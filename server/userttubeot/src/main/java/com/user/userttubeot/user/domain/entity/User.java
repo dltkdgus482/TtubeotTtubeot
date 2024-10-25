@@ -60,4 +60,5 @@ public class User {
 
     @Column(name = "user_parent")
     private Integer userParent;
+
 }
