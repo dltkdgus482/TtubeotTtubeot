@@ -1,23 +1,22 @@
 import React from 'react';
+import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
+  useColorScheme,
   View,
 } from 'react-native';
-
-import {Header} from 'react-native/Libraries/NewAppScreen';
 
 function App(): React.JSX.Element {
   return (
     <SafeAreaView>
       <StatusBar />
       <ScrollView>
-        <Header />
         <View>
-          <Text>FrontEnd init</Text>
+          <Text>메인페이지</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
