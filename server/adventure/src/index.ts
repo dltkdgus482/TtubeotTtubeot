@@ -1,12 +1,14 @@
 import express from 'express';
+import http from 'http';
+import { Server as SocketIOServer } from 'socket.io';
 
 const app = express();
-const port = 3000;
-
-app.get('/', (req, res) => {
-  res.send('Hello, world!');
+const server = http.createServer(app);
+const io = new SocketIOServer(server, {
+  path: '/adventure/socket',
 });
+const port = 8080;
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+server.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
 });
