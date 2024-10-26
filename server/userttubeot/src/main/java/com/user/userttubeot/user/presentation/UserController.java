@@ -1,5 +1,6 @@
 package com.user.userttubeot.user.presentation;
 
+import com.user.userttubeot.user.application.SmsVerificationService;
 import com.user.userttubeot.user.application.UserService;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
 import com.user.userttubeot.user.domain.entity.User;
@@ -18,24 +19,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 public class UserController {
 
-    private final UserService userService;  // UserService 의존성 주입
+    private final UserService userService;
+    private final SmsVerificationService smsVerificationService;  // SmsVerificationService 주입
 
-    /**
-     * 회원가입 요청을 처리하는 메서드
-     *
-     * @param request 회원가입 요청 정보를 담은 DTO
-     * @return 생성된 User 객체와 HTTP 상태 코드를 포함한 ResponseEntity
-     */
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody UserSignupRequestDto request) {
         try {
             log.info("회원가입 요청이 들어왔습니다. 요청 사용자 이름: {}", request.getUserName());
 
+            // 전화번호 인증 여부 확인
+            boolean isPhoneVerified = smsVerificationService.isPhoneVerified(
+                request.getUserPhone());
+            if (!isPhoneVerified) {
+                log.warn("회원가입 실패 - 전화번호 인증이 되지 않았습니다. 전화번호: {}", request.getUserPhone());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("전화번호 인증이 필요합니다.");
+            }
+            // 레디스에서 인증 관련 정보 삭제
+            if (smsVerificationService.deleteVerificationCode(request.getUserPhone())) {
+                log.info("전화번호 인증 후 Redis 데이터 삭제 완료. 전화번호: {}", request.getUserPhone());
+            }
+
             // UserService를 호출하여 회원가입 처리
             User newUser = userService.signup(request);
             log.info("회원가입 성공. 사용자 ID: {}", newUser.getUserId());
 
-            // 성공 응답 반환
             return ResponseEntity.ok(newUser);
 
         } catch (IllegalArgumentException e) {
