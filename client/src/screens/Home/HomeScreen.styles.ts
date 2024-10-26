@@ -5,9 +5,12 @@ export default StyleSheet.create({
     flex: 1,
   },
   backgroundImage: {
-    flex: 1,
-    resizeMode: 'cover',
-    opacity: 0.8,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.7,
   },
   content: {
     flex: 1,
@@ -34,5 +37,10 @@ export default StyleSheet.create({
   albumIcon: {
     width: 60,
     height: 60,
+  },
+  profileContainer: {
+    position: 'absolute',
+    top: 40,
+    left: 85,
   },
 });

@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Image, ImageBackground, TouchableOpacity} from 'react-native';
 import styles from './HomeScreen.styles';
+import TtubeotProfile from '../../styles/TtubeotProfile';
 
 const background = require('../../assets/images/HomeBackground.jpg');
 const ShopIcon = require('../../assets/icons/ShopIcon.png');
@@ -13,22 +14,27 @@ const HomeScreen = () => {
   };
 
   return (
-    <ImageBackground source={background} style={styles.backgroundImage}>
-      <View style={styles.container}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={handlePress}>
-            <Image source={ShopIcon} style={styles.shopIcon} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handlePress}>
-            <Image source={MissionIcon} style={styles.missionIcon} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handlePress}>
-            <Image source={AlbumIcon} style={styles.albumIcon} />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.content}></View>
+    <View style={styles.container}>
+      <ImageBackground
+        source={background}
+        style={styles.backgroundImage}></ImageBackground>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={handlePress}>
+          <Image source={ShopIcon} style={styles.shopIcon} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handlePress}>
+          <Image source={MissionIcon} style={styles.missionIcon} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handlePress}>
+          <Image source={AlbumIcon} style={styles.albumIcon} />
+        </TouchableOpacity>
       </View>
-    </ImageBackground>
+      <View style={styles.profileContainer}>
+        <TtubeotProfile />
+      </View>
+      <View style={styles.content}>
+      </View>
+    </View>
   );
 };
 
