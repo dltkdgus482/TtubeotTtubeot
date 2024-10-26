@@ -10,49 +10,62 @@ import java.util.Base64;
 import java.util.UUID;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class SmsService {
 
     @Value("${coolsms.api-key}")
-    private static String API_KEY;
+    private String apiKey;
+
     @Value("${coolsms.api-secret}")
-    private static String API_SECRET;
+    private String apiSecret;
+
     private static final String SMS_API_URL = "https://api.coolsms.co.kr/messages/v4/send";
 
-    public String sendMessage(String to, String code) throws Exception {
-        String authorization = generateAuthorizationHeader();
+    public String sendMessage(String to, String code) {
+        try {
+            String authorization = generateAuthorizationHeader();
 
-        // HTTP POST 요청 설정
-        HttpURLConnection connection = (HttpURLConnection) new URL(SMS_API_URL).openConnection();
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Authorization", authorization);
-        connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-        connection.setDoOutput(true);
+            HttpURLConnection connection = (HttpURLConnection) new URL(
+                SMS_API_URL).openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Authorization", authorization);
+            connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            connection.setDoOutput(true);
 
-        // JSON 메시지 작성
-        JSONObject message = new JSONObject();
-        message.put("from", "01084964116");  // 발신 번호
-        message.put("to", to);
-        message.put("type", "SMS");
-        message.put("text", "인증번호는 " + code + "입니다.");
+            JSONObject message = new JSONObject();
+            message.put("from", "01084964116");
+            message.put("to", to);
+            message.put("type", "SMS");
+            message.put("text", "인증번호는 " + code + "입니다.");
 
-        JSONObject body = new JSONObject();
-        body.put("message", message);
+            JSONObject body = new JSONObject();
+            body.put("message", message);
 
-        // JSON 바디 전송
-        try (OutputStream os = connection.getOutputStream()) {
-            os.write(body.toString().getBytes(StandardCharsets.UTF_8));
-        }
+            log.debug("SMS 요청 본문: {}", body);
 
-        // 응답 처리
-        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-            return "인증번호가 전송되었습니다.";
-        } else {
-            return "SMS 전송 실패: " + connection.getResponseMessage();
+            try (OutputStream os = connection.getOutputStream()) {
+                os.write(body.toString().getBytes(StandardCharsets.UTF_8));
+            }
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                log.info("인증번호 전송 성공: 수신자={}, 코드={}", to, code);
+                return "인증번호가 전송되었습니다.";
+            } else {
+                String errorMessage = connection.getResponseMessage();
+                log.error("SMS 전송 실패: 응답 코드={}, 응답 메시지={}", responseCode, errorMessage);
+                return "SMS 전송 실패: " + errorMessage;
+            }
+
+        } catch (Exception e) {
+            log.error("SMS 전송 중 오류 발생", e);
+            return "SMS 전송 중 오류가 발생했습니다.";
         }
     }
 
@@ -63,15 +76,17 @@ public class SmsService {
         String data = date + salt;
 
         Mac mac = Mac.getInstance("HmacSHA256");
-        SecretKeySpec secretKeySpec = new SecretKeySpec(
-            SmsService.API_SECRET.getBytes(StandardCharsets.UTF_8),
+        SecretKeySpec secretKeySpec = new SecretKeySpec(apiSecret.getBytes(StandardCharsets.UTF_8),
             "HmacSHA256");
         mac.init(secretKeySpec);
         byte[] hashBytes = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
         String signature = Base64.getEncoder().encodeToString(hashBytes);
 
-        return "HMAC-SHA256 apiKey=" + SmsService.API_KEY + ", date=" + date + ", salt=" + salt
-            + ", signature="
-            + signature;
+        String authorizationHeader =
+            "HMAC-SHA256 apiKey=" + apiKey + ", date=" + date + ", salt=" + salt
+                + ", signature=" + signature;
+        log.debug("Authorization Header 생성: {}", authorizationHeader);
+
+        return authorizationHeader;
     }
 }
