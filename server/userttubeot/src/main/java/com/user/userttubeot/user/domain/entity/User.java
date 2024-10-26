@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -60,5 +62,26 @@ public class User {
 
     @Column(name = "user_parent")
     private Integer userParent;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        if (this.userCoin == null) {
+            this.userCoin = 0;
+        }
+        if (this.userStatus == null) {
+            this.userStatus = 1;
+        }
+        if (this.userParent == null) {
+            this.userParent = 0;
+        }
+    }
+
+    // Optional: updated_at 필드를 자동으로 현재 시간으로 갱신하기 위한 메소드
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
 }
