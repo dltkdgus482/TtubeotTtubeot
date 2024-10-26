@@ -15,4 +15,24 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  buttonContainer: {
+    position: 'absolute',
+    right: 20,
+    top: 100,
+    justifyContent: 'center',
+    alignContent: 'space-between',
+    gap: 10,
+  },
+  shopIcon: {
+    width: 60,
+    height: 60,
+  },
+  missionIcon: {
+    width: 60,
+    height: 60,
+  },
+  albumIcon: {
+    width: 60,
+    height: 60,
+  },
 });
