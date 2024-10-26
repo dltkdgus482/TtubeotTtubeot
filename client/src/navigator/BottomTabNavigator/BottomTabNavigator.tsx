@@ -15,6 +15,7 @@ type IconType = 'Ionicons' | 'FontAwesome' | 'FontAwesome6' | 'Octicons';
 const BottomTabNavigator = () => {
   return (
     <Tab.Navigator
+      initialRouteName="Home"
       screenOptions={({route}) => ({
         tabBarIcon: ({color, size, focused}) => {
           let iconName;
