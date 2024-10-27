@@ -81,4 +81,26 @@ public class UserService {
             .userType((byte) dto.getUserType())
             .build();
     }
+
+    public boolean verifyUserCredentials(String userPhone, String password) {
+        // 1. 전화번호로 사용자 조회
+        User user = userRepository.findByUserPhone(userPhone)
+            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 2. 저장된 Salt와 암호화된 비밀번호 가져오기
+        String salt = user.getUserPasswordSalt();  // 저장된 Salt 값
+        String encryptedPassword = user.getUserPassword(); // 암호화된 비밀번호
+
+        // 3. 입력된 비밀번호와 Salt를 결합하여 암호화
+        String rawPassword = password + salt;
+        boolean isPasswordMatch = passwordEncoder.matches(rawPassword, encryptedPassword);
+
+        if (isPasswordMatch) {
+            log.debug("비밀번호 일치. 로그인 성공.");
+        } else {
+            log.warn("비밀번호 불일치. 로그인 실패.");
+        }
+
+        return isPasswordMatch;
+    }
 }
