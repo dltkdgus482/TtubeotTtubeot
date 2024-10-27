@@ -3,6 +3,10 @@ import AdventureRepository from '../repositories/AdventureRepository';
 class AdventureService {
   private adventureRepository: AdventureRepository;
 
+  // TODO: 현재 연결중인 사용자들 목록을 관리하는 HashMap 자료형 생성
+  // TODO: socket_id를 key로, userId를 value로 하는 HashMap 자료형 생성, 이는 adventure_init 이벤트에서 JWT 토큰으로 등록되어야 함.
+  // TODO: 아래에서 userId를 사용하는 부분을 HashMap을 사용하여 socket_id => userId로 치환, 이를 각 메서드에 적용해야 함.
+
   constructor() {
     this.adventureRepository = new AdventureRepository();
   }

@@ -7,7 +7,13 @@ export default function socketRoutes(io: Server) {
   io.on("connection", (socket: Socket) => {
     console.log("New client connected:", socket.id);
 
+    // TODO: adventure_init 이벤트 추가
+
     socket.on("adventure_info", (data) => adventureController.handleStoreGPSData(socket, data));
+
+    // TODO: adventure_claim 이벤트 추가
+
+    // TODO: adventure_greet 이벤트 추가
 
     socket.on("disconnect", () => {
       console.log("Client disconnected:", socket.id);
