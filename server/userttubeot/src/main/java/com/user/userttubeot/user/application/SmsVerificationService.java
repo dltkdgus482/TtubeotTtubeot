@@ -6,7 +6,6 @@ import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import com.user.userttubeot.user.infrastructure.SmsVerificationRedisRepository;
 
 @Slf4j
 @Service
@@ -14,7 +13,7 @@ import com.user.userttubeot.user.infrastructure.SmsVerificationRedisRepository;
 public class SmsVerificationService {
 
     private static final Duration VERIFICATION_CODE_EXPIRE_DURATION = Duration.ofMinutes(5);
-    private final SmsVerificationRedisRepository redisRepository;
+    private final RedisService redisRepository;
 
     /**
      * 인증 코드 생성 및 Redis에 저장

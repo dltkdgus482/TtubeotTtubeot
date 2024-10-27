@@ -1,4 +1,4 @@
-package com.user.userttubeot.user.infrastructure;
+package com.user.userttubeot.user.application;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class SmsVerificationRedisRepository {
+public class RedisService {
 
     private final StringRedisTemplate redisTemplate;
     private static final Duration VERIFICATION_CODE_EXPIRE_DURATION = Duration.ofMinutes(5);
