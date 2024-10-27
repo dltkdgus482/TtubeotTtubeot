@@ -20,26 +20,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
-    private final SmsVerificationService smsVerificationService;  // SmsVerificationService 주입
+    private final SmsVerificationService smsVerificationService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody UserSignupRequestDto request) {
         try {
             log.info("회원가입 요청이 들어왔습니다. 요청 사용자 이름: {}", request.getUserName());
 
-            // 전화번호 인증 여부 확인
-            boolean isPhoneVerified = smsVerificationService.isPhoneVerified(
-                request.getUserPhone());
-            if (!isPhoneVerified) {
+            if (!smsVerificationService.isPhoneVerified(request.getUserPhone())) {
                 log.warn("회원가입 실패 - 전화번호 인증이 되지 않았습니다. 전화번호: {}", request.getUserPhone());
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("전화번호 인증이 필요합니다.");
             }
-            // 레디스에서 인증 관련 정보 삭제
-            if (smsVerificationService.deleteVerificationCode(request.getUserPhone())) {
-                log.info("전화번호 인증 후 Redis 데이터 삭제 완료. 전화번호: {}", request.getUserPhone());
-            }
 
-            // UserService를 호출하여 회원가입 처리
+            smsVerificationService.deleteVerificationCode(request.getUserPhone());
+
             User newUser = userService.signup(request);
             log.info("회원가입 성공. 사용자 ID: {}", newUser.getUserId());
 
@@ -48,7 +42,6 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             log.error("회원가입 실패 - 잘못된 요청 데이터: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원가입 실패: 잘못된 요청 데이터입니다.");
-
         } catch (Exception e) {
             log.error("회원가입 실패 - 서버 오류: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

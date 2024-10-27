@@ -22,8 +22,7 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/user/signup", "/sms-verification/request",
-                    "/sms-verification/confirm")
+                .requestMatchers("/user/sms-verification/request","/user/sms-verification/confirm","/user/signup")
                 .permitAll() // 특정 경로에 접근 허용
                 .anyRequest().authenticated() // 나머지 요청은 인증 필요
             )

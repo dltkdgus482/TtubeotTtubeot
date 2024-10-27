@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/sms-verification")
+@RequestMapping("/user/sms-verification")
 public class SmsController {
 
     private final SmsService smsService;
