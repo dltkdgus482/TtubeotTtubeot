@@ -10,11 +10,17 @@ import Icon from '../../components/Icon';
 
 const Tab = createBottomTabNavigator();
 
-type IconType = 'Ionicons' | 'FontAwesome' | 'FontAwesome6' | 'Octicons';
+type IconType =
+  | 'Ionicons'
+  | 'FontAwesome5'
+  | 'FontAwesome6'
+  | 'Octicons'
+  | undefined;
 
 const BottomTabNavigator = () => {
   return (
     <Tab.Navigator
+      initialRouteName="Home"
       screenOptions={({route}) => ({
         tabBarIcon: ({color, size, focused}) => {
           let iconName;
@@ -22,7 +28,7 @@ const BottomTabNavigator = () => {
 
           if (route.name === 'Adventure') {
             iconName = 'compass';
-            iconType = 'FontAwesome';
+            iconType = 'FontAwesome5';
           } else if (route.name === 'Journal') {
             iconName = 'log';
             iconType = 'Octicons';
@@ -37,7 +43,7 @@ const BottomTabNavigator = () => {
             iconType = 'FontAwesome6';
           } else {
             iconName = '';
-            iconType = 'FontAwesome';
+            iconType = undefined;
           }
 
           return (
@@ -50,7 +56,7 @@ const BottomTabNavigator = () => {
               <Icon
                 type={iconType}
                 name={iconName ? iconName : ''}
-                size={size}
+                size={size + 5}
                 color={color}
               />
             </View>

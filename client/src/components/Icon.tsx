@@ -8,14 +8,14 @@ type IconProps = {
   name: string;
   size?: number;
   color?: string;
-  type: 'Ionicons' | 'FontAwesome' | 'FontAwesome6' | 'Octicons';
+  type: 'Ionicons' | 'FontAwesome5' | 'FontAwesome6' | 'Octicons' | undefined;
 };
 
 const Icon: React.FC<IconProps> = ({name, size = 30, color = '#000', type}) => {
   switch (type) {
     case 'Ionicons':
       return <Ionicons name={name} size={size} color={color} />;
-    case 'FontAwesome':
+    case 'FontAwesome5':
       return <FontAwesome name={name} size={size} color={color} />;
     case 'FontAwesome6':
       return <FontAwesome6 name={name} size={size} color={color} />;
