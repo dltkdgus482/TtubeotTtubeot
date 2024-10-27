@@ -38,6 +38,13 @@ class AdventureRedisRepository {
             distance: user.distance ?? 0,
         }));
     }
+
+    async findUserLocationData(userId: number): Promise<{ lat: number; lng: number; steps: number; timestamp: number }[]> {
+        const userLocationKey = `user:${userId}:location_data`;
+        const locationData = await redisClient.zRange(userLocationKey, 0, -1);
+
+        return locationData.map((data) => JSON.parse(data));
+    }
 }
 
 export default AdventureRedisRepository;

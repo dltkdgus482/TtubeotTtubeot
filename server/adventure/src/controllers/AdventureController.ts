@@ -20,4 +20,14 @@ export class AdventureController {
       socket.emit("error", { message: "Failed to store GPS data" });
     }
   }
+
+  async handleEndAdventure(socket: Socket, data: { userId: number }): Promise<void> {
+    const { userId } = data;
+    try {
+      await this.adventureService.endAdventure(userId);
+    } catch (error) {
+      console.error("Error in handleEndAdventure:", error);
+      socket.emit("error", { message: "Failed to end adventure" });
+    }
+  }
 }

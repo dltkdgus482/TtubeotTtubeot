@@ -15,7 +15,7 @@ export default function socketRoutes(io: Server) {
 
     // TODO: adventure_greet 이벤트 추가
 
-    // TODO: adventure_end 이벤트 추가
+    socket.on("adventure_end", (data) => adventureController.handleEndAdventure(socket, data));
 
     socket.on("disconnect", () => {
       console.log("Client disconnected:", socket.id);

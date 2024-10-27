@@ -19,6 +19,11 @@ class AdventureService {
     nearbyUsers = nearbyUsers.filter(user => user.userId !== userId);
     return nearbyUsers;
   }
+
+  async endAdventure(userId: number): Promise<void> {
+    let locationData = await this.adventureRedisRepository.findUserLocationData(userId);
+    console.log(`Location data for user ${userId}:`, locationData);
+  }
 }
 
 export default AdventureService;
