@@ -26,33 +26,36 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 120,
     width: '100%',
-    height: 250,
-    resizeMode: 'stretch',
+    height: 260,
     borderRadius: 10,
     justifyContent: 'center',
     alignContent: 'center',
   },
   adventureAlert: {
-    padding: 20,
-    textAlign: 'left',
-    textAlignVertical: 'top',
+    padding: 50,
+    display: 'flex',
+    justifyContent: 'space-between',
   },
-  alertContentTitle: {
-    fontSize: 20,
+  alertSection: {
+    height: 80,
+    justifyContent: 'center',
+  },
+  alertTitle: {
+    fontSize: 23,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 10,
   },
   alertContent: {
     fontSize: 18,
     fontWeight: 'bold',
-    textAlign: 'center',
+    textAlign: 'left',
+    paddingTop: 3,
   },
-  alertContentLast: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginTop: 8,
+  accentText: {
+    color: 'red',
+  },
+  accentTextBlue: {
+    color: 'blue',
   },
 });
 
