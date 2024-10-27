@@ -1,17 +1,23 @@
 import AdventureRedisRepository from '../repositories/AdventureRedisRepository';
 import AdventureMongoRepository from '../repositories/AdventureMongoRepository';
+import AdventureMysqlRepository from '../repositories/AdventureMysqlRepository';
+import AdventureLogModel from '../models/AdventureLogModel';
+import CalcAdventureStats from '../utils/calcAdventureStats';
 
 class AdventureService {
   private adventureRedisRepository: AdventureRedisRepository;
   private adventureMongoRepository: AdventureMongoRepository;
-
-  // TODO: 현재 연결중인 사용자들 목록을 관리하는 HashMap 자료형 생성
-  // TODO: socket_id를 key로, userId를 value로 하는 HashMap 자료형 생성, 이는 adventure_init 이벤트에서 JWT 토큰으로 등록되어야 함.
-  // TODO: 아래에서 userId를 사용하는 부분을 HashMap을 사용하여 socket_id => userId로 치환, 이를 각 메서드에 적용해야 함.
+  private adventureMysqlRepository: AdventureMysqlRepository;
 
   constructor() {
     this.adventureRedisRepository = new AdventureRedisRepository();
     this.adventureMongoRepository = new AdventureMongoRepository();
+    this.adventureMysqlRepository = new AdventureMysqlRepository();
+  }
+
+  async initAdventure(adventureLog: AdventureLogModel): Promise<void> {
+    let adventureLogId = await this.adventureMysqlRepository.initAdventureLog(adventureLog);
+    adventureLog.adventureLogId = adventureLogId;
   }
 
   // 위치 정보와 걸음 수를 저장, 근처 사용자 목록 반환
@@ -23,11 +29,19 @@ class AdventureService {
     return nearbyUsers;
   }
 
-  async endAdventure(userId: number): Promise<void> {
-    let locationData = await this.adventureRedisRepository.findUserLocationData(userId);
-    let mongoId = await this.adventureMongoRepository.insertUserLocationData(userId, locationData);
+  async endAdventure(adventureLog: AdventureLogModel): Promise<void> {
+    let locationData = await this.adventureRedisRepository.findUserLocationData(adventureLog.userId);
+    let mongoId = await this.adventureMongoRepository.insertUserLocationData(adventureLog.userId, locationData);
 
-    await this.adventureRedisRepository.flushUserLocationData(userId);
+    adventureLog.gpsLogKey = mongoId;
+    adventureLog.gpsLog = locationData;
+    adventureLog.endAt = new Date();
+    adventureLog.adventureDistance = CalcAdventureStats.getDistanceFromGPSData(locationData);
+    adventureLog.adventureCalorie = CalcAdventureStats.getCalorieBurned(locationData.reduce((acc, data) => acc + data.steps, 0));
+
+    await this.adventureMysqlRepository.updateAdventureLog(adventureLog);
+
+    await this.adventureRedisRepository.flushUserLocationData(adventureLog.userId);
   }
 }
 

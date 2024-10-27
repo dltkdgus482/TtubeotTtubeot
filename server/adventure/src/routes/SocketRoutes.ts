@@ -7,7 +7,7 @@ export default function socketRoutes(io: Server) {
   io.on("connection", (socket: Socket) => {
     console.log("New client connected:", socket.id);
 
-    // TODO: adventure_init 이벤트 추가
+    socket.on("adventure_init", (data) => adventureController.handleInitAdventure(socket, data));
 
     socket.on("adventure_info", (data) => adventureController.handleStoreGPSData(socket, data));
 
@@ -15,7 +15,7 @@ export default function socketRoutes(io: Server) {
 
     // TODO: adventure_greet 이벤트 추가
 
-    socket.on("adventure_end", (data) => adventureController.handleEndAdventure(socket, data));
+    socket.on("adventure_end", () => adventureController.handleEndAdventure(socket));
 
     socket.on("disconnect", () => {
       console.log("Client disconnected:", socket.id);

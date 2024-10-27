@@ -18,5 +18,6 @@ class JWTParser {
       return -1;
     }
   }
-
 }
+
+export default JWTParser;
