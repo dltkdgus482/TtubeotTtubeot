@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import {Image, Text, View} from 'react-native';
-import {Shadow} from 'react-native-shadow-2';
 import Icon from '../components/Icon';
 
 const Profile = styled.View`
