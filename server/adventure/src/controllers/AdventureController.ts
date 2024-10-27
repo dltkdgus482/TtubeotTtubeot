@@ -36,8 +36,6 @@ export class AdventureController {
       socket.emit("error", { message: "Failed to store GPS data" });
       return;
     }
-    console.log("handleStoreGPSData:", data);
-    console.log("userId:", userId);
 
     const { lat, lng, steps } = data;
     try {
