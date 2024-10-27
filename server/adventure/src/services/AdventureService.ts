@@ -1,4 +1,4 @@
-import AdventureRepository from '../repositories/adventureRepository';
+import AdventureRepository from '../repositories/AdventureRepository';
 
 class AdventureService {
   private adventureRepository: AdventureRepository;
