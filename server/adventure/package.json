@@ -20,7 +20,9 @@
     "ts-node": "^10.9.2"
   },
   "dependencies": {
+    "@types/jsonwebtoken": "^9.0.7",
     "dotenv": "^16.4.5",
+    "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.10.0",
     "mysql2": "^3.11.3",
     "redis": "^4.7.0",
