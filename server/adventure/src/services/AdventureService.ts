@@ -27,7 +27,6 @@ class AdventureService {
     let locationData = await this.adventureRedisRepository.findUserLocationData(userId);
     let mongoId = await this.adventureMongoRepository.insertUserLocationData(userId, locationData);
 
-    console.log(`Adventure ended for user ${userId}, data saved with ID ${mongoId}`);
     await this.adventureRedisRepository.flushUserLocationData(userId);
   }
 }

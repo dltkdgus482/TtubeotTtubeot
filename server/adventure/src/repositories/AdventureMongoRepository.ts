@@ -16,7 +16,6 @@ class AdventureMongoRepository {
         userId,
         gps_log: locationData,
       });
-      console.log(`Data inserted for user ${userId}`);
       return result.insertedId;
     } catch (error) {
       console.error(`Failed to insert data for user ${userId}:`, error);
