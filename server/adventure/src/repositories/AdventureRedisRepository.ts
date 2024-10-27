@@ -45,6 +45,13 @@ class AdventureRedisRepository {
 
         return locationData.map((data) => JSON.parse(data));
     }
+
+    async flushUserLocationData(userId: number): Promise<void> {
+        const userLocationKey = `user:${userId}:location_data`;
+        await redisClient.del(userLocationKey);
+
+        await redisClient.zRem(this.locationKey, userId.toString());
+    }
 }
 
 export default AdventureRedisRepository;

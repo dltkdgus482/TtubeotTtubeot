@@ -1,7 +1,9 @@
 import AdventureRedisRepository from '../repositories/AdventureRedisRepository';
+import AdventureMongoRepository from '../repositories/AdventureMongoRepository';
 
 class AdventureService {
   private adventureRedisRepository: AdventureRedisRepository;
+  private adventureMongoRepository: AdventureMongoRepository;
 
   // TODO: 현재 연결중인 사용자들 목록을 관리하는 HashMap 자료형 생성
   // TODO: socket_id를 key로, userId를 value로 하는 HashMap 자료형 생성, 이는 adventure_init 이벤트에서 JWT 토큰으로 등록되어야 함.
@@ -9,6 +11,7 @@ class AdventureService {
 
   constructor() {
     this.adventureRedisRepository = new AdventureRedisRepository();
+    this.adventureMongoRepository = new AdventureMongoRepository();
   }
 
   // 위치 정보와 걸음 수를 저장, 근처 사용자 목록 반환
@@ -22,7 +25,10 @@ class AdventureService {
 
   async endAdventure(userId: number): Promise<void> {
     let locationData = await this.adventureRedisRepository.findUserLocationData(userId);
-    console.log(`Location data for user ${userId}:`, locationData);
+    let mongoId = await this.adventureMongoRepository.insertUserLocationData(userId, locationData);
+
+    console.log(`Adventure ended for user ${userId}, data saved with ID ${mongoId}`);
+    await this.adventureRedisRepository.flushUserLocationData(userId);
   }
 }
 
