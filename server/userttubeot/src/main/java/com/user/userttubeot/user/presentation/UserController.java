@@ -1,6 +1,5 @@
 package com.user.userttubeot.user.presentation;
 
-import com.user.userttubeot.user.application.SmsVerificationService;
 import com.user.userttubeot.user.application.UserService;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
 import com.user.userttubeot.user.domain.entity.User;
@@ -20,19 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
-    private final SmsVerificationService smsVerificationService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody UserSignupRequestDto request) {
         try {
             log.info("회원가입 요청이 들어왔습니다. 요청 사용자 이름: {}", request.getUserName());
-
-            if (!smsVerificationService.isPhoneVerified(request.getUserPhone())) {
-                log.warn("회원가입 실패 - 전화번호 인증이 되지 않았습니다. 전화번호: {}", request.getUserPhone());
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("전화번호 인증이 필요합니다.");
-            }
-
-            smsVerificationService.deleteVerificationCode(request.getUserPhone());
 
             User newUser = userService.signup(request);
             log.info("회원가입 성공. 사용자 ID: {}", newUser.getUserId());

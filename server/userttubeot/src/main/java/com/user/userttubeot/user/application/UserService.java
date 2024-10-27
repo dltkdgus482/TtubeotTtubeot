@@ -16,8 +16,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;   // 사용자 저장소
-    private final PasswordEncoder passwordEncoder; // 비밀번호 암호화 인코더
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final SmsVerificationService smsVerificationService;
 
     /**
      * 회원 가입을 처리하는 메서드
@@ -28,17 +29,24 @@ public class UserService {
     public User signup(UserSignupRequestDto request) {
         log.info("회원가입 요청이 들어왔습니다. 요청 사용자 이름: {}", request.getUserName());
 
+        // 전화번호 인증 여부 확인
+        if (!smsVerificationService.isPhoneVerified(request.getUserPhone())) {
+            log.warn("회원가입 실패 - 전화번호 인증이 되지 않았습니다. 전화번호: {}", request.getUserPhone());
+            throw new IllegalArgumentException("전화번호 인증이 필요합니다.");
+        }
+
+        // 전화번호 인증 정보 삭제
+        smsVerificationService.deleteVerificationCode(request.getUserPhone());
+        log.info("전화번호 인증 후 Redis 데이터 삭제 완료. 전화번호: {}", request.getUserPhone());
+
         // 비밀번호 암호화 및 Salt 생성
         String passwordSalt = generateSalt();
         log.debug("생성된 비밀번호 Salt: {}", passwordSalt);
         String encryptedPassword = passwordEncoder.encode(request.getUserPassword() + passwordSalt);
         log.debug("암호화된 비밀번호 생성 완료");
 
-        // User 엔티티 생성
+        // User 엔티티 생성 및 저장
         User user = fromDto(request, passwordSalt, encryptedPassword);
-        log.info("User 엔티티 생성 완료. 사용자 이름: {}", user.getUserName());
-
-        // 데이터베이스에 저장
         User savedUser = userRepository.save(user);
         log.info("회원가입 성공. 사용자 ID: {}", savedUser.getUserId());
 
@@ -55,7 +63,7 @@ public class UserService {
     }
 
     /**
-     * UserSignupRequestDto를 User 엔티티로 변환하는 정적 메서드.
+     * UserSignupRequestDto를 User 엔티티로 변환하는 메서드
      *
      * @param dto               회원가입 요청 DTO
      * @param passwordSalt      비밀번호 암호화에 사용할 Salt 값
@@ -64,10 +72,7 @@ public class UserService {
      */
     private static User fromDto(UserSignupRequestDto dto, String passwordSalt,
         String encryptedPassword) {
-        log.debug("User 엔티티로 변환 시작");
-
-        // User 엔티티 빌드
-        User user = User.builder()
+        return User.builder()
             .userName(dto.getUserName())
             .userPhone(dto.getUserPhone())
             .userPassword(encryptedPassword)
@@ -75,8 +80,5 @@ public class UserService {
             .userLocationAgreement(dto.getUserLocationAgreement() == 1)
             .userType((byte) dto.getUserType())
             .build();
-
-        log.debug("User 엔티티 변환 완료");
-        return user;
     }
 }
