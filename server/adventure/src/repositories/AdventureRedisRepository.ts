@@ -1,7 +1,7 @@
 import { commandOptions, GeoReplyWith } from "redis";
 import redisClient from "../config/database/redis";
 
-class adventureRepository {
+class AdventureRedisRepository {
     private readonly locationKey: string = "user_locations";
 
     async storeGPSData(userId: number, lat: number, lng: number, steps: number): Promise<void> {
@@ -40,4 +40,4 @@ class adventureRepository {
     }
 }
 
-export default adventureRepository;
+export default AdventureRedisRepository;
