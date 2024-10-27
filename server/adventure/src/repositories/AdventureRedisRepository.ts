@@ -1,4 +1,4 @@
-import { commandOptions, GeoReplyWith } from "redis";
+import { GeoReplyWith } from "redis";
 import redisClient from "../config/database/redis";
 
 class AdventureRedisRepository {
