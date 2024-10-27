@@ -13,14 +13,14 @@ import org.springframework.stereotype.Service;
 public class SmsVerificationService {
 
     private static final Duration VERIFICATION_CODE_EXPIRE_DURATION = Duration.ofMinutes(5);
-    private final RedisService redisRepository;
+    private final RedisService redisService;
 
     /**
      * 인증 코드 생성 및 Redis에 저장
      */
     public String generateAndSaveVerificationCode(String phoneNumber) {
         String verificationCode = generateVerificationCode();
-        redisRepository.saveVerificationCode(phoneNumber, verificationCode);
+        redisService.saveVerificationCode(phoneNumber, verificationCode);
         log.info("인증 번호 생성 및 저장 완료. 전화번호: {}, 코드: {}", phoneNumber, verificationCode);
         return verificationCode;
     }
@@ -29,8 +29,8 @@ public class SmsVerificationService {
      * 인증 코드 검증
      */
     public boolean verifyCode(String phoneNumber, String verificationCode) {
-        String storedCode = redisRepository.getVerificationCode(phoneNumber);
-        String storedTimestamp = redisRepository.getVerificationTimestamp(phoneNumber);
+        String storedCode = redisService.getVerificationCode(phoneNumber);
+        String storedTimestamp = redisService.getVerificationTimestamp(phoneNumber);
 
         if (storedCode == null || storedTimestamp == null) {
             log.warn("인증 시간이 만료되었습니다. 전화번호: {}", phoneNumber);
@@ -41,7 +41,7 @@ public class SmsVerificationService {
         long savedTimestamp = Long.parseLong(storedTimestamp);
         if (currentTimestamp - savedTimestamp > VERIFICATION_CODE_EXPIRE_DURATION.getSeconds()) {
             log.warn("인증 시간이 초과되었습니다. 전화번호: {}", phoneNumber);
-            redisRepository.deleteVerificationCode(phoneNumber);
+            redisService.deleteVerificationCode(phoneNumber);
             return false;
         }
 
@@ -58,7 +58,7 @@ public class SmsVerificationService {
      * 전화번호 인증 여부 확인
      */
     public boolean isPhoneVerified(String phoneNumber) {
-        String storedCode = redisRepository.getVerificationCode(phoneNumber);
+        String storedCode = redisService.getVerificationCode(phoneNumber);
         boolean isVerified = storedCode != null;
         log.info("전화번호 인증 상태 확인. 전화번호: {}, 인증 상태: {}", phoneNumber, isVerified ? "인증됨" : "인증되지 않음");
         return isVerified;
@@ -68,7 +68,7 @@ public class SmsVerificationService {
      * 인증 데이터 삭제
      */
     public void deleteVerificationCode(String phoneNumber) {
-        redisRepository.deleteVerificationCode(phoneNumber);
+        redisService.deleteVerificationCode(phoneNumber);
         log.info("인증 데이터 삭제 완료. 전화번호: {}", phoneNumber);
     }
 
