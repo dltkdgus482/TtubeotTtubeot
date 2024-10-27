@@ -5,6 +5,7 @@ import com.user.userttubeot.user.application.UserService;
 import com.user.userttubeot.user.domain.dto.UserLoginRequestDto;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
 import com.user.userttubeot.user.domain.entity.User;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,6 +72,17 @@ public class UserController {
         } catch (Exception e) {
             log.error("로그인 실패 - 서버 오류: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("로그인 실패: 잘못된 요청 방식입니다.");
+        }
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<?> reissueAccessToken(HttpServletRequest request,
+        HttpServletResponse response) {
+        try {
+            authService.refreshToken(request, response);
+            return ResponseEntity.ok("Access token reissued successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(401).body("Invalid or expired refresh token");
         }
     }
 }
