@@ -1,8 +1,24 @@
 import { GeoReplyWith } from "redis";
 import redisClient from "../config/database/redis";
+import AdventureLogModel from "../models/AdventureLogModel";
+import { Socket } from "socket.io";
 
 class AdventureRedisRepository {
     private readonly locationKey: string = "user_locations";
+    private readonly onlineUsersKey: string = "online_users";
+
+    async setOnline(adventureLog: AdventureLogModel, socket: string): Promise<void> {
+        await redisClient.hSet(this.onlineUsersKey, socket, JSON.stringify(adventureLog));
+    }
+
+    async setOffline(socket: string): Promise<void> {
+        await redisClient.hDel(this.onlineUsersKey, socket);
+    }
+
+    async getAdventureLog(socket: string): Promise<AdventureLogModel> {
+        const adventureLog = await redisClient.hGet(this.onlineUsersKey, socket) ?? "{}";
+        return AdventureLogModel.create(JSON.parse(adventureLog))
+    }
 
     async storeGPSData(userId: number, lat: number, lng: number, steps: number): Promise<void> {
         await redisClient.geoAdd(this.locationKey, {

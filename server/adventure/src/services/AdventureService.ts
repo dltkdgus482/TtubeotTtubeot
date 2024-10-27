@@ -15,13 +15,20 @@ class AdventureService {
     this.adventureMysqlRepository = new AdventureMysqlRepository();
   }
 
-  async initAdventure(adventureLog: AdventureLogModel): Promise<void> {
+  async initAdventure(userId: number, socket: string): Promise<void> {
+    let adventureLog = AdventureLogModel.create({ userId, userTtubeotOwnershipId: 0 }); // TODO: 현재는 userTtubeotOwnershipId를 0으로 설정, 추후 user 서비스와 연동하여 수정해야 함.
+
     let adventureLogId = await this.adventureMysqlRepository.initAdventureLog(adventureLog);
     adventureLog.adventureLogId = adventureLogId;
+
+    await this.adventureRedisRepository.setOnline(adventureLog, socket);
   }
 
   // 위치 정보와 걸음 수를 저장, 근처 사용자 목록 반환
-  async storeGPSData(userId: number, lat: number, lng: number, steps: number): Promise<{ userId: number; distance: number }[]> {
+  async storeGPSData(socket: string, lat: number, lng: number, steps: number): Promise<{ userId: number; distance: number }[]> {
+    let adventureLog = await this.adventureRedisRepository.getAdventureLog(socket);
+    let userId = adventureLog.userId;
+
     await this.adventureRedisRepository.storeGPSData(userId, lat, lng, steps);
 
     let nearbyUsers = await this.adventureRedisRepository.findNearbyUsers(lat, lng, 300);
@@ -29,9 +36,12 @@ class AdventureService {
     return nearbyUsers;
   }
 
-  async endAdventure(adventureLog: AdventureLogModel): Promise<void> {
-    let locationData = await this.adventureRedisRepository.findUserLocationData(adventureLog.userId);
-    let mongoId = await this.adventureMongoRepository.insertUserLocationData(adventureLog.userId, locationData);
+  async endAdventure(socket: string): Promise<AdventureLogModel> {
+    let adventureLog = await this.adventureRedisRepository.getAdventureLog(socket);
+    let userId = adventureLog.userId;
+
+    let locationData = await this.adventureRedisRepository.findUserLocationData(userId);
+    let mongoId = await this.adventureMongoRepository.insertUserLocationData(userId, locationData);
 
     adventureLog.gpsLogKey = mongoId;
     adventureLog.gpsLog = locationData;
@@ -42,6 +52,9 @@ class AdventureService {
     await this.adventureMysqlRepository.updateAdventureLog(adventureLog);
 
     await this.adventureRedisRepository.flushUserLocationData(adventureLog.userId);
+    await this.adventureRedisRepository.setOffline(socket);
+
+    return adventureLog;
   }
 }
 

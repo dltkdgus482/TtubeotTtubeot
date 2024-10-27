@@ -26,6 +26,21 @@ class AdventureLogModel {
   static create(data: Partial<AdventureLogModel>): AdventureLogModel {
     return new AdventureLogModel(data);
   }
+
+  toJsonObject(): any {
+    return {
+      adventure_log_id: this.adventureLogId,
+      user_ttubeot_ownership_id: this.userTtubeotOwnershipId,
+      user_id: this.userId,
+      adventure_distance: this.adventureDistance,
+      adventure_calorie: this.adventureCalorie,
+      adventure_coin: this.adventureCoin,
+      start_at: this.startAt,
+      end_at: this.endAt,
+      gps_log_key: this.gpsLogKey,
+      gps_log: this.gpsLog,
+    };
+  }
 }
 
 export default AdventureLogModel;

@@ -4,20 +4,22 @@ class CalcAdventureStats {
     for (let i = 1; i < gpsData.length; i++) {
       let prev = gpsData[i - 1];
       let current = gpsData[i];
-      distance += this.getDistanceFromLatLonInKm(prev.lat, prev.lng, current.lat, current.lng);
+      distance += this.getDistanceFromLatLonInm(prev.lat, prev.lng, current.lat, current.lng);
     }
     return distance;
   }
 
-  static getDistanceFromLatLonInKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
-    const R = 6371;
-    const dLat = this.deg2rad(lat2 - lat1);
-    const dLon = this.deg2rad(lon2 - lon1);
-    const a =
+  static getDistanceFromLatLonInm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    let R = 6371; // Radius of the earth in km
+    let dLat = this.deg2rad(lat2 - lat1); // deg2rad below
+    let dLon = this.deg2rad(lon2 - lon1);
+    let a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const d = R * c;
+      Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2)
+      ;
+    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    let d = R * c * 1000; // Distance in m
     return d;
   }
 
