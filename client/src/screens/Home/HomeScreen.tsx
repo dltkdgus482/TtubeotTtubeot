@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Image, ImageBackground, TouchableOpacity } from 'react-native';
 import WebView from 'react-native-webview';
 import styles from './HomeScreen.styles';
-import TtubeotProfile from '../../styles/TtubeotProfile';
+import TtubeotProfile from '../../components/TtubeotProfile';
 
 const background = require('../../assets/images/HomeBackground.jpg');
 const ShopIcon = require('../../assets/icons/ShopIcon.png');
