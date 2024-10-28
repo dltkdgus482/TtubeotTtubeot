@@ -24,7 +24,7 @@ spec:
         node-role.kubernetes.io/worker: "worker"
       containers:
       - name: adventure
-        image: tkdqja9573/ssafy-final-adventure:lastest
+        image: tkdqja9573/ssafy-final-adventure:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
