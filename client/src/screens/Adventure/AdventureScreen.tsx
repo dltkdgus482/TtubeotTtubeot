@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, View, ImageBackground} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import styles from './AdventureScreen.styles';
-import TtubeotProfile from '../../styles/TtubeotProfile';
+import TtubeotProfile from '../../components/TtubeotProfile';
 import StyledText from '../../styles/StyledText';
 
 const background = require('../../assets/images/AdventureBackground.jpg');

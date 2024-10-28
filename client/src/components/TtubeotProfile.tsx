@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import {Image, View} from 'react-native';
-import Icon from '../components/Icon';
-import StyledText from './StyledText';
+import Icon from './Icon';
+import StyledText from '../styles/StyledText';
 
 const Profile = styled.View`
   position: relative;
