@@ -7,6 +7,8 @@ import com.user.userttubeot.user.domain.repository.UserRepository;
 import com.user.userttubeot.user.infrastructure.security.JWTUtil;
 import jakarta.transaction.Transactional;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,8 +47,7 @@ public class UserService {
             .build();
     }
 
-    public String reissueTokens(String refreshToken) {
-        // 1. 리프레시 토큰 유효성 확인
+    public Map<String, String> reissueTokens(String refreshToken) {
         String userPhone = jwtUtil.getUserPhone(refreshToken);
         Integer userId = jwtUtil.getUserId(refreshToken);
         String storedToken = redisService.getValue("refresh_" + userPhone);
@@ -56,15 +57,20 @@ public class UserService {
             throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
         }
 
-        // 2. 새 액세스 및 리프레시 토큰 발급
+        // 새 액세스 및 리프레시 토큰 발급
         String newAccessToken = jwtUtil.createAccessToken(userId, userPhone);
         String newRefreshToken = jwtUtil.createRefreshToken(userId, userPhone);
 
-        // 3. Redis에 새로운 리프레시 토큰 저장 (기존 토큰을 대체)
+        // Redis에 새 리프레시 토큰 저장
         redisService.setValues("refresh_" + userPhone, newRefreshToken, Duration.ofDays(1));
 
-        return newAccessToken; // 필요 시 새 리프레시 토큰도 반환
+        // 액세스 토큰과 리프레시 토큰을 Map으로 반환
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("accessToken", newAccessToken);
+        tokens.put("refreshToken", newRefreshToken);
+        return tokens;
     }
+
 
     /**
      * 회원 가입을 처리하는 메서드

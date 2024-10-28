@@ -53,7 +53,9 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/user/login").permitAll()
+                .requestMatchers("/user/login", "/user/reissue", "/user/signup", "/user/logout",
+                    "/user/change-password", "/user/sms-verification/request",
+                    "/user/sms-verification/confirm", "/user/reissue").permitAll()
                 .anyRequest().authenticated());
 
         LoginFilter loginFilter = new LoginFilter(

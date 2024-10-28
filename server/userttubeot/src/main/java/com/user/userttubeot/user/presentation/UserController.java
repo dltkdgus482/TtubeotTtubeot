@@ -3,6 +3,8 @@ package com.user.userttubeot.user.presentation;
 import com.user.userttubeot.user.application.UserService;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
 import com.user.userttubeot.user.domain.entity.User;
+import jakarta.servlet.http.HttpServletResponse;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -41,14 +43,23 @@ public class UserController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissueToken(@RequestBody String refreshToken) {
+    public ResponseEntity<?> reissueToken(@RequestBody String refreshToken,
+        HttpServletResponse response) {
         try {
             log.info("토큰 재발급 요청이 들어왔습니다.");
 
-            String newAccessToken = userService.reissueTokens(refreshToken);
+            // 액세스 및 리프레시 토큰을 포함한 Map 반환
+            Map<String, String> tokens = userService.reissueTokens(refreshToken);
             log.info("토큰 재발급 성공.");
 
-            return ResponseEntity.ok(newAccessToken); // 필요한 경우 새 리프레시 토큰도 함께 반환
+            // Authorization 헤더에 Bearer 액세스 토큰 추가
+            response.addHeader("Authorization", "Bearer " + tokens.get("accessToken"));
+
+            // Set-Cookie 헤더에 리프레시 토큰 추가
+            response.addHeader("Set-Cookie",
+                "refreshToken=" + tokens.get("refreshToken") + "; HttpOnly; Path=/");
+
+            return ResponseEntity.ok("토큰 재발급 성공");
 
         } catch (IllegalArgumentException e) {
             log.error("토큰 재발급 실패 - 잘못된 리프레시 토큰: {}", e.getMessage());
