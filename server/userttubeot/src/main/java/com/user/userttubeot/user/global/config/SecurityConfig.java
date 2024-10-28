@@ -49,9 +49,12 @@ public class SecurityConfig {
                 .requestMatchers("/").permitAll() // 모든 경로
                 .anyRequest().authenticated());
 
+        LoginFilter loginFilter = new LoginFilter(
+            authenticationManager(authenticationConfiguration));
+        loginFilter.setFilterProcessesUrl("/user/login");
+
         http
-            .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration)),
-                UsernamePasswordAuthenticationFilter.class);
+            .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
 
         // 세션 설정
         http.sessionManagement(

@@ -1,17 +1,21 @@
 package com.user.userttubeot.user.infrastructure.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@Slf4j
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -24,6 +28,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String userPhone = obtainUserPhone(request);
         String password = obtainPassword(request);
+
+        log.info("로그인 시도:{}", userPhone);
 
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
             userPhone, password, null);
@@ -45,10 +51,25 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         super.unsuccessfulAuthentication(request, response, failed);
     }
 
-    // 전화번호를 가져오기 위한 사용자 정의 메서드
     protected String obtainUserPhone(HttpServletRequest request) {
-        // 요청에서 전화번호를 추출하는 로직 구현
-        return request.getParameter("user_phone");
+        try {
+            // 요청 Body를 읽어 Map 형태로 변환
+            ObjectMapper objectMapper = new ObjectMapper();
+            var requestBody = objectMapper.readValue(request.getReader(),
+                Map.class);
+
+            // 요청 Body에서 전화번호 추출
+            return requestBody.get("user_phone").toString();
+        } catch (IOException e) {
+            log.error("전화번호를 추출하는 데 오류 발생: {}", e.getMessage());
+            return null; // 예외 발생 시 null 반환 (필요에 따라 다른 처리를 할 수 있음)
+        }
+    }
+
+    // 로그인 경로를 변경할 메서드
+    @Override
+    public void setFilterProcessesUrl(String url) {
+        super.setFilterProcessesUrl(url); // 원하는 로그인 경로 설정
     }
 
 }
