@@ -22,11 +22,13 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/user/sms-verification/request","/user/sms-verification/confirm","/user/signup")
+                .requestMatchers("/user/sms-verification/request", "/user/sms-verification/confirm",
+                    "/user/signup", "/user/ttubeot/logs")
                 .permitAll() // 특정 경로에 접근 허용
                 .anyRequest().authenticated() // 나머지 요청은 인증 필요
             )
-            .formLogin(AbstractAuthenticationFilterConfigurer::permitAll // 모든 사용자에게 폼 로그인 페이지 접근 허용
+            .formLogin(form -> form // 로그인 폼에 대한 설정
+                .permitAll() // 모든 사용자에게 폼 로그인 페이지 접근 허용
             )
             .httpBasic(withDefaults()); // HTTP Basic 인증 설정
 
