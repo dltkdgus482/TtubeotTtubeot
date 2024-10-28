@@ -1,23 +1,23 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {View, PermissionsAndroid, Alert, ActivityIndicator} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import MaskedView from '@react-native-masked-view/masked-view';
 import styles from './AdventureMapScreen.styles';
 import StyledText from '../../styles/StyledText';
 import {mapStyle} from '../../styles/mapStyle';
-import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
-import Geolocation, {GeoCoordinates} from 'react-native-geolocation-service';
+import MapView, {PROVIDER_GOOGLE, Marker, Region} from 'react-native-maps';
+import Geolocation, {
+  GeoCoordinates,
+  GeoWatchOptions,
+} from 'react-native-geolocation-service';
 
 const AdventureMapScreen = () => {
   const [location, setLocation] = useState<GeoCoordinates | null>(null);
-  const [region, setRegion] = useState({
-    latitude: 35.09,
-    longitude: 128.855,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  });
+  const [region, setRegion] = useState<Region | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const mapRef = useRef<MapView>(null);
+  const watchId = useRef<number | null>(null);
 
   const requestLocationPermission = async (): Promise<boolean> => {
     try {
@@ -43,11 +43,12 @@ const AdventureMapScreen = () => {
       position => {
         const {latitude, longitude} = position.coords;
         setLocation(position.coords);
+
         setRegion({
           latitude,
           longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
+          latitudeDelta: 0.02,
+          longitudeDelta: 0.01,
         });
         setLoading(false);
       },
@@ -60,25 +61,45 @@ const AdventureMapScreen = () => {
     );
   };
 
+  const startWatchingLocation = () => {
+    const watchOptions: GeoWatchOptions = {
+      enableHighAccuracy: true,
+      distanceFilter: 10,
+      interval: 5000,
+      fastestInterval: 2000,
+    };
+
+    watchId.current = Geolocation.watchPosition(
+      position => {
+        setLocation(position.coords);
+      },
+      error => {
+        Alert.alert('위치 정보 오류', error.message);
+        setErrorMessage('위치 정보를 가져오는 데 실패했습니다.');
+        setLoading(false);
+      },
+      watchOptions,
+    );
+  };
+
   useEffect(() => {
-    const fetchLocation = async () => {
+    const initializeLocation = async () => {
       const hasPermission = await requestLocationPermission();
       if (hasPermission) {
         getCurrentLocation();
+        startWatchingLocation();
       } else {
         setErrorMessage('위치 권한이 없습니다.');
         setLoading(false);
       }
     };
 
-    fetchLocation();
-
-    const intervalId = setInterval(() => {
-      getCurrentLocation();
-    }, 5000);
+    initializeLocation();
 
     return () => {
-      clearInterval(intervalId);
+      if (watchId.current !== null) {
+        Geolocation.clearWatch(watchId.current);
+      }
     };
   }, []);
 
@@ -86,44 +107,50 @@ const AdventureMapScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.mapContainer}>
-        {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
-        ) : errorMessage ? (
-          <StyledText>{errorMessage}</StyledText>
-        ) : (
-          <MaskedView
-            style={{height: 500, width: '100%'}}
-            maskElement={
-              <View
-                style={{
-                  backgroundColor: 'black',
-                  height: 500,
-                  borderRadius: 25,
-                  overflow: 'hidden',
-                }}
-              />
-            }>
-            <MapView
-              provider={PROVIDER_GOOGLE}
-              region={region}
-              onRegionChangeComplete={setRegion}
-              minZoomLevel={15}
-              customMapStyle={mapStyle}
-              style={styles.map}>
-              {location && (
-                <Marker
-                  coordinate={{
-                    latitude: location.latitude,
-                    longitude: location.longitude,
+      <View style={styles.mapShadowContainer}>
+        <View style={styles.mapShadow}></View>
+        <View style={styles.mapContainer}>
+          {loading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : errorMessage ? (
+            <StyledText>{errorMessage}</StyledText>
+          ) : (
+            <MaskedView
+              style={{height: 500, width: '100%'}}
+              maskElement={
+                <View
+                  style={{
+                    backgroundColor: 'black',
+                    height: 500,
+                    borderRadius: 25,
+                    overflow: 'hidden',
                   }}
-                  title="현재위치"
-                  icon={require('../../assets/ttubeot/mockTtu.png')}
                 />
+              }>
+              {region ? (
+                <MapView
+                  ref={mapRef}
+                  provider={PROVIDER_GOOGLE}
+                  region={region}
+                  customMapStyle={mapStyle}
+                  style={styles.map}>
+                  {location && (
+                    <Marker
+                      coordinate={{
+                        latitude: location.latitude,
+                        longitude: location.longitude,
+                      }}
+                      title="현재위치"
+                      icon={require('../../assets/ttubeot/mockTtu.png')}
+                    />
+                  )}
+                </MapView>
+              ) : (
+                <StyledText>현재 위치를 불러올 수 없습니다.</StyledText>
               )}
-            </MapView>
-          </MaskedView>
-        )}
+            </MaskedView>
+          )}
+        </View>
       </View>
     </SafeAreaView>
   );

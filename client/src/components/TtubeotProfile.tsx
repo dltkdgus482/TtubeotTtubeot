@@ -12,8 +12,6 @@ const Profile = styled.View`
 `;
 
 const ProfileImageContainer = styled.View`
-  position: absolute;
-  left: -65px;
   width: 80px;
   height: 80px;
   border-radius: 50px;
@@ -35,6 +33,7 @@ const ProfileDetails = styled.View`
   flex-direction: column;
   justify-content: center;
   width: 215px;
+  height: 97%;
 `;
 
 const ProfileTop = styled.View`
@@ -75,33 +74,71 @@ const WalkWith = styled(StyledText)`
   color: #fff;
 `;
 
+const ShadowBox = styled(View)`
+  position: relative;
+`;
+
+const Shadow = styled(View)`
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-color: rgba(0, 0, 0, 0.45);
+  border-width: 3px;
+  border-radius: 25px;
+`;
+
+const ImageShadowBox = styled(View)`
+  position: relative;
+  left: -280px;
+  width: 80px;
+  height: 80px;
+`;
+
+const ImageShadow = styled(View)`
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 82.5px;
+  border-bottom-width: 12px;
+  border-left-width: 13px;
+  border-color: rgba(0, 0, 0, 0.45);
+  border-radius: 50px;
+`;
+
 const TtubeotProfile = () => {
   return (
     <Profile>
-      <ProfileDetails>
-        <ProfileTop>
-          <ProfileName bold>우리마루</ProfileName>
-          <RemainDays bold>D-4</RemainDays>
-        </ProfileTop>
-        <ProfileBottom>
-          <StyledText bold style={{color: 'white'}}>
-            함께한 거리
-          </StyledText>
-          <View
-            style={{
-              backgroundColor: '#605C50',
-              opacity: 0.5,
-              padding: 3,
-              borderRadius: 5,
-            }}>
-            <Icon type="FontAwesome5" name="paw" size={12} color="#000" />
-          </View>
-          <WalkWith bold>55,000 걸음</WalkWith>
-        </ProfileBottom>
-      </ProfileDetails>
-      <ProfileImageContainer>
-        <ProfileImage source={require('../assets/ttubeot/mockTtu.png')} />
-      </ProfileImageContainer>
+      <ShadowBox>
+        <Shadow />
+        <ProfileDetails>
+          <ProfileTop>
+            <ProfileName bold>우리마루</ProfileName>
+            <RemainDays bold>D-4</RemainDays>
+          </ProfileTop>
+          <ProfileBottom>
+            <StyledText bold style={{color: 'white'}}>
+              함께한 거리
+            </StyledText>
+            <View
+              style={{
+                backgroundColor: '#605C50',
+                opacity: 0.5,
+                padding: 3,
+                borderRadius: 5,
+              }}>
+              <Icon type="FontAwesome5" name="paw" size={12} color="#000" />
+            </View>
+            <WalkWith bold>55,000 걸음</WalkWith>
+          </ProfileBottom>
+        </ProfileDetails>
+      </ShadowBox>
+      <ImageShadowBox>
+        <ImageShadow />
+        <ProfileImageContainer>
+          <ProfileImage source={require('../assets/ttubeot/mockTtu.png')} />
+        </ProfileImageContainer>
+      </ImageShadowBox>
     </Profile>
   );
 };
