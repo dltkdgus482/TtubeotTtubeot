@@ -7,13 +7,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   mapContainer: {
-    flex: 1,
+    height: 500,
+    borderRadius: 25,
+    overflow: 'hidden',
+    backgroundColor: 'white',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   map: {
     width: '100%',
-    height: '70%',
-    backgroundColor: 'white',
-    borderRadius: 25,
+    height: '100%',
   },
 });
 

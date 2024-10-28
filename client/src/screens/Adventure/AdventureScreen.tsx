@@ -1,5 +1,11 @@
-import React, {useState} from 'react';
-import {View, ImageBackground, TouchableOpacity, Image} from 'react-native';
+import React, {useState, useRef} from 'react';
+import {
+  View,
+  ImageBackground,
+  TouchableOpacity,
+  Image,
+  Animated,
+} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import styles from './AdventureScreen.styles';
 import TtubeotProfile from '../../components/TtubeotProfile';
@@ -13,9 +19,17 @@ const MissionIcon = require('../../assets/icons/MissionIcon.png');
 
 const AdventureScreen = () => {
   const [adventureStart, setAdventureStart] = useState<boolean>(false);
+  const opacityAnim = useRef(new Animated.Value(1)).current;
+
   const handleStartAdventure = () => {
     setAdventureStart(!adventureStart);
-    console.log(adventureStart);
+    setTimeout(() => {
+      Animated.timing(opacityAnim, {
+        toValue: adventureStart ? 0.7 : 0.45,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }, 100);
   };
 
   const handlePress = () => {
@@ -70,7 +84,7 @@ const AdventureScreen = () => {
                 <StyledText bold style={styles.accentText}>
                   상대방에게 제공
                 </StyledText>
-                하는 것에,
+                하는 것에
               </StyledText>
               <StyledText bold style={styles.alertContent}>
                 <StyledText bold style={styles.accentText}>
@@ -90,10 +104,11 @@ const AdventureScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <ImageBackground
+    <SafeAreaView style={styles.container}>
+      <Animated.Image
         source={background}
-        style={styles.backgroundImage}></ImageBackground>
+        style={[styles.backgroundImage, {opacity: opacityAnim}]}
+      />
       <View style={styles.profileContainer}>
         <TtubeotProfile />
       </View>
@@ -113,7 +128,7 @@ const AdventureScreen = () => {
           <StyledText>임시버튼</StyledText>
         </View>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
