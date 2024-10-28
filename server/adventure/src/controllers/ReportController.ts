@@ -6,9 +6,6 @@ const reportService = new ReportService();
 
 class ReportController {
   async getAdventureLogList(req: Request, res: Response) {
-    // request: /reports?page=1&size=10
-    // get userId from request header 'authorization' token
-    // remove Bearer from token
     let token = req.headers.authorization?.split(' ')[1];
     let userId = JWTParser.parseUserIdFromJWT(token ?? '');
     if (userId === -1) {
@@ -28,8 +25,6 @@ class ReportController {
   }
 
   async getAdventureLogDetail(req: Request, res: Response) {
-    // request: /reports/1
-    // get userId from request header 'authorization' token
     let token = req.headers.authorization?.split(' ')[1];
     let userId = JWTParser.parseUserIdFromJWT(token ?? '');
     if (userId === -1) {
@@ -48,7 +43,6 @@ class ReportController {
       res.status(403).json({ message: 'Forbidden' });
       return;
     }
-    console.log(adventureLog);
 
     if (!adventureLog) {
       res.status(404).json({ message: 'Not Found' });

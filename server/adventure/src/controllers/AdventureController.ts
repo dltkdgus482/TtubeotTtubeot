@@ -49,4 +49,12 @@ export class AdventureController {
       socket.emit("error", { message: "Failed to end adventure" });
     }
   }
+
+  async handleDisconnect(socket: Socket): Promise<void> {
+    try {
+      await this.adventureService.endAdventure(socket.id);
+    } catch (error) {
+      console.error("Error in handleDisconnect:", error);
+    }
+  }
 }
