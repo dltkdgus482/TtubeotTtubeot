@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByUserPhone(String userPhone);
+
+    boolean existsByUserPhone(String userPhone);
 }

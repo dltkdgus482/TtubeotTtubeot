@@ -2,6 +2,7 @@ package com.user.userttubeot.user.application;
 
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
 import com.user.userttubeot.user.domain.entity.User;
+import com.user.userttubeot.user.domain.exception.UserAlreadyExistsException;
 import com.user.userttubeot.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.util.UUID;
@@ -28,6 +29,11 @@ public class UserService {
      */
     public User signup(UserSignupRequestDto request) {
         log.info("회원가입 요청이 들어왔습니다. 요청 사용자 이름: {}", request.getUserName());
+
+        // 중복 회원 예외
+        if (userRepository.existsByUserPhone(request.getUserPhone())) {
+            throw new UserAlreadyExistsException("이미 존재하는 사용자입니다.");
+        }
 
         // 전화번호 인증 여부 확인
         if (!smsVerificationService.isPhoneVerified(request.getUserPhone())) {
