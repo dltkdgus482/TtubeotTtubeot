@@ -1,6 +1,7 @@
 package com.user.userttubeot.user.global.config;
 
 import com.user.userttubeot.user.domain.repository.UserRepository;
+import com.user.userttubeot.user.infrastructure.security.JWTFilter;
 import com.user.userttubeot.user.infrastructure.security.JWTUtil;
 import com.user.userttubeot.user.infrastructure.security.LoginFilter;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,7 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/").permitAll() // 모든 경로
+                .requestMatchers("/user/login").permitAll()
                 .anyRequest().authenticated());
 
         LoginFilter loginFilter = new LoginFilter(
@@ -65,6 +66,9 @@ public class SecurityConfig {
 
         http
             .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http
+            .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 
         // 세션 설정
         http.sessionManagement(
