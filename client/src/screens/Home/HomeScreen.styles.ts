@@ -41,6 +41,6 @@ export default StyleSheet.create({
   profileContainer: {
     position: 'absolute',
     top: 40,
-    left: 85,
+    left: 75,
   },
 });
