@@ -21,6 +21,10 @@ class AdventureRedisRepository {
     }
 
     async storeGPSData(userId: number, lat: number, lng: number, steps: number): Promise<void> {
+        if (!userId || userId <= 0) {
+            return;
+        }
+
         await redisClient.geoAdd(this.locationKey, {
             member: userId.toString(),
             longitude: lng,
