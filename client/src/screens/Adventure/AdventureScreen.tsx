@@ -1,23 +1,34 @@
-import React from 'react';
-import {StyleSheet, View, ImageBackground} from 'react-native';
+import React, {useState} from 'react';
+import {View, ImageBackground, TouchableOpacity, Image} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import styles from './AdventureScreen.styles';
 import TtubeotProfile from '../../components/TtubeotProfile';
 import StyledText from '../../styles/StyledText';
+import AdventureMapScreen from './AdventureMapScreen';
 
 const background = require('../../assets/images/AdventureBackground.jpg');
 const woodenTexture = require('../../assets/images/WoodenSign.png');
+const CameraIcon = require('../../assets/icons/CameraIcon.png');
+const MissionIcon = require('../../assets/icons/MissionIcon.png');
 
 const AdventureScreen = () => {
-  return (
-    <SafeAreaView style={styles.container}>
-      <ImageBackground
-        source={background}
-        style={styles.backgroundImage}></ImageBackground>
-      <View style={styles.profileContainer}>
-        <TtubeotProfile />
-      </View>
-      <View style={styles.content}>
+  const [adventureStart, setAdventureStart] = useState<boolean>(false);
+  const handleStartAdventure = () => {
+    setAdventureStart(!adventureStart);
+    console.log(adventureStart);
+  };
+
+  const handlePress = () => {
+    console.log('ShopIcon pressed!');
+  };
+
+  // TODO: 컴포넌트 분리
+
+  const renderPage = () => {
+    if (adventureStart) {
+      return <AdventureMapScreen />;
+    } else {
+      return (
         <ImageBackground source={woodenTexture} style={styles.alertBackground}>
           <View style={styles.adventureAlert}>
             <View style={styles.alertSection}>
@@ -74,8 +85,35 @@ const AdventureScreen = () => {
             </View>
           </View>
         </ImageBackground>
+      );
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <ImageBackground
+        source={background}
+        style={styles.backgroundImage}></ImageBackground>
+      <View style={styles.profileContainer}>
+        <TtubeotProfile />
       </View>
-    </SafeAreaView>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={handlePress}>
+          <Image source={CameraIcon} style={styles.cameraIcon} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handlePress}>
+          <Image source={MissionIcon} style={styles.missionIcon} />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.content}>{renderPage()}</View>
+      <TouchableOpacity
+        style={styles.startButton}
+        onPress={handleStartAdventure}>
+        <View style={styles.buttonTextContainer}>
+          <StyledText>임시버튼</StyledText>
+        </View>
+      </TouchableOpacity>
+    </View>
   );
 };
 

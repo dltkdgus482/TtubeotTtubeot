@@ -55,6 +55,41 @@ const styles = StyleSheet.create({
   accentTextBlue: {
     color: 'blue',
   },
+  startButton: {
+    position: 'absolute',
+    bottom: 150,
+    left: '50%',
+    transform: [{translateX: -50}],
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    color: '#fff',
+  },
+  buttonTextContainer: {
+    width: 60,
+    display: 'flex',
+    flexDirection: 'row',
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignContent: 'center',
+  },
+  buttonContainer: {
+    position: 'absolute',
+    top: 67,
+    right: 8,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignContent: 'center',
+  },
+  missionIcon: {
+    width: 55,
+    height: 55,
+  },
+  cameraIcon: {
+    width: 55,
+    height: 55,
+  },
 });
 
 export default styles;
