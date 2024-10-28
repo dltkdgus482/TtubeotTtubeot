@@ -41,15 +41,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   alertTitle: {
-    fontSize: 23,
-    fontWeight: 'bold',
+    fontSize: 22,
     textAlign: 'center',
   },
   alertContent: {
     fontSize: 18,
-    fontWeight: 'bold',
     textAlign: 'left',
-    paddingTop: 3,
+    paddingTop: 5,
   },
   accentText: {
     color: 'red',
