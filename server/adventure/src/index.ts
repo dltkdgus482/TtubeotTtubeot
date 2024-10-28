@@ -15,7 +15,7 @@ const io = new SocketIOServer(server, {
 });
 configureGpsRoutes(io);
 
-app.get('/adventure/healthz', (req, res) => {
+app.get('/healthz', (req, res) => {
   res.status(200).send('OK');
 });
 
