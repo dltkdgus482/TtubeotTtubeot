@@ -40,4 +40,26 @@ public class UserController {
         }
     }
 
+    @PostMapping("/reissue")
+    public ResponseEntity<?> reissueToken(@RequestBody String refreshToken) {
+        try {
+            log.info("토큰 재발급 요청이 들어왔습니다.");
+
+            String newAccessToken = userService.reissueTokens(refreshToken);
+            log.info("토큰 재발급 성공.");
+
+            return ResponseEntity.ok(newAccessToken); // 필요한 경우 새 리프레시 토큰도 함께 반환
+
+        } catch (IllegalArgumentException e) {
+            log.error("토큰 재발급 실패 - 잘못된 리프레시 토큰: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("토큰 재발급 실패: 유효하지 않은 리프레시 토큰입니다.");
+        } catch (Exception e) {
+            log.error("토큰 재발급 실패 - 서버 오류: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("토큰 재발급 실패: 서버 오류가 발생했습니다.");
+        }
+    }
+
+
 }

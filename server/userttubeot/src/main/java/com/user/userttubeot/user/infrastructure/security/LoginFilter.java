@@ -75,14 +75,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // 사용자 정보 가져오기
         CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
         String userPhone = customUserDetails.getUsername();
-        log.info("사용자 전화번호: {}", userPhone);
+        Integer userId = customUserDetails.getUserId();
+        log.info("사용자 Id:{}, 전화번호: {}", userId, userPhone);
 
         // AccessToken 생성
-        String accessToken = jwtUtil.createAccessToken(userPhone);
+        String accessToken = jwtUtil.createAccessToken(userId, userPhone);
         log.info("액세스 토큰 생성 완료");
 
         // RefreshToken 생성
-        String refreshToken = jwtUtil.createRefreshToken(userPhone);
+        String refreshToken = jwtUtil.createRefreshToken(userId, userPhone);
         log.info("리프레시 토큰 생성 완료");
 
         // Redis에 리프레시 토큰 저장 (Duration으로 TTL 설정)

@@ -23,14 +23,20 @@ public class JWTUtil {
             .getPayload().get("userPhone", String.class);
     }
 
+    public Integer getUserId(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
+            .getPayload().get("userId", Integer.class);
+    }
+
     public boolean isExpired(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
             .getPayload().getExpiration().before(new Date());
     }
 
-    public String createAccessToken(String userPhone) {
+    public String createAccessToken(Integer userId, String userPhone) {
         long expiredMs = 1000 * 60 * 10; // 10분
         return Jwts.builder()
+            .claim("userId", userId)
             .claim("userPhone", userPhone)
             .issuedAt(new Date(System.currentTimeMillis()))
             .expiration(new Date(System.currentTimeMillis() + expiredMs))
@@ -38,9 +44,10 @@ public class JWTUtil {
             .compact();
     }
 
-    public String createRefreshToken(String userPhone) {
+    public String createRefreshToken(Integer userId, String userPhone) {
         long expiredMs = 1000 * 60 * 60 * 24; // 1일
         return Jwts.builder()
+            .claim("userId", userId)
             .claim("userPhone", userPhone)
             .issuedAt(new Date(System.currentTimeMillis()))
             .expiration(new Date(System.currentTimeMillis() + expiredMs))

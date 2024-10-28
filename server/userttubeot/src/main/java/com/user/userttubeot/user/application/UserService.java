@@ -48,6 +48,7 @@ public class UserService {
     public String reissueTokens(String refreshToken) {
         // 1. 리프레시 토큰 유효성 확인
         String userPhone = jwtUtil.getUserPhone(refreshToken);
+        Integer userId = jwtUtil.getUserId(refreshToken);
         String storedToken = redisService.getValue("refresh_" + userPhone);
 
         if (storedToken == null || !storedToken.equals(refreshToken) || jwtUtil.isExpired(
@@ -56,8 +57,8 @@ public class UserService {
         }
 
         // 2. 새 액세스 및 리프레시 토큰 발급
-        String newAccessToken = jwtUtil.createAccessToken(userPhone);
-        String newRefreshToken = jwtUtil.createRefreshToken(userPhone);
+        String newAccessToken = jwtUtil.createAccessToken(userId, userPhone);
+        String newRefreshToken = jwtUtil.createRefreshToken(userId, userPhone);
 
         // 3. Redis에 새로운 리프레시 토큰 저장 (기존 토큰을 대체)
         redisService.setValues("refresh_" + userPhone, newRefreshToken, Duration.ofDays(1));
