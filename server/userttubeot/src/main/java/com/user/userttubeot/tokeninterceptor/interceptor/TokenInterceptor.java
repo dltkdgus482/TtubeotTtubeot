@@ -14,7 +14,8 @@ public class TokenInterceptor implements HandlerInterceptor {
     private final TokenInterceptorService tokenInterceptorService;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+        Object handler) throws Exception {
         // Authorization 헤더에서 토큰을 가져옴
         String token = request.getHeader("Authorization");
 

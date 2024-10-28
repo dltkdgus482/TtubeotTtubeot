@@ -18,5 +18,4 @@ public class TokenInterceptorConfig implements WebMvcConfigurer {
         registry.addInterceptor(tokenInterceptor)
             .addPathPatterns("/user/auth**");
     }
-
 }
