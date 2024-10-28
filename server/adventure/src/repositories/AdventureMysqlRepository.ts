@@ -17,7 +17,7 @@ class AdventureMysqlRepository {
         adventure_coin INT DEFAULT 0,
         start_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         end_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        gps_log CHAR(24) DEFAULT NULL
+        gps_log_key CHAR(24) DEFAULT NULL
       )
     `;
     await connection.query(createTableQuery);
@@ -34,7 +34,7 @@ class AdventureMysqlRepository {
 
   async updateAdventureLog(adventureLog: AdventureLogModel): Promise<void> {
     await connection.query(
-      `UPDATE adventure_log SET adventure_distance = ?, adventure_calorie = ?, adventure_coin = ?, end_at = ?, gps_log = ? WHERE adventure_log_id = ?`,
+      `UPDATE adventure_log SET adventure_distance = ?, adventure_calorie = ?, adventure_coin = ?, end_at = ?, gps_log_key = ? WHERE adventure_log_id = ?`,
       [
         adventureLog.adventureDistance,
         adventureLog.adventureCalorie,
@@ -44,6 +44,25 @@ class AdventureMysqlRepository {
         adventureLog.adventureLogId,
       ]
     );
+  }
+
+  async getAdventureLogList(userId: number, page: number, size: number): Promise<any[]> {
+    const [result]: any = await connection.query(
+      `SELECT * FROM adventure_log WHERE user_id = ? ORDER BY adventure_log_id ASC LIMIT ?, ?`,
+      [userId, (page - 1) * size, size]
+    );
+
+    // change snake_case to camelCase
+    return result;
+  }
+
+  async getAdventureLogDetail(adventureLogId: number): Promise<any> {
+    const [result]: any = await connection.query(
+      `SELECT * FROM adventure_log WHERE adventure_log_id = ?`,
+      [adventureLogId]
+    );
+
+    return result[0];
   }
 }
 

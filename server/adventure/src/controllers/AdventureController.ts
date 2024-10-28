@@ -11,8 +11,9 @@ export class AdventureController {
   }
 
   async handleInitAdventure(socket: Socket, data: { token: string }): Promise<void> {
-    const { token } = data;
+    let { token } = data;
     try {
+      token = token.split(' ')[1];
       let userId = JWTParser.parseUserIdFromJWT(token);
       if (userId === -1) {
         throw new Error('Invalid JWT token');
@@ -42,7 +43,7 @@ export class AdventureController {
     try {
       let adventureLog = await this.adventureService.endAdventure(socket.id);
 
-      socket.emit("adventure_result", { "data": adventureLog.toJsonObject() });
+      socket.emit("adventure_result", { "data": adventureLog });
     } catch (error) {
       console.error("Error in handleEndAdventure:", error);
       socket.emit("error", { message: "Failed to end adventure" });
