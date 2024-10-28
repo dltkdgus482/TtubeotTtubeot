@@ -1,6 +1,8 @@
 import React from 'react';
-import {View, Modal, Text, Button} from 'react-native';
+import {View, Modal, Text, Button, Image} from 'react-native';
 import styles from './CharacterShopModal.styles';
+
+const TtubeotEgg = require('../../assets/ttubeot/TtubeotEgg.png')
 
 interface CharacterShopModalProps {
   modalVisible: boolean;
@@ -20,11 +22,7 @@ const CharacterShopModal: React.FC<CharacterShopModalProps> = ({
       onRequestClose={closeShopModal}>
       <View style={styles.modalBackground}>
         <View style={styles.modalView}>
-          <Text style={styles.modalText}>Welcome to the Shop!</Text>
-          <Text style={styles.modalText}>Welcome to the Shop!</Text>
-          <Text style={styles.modalText}>Welcome to the Shop!</Text>
-          <Text style={styles.modalText}>Welcome to the Shop!</Text>
-          <Text style={styles.modalText}>Welcome to the Shop!</Text>
+          <Image source={TtubeotEgg} />
           <Text style={styles.modalText}>Welcome to the Shop!</Text>
           <Button title="Close Shop" onPress={closeShopModal} />
         </View>

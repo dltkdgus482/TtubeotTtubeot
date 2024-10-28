@@ -13,6 +13,7 @@ import styles from './HomeScreen.styles';
 import TtubeotProfile from '../../styles/TtubeotProfile';
 import CharacterShopModal from '../../components/CharacterShop/CharacterShopModal';
 import GraduationAlbumModal from '../../components/GraduationAlbum/GraduationAlbumModal';
+import MissionModal from "../../components/Mission/MissionModal.tsx";
 
 const background = require('../../assets/images/HomeBackground.jpg');
 const ShopIcon = require('../../assets/icons/ShopIcon.png');
@@ -23,13 +24,12 @@ const HomeScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [graduationAlbumModalVisible, setGraduationAlbumModalVisible] =
     useState(false);
+  const [missionModalVisible, setMissionModalVisible] = useState(false);
 
-  // 모달 열기 함수
   const openShopModal = () => {
     setModalVisible(true);
   };
 
-  // 모달 닫기 함수
   const closeShopModal = () => {
     setModalVisible(false);
   };
@@ -41,6 +41,14 @@ const HomeScreen = () => {
   const closeAlbumModal = () => {
     setGraduationAlbumModalVisible(false);
   };
+
+  const openMissionModal = () => {
+      setMissionModalVisible(true);
+  }
+
+  const closeMissionModal = () => {
+      setMissionModalVisible(false);
+  }
 
   return (
     <View style={styles.container}>
@@ -54,7 +62,7 @@ const HomeScreen = () => {
         <TouchableOpacity onPress={openShopModal}>
           <Image source={ShopIcon} style={styles.shopIcon} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => console.log('MissionIcon pressed!')}>
+        <TouchableOpacity onPress={openMissionModal}>
           <Image source={MissionIcon} style={styles.missionIcon} />
         </TouchableOpacity>
         <TouchableOpacity onPress={openAlbumModal}>
@@ -72,6 +80,11 @@ const HomeScreen = () => {
         modalVisible={modalVisible}
         closeShopModal={closeShopModal}
       />
+
+        <MissionModal
+            modalVisible={missionModalVisible}
+            closeMissionModal={closeMissionModal}
+        />
 
       <GraduationAlbumModal
         modalVisible={graduationAlbumModalVisible}
