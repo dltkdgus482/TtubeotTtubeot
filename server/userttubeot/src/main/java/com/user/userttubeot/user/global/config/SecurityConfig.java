@@ -1,5 +1,6 @@
 package com.user.userttubeot.user.global.config;
 
+import com.user.userttubeot.user.domain.repository.UserRepository;
 import com.user.userttubeot.user.infrastructure.security.LoginFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final UserRepository userRepository;
 
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
         throws Exception {
@@ -50,8 +52,14 @@ public class SecurityConfig {
                 .anyRequest().authenticated());
 
         LoginFilter loginFilter = new LoginFilter(
-            authenticationManager(authenticationConfiguration));
+            authenticationManager(authenticationConfiguration), userRepository,
+            new BCryptPasswordEncoder());
         loginFilter.setFilterProcessesUrl("/user/login");
+
+        UsernamePasswordAuthenticationFilter usernamePasswordAuthenticationFilter = new UsernamePasswordAuthenticationFilter();
+
+        usernamePasswordAuthenticationFilter.setFilterProcessesUrl("/user/login");
+        usernamePasswordAuthenticationFilter.setUsernameParameter("user_phone");
 
         http
             .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);

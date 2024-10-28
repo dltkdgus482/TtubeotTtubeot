@@ -1,6 +1,8 @@
 package com.user.userttubeot.user.infrastructure.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.user.userttubeot.user.domain.entity.User;
+import com.user.userttubeot.user.domain.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,9 +12,12 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Slf4j
@@ -20,56 +25,63 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository; // UserRepository 추가
+    private final BCryptPasswordEncoder passwordEncoder; // PasswordEncoder 주입
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
-        HttpServletResponse response)
-        throws AuthenticationException {
+        HttpServletResponse response) throws AuthenticationException {
 
-        String userPhone = obtainUserPhone(request);
-        String password = obtainPassword(request);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String userPhone;
+        String password;
+        try {
+            var requestBody = objectMapper.readValue(request.getReader(), Map.class);
+            userPhone = requestBody.get("user_phone").toString();
+            password = requestBody.get("password").toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        log.info("로그인 시도:{}", userPhone);
+        // 사용자 조회
+        User user = userRepository.findByUserPhone(userPhone)
+            .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
+        String salt = user.getUserPasswordSalt();
+
+        // 비밀번호 검증
+        if (!isPasswordValid(password, user.getUserPassword(), salt)) {
+            throw new BadCredentialsException("비밀번호가 잘못되었습니다.");
+        }
+
+        // 인증 요청을 위한 토큰 생성
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
-            userPhone, password, null);
+            userPhone, password + salt);
 
         return authenticationManager.authenticate(authRequest);
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
-        HttpServletResponse response, FilterChain chain, Authentication authResult)
-        throws IOException, ServletException {
-        super.successfulAuthentication(request, response, chain, authResult);
+        HttpServletResponse response, FilterChain chain, Authentication authResult) {
+        log.info("로그인 성공: {}", authResult.getName());
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request,
         HttpServletResponse response, AuthenticationException failed)
         throws IOException, ServletException {
+        log.info("로그인 실패: {}", failed.getMessage());
         super.unsuccessfulAuthentication(request, response, failed);
     }
 
-    protected String obtainUserPhone(HttpServletRequest request) {
-        try {
-            // 요청 Body를 읽어 Map 형태로 변환
-            ObjectMapper objectMapper = new ObjectMapper();
-            var requestBody = objectMapper.readValue(request.getReader(),
-                Map.class);
-
-            // 요청 Body에서 전화번호 추출
-            return requestBody.get("user_phone").toString();
-        } catch (IOException e) {
-            log.error("전화번호를 추출하는 데 오류 발생: {}", e.getMessage());
-            return null; // 예외 발생 시 null 반환 (필요에 따라 다른 처리를 할 수 있음)
-        }
+    // 비밀번호 검증 메서드
+    private boolean isPasswordValid(String rawPassword, String storedHash, String salt) {
+        String combinedPassword = rawPassword + salt;
+        boolean isValid = passwordEncoder.matches(combinedPassword, storedHash);
+        // matches 메서드를 사용하여 입력된 비밀번호와 저장된 해시를 비교
+        log.info("비밀번호 검증: 입력된 비밀번호 + salt = {}, 저장된 해시 = {}, 검증 결과 = {}",
+            combinedPassword, storedHash, isValid);
+        return passwordEncoder.matches(rawPassword + salt, storedHash);
     }
-
-    // 로그인 경로를 변경할 메서드
-    @Override
-    public void setFilterProcessesUrl(String url) {
-        super.setFilterProcessesUrl(url); // 원하는 로그인 경로 설정
-    }
-
 }
