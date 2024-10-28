@@ -32,6 +32,14 @@ class CalcAdventureStats {
     // reference: https://mobile.hidoc.co.kr/healthqna/view/C0000249066
     return steps * 0.03;
   }
+
+  static getStepsFromGPSData(gpsData: { lat: number; lng: number; steps: number }[]): number {
+    let steps = 0;
+    for (let i = 0; i < gpsData.length; i++) {
+      steps += gpsData[i].steps;
+    }
+    return steps;
+  }
 }
 
 export default CalcAdventureStats;

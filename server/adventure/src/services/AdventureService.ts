@@ -2,7 +2,7 @@ import AdventureRedisRepository from '../repositories/AdventureRedisRepository';
 import AdventureMongoRepository from '../repositories/AdventureMongoRepository';
 import AdventureMysqlRepository from '../repositories/AdventureMysqlRepository';
 import AdventureLogModel from '../models/AdventureLogModel';
-import CalcAdventureStats from '../utils/calcAdventureStats';
+import CalcAdventureStats from '../utils/CalcAdventureStats';
 
 class AdventureService {
   private adventureRedisRepository: AdventureRedisRepository;
@@ -47,7 +47,7 @@ class AdventureService {
     adventureLog.gpsLog = locationData;
     adventureLog.endAt = new Date();
     adventureLog.adventureDistance = CalcAdventureStats.getDistanceFromGPSData(locationData);
-    adventureLog.adventureCalorie = CalcAdventureStats.getCalorieBurned(locationData.reduce((acc, data) => acc + data.steps, 0));
+    adventureLog.adventureCalorie = CalcAdventureStats.getCalorieBurned(CalcAdventureStats.getCalorieBurned(CalcAdventureStats.getStepsFromGPSData(locationData)));
 
     await this.adventureMysqlRepository.updateAdventureLog(adventureLog);
 
