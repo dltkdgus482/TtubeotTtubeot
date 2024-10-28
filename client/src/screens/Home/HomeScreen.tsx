@@ -13,7 +13,7 @@ import styles from './HomeScreen.styles';
 import TtubeotProfile from '../../styles/TtubeotProfile';
 import CharacterShopModal from '../../components/CharacterShop/CharacterShopModal';
 import GraduationAlbumModal from '../../components/GraduationAlbum/GraduationAlbumModal';
-import MissionModal from "../../components/Mission/MissionModal.tsx";
+import MissionModal from '../../components/Mission/MissionModal.tsx';
 
 const background = require('../../assets/images/HomeBackground.jpg');
 const ShopIcon = require('../../assets/icons/ShopIcon.png');
@@ -43,12 +43,12 @@ const HomeScreen = () => {
   };
 
   const openMissionModal = () => {
-      setMissionModalVisible(true);
-  }
+    setMissionModalVisible(true);
+  };
 
   const closeMissionModal = () => {
-      setMissionModalVisible(false);
-  }
+    setMissionModalVisible(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -58,17 +58,19 @@ const HomeScreen = () => {
         style={styles.backgroundImage}></ImageBackground>
 
       {/* 버튼 컨테이너 */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={openShopModal}>
-          <Image source={ShopIcon} style={styles.shopIcon} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={openMissionModal}>
-          <Image source={MissionIcon} style={styles.missionIcon} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={openAlbumModal}>
-          <Image source={AlbumIcon} style={styles.albumIcon} />
-        </TouchableOpacity>
-      </View>
+      {!modalVisible && (
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={openShopModal}>
+            <Image source={ShopIcon} style={styles.shopIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={openMissionModal}>
+            <Image source={MissionIcon} style={styles.missionIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={openAlbumModal}>
+            <Image source={AlbumIcon} style={styles.albumIcon} />
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* 프로필 컨테이너 */}
       <View style={styles.profileContainer}>
@@ -81,10 +83,10 @@ const HomeScreen = () => {
         closeShopModal={closeShopModal}
       />
 
-        <MissionModal
-            modalVisible={missionModalVisible}
-            closeMissionModal={closeMissionModal}
-        />
+      <MissionModal
+        modalVisible={missionModalVisible}
+        closeMissionModal={closeMissionModal}
+      />
 
       <GraduationAlbumModal
         modalVisible={graduationAlbumModalVisible}

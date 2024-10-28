@@ -25,6 +25,4 @@ function App(): React.JSX.Element {
   );
 }
 
-const styles = StyleSheet.create({});
-
 export default App;
