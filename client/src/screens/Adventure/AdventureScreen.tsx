@@ -1,23 +1,48 @@
-import React from 'react';
-import {StyleSheet, View, ImageBackground} from 'react-native';
+import React, {useState, useRef} from 'react';
+import {
+  View,
+  ImageBackground,
+  TouchableOpacity,
+  Image,
+  Animated,
+} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import styles from './AdventureScreen.styles';
 import TtubeotProfile from '../../components/TtubeotProfile';
 import StyledText from '../../styles/StyledText';
+import AdventureMapScreen from './AdventureMapScreen';
 
 const background = require('../../assets/images/AdventureBackground.jpg');
 const woodenTexture = require('../../assets/images/WoodenSign.png');
+const CameraIcon = require('../../assets/icons/CameraIcon.png');
+const MissionIcon = require('../../assets/icons/MissionIcon.png');
 
 const AdventureScreen = () => {
-  return (
-    <SafeAreaView style={styles.container}>
-      <ImageBackground
-        source={background}
-        style={styles.backgroundImage}></ImageBackground>
-      <View style={styles.profileContainer}>
-        <TtubeotProfile />
-      </View>
-      <View style={styles.content}>
+  const [adventureStart, setAdventureStart] = useState<boolean>(false);
+  const opacityAnim = useRef(new Animated.Value(1)).current;
+
+  const handleStartAdventure = () => {
+    setAdventureStart(!adventureStart);
+    setTimeout(() => {
+      Animated.timing(opacityAnim, {
+        toValue: adventureStart ? 0.7 : 0.45,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }, 100);
+  };
+
+  const handlePress = () => {
+    console.log('ShopIcon pressed!');
+  };
+
+  // TODO: 컴포넌트 분리
+
+  const renderPage = () => {
+    if (adventureStart) {
+      return <AdventureMapScreen />;
+    } else {
+      return (
         <ImageBackground source={woodenTexture} style={styles.alertBackground}>
           <View style={styles.adventureAlert}>
             <View style={styles.alertSection}>
@@ -59,7 +84,7 @@ const AdventureScreen = () => {
                 <StyledText bold style={styles.accentText}>
                   상대방에게 제공
                 </StyledText>
-                하는 것에,
+                하는 것에
               </StyledText>
               <StyledText bold style={styles.alertContent}>
                 <StyledText bold style={styles.accentText}>
@@ -74,7 +99,35 @@ const AdventureScreen = () => {
             </View>
           </View>
         </ImageBackground>
+      );
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <Animated.Image
+        source={background}
+        style={[styles.backgroundImage, {opacity: opacityAnim}]}
+      />
+      <View style={styles.profileContainer}>
+        <TtubeotProfile />
       </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={handlePress}>
+          <Image source={CameraIcon} style={styles.cameraIcon} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handlePress}>
+          <Image source={MissionIcon} style={styles.missionIcon} />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.content}>{renderPage()}</View>
+      <TouchableOpacity
+        style={styles.startButton}
+        onPress={handleStartAdventure}>
+        <View style={styles.buttonTextContainer}>
+          <StyledText>임시버튼</StyledText>
+        </View>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
