@@ -30,6 +30,7 @@ class CalcAdventureStats {
   static getCalorieBurned(steps: number): number {
     // 1걸음당 소모 칼로리 0.03kcal
     // reference: https://mobile.hidoc.co.kr/healthqna/view/C0000249066
+    console.log(steps);
     return steps * 0.03;
   }
 
