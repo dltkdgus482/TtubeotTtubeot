@@ -1,6 +1,7 @@
 package com.user.userttubeot.user.infrastructure.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.user.userttubeot.user.application.RedisService;
 import com.user.userttubeot.user.domain.dto.CustomUserDetails;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.repository.UserRepository;
@@ -8,6 +9,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final UserRepository userRepository; // UserRepository 추가
     private final BCryptPasswordEncoder passwordEncoder; // PasswordEncoder 주입
     private final JWTUtil jwtUtil;
+    private final RedisService redisService;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
@@ -81,6 +84,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // RefreshToken 생성
         String refreshToken = jwtUtil.createRefreshToken(userPhone);
         log.info("리프레시 토큰 생성 완료");
+
+        // Redis에 리프레시 토큰 저장 (Duration으로 TTL 설정)
+        redisService.setValues("refresh_" + userPhone, refreshToken, Duration.ofDays(1));
 
         // 헤더에 토큰 추가
         response.addHeader("Authorization", "Bearer " + accessToken);

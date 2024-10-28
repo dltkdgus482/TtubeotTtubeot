@@ -1,5 +1,6 @@
 package com.user.userttubeot.user.global.config;
 
+import com.user.userttubeot.user.application.RedisService;
 import com.user.userttubeot.user.domain.repository.UserRepository;
 import com.user.userttubeot.user.infrastructure.security.JWTFilter;
 import com.user.userttubeot.user.infrastructure.security.JWTUtil;
@@ -26,6 +27,7 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
+    private final RedisService redisService;
 
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
         throws Exception {
@@ -56,7 +58,7 @@ public class SecurityConfig {
 
         LoginFilter loginFilter = new LoginFilter(
             authenticationManager(authenticationConfiguration), userRepository,
-            new BCryptPasswordEncoder(), jwtUtil);
+            new BCryptPasswordEncoder(), jwtUtil, redisService);
         loginFilter.setFilterProcessesUrl("/user/login");
 
         UsernamePasswordAuthenticationFilter usernamePasswordAuthenticationFilter = new UsernamePasswordAuthenticationFilter();

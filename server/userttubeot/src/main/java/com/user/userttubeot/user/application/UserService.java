@@ -4,7 +4,9 @@ import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.exception.UserAlreadyExistsException;
 import com.user.userttubeot.user.domain.repository.UserRepository;
+import com.user.userttubeot.user.infrastructure.security.JWTUtil;
 import jakarta.transaction.Transactional;
+import java.time.Duration;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,48 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final SmsVerificationService smsVerificationService;
+    private final JWTUtil jwtUtil;
+    private final RedisService redisService;
+
+    /**
+     * UserSignupRequestDto를 User 엔티티로 변환하는 메서드
+     *
+     * @param dto               회원가입 요청 DTO
+     * @param passwordSalt      비밀번호 암호화에 사용할 Salt 값
+     * @param encryptedPassword 암호화된 비밀번호
+     * @return 변환된 User 엔티티 객체
+     */
+    private static User fromDto(UserSignupRequestDto dto, String passwordSalt,
+        String encryptedPassword) {
+        return User.builder()
+            .userName(dto.getUserName())
+            .userPhone(dto.getUserPhone())
+            .userPassword(encryptedPassword)
+            .userPasswordSalt(passwordSalt)
+            .userLocationAgreement(dto.getUserLocationAgreement() == 1)
+            .userType((byte) dto.getUserType())
+            .build();
+    }
+
+    public String reissueTokens(String refreshToken) {
+        // 1. 리프레시 토큰 유효성 확인
+        String userPhone = jwtUtil.getUserPhone(refreshToken);
+        String storedToken = redisService.getValue("refresh_" + userPhone);
+
+        if (storedToken == null || !storedToken.equals(refreshToken) || jwtUtil.isExpired(
+            refreshToken)) {
+            throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
+        }
+
+        // 2. 새 액세스 및 리프레시 토큰 발급
+        String newAccessToken = jwtUtil.createAccessToken(userPhone);
+        String newRefreshToken = jwtUtil.createRefreshToken(userPhone);
+
+        // 3. Redis에 새로운 리프레시 토큰 저장 (기존 토큰을 대체)
+        redisService.setValues("refresh_" + userPhone, newRefreshToken, Duration.ofDays(1));
+
+        return newAccessToken; // 필요 시 새 리프레시 토큰도 반환
+    }
 
     /**
      * 회원 가입을 처리하는 메서드
@@ -68,45 +112,4 @@ public class UserService {
         return UUID.randomUUID().toString().substring(0, 10);
     }
 
-    /**
-     * UserSignupRequestDto를 User 엔티티로 변환하는 메서드
-     *
-     * @param dto               회원가입 요청 DTO
-     * @param passwordSalt      비밀번호 암호화에 사용할 Salt 값
-     * @param encryptedPassword 암호화된 비밀번호
-     * @return 변환된 User 엔티티 객체
-     */
-    private static User fromDto(UserSignupRequestDto dto, String passwordSalt,
-        String encryptedPassword) {
-        return User.builder()
-            .userName(dto.getUserName())
-            .userPhone(dto.getUserPhone())
-            .userPassword(encryptedPassword)
-            .userPasswordSalt(passwordSalt)
-            .userLocationAgreement(dto.getUserLocationAgreement() == 1)
-            .userType((byte) dto.getUserType())
-            .build();
-    }
-
-    public boolean verifyUserCredentials(String userPhone, String password) {
-        // 1. 전화번호로 사용자 조회
-        User user = userRepository.findByUserPhone(userPhone)
-            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        // 2. 저장된 Salt와 암호화된 비밀번호 가져오기
-        String salt = user.getUserPasswordSalt();  // 저장된 Salt 값
-        String encryptedPassword = user.getUserPassword(); // 암호화된 비밀번호
-
-        // 3. 입력된 비밀번호와 Salt를 결합하여 암호화
-        String rawPassword = password + salt;
-        boolean isPasswordMatch = passwordEncoder.matches(rawPassword, encryptedPassword);
-
-        if (isPasswordMatch) {
-            log.debug("비밀번호 일치. 로그인 성공.");
-        } else {
-            log.warn("비밀번호 불일치. 로그인 실패.");
-        }
-
-        return isPasswordMatch;
-    }
 }
