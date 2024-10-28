@@ -42,7 +42,7 @@ export class AdventureController {
     try {
       let adventureLog = await this.adventureService.endAdventure(socket.id);
 
-      socket.emit("adventure_result", { "data": adventureLog.toJsonObject() });
+      socket.emit("adventure_result", { "data": adventureLog });
     } catch (error) {
       console.error("Error in handleEndAdventure:", error);
       socket.emit("error", { message: "Failed to end adventure" });
