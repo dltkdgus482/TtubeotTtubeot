@@ -15,6 +15,10 @@ const io = new SocketIOServer(server, {
 });
 configureGpsRoutes(io);
 
+app.get('/adventure/healthz', (req, res) => {
+  res.status(200).send('OK');
+});
+
 app.use('/adventure/test', testRoutes);
 
 app.use('/adventure/parks', parkRoutes);
