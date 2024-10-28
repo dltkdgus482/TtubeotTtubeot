@@ -11,8 +11,9 @@ export class AdventureController {
   }
 
   async handleInitAdventure(socket: Socket, data: { token: string }): Promise<void> {
-    const { token } = data;
+    let { token } = data;
     try {
+      token = token.split(' ')[1];
       let userId = JWTParser.parseUserIdFromJWT(token);
       if (userId === -1) {
         throw new Error('Invalid JWT token');
