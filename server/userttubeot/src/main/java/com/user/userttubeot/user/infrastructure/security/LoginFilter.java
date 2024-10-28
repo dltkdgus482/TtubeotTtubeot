@@ -1,10 +1,10 @@
 package com.user.userttubeot.user.infrastructure.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.user.userttubeot.user.domain.dto.CustomUserDetails;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.repository.UserRepository;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -27,6 +27,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository; // UserRepository 추가
     private final BCryptPasswordEncoder passwordEncoder; // PasswordEncoder 주입
+    private final JWTUtil jwtUtil;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
@@ -63,16 +64,40 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
-        HttpServletResponse response, FilterChain chain, Authentication authResult) {
-        log.info("로그인 성공: {}", authResult.getName());
+        HttpServletResponse response,
+        FilterChain chain,
+        Authentication authResult) {
+        log.info("로그인 성공: 사용자 이름 = {}", authResult.getName());
+
+        // 사용자 정보 가져오기
+        CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
+        String userPhone = customUserDetails.getUsername();
+        log.info("사용자 전화번호: {}", userPhone);
+
+        // AccessToken 생성
+        String accessToken = jwtUtil.createAccessToken(userPhone);
+        log.info("액세스 토큰 생성 완료");
+
+        // RefreshToken 생성
+        String refreshToken = jwtUtil.createRefreshToken(userPhone);
+        log.info("리프레시 토큰 생성 완료");
+
+        // 헤더에 토큰 추가
+        response.addHeader("Authorization", "Bearer " + accessToken);
+        response.addHeader("Set-Cookie", "refresh token " + refreshToken);
+        log.info("헤더에 액세스 및 리프레시 토큰 추가 완료");
+
+        log.debug("AccessToken: {}", accessToken);  // 필요 시에만 출력
+        log.debug("RefreshToken: {}", refreshToken); // 필요 시에만 출력
     }
+
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request,
-        HttpServletResponse response, AuthenticationException failed)
-        throws IOException, ServletException {
+        HttpServletResponse response, AuthenticationException failed) {
         log.info("로그인 실패: {}", failed.getMessage());
-        super.unsuccessfulAuthentication(request, response, failed);
+
+        response.setStatus(401);
     }
 
     // 비밀번호 검증 메서드

@@ -1,6 +1,7 @@
 package com.user.userttubeot.user.global.config;
 
 import com.user.userttubeot.user.domain.repository.UserRepository;
+import com.user.userttubeot.user.infrastructure.security.JWTUtil;
 import com.user.userttubeot.user.infrastructure.security.LoginFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
 
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
@@ -53,7 +55,7 @@ public class SecurityConfig {
 
         LoginFilter loginFilter = new LoginFilter(
             authenticationManager(authenticationConfiguration), userRepository,
-            new BCryptPasswordEncoder());
+            new BCryptPasswordEncoder(), jwtUtil);
         loginFilter.setFilterProcessesUrl("/user/login");
 
         UsernamePasswordAuthenticationFilter usernamePasswordAuthenticationFilter = new UsernamePasswordAuthenticationFilter();
