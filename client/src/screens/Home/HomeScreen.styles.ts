@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   container: {
@@ -42,5 +42,14 @@ export default StyleSheet.create({
     position: 'absolute',
     top: 40,
     left: 85,
+  },
+  ttubeotWebview: {
+    position: 'absolute',
+    bottom: -90,
+    left: '50%',
+    transform: [{ translateX: -250 }], // 모델의 너비의 절반으로 설정
+    width: 500,
+    height: 500,
+    backgroundColor: 'transparent', // 투명 배경
   },
 });
