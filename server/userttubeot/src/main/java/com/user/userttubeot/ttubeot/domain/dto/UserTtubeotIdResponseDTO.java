@@ -7,6 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserTtubeotIdResponseDTO {
 
-    private Integer userTtubeotOwnershipId;
+    private Long userTtubeotOwnershipId;
 
 }

@@ -1,6 +1,9 @@
 package com.user.userttubeot.ttubeot.application.service;
 
+import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
 import com.user.userttubeot.ttubeot.domain.model.TtubeotLog;
 import com.user.userttubeot.ttubeot.domain.model.UserTtuBeotOwnership;
@@ -8,6 +11,7 @@ import com.user.userttubeot.ttubeot.domain.repository.TtubeotLogRepository;
 import com.user.userttubeot.ttubeot.domain.repository.UserTtubeotOwnershipRepository;
 import com.user.userttubeot.ttubeot.global.exception.TtubeotNotFoundException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +43,7 @@ public class TtubeotServiceImpl implements TtubeotService {
 
     // 유저의 뚜벗 아이디 조회
     @Override
-    public int getTtubeotOwnershipId(int userId) {
+    public Long getTtubeotOwnershipId(int userId) {
         return userTtubeotOwnershipRepository.findByUser_UserIdAndTtubeotStatus(userId, 0)
             .map(UserTtuBeotOwnership::getUserTtubeotOwnershipId)
             .orElseThrow(() -> new TtubeotNotFoundException("보유하고 있는 정상 상태의 뚜벗이 없습니다."));
@@ -56,9 +60,39 @@ public class TtubeotServiceImpl implements TtubeotService {
         return UserTtubeotInfoResponseDTO.builder()
             .ttubeotType(userTtuBeotOwnership.getTtubeot().getTtubeotType())
             .ttubeotImage(userTtuBeotOwnership.getTtubeot().getTtubeotImage())
-            .ttubeotName(userTtuBeotOwnership.getTtubeotame())
+            .ttubeotName(userTtuBeotOwnership.getTtubeotName())
             .ttubeotScore(userTtuBeotOwnership.getTtubeotScore())
             .createdAt(userTtuBeotOwnership.getCreatedAt())
             .build();
+    }
+
+    @Override
+    public TtubeotDrawResponseDTO drawTtubeot(TtubeotDrawRequestDTO ttubeotDrawRequestDTO) {
+
+        return null;
+    }
+
+    @Override
+    public void registerTtubeotName(TtubeotNameRegisterRequestDTO ttubeotNameRegisterRequestDTO) {
+        Optional<UserTtuBeotOwnership> ownershipOpt = userTtubeotOwnershipRepository.findById(
+            ttubeotNameRegisterRequestDTO.getUserTtubeotOwnershipId());
+
+        if (ownershipOpt.isPresent()) {
+            UserTtuBeotOwnership ownership = ownershipOpt.get();
+
+            // 새로운 이름을 가진 엔티티 생성
+            UserTtuBeotOwnership updatedOwnership = UserTtuBeotOwnership.fromDTO(
+                ttubeotNameRegisterRequestDTO,
+                ownership.getTtubeot(),
+                ownership.getUser()
+            );
+
+            // 엔티티 저장
+            userTtubeotOwnershipRepository.save(updatedOwnership);
+
+        } else {
+            throw new IllegalArgumentException("해당 ID에 해당하는 뚜벗 소유 정보가 없습니다.");
+        }
+
     }
 }
