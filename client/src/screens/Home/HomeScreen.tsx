@@ -14,6 +14,7 @@ import TtubeotProfile from '../../styles/TtubeotProfile';
 import CharacterShopModal from '../../components/CharacterShop/CharacterShopModal';
 import GraduationAlbumModal from '../../components/GraduationAlbum/GraduationAlbumModal';
 import MissionModal from '../../components/Mission/MissionModal.tsx';
+import WebView from 'react-native-webview';
 
 const background = require('../../assets/images/HomeBackground.jpg');
 const ShopIcon = require('../../assets/icons/ShopIcon.png');
@@ -91,6 +92,29 @@ const HomeScreen = () => {
       <GraduationAlbumModal
         modalVisible={graduationAlbumModalVisible}
         closeAlbumModal={closeAlbumModal}
+      {/* WebView로 3D 모델 표시 */}
+      <WebView
+        originWhitelist={['*']}
+        source={{ uri: 'file:///android_asset/renderModel.html' }}
+        style={styles.ttubeotWebview}
+        allowFileAccess={true}
+        allowFileAccessFromFileURLs={true}
+        allowUniversalAccessFromFileURLs={true}
+        onLoadStart={(syntheticEvent) => {
+          const { nativeEvent } = syntheticEvent;
+          console.log('WebView Start: ', nativeEvent);
+        }}
+        onError={(syntheticEvent) => {
+          const { nativeEvent } = syntheticEvent;
+          console.error('WebView onError: ', nativeEvent);
+        }}
+        onHttpError={(syntheticEvent) => {
+          const { nativeEvent } = syntheticEvent;
+          console.error('WebView onHttpError: ', nativeEvent);
+        }}
+        onMessage={(event) => {
+          console.log('Message from WebView:', event.nativeEvent.data);
+        }}
       />
     </View>
   );
