@@ -31,6 +31,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final BCryptPasswordEncoder passwordEncoder; // PasswordEncoder 주입
     private final JWTUtil jwtUtil;
     private final RedisService redisService;
+    private final CookieUtil cookieUtil;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
@@ -91,8 +92,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         redisService.setValues("refresh_" + userPhone, refreshToken, Duration.ofDays(1));
 
         // 헤더에 토큰 추가
-        response.addHeader("Authorization", "Bearer " + accessToken);
-        response.addHeader("Set-Cookie", "refresh token " + refreshToken);
+        response.setHeader("Authorization", "Bearer " + accessToken);
+        response.addCookie(cookieUtil.createCookie("refresh", refreshToken));
         log.info("헤더에 액세스 및 리프레시 토큰 추가 완료");
 
         log.debug("AccessToken: {}", accessToken);  // 필요 시에만 출력

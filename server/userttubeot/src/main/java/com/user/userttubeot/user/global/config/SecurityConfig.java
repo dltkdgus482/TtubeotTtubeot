@@ -2,6 +2,7 @@ package com.user.userttubeot.user.global.config;
 
 import com.user.userttubeot.user.application.RedisService;
 import com.user.userttubeot.user.domain.repository.UserRepository;
+import com.user.userttubeot.user.infrastructure.security.CookieUtil;
 import com.user.userttubeot.user.infrastructure.security.JWTFilter;
 import com.user.userttubeot.user.infrastructure.security.JWTUtil;
 import com.user.userttubeot.user.infrastructure.security.LoginFilter;
@@ -28,6 +29,7 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
     private final RedisService redisService;
+    private final CookieUtil cookieUtil;
 
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
         throws Exception {
@@ -55,12 +57,12 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/user/login", "/user/reissue", "/user/signup", "/user/logout",
                     "/user/change-password", "/user/sms-verification/request",
-                    "/user/sms-verification/confirm", "/user/reissue").permitAll()
+                    "/user/sms-verification/confirm").permitAll()
                 .anyRequest().authenticated());
 
         LoginFilter loginFilter = new LoginFilter(
             authenticationManager(authenticationConfiguration), userRepository,
-            new BCryptPasswordEncoder(), jwtUtil, redisService);
+            new BCryptPasswordEncoder(), jwtUtil, redisService, cookieUtil);
         loginFilter.setFilterProcessesUrl("/user/login");
 
         UsernamePasswordAuthenticationFilter usernamePasswordAuthenticationFilter = new UsernamePasswordAuthenticationFilter();

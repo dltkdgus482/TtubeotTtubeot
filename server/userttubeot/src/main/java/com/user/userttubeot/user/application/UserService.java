@@ -1,14 +1,15 @@
 package com.user.userttubeot.user.application;
 
+import com.user.userttubeot.user.domain.dto.TokenDto;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.exception.UserAlreadyExistsException;
 import com.user.userttubeot.user.domain.repository.UserRepository;
 import com.user.userttubeot.user.infrastructure.security.JWTUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class UserService {
     private final RedisService redisService;
 
     /**
-     * UserSignupRequestDto를 User 엔티티로 변환하는 메서드
+     * UserSignupRequestDto 를 User 엔티티로 변환하는 메서드
      *
      * @param dto               회원가입 요청 DTO
      * @param passwordSalt      비밀번호 암호화에 사용할 Salt 값
@@ -47,10 +48,13 @@ public class UserService {
             .build();
     }
 
-    public Map<String, String> reissueTokens(String refreshToken) {
+    public TokenDto reissueTokens(String refreshToken) {
         String userPhone = jwtUtil.getUserPhone(refreshToken);
         Integer userId = jwtUtil.getUserId(refreshToken);
-        String storedToken = redisService.getValue("refresh_" + userPhone);
+
+        String key = "refresh_" + userPhone;
+
+        String storedToken = redisService.getValue(key);
 
         if (storedToken == null || !storedToken.equals(refreshToken) || jwtUtil.isExpired(
             refreshToken)) {
@@ -61,14 +65,14 @@ public class UserService {
         String newAccessToken = jwtUtil.createAccessToken(userId, userPhone);
         String newRefreshToken = jwtUtil.createRefreshToken(userId, userPhone);
 
-        // Redis에 새 리프레시 토큰 저장
-        redisService.setValues("refresh_" + userPhone, newRefreshToken, Duration.ofDays(1));
+        // Redis 에 새 리프레시 토큰 저장
+        redisService.setValues(key, newRefreshToken, Duration.ofDays(1));
 
-        // 액세스 토큰과 리프레시 토큰을 Map으로 반환
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("accessToken", newAccessToken);
-        tokens.put("refreshToken", newRefreshToken);
-        return tokens;
+        // 액세스 토큰과 리프레시 토큰을 Dto 으로 반환
+        TokenDto tokenDto = new TokenDto();
+        tokenDto.setAccessToken(newAccessToken);
+        tokenDto.setRefreshToken(newRefreshToken);
+        return tokenDto;
     }
 
 
@@ -117,6 +121,20 @@ public class UserService {
      */
     private String generateSalt() {
         return UUID.randomUUID().toString().substring(0, 10);
+    }
+
+    public String extractRefreshTokenFromCookie(HttpServletRequest request) {
+        String refreshToken = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("refresh")) {
+                    refreshToken = cookie.getValue();
+                    log.info("리프레시 토큰: {}", refreshToken);
+                }
+            }
+        }
+        return refreshToken;
     }
 
 }

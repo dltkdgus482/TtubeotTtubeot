@@ -33,8 +33,8 @@ public class JWTFilter extends OncePerRequestFilter {
         // Authorization 헤더 검증
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             log.info("Authorization header is missing");
-
             filterChain.doFilter(request, response);
+            return;
         }
 
         String accessToken = Objects.requireNonNull(authorization).split(" ")[1];

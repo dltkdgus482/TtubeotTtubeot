@@ -1,10 +1,12 @@
 package com.user.userttubeot.user.presentation;
 
 import com.user.userttubeot.user.application.UserService;
+import com.user.userttubeot.user.domain.dto.TokenDto;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
 import com.user.userttubeot.user.domain.entity.User;
+import com.user.userttubeot.user.infrastructure.security.CookieUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private final CookieUtil cookieUtil;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody UserSignupRequestDto request) {
@@ -43,21 +46,19 @@ public class UserController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissueToken(@RequestBody String refreshToken,
+    public ResponseEntity<?> reissueToken(HttpServletRequest request,
         HttpServletResponse response) {
         try {
             log.info("토큰 재발급 요청이 들어왔습니다.");
 
-            // 액세스 및 리프레시 토큰을 포함한 Map 반환
-            Map<String, String> tokens = userService.reissueTokens(refreshToken);
+            String refreshToken = userService.extractRefreshTokenFromCookie(request);
+
+            // 액세스 및 리프레시 토큰을 포함한 Dto 반환
+            TokenDto tokens = userService.reissueTokens(refreshToken);
             log.info("토큰 재발급 성공.");
 
-            // Authorization 헤더에 Bearer 액세스 토큰 추가
-            response.addHeader("Authorization", "Bearer " + tokens.get("accessToken"));
-
-            // Set-Cookie 헤더에 리프레시 토큰 추가
-            response.addHeader("Set-Cookie",
-                "refreshToken=" + tokens.get("refreshToken") + "; HttpOnly; Path=/");
+            response.setHeader("Authorization", "Bearer " + tokens.getAccessToken());
+            response.addCookie(cookieUtil.createCookie("refresh", tokens.getRefreshToken()));
 
             return ResponseEntity.ok("토큰 재발급 성공");
 
