@@ -16,10 +16,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -99,6 +101,13 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ResponseMessage("서버 오류가 발생했습니다."));
         }
+    }
+
+    @GetMapping("/check-username")
+    public ResponseEntity<?> checkUsername(@RequestParam("username") String username) {
+        boolean isAvailable = userService.isUsernameAvailable(username);
+        String message = isAvailable ? "사용 가능한 사용자 이름입니다." : "이미 사용 중인 사용자 이름입니다.";
+        return ResponseEntity.ok(new ResponseMessage(message));
     }
 
 

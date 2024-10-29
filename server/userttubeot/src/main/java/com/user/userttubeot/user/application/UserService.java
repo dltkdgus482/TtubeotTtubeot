@@ -149,4 +149,7 @@ public class UserService {
         userRepository.save(updatedUser);
     }
 
+    public boolean isUsernameAvailable(String username) {
+        return !userRepository.existsByUserName(username);
+    }
 }
