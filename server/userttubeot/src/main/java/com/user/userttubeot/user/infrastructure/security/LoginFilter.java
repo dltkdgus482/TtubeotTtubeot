@@ -27,8 +27,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository; // UserRepository 추가
-    private final BCryptPasswordEncoder passwordEncoder; // PasswordEncoder 주입
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
     private final JWTUtil jwtUtil;
     private final RedisService redisService;
     private final CookieUtil cookieUtil;
@@ -36,84 +36,64 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
         HttpServletResponse response) throws AuthenticationException {
-        ObjectMapper objectMapper = new ObjectMapper();
+
         String userPhone;
         String password;
+
         try {
-            var requestBody = objectMapper.readValue(request.getReader(), Map.class);
-            userPhone = requestBody.get("user_phone").toString();
-            password = requestBody.get("password").toString();
+            var requestBody = new ObjectMapper().readValue(request.getReader(), Map.class);
+            userPhone = (String) requestBody.get("user_phone");
+            password = (String) requestBody.get("password");
         } catch (IOException e) {
-            response.setStatus(400); // 잘못된 요청 방식
-            throw new RuntimeException("잘못된 요청 방식입니다.", e);
+            log.warn("잘못된 요청 형식으로 인해 로그인 실패 - Exception: {}", e.getMessage());
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            throw new RuntimeException("잘못된 요청 형식입니다.", e);
         }
 
-        User user = userRepository.findByUserPhone(userPhone)
-            .orElseThrow(() -> {
-                response.setStatus(401); // 잘못된 로그인 정보
-                return new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
-            });
+        User user = findUserByPhone(userPhone, response);
+        validatePassword(password, user, response);
 
-        String salt = user.getUserPasswordSalt();
-
-        if (!isPasswordValid(password, user.getUserPassword(), salt)) {
-            response.setStatus(401); // 잘못된 로그인 정보
-            throw new BadCredentialsException("비밀번호가 잘못되었습니다.");
-        }
-
-        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
-            userPhone, password + salt);
+        var authRequest = new UsernamePasswordAuthenticationToken(userPhone,
+            password + user.getUserPasswordSalt());
         return authenticationManager.authenticate(authRequest);
     }
-
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
         HttpServletResponse response,
-        FilterChain chain,
-        Authentication authResult) {
-        log.info("로그인 성공: 사용자 이름 = {}", authResult.getName());
+        FilterChain chain, Authentication authResult) {
 
-        // 사용자 정보 가져오기
         CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
         String userPhone = customUserDetails.getUsername();
         Integer userId = customUserDetails.getUserId();
-        log.info("사용자 Id:{}, 전화번호: {}", userId, userPhone);
 
-        // AccessToken 생성
         String accessToken = jwtUtil.createAccessToken(userId, userPhone);
-        log.info("액세스 토큰 생성 완료");
-
-        // RefreshToken 생성
         String refreshToken = jwtUtil.createRefreshToken(userId, userPhone);
-        log.info("리프레시 토큰 생성 완료");
 
-        // Redis에 리프레시 토큰 저장 (Duration으로 TTL 설정)
         redisService.setValues("refresh_" + userPhone, refreshToken, Duration.ofDays(1));
 
-        // 헤더에 토큰 추가
         response.setHeader("Authorization", "Bearer " + accessToken);
         response.addCookie(cookieUtil.createCookie("refresh", refreshToken));
-        log.info("헤더에 액세스 및 리프레시 토큰 추가 완료");
 
-        log.debug("AccessToken: {}", accessToken);  // 필요 시에만 출력
-        log.debug("RefreshToken: {}", refreshToken); // 필요 시에만 출력
+        log.info("로그인 성공 - userId: {}, userPhone: {}", userId, userPhone);
+        log.debug("AccessToken: {}", accessToken);
+        log.debug("RefreshToken: {}", refreshToken);
     }
-
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request,
         HttpServletResponse response, AuthenticationException failed) throws IOException {
-        log.info("로그인 실패: {}", failed.getMessage());
+
+        log.warn("로그인 실패 - Exception: {}", failed.getMessage());
 
         if (failed instanceof BadCredentialsException) {
-            response.setStatus(401); // 잘못된 로그인 정보
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("잘못된 로그인 정보입니다.");
         } else if (failed instanceof UsernameNotFoundException) {
-            response.setStatus(401); // 존재하지 않는 계정
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("존재하지 않는 계정입니다.");
         } else {
-            response.setStatus(400); // 기본적으로 잘못된 요청
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("로그인 요청이 올바르지 않습니다.");
         }
     }
@@ -121,10 +101,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     // 비밀번호 검증 메서드
     private boolean isPasswordValid(String rawPassword, String storedHash, String salt) {
         String combinedPassword = rawPassword + salt;
-        boolean isValid = passwordEncoder.matches(combinedPassword, storedHash);
-        // matches 메서드를 사용하여 입력된 비밀번호와 저장된 해시를 비교
-        log.info("비밀번호 검증: 입력된 비밀번호 + salt = {}, 저장된 해시 = {}, 검증 결과 = {}",
-            combinedPassword, storedHash, isValid);
-        return passwordEncoder.matches(rawPassword + salt, storedHash);
+        return passwordEncoder.matches(combinedPassword, storedHash);
+    }
+
+    private User findUserByPhone(String userPhone, HttpServletResponse response) {
+        return userRepository.findByUserPhone(userPhone)
+            .orElseThrow(() -> {
+                log.warn("로그인 실패 - 존재하지 않는 사용자, userPhone: {}", userPhone);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
+            });
+    }
+
+    private void validatePassword(String rawPassword, User user, HttpServletResponse response) {
+        if (!isPasswordValid(rawPassword, user.getUserPassword(), user.getUserPasswordSalt())) {
+            log.warn("로그인 실패 - 잘못된 비밀번호, userPhone: {}", user.getUserPhone());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            throw new BadCredentialsException("비밀번호가 잘못되었습니다.");
+        }
     }
 }
