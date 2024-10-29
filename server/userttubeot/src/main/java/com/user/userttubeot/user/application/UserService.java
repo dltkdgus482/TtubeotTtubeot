@@ -2,8 +2,10 @@ package com.user.userttubeot.user.application;
 
 import com.user.userttubeot.user.domain.dto.TokenDto;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
+import com.user.userttubeot.user.domain.dto.UserUpdateRequestDto;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.exception.UserAlreadyExistsException;
+import com.user.userttubeot.user.domain.exception.UserNotFoundException;
 import com.user.userttubeot.user.domain.repository.UserRepository;
 import com.user.userttubeot.user.infrastructure.security.JWTUtil;
 import jakarta.transaction.Transactional;
@@ -122,6 +124,29 @@ public class UserService {
         String salt = UUID.randomUUID().toString().substring(0, 10);
         log.debug("생성된 비밀번호 Salt: {}", salt);
         return salt;
+    }
+
+    public User findUserById(Integer userId) {
+        return userRepository.findById(userId)
+            .orElseThrow(
+                () -> new UserNotFoundException("ID: " + userId + "에 해당하는 사용자를 찾을 수 없습니다."));
+    }
+
+
+    public void partiallyUpdateUser(Integer userId, UserUpdateRequestDto updateDto) {
+        User user = findUserById(userId);
+
+        User updatedUser = user.toBuilder()
+            .userLocationAgreement(updateDto.getUserLocationAgreement() != null
+                ? updateDto.getUserLocationAgreement() == 1
+                : user.getUserLocationAgreement())
+            .userParent(updateDto.getUserParent() != null
+                ? updateDto.getUserParent()
+                : user.getUserParent())
+            .build();
+
+        // 수정된 사용자 정보를 저장
+        userRepository.save(updatedUser);
     }
 
 }

@@ -1,9 +1,12 @@
 package com.user.userttubeot.user.presentation;
 
 import com.user.userttubeot.user.application.UserService;
+import com.user.userttubeot.user.domain.dto.CustomUserDetails;
 import com.user.userttubeot.user.domain.dto.TokenDto;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
+import com.user.userttubeot.user.domain.dto.UserUpdateRequestDto;
 import com.user.userttubeot.user.domain.entity.User;
+import com.user.userttubeot.user.domain.exception.ResponseMessage;
 import com.user.userttubeot.user.infrastructure.security.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,6 +76,28 @@ public class UserController {
             log.error("토큰 재발급 실패 - 서버 오류: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("토큰 재발급 실패: 서버 오류가 발생했습니다.");
+        }
+    }
+
+    @PatchMapping("/me")
+    public ResponseEntity<?> partiallyUpdateUserInfo(@RequestBody UserUpdateRequestDto updateDto,
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
+        try {
+            Integer userId = userDetails.getUserId();
+            userService.partiallyUpdateUser(userId, updateDto);
+            return ResponseEntity.ok(new ResponseMessage("사용자 정보가 수정되었습니다."));
+        } catch (IllegalArgumentException e) {
+            // 잘못된 요청에 대해 400 반환
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseMessage("잘못된 요청 방식입니다."));
+        } catch (AuthenticationException e) {
+            // 인증 실패에 대해 401 반환
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ResponseMessage("사용자 검증에 실패했습니다."));
+        } catch (Exception e) {
+            // 기타 예외는 500 에러로 반환
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseMessage("서버 오류가 발생했습니다."));
         }
     }
 
