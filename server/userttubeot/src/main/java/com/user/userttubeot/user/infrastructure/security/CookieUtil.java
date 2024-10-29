@@ -14,7 +14,7 @@ public class CookieUtil {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24 * 60 * 60); // 1일
         cookie.setHttpOnly(true);
-
+        cookie.setPath("/"); // 쿠키가 전체 경로에서 유효하도록 설정
         return cookie;
     }
 

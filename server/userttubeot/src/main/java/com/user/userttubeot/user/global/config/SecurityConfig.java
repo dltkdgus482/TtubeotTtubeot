@@ -3,6 +3,7 @@ package com.user.userttubeot.user.global.config;
 import com.user.userttubeot.user.application.RedisService;
 import com.user.userttubeot.user.domain.repository.UserRepository;
 import com.user.userttubeot.user.infrastructure.security.CookieUtil;
+import com.user.userttubeot.user.infrastructure.security.CustomLogoutFilter;
 import com.user.userttubeot.user.infrastructure.security.JWTFilter;
 import com.user.userttubeot.user.infrastructure.security.JWTUtil;
 import com.user.userttubeot.user.infrastructure.security.LoginFilter;
@@ -19,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @RequiredArgsConstructor
@@ -72,6 +74,10 @@ public class SecurityConfig {
 
         http
             .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http
+            .addFilterBefore(new CustomLogoutFilter(jwtUtil, redisService, cookieUtil),
+                LogoutFilter.class);
 
         http
             .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
