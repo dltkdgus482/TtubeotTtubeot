@@ -1,9 +1,10 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
+    width: '100%',
   },
   backgroundImage: {
     position: 'absolute',
@@ -22,48 +23,16 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 120,
   },
-  alertBackground: {
+
+  startButtonContainer: {
+    alignItems: 'center',
     position: 'absolute',
-    top: 120,
+    bottom: 150,
     width: '100%',
-    height: 260,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignContent: 'center',
-  },
-  adventureAlert: {
-    padding: 50,
-    display: 'flex',
-    justifyContent: 'space-between',
-  },
-  alertSection: {
-    height: 80,
-    justifyContent: 'center',
-  },
-  alertTitle: {
-    fontSize: 22,
-    textAlign: 'center',
-  },
-  alertContent: {
-    fontSize: 18,
-    textAlign: 'left',
-    paddingTop: 5,
-  },
-  accentText: {
-    color: 'red',
-  },
-  accentTextBlue: {
-    color: 'blue',
   },
   startButton: {
     position: 'absolute',
     bottom: 150,
-    left: '50%',
-    transform: [{translateX: -50}],
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 10,
-    color: '#fff',
   },
   buttonTextContainer: {
     width: 60,
