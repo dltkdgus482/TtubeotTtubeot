@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Image,
@@ -10,7 +10,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import styles from './HomeScreen.styles';
-import TtubeotProfile from '../../styles/TtubeotProfile';
+import TtubeotProfile from '../../components/TtubeotProfile';
 import CharacterShopModal from '../../components/CharacterShop/CharacterShopModal';
 import GraduationAlbumModal from '../../components/GraduationAlbum/GraduationAlbumModal';
 import MissionModal from '../../components/Mission/MissionModal.tsx';
@@ -92,6 +92,7 @@ const HomeScreen = () => {
       <GraduationAlbumModal
         modalVisible={graduationAlbumModalVisible}
         closeAlbumModal={closeAlbumModal}
+      />
       {/* WebView로 3D 모델 표시 */}
       <WebView
         originWhitelist={['*']}
@@ -100,19 +101,19 @@ const HomeScreen = () => {
         allowFileAccess={true}
         allowFileAccessFromFileURLs={true}
         allowUniversalAccessFromFileURLs={true}
-        onLoadStart={(syntheticEvent) => {
+        onLoadStart={syntheticEvent => {
           const { nativeEvent } = syntheticEvent;
           console.log('WebView Start: ', nativeEvent);
         }}
-        onError={(syntheticEvent) => {
+        onError={syntheticEvent => {
           const { nativeEvent } = syntheticEvent;
           console.error('WebView onError: ', nativeEvent);
         }}
-        onHttpError={(syntheticEvent) => {
+        onHttpError={syntheticEvent => {
           const { nativeEvent } = syntheticEvent;
           console.error('WebView onHttpError: ', nativeEvent);
         }}
-        onMessage={(event) => {
+        onMessage={event => {
           console.log('Message from WebView:', event.nativeEvent.data);
         }}
       />
