@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Modal,
@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import styles from './CharacterShopModal.styles';
+import StyledText from '../../styles/StyledText';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 const CharacterShopTitleContainer = require('../../assets/images/CharacterShopTitleContainer.png');
 const CharacterShopBackgound = require('../../assets/images/CharacterShopBackground.png');
@@ -126,10 +128,16 @@ const CharacterShopModal: React.FC<CharacterShopModalProps> = ({
               source={CharacterShopTitleContainer}
               style={styles.titleImage}
             />
-            <Text style={styles.title}>상점</Text>
-            <Text style={styles.closeButton} onPress={closeShopModal}>
-              X
-            </Text>
+            <StyledText bold style={styles.title}>
+              상점
+            </StyledText>
+            <Icon
+              name="close"
+              size={30}
+              color="black"
+              style={styles.closeButton}
+              onPress={closeShopModal}
+            />
           </View>
 
           <View style={styles.menuContainer}>
@@ -143,7 +151,10 @@ const CharacterShopModal: React.FC<CharacterShopModalProps> = ({
                       ? [styles.menu, styles.selectedMenu]
                       : styles.menu
                   }>
-                  <Text style={styles.menuText}>{menu}</Text>
+                  <View style={styles.stitchedBorder}></View>
+                  <StyledText bold style={styles.menuText}>
+                    {menu}
+                  </StyledText>
                 </View>
               </TouchableOpacity>
             ))}
@@ -158,14 +169,18 @@ const CharacterShopModal: React.FC<CharacterShopModalProps> = ({
                       <Image source={item.source} style={styles.itemImage} />
                     </View>
                     <View style={styles.itemInfoContainer}>
-                      <Text style={styles.itemName}>{item.name}</Text>
-                      <Text>{item.description}</Text>
+                      <StyledText bold style={styles.itemName}>
+                        {item.name}
+                      </StyledText>
+                      <StyledText bold>{item.description}</StyledText>
                       <TouchableOpacity
                         style={styles.itemPriceContainer}
                         onPress={buyItem}>
                         <View style={styles.itemPriceInnerContainer}>
                           <Image source={CoinIcon} style={styles.coinIcon} />
-                          <Text style={styles.itemPrice}>{item.price}</Text>
+                          <StyledText bold style={styles.itemPrice}>
+                            {item.price}
+                          </StyledText>
                         </View>
                       </TouchableOpacity>
                     </View>
@@ -180,14 +195,18 @@ const CharacterShopModal: React.FC<CharacterShopModalProps> = ({
                       <Image source={item.source} style={styles.itemImage} />
                     </View>
                     <View style={styles.itemInfoContainer}>
-                      <Text style={styles.itemName}>{item.name}</Text>
-                      <Text>{item.description}</Text>
+                      <StyledText bold style={styles.itemName}>
+                        {item.name}
+                      </StyledText>
+                      <StyledText bold>{item.description}</StyledText>
                       <TouchableOpacity
                         style={styles.itemPriceContainer}
                         onPress={buyItem}>
                         <View style={styles.itemPriceInnerContainer}>
                           <Image source={CoinIcon} style={styles.coinIcon} />
-                          <Text style={styles.itemPrice}>{item.price}</Text>
+                          <StyledText bold style={styles.itemPrice}>
+                            {item.price}
+                          </StyledText>
                         </View>
                       </TouchableOpacity>
                     </View>
@@ -202,14 +221,18 @@ const CharacterShopModal: React.FC<CharacterShopModalProps> = ({
                       <Image source={item.source} style={styles.itemImage} />
                     </View>
                     <View style={styles.itemInfoContainer}>
-                      <Text style={styles.itemName}>{item.name}</Text>
-                      <Text>{item.description}</Text>
+                      <StyledText bold style={styles.itemName}>
+                        {item.name}
+                      </StyledText>
+                      <StyledText bold>{item.description}</StyledText>
                       <TouchableOpacity
                         style={styles.itemPriceContainer}
                         onPress={buyItem}>
                         <View style={styles.itemPriceInnerContainer}>
                           <Image source={CoinIcon} style={styles.coinIcon} />
-                          <Text style={styles.itemPrice}>{item.price}</Text>
+                          <StyledText bold style={styles.itemPrice}>
+                            {item.price}
+                          </StyledText>
                         </View>
                       </TouchableOpacity>
                     </View>

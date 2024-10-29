@@ -58,6 +58,31 @@ const HomeScreen = () => {
         source={background}
         style={styles.backgroundImage}></ImageBackground>
 
+      {/* WebView로 3D 모델 표시 */}
+      <WebView
+        originWhitelist={['*']}
+        source={{ uri: 'file:///android_asset/renderModel.html' }}
+        style={styles.ttubeotWebview}
+        allowFileAccess={true}
+        allowFileAccessFromFileURLs={true}
+        allowUniversalAccessFromFileURLs={true}
+        onLoadStart={syntheticEvent => {
+          const { nativeEvent } = syntheticEvent;
+          console.log('WebView Start: ', nativeEvent);
+        }}
+        onError={syntheticEvent => {
+          const { nativeEvent } = syntheticEvent;
+          console.error('WebView onError: ', nativeEvent);
+        }}
+        onHttpError={syntheticEvent => {
+          const { nativeEvent } = syntheticEvent;
+          console.error('WebView onHttpError: ', nativeEvent);
+        }}
+        onMessage={event => {
+          console.log('Message from WebView:', event.nativeEvent.data);
+        }}
+      />
+
       {/* 버튼 컨테이너 */}
       {!modalVisible && (
         <View style={styles.buttonContainer}>
@@ -92,30 +117,6 @@ const HomeScreen = () => {
       <GraduationAlbumModal
         modalVisible={graduationAlbumModalVisible}
         closeAlbumModal={closeAlbumModal}
-      />
-      {/* WebView로 3D 모델 표시 */}
-      <WebView
-        originWhitelist={['*']}
-        source={{ uri: 'file:///android_asset/renderModel.html' }}
-        style={styles.ttubeotWebview}
-        allowFileAccess={true}
-        allowFileAccessFromFileURLs={true}
-        allowUniversalAccessFromFileURLs={true}
-        onLoadStart={syntheticEvent => {
-          const { nativeEvent } = syntheticEvent;
-          console.log('WebView Start: ', nativeEvent);
-        }}
-        onError={syntheticEvent => {
-          const { nativeEvent } = syntheticEvent;
-          console.error('WebView onError: ', nativeEvent);
-        }}
-        onHttpError={syntheticEvent => {
-          const { nativeEvent } = syntheticEvent;
-          console.error('WebView onHttpError: ', nativeEvent);
-        }}
-        onMessage={event => {
-          console.log('Message from WebView:', event.nativeEvent.data);
-        }}
       />
     </View>
   );
