@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   modalBackground: {
@@ -19,7 +19,7 @@ export default StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
-    marginTop: 25,
+    marginTop: 30,
     backgroundColor: '#DFD6C0',
   },
   titleBackImage: {
@@ -38,7 +38,7 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
     textAlign: 'center',
-    top: 14,
+    top: 11,
   },
   titleContainer: {
     alignItems: 'center',
@@ -58,6 +58,7 @@ export default StyleSheet.create({
     borderColor: '#7A574B',
     borderStyle: 'solid',
     borderWidth: 2,
+    borderBottomWidth: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -70,13 +71,27 @@ export default StyleSheet.create({
     borderColor: '#7A574B',
     borderStyle: 'solid',
     borderWidth: 2,
+    borderBottomWidth: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
   },
   menuText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#231514',
+  },
+  stitchedBorder: {
+    position: 'absolute',
+    width: '95%',
+    height: '120%',
+    top: 2,
+    borderRadius: 6,
+    borderBottomWidth: 0,
+    borderColor: '#D0C8BD',
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    zIndex: -1,
   },
   itemContainer: {
     width: '100%',
@@ -155,9 +170,6 @@ export default StyleSheet.create({
   closeButton: {
     position: 'absolute',
     right: 15,
-    top: 15,
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: 'black',
+    top: 20,
   },
 });
