@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TokenInterceptorService {
 
-    @Value("${jwt.secret}")
+    @Value("${spring.jwt.secret}")
     private String SECRET_KEY;
 
     // JWT 토큰에서 Claims 객체를 추출
