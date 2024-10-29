@@ -21,7 +21,7 @@ const AdventureScreen = () => {
     setAdventureStart(!adventureStart);
     setTimeout(() => {
       Animated.timing(opacityAnim, {
-        toValue: adventureStart ? 0.7 : 0.45,
+        toValue: adventureStart ? 0.62 : 0.3,
         duration: 500,
         useNativeDriver: true,
       }).start();

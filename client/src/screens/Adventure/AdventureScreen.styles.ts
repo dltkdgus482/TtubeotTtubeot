@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.7,
+    opacity: 0.62,
   },
   profileContainer: {
     position: 'absolute',
@@ -36,12 +36,12 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    top: 72,
+    top: 75,
     right: 8,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
-    alignContent: 'center',
+    alignItems: 'baseline',
   },
   missionIcon: {
     width: 55,
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   },
   cameraIcon: {
     width: 55,
-    height: 55,
+    height: 57,
   },
 });
 
