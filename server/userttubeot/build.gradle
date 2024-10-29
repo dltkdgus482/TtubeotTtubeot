@@ -42,6 +42,12 @@ dependencies {
     // Additional dependencies
     implementation 'org.json:json:20210307'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // JJWT 라이브러리
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3' // JSON 직렬화 및 역직렬화
+
 }
 
 tasks.named('test') {
