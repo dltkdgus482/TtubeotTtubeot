@@ -1,6 +1,8 @@
 package com.user.userttubeot.user.infrastructure.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import javax.crypto.SecretKey;
@@ -14,23 +16,26 @@ public class JWTUtil {
     private final SecretKey secretKey;
 
     public JWTUtil(@Value("${spring.jwt.secret}") String secret) {
-        secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
-            Jwts.SIG.HS256.key().build().getAlgorithm());
+        this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
+            SignatureAlgorithm.HS256.getJcaName());
     }
 
     public String getUserPhone(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
-            .getPayload().get("userPhone", String.class);
+        Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token)
+            .getBody();
+        return claims.get("userPhone", String.class);
     }
 
     public Integer getUserId(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
-            .getPayload().get("userId", Integer.class);
+        Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token)
+            .getBody();
+        return claims.get("userId", Integer.class);
     }
 
     public boolean isExpired(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
-            .getPayload().getExpiration().before(new Date());
+        Date expiration = Jwts.parserBuilder().setSigningKey(secretKey).build()
+            .parseClaimsJws(token).getBody().getExpiration();
+        return expiration.before(new Date());
     }
 
     public String createAccessToken(Integer userId, String userPhone) {
@@ -38,8 +43,8 @@ public class JWTUtil {
         return Jwts.builder()
             .claim("userId", userId)
             .claim("userPhone", userPhone)
-            .issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + expiredMs))
+            .setIssuedAt(new Date(System.currentTimeMillis()))
+            .setExpiration(new Date(System.currentTimeMillis() + expiredMs))
             .signWith(secretKey)
             .compact();
     }
@@ -49,8 +54,8 @@ public class JWTUtil {
         return Jwts.builder()
             .claim("userId", userId)
             .claim("userPhone", userPhone)
-            .issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + expiredMs))
+            .setIssuedAt(new Date(System.currentTimeMillis()))
+            .setExpiration(new Date(System.currentTimeMillis() + expiredMs))
             .signWith(secretKey)
             .compact();
     }
