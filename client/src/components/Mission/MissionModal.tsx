@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/AntDesign';
 const CharacterShopTitleContainer = require('../../assets/images/CharacterShopTitleContainer.png');
 const CharacterShopBackgound = require('../../assets/images/CharacterShopBackground.png');
 const CoinIcon = require('../../assets/icons/coinIcon.png');
+const CompleteIcon = require('../../assets/icons/CompleteIcon.png');
 
 interface CharacterShopModalProps {
   missionModalVisible: boolean;
@@ -19,7 +20,6 @@ interface MissionProps {
   description: string;
   cur: number;
   goal: number;
-  isCompleted: boolean;
 }
 
 const MissionModal: React.FC<CharacterShopModalProps> = ({
@@ -35,7 +35,6 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
       description: '자신의 뚜벗과 상호작용 1회',
       cur: 1,
       goal: 1,
-      isCompleted: false,
     },
     {
       name: '친구와 인사 나누기',
@@ -43,12 +42,69 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
       description: '주변 친구들과 인사 2회',
       cur: 1,
       goal: 2,
-      isCompleted: false,
     },
   ];
 
-  const weeklyMissionList: MissionProps[] = [];
-  const achievementList: MissionProps[] = [];
+  const weeklyMissionList: MissionProps[] = [
+    {
+      name: '뚜벗 쓰다듬기',
+      source: require('../../assets/images/RandomCharacter.png'),
+      description: '자신의 뚜벗과 상호작용 1회',
+      cur: 1,
+      goal: 1,
+    },
+    {
+      name: '친구와 인사 나누기',
+      source: require('../../assets/images/RandomCharacter.png'),
+      description: '주변 친구들과 인사 2회',
+      cur: 1,
+      goal: 2,
+    },
+    {
+      name: '걷기',
+        source: require('../../assets/images/RandomCharacter.png'),
+        description: '10000보 걷기',
+      cur: 5000,
+      goal: 10000,
+    }
+  ];
+  const achievementList: MissionProps[] = [
+    {
+      name: '뚜벗 쓰다듬기',
+      source: require('../../assets/images/RandomCharacter.png'),
+      description: '자신의 뚜벗과 상호작용 1회',
+      cur: 1,
+      goal: 1,
+    },
+    {
+      name: '친구와 인사 나누기',
+      source: require('../../assets/images/RandomCharacter.png'),
+      description: '주변 친구들과 인사 2회',
+      cur: 1,
+      goal: 2,
+    },
+    {
+      name: '걷기',
+      source: require('../../assets/images/RandomCharacter.png'),
+      description: '10000보 걷기',
+      cur: 5000,
+      goal: 10000,
+    },
+    {
+      name: '뚜벗 쓰다듬기',
+      source: require('../../assets/images/RandomCharacter.png'),
+      description: '자신의 뚜벗과 상호작용 1회',
+      cur: 1,
+      goal: 1,
+    },
+    {
+      name: '친구와 인사 나누기',
+      source: require('../../assets/images/RandomCharacter.png'),
+      description: '주변 친구들과 인사 2회',
+      cur: 1,
+      goal: 2,
+    },
+  ];
 
   const completeMission = () => {
     console.log('complete mission');
@@ -134,9 +190,74 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
                         </StyledText>
                       </View>
                     </View>
+                    <View style={styles.completeCheckBox}>
+                      {item.cur === item.goal && <Image source={CompleteIcon} style={styles.completeCheck} />}
+                    </View>
                   </View>
                 );
               })}
+            {selectedMenu === '주간 미션' &&
+                weeklyMissionList.map((item, index) => {
+                  const progress = (item.cur / item.goal) * 100;
+                  return (
+                      <View style={styles.item} key={index}>
+                        <View style={styles.itemImageContainer}>
+                          <Image source={item.source} style={styles.itemImage} />
+                        </View>
+                        <View style={styles.itemInfoContainer}>
+                          <StyledText bold style={styles.itemName}>
+                            {item.name}
+                          </StyledText>
+                          <StyledText bold>{item.description}</StyledText>
+                          <View style={styles.progressBarContainer}>
+                            <View
+                                style={[
+                                  styles.progressBar,
+                                  { width: `${progress}%` },
+                                ]}
+                            />
+                            <StyledText bold style={styles.progressText}>
+                              {item.cur} / {item.goal}
+                            </StyledText>
+                          </View>
+                        </View>
+                        <View style={styles.completeCheckBox}>
+                          {item.cur === item.goal && <Image source={CompleteIcon} style={styles.completeCheck} />}
+                        </View>
+                      </View>
+                  );
+                })}
+            {selectedMenu === '업적' &&
+                achievementList.map((item, index) => {
+                  const progress = (item.cur / item.goal) * 100;
+                  return (
+                      <View style={styles.item} key={index}>
+                        <View style={styles.itemImageContainer}>
+                          <Image source={item.source} style={styles.itemImage} />
+                        </View>
+                        <View style={styles.itemInfoContainer}>
+                          <StyledText bold style={styles.itemName}>
+                            {item.name}
+                          </StyledText>
+                          <StyledText bold>{item.description}</StyledText>
+                          <View style={styles.progressBarContainer}>
+                            <View
+                                style={[
+                                  styles.progressBar,
+                                  { width: `${progress}%` },
+                                ]}
+                            />
+                            <StyledText bold style={styles.progressText}>
+                              {item.cur} / {item.goal}
+                            </StyledText>
+                          </View>
+                        </View>
+                        <View style={styles.completeCheckBox}>
+                          {item.cur === item.goal && <Image source={CompleteIcon} style={styles.completeCheck} />}
+                        </View>
+                      </View>
+                  );
+                })}
           </ScrollView>
         </View>
       </View>

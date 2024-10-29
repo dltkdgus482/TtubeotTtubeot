@@ -104,7 +104,7 @@ export default StyleSheet.create({
     height: 130,
     backgroundColor: '#F2E6D6',
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     alignItems: 'center',
     marginHorizontal: '2%',
     marginVertical: '1%',
@@ -124,9 +124,9 @@ export default StyleSheet.create({
   },
   itemImageContainer: {
     backgroundColor: 'white',
-    borderRadius: 100,
+    borderRadius: 12,
     padding: 7,
-    borderWidth: 5,
+    borderWidth: 3,
     borderColor: '#8D6444',
   },
   itemImage: {
@@ -199,5 +199,18 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     color: '#231514',
     alignSelf: 'center',
+  },
+  completeCheckBox: {
+    width: 35,
+    height: 35,
+    borderWidth: 3,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  completeCheck: {
+    width: 25,
+    height: 25,
+    resizeMode: 'stretch',
   },
 });
