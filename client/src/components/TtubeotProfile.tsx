@@ -1,17 +1,17 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import {Image, View} from 'react-native';
+import { Image, View } from 'react-native';
 import Icon from './Icon';
 import StyledText from '../styles/StyledText';
 
-const Profile = styled.View`
+const Profile = styled(View)`
   position: relative;
   height: 80px;
   display: 'flex';
   flex-direction: row;
 `;
 
-const ProfileImageContainer = styled.View`
+const ProfileImageContainer = styled(View)`
   width: 80px;
   height: 80px;
   border-radius: 50px;
@@ -25,7 +25,7 @@ const ProfileImage = styled(Image)`
   height: 65px;
 `;
 
-const ProfileDetails = styled.View`
+const ProfileDetails = styled(View)`
   background-color: #b1baaa;
   border-radius: 25px;
   padding-left: 15px;
@@ -36,7 +36,7 @@ const ProfileDetails = styled.View`
   height: 97%;
 `;
 
-const ProfileTop = styled.View`
+const ProfileTop = styled(View)`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -117,7 +117,7 @@ const TtubeotProfile = () => {
             <RemainDays bold>D-4</RemainDays>
           </ProfileTop>
           <ProfileBottom>
-            <StyledText bold style={{color: 'white'}}>
+            <StyledText bold style={{ color: 'white' }}>
               함께한 거리
             </StyledText>
             <View
