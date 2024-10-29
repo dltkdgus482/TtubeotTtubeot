@@ -174,4 +174,33 @@ public class UserService {
         log.info("사용자 상태 변경 완료 - 사용자 ID: {}, 상태: {}", userId, deleteUser.getUserStatus());
     }
 
+    /**
+     * 비밀번호 변경 처리
+     */
+    public void changePassword(Integer userId, String userPhone, String newPassword) {
+        log.info("비밀번호 변경 요청 - 사용자 ID: {}, 전화번호: {}", userId, userPhone);
+
+        // 인증 코드 검증
+        if (!smsVerificationService.isPhoneVerified(userPhone)) {
+            log.warn("비밀번호 변경 실패 - 인증 코드가 일치하지 않음: 전화번호: {}", userPhone);
+            throw new IllegalArgumentException("인증 코드가 일치하지 않습니다.");
+        }
+
+        // 전화번호 인증 정보 삭제
+        smsVerificationService.deleteVerificationCode(userPhone);
+
+        // 유저 조회 및 ID와 전화번호 일치 여부 확인
+        User user = userRepository.findById(userId)
+            .filter(u -> u.getUserPhone().equals(userPhone))
+            .orElseThrow(() -> new IllegalArgumentException("전화번호가 일치하지 않습니다."));
+
+        // 새 비밀번호 암호화 및 저장
+        String salt = user.getUserPasswordSalt();
+        String encryptedPassword = passwordEncoder.encode(newPassword + salt);
+
+        userRepository.save(user.toBuilder().userPassword(encryptedPassword).build());
+
+        log.info("비밀번호 변경 성공 - 사용자 ID: {}", user.getUserId());
+    }
+
 }

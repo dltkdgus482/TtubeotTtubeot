@@ -3,6 +3,7 @@ package com.user.userttubeot.user.presentation;
 import com.user.userttubeot.user.application.UserService;
 import com.user.userttubeot.user.domain.dto.CustomUserDetails;
 import com.user.userttubeot.user.domain.dto.TokenDto;
+import com.user.userttubeot.user.domain.dto.UserChangePasswordRequestDto;
 import com.user.userttubeot.user.domain.dto.UserResponseDto;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
 import com.user.userttubeot.user.domain.dto.UserUpdateRequestDto;
@@ -148,6 +149,37 @@ public class UserController {
                 .body(new ResponseMessage("사용자를 찾을 수 없습니다."));
         } catch (Exception e) {
             log.error("사용자 삭제 실패 - 서버 오류: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseMessage("서버 오류가 발생했습니다."));
+        }
+    }
+
+    @PatchMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @RequestBody UserChangePasswordRequestDto dto) {
+
+        Integer userId = userDetails.getUserId();
+
+        String userPhone = dto.getPhone();
+        String newPassword = dto.getPassword();
+
+        log.info("비밀번호 변경 요청 - 사용자 전화번호: {}", userPhone);
+        try {
+            // 새 비밀번호 업데이트
+            userService.changePassword(userId, userPhone, newPassword);
+            log.info("비밀번호 변경 성공 - 사용자 전화번호: {}", userPhone);
+            return ResponseEntity.ok(new ResponseMessage("비밀번호가 성공적으로 변경되었습니다."));
+        } catch (UserNotFoundException e) {
+            log.warn("비밀번호 변경 실패 - 사용자 없음: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ResponseMessage("사용자를 찾을 수 없습니다."));
+        } catch (IllegalArgumentException e) {
+            log.warn("비밀번호 변경 실패 - 인증 정보 없음: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseMessage("인증 정보가 존재하지 않습니다."));
+        } catch (Exception e) {
+            log.error("비밀번호 변경 실패 - 서버 오류: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ResponseMessage("서버 오류가 발생했습니다."));
         }
