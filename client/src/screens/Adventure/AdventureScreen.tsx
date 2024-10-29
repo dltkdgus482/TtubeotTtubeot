@@ -1,16 +1,9 @@
 import React, { useState, useRef } from 'react';
-import {
-  View,
-  ImageBackground,
-  TouchableOpacity,
-  Image,
-  Animated,
-  Pressable,
-} from 'react-native';
+import { View, TouchableOpacity, Image, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from './AdventureScreen.styles';
 import TtubeotProfile from '../../components/TtubeotProfile';
-import StyledText from '../../styles/StyledText';
+import CurrencyDisplay from '../../components/CurrencyDisplay';
 import AdventureMapScreen from './AdventureMapScreen';
 import ButtonDefault from '../../components/Button/ButtonDefault';
 import AdventureAlert from '../../components/AdventureAlert/AdventureAlert';
@@ -57,6 +50,9 @@ const AdventureScreen = () => {
       />
       <View style={styles.profileContainer}>
         <TtubeotProfile />
+      </View>
+      <View style={styles.currencyContainer}>
+        <CurrencyDisplay />
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={handlePress}>

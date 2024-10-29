@@ -43,13 +43,24 @@ export default StyleSheet.create({
     top: 40,
     left: 75,
   },
+  currencyContainer: {
+    position: 'absolute',
+    top: 40,
+    right: 10,
+  },
   ttubeotWebview: {
     position: 'absolute',
-    bottom: -90,
+    bottom: -70,
     left: '50%',
     transform: [{ translateX: -250 }], // 모델의 너비의 절반으로 설정
     width: 500,
     height: 500,
     backgroundColor: 'transparent', // 투명 배경
+  },
+  startButtonContainer: {
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 150,
+    width: '100%',
   },
 });

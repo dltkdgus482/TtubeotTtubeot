@@ -1,31 +1,27 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Image,
-  ImageBackground,
-  TouchableOpacity,
-  Modal,
-  Text,
-  Button,
-  StyleSheet,
-} from 'react-native';
+import { View, Image, ImageBackground, TouchableOpacity } from 'react-native';
 import styles from './HomeScreen.styles';
 import TtubeotProfile from '../../components/TtubeotProfile';
+import CurrencyDisplay from '../../components/CurrencyDisplay.tsx';
 import CharacterShopModal from '../../components/CharacterShop/CharacterShopModal';
 import GraduationAlbumModal from '../../components/GraduationAlbum/GraduationAlbumModal';
 import MissionModal from '../../components/Mission/MissionModal.tsx';
 import WebView from 'react-native-webview';
+import ButtonDefault from '../../components/Button/ButtonDefault.tsx';
+import { useNavigation } from '@react-navigation/native';
 
 const background = require('../../assets/images/HomeBackground.jpg');
 const ShopIcon = require('../../assets/icons/ShopIcon.png');
 const MissionIcon = require('../../assets/icons/MissionIcon.png');
 const AlbumIcon = require('../../assets/icons/AlbumIcon.png');
+const MapIcon = require('../../assets/icons/MapIcon.png');
 
 const HomeScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [graduationAlbumModalVisible, setGraduationAlbumModalVisible] =
     useState(false);
   const [missionModalVisible, setMissionModalVisible] = useState(false);
+  const navigation = useNavigation();
 
   const openShopModal = () => {
     setModalVisible(true);
@@ -54,9 +50,7 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       {/* 배경 이미지 */}
-      <ImageBackground
-        source={background}
-        style={styles.backgroundImage}></ImageBackground>
+      <ImageBackground source={background} style={styles.backgroundImage} />
       <WebView
         originWhitelist={['*']}
         source={{ uri: 'file:///android_asset/renderModel.html' }}
@@ -80,6 +74,7 @@ const HomeScreen = () => {
           console.log('Message from WebView:', event.nativeEvent.data);
         }}
       />
+
       {/* 버튼 컨테이너 */}
       {!modalVisible && (
         <View style={styles.buttonContainer}>
@@ -98,6 +93,10 @@ const HomeScreen = () => {
       {/* 프로필 컨테이너 */}
       <View style={styles.profileContainer}>
         <TtubeotProfile />
+      </View>
+
+      <View style={styles.currencyContainer}>
+        <CurrencyDisplay />
       </View>
 
       {/* 모달 컴포넌트 */}

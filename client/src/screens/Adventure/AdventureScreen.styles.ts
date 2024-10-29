@@ -19,32 +19,24 @@ const styles = StyleSheet.create({
     top: 40,
     left: 75,
   },
+  currencyContainer: {
+    position: 'absolute',
+    top: 40,
+    right: 10,
+  },
   content: {
     flex: 1,
     paddingTop: 120,
   },
-
   startButtonContainer: {
     alignItems: 'center',
     position: 'absolute',
     bottom: 150,
     width: '100%',
   },
-  startButton: {
-    position: 'absolute',
-    bottom: 150,
-  },
-  buttonTextContainer: {
-    width: 60,
-    display: 'flex',
-    flexDirection: 'row',
-    textAlign: 'center',
-    justifyContent: 'center',
-    alignContent: 'center',
-  },
   buttonContainer: {
     position: 'absolute',
-    top: 67,
+    top: 72,
     right: 8,
     display: 'flex',
     flexDirection: 'row',
