@@ -35,7 +35,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
         HttpServletResponse response) throws AuthenticationException {
-
         ObjectMapper objectMapper = new ObjectMapper();
         String userPhone;
         String password;
@@ -44,26 +43,28 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             userPhone = requestBody.get("user_phone").toString();
             password = requestBody.get("password").toString();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            response.setStatus(400); // 잘못된 요청 방식
+            throw new RuntimeException("잘못된 요청 방식입니다.", e);
         }
 
-        // 사용자 조회
         User user = userRepository.findByUserPhone(userPhone)
-            .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+            .orElseThrow(() -> {
+                response.setStatus(401); // 잘못된 로그인 정보
+                return new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
+            });
 
         String salt = user.getUserPasswordSalt();
 
-        // 비밀번호 검증
         if (!isPasswordValid(password, user.getUserPassword(), salt)) {
+            response.setStatus(401); // 잘못된 로그인 정보
             throw new BadCredentialsException("비밀번호가 잘못되었습니다.");
         }
 
-        // 인증 요청을 위한 토큰 생성
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
             userPhone, password + salt);
-
         return authenticationManager.authenticate(authRequest);
     }
+
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
