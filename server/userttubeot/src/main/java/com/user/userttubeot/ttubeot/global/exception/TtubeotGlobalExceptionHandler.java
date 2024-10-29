@@ -1,13 +1,9 @@
 package com.user.userttubeot.ttubeot.global.exception;
 
-import com.user.userttubeot.ttubeot.domain.dto.ErrorResponseDTO;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class TtubeotGlobalExceptionHandler {
 
 //    @ExceptionHandler(TtubeotNotFoundException.class)
 //    public ResponseEntity<ErrorResponseDTO> handleTtubeotNotFoundException(
