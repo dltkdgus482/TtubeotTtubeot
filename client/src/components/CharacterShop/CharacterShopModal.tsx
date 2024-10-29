@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Modal,
-  Text,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Modal, ScrollView, Image, TouchableOpacity } from 'react-native';
 import styles from './CharacterShopModal.styles';
 import StyledText from '../../styles/StyledText';
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -20,13 +13,20 @@ interface CharacterShopModalProps {
   closeShopModal: () => void;
 }
 
+interface ItemProps {
+  name: string;
+  source: any;
+  description: string;
+  price: number;
+}
+
 const CharacterShopModal: React.FC<CharacterShopModalProps> = ({
   modalVisible,
   closeShopModal,
 }) => {
   const [selectedMenu, setSelectedMenu] = useState<string>('뚜벗');
-  const menuList = ['뚜벗', '밥', '기타'];
-  const TtuBeotList = [
+  const menuList: string[] = ['뚜벗', '밥', '기타'];
+  const TtuBeotList: ItemProps[] = [
     {
       name: '뚜벗 Lv. 1',
       source: require('../../assets/images/RandomCharacter.png'),
@@ -40,7 +40,7 @@ const CharacterShopModal: React.FC<CharacterShopModalProps> = ({
       price: 2000,
     },
   ];
-  const FoodList = [
+  const FoodList: ItemProps[] = [
     {
       name: '밥 Lv. 1',
       source: require('../../assets/images/RandomCharacter.png'),
@@ -54,7 +54,7 @@ const CharacterShopModal: React.FC<CharacterShopModalProps> = ({
       price: 2000,
     },
   ];
-  const EtcList = [
+  const EtcList: ItemProps[] = [
     {
       name: '기타 Lv. 1',
       source: require('../../assets/images/RandomCharacter.png'),

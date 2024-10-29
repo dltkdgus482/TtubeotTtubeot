@@ -81,7 +81,7 @@ const HomeScreen = () => {
         }}
       />
       {/* 버튼 컨테이너 */}
-      {!modalVisible && (
+      {!modalVisible && !missionModalVisible && (
         <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={openShopModal}>
             <Image source={ShopIcon} style={styles.shopIcon} />
@@ -107,7 +107,7 @@ const HomeScreen = () => {
       />
 
       <MissionModal
-        modalVisible={missionModalVisible}
+        missionModalVisible={missionModalVisible}
         closeMissionModal={closeMissionModal}
       />
 
