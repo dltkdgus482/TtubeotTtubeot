@@ -102,10 +102,19 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request,
-        HttpServletResponse response, AuthenticationException failed) {
+        HttpServletResponse response, AuthenticationException failed) throws IOException {
         log.info("로그인 실패: {}", failed.getMessage());
 
-        response.setStatus(401);
+        if (failed instanceof BadCredentialsException) {
+            response.setStatus(401); // 잘못된 로그인 정보
+            response.getWriter().write("잘못된 로그인 정보입니다.");
+        } else if (failed instanceof UsernameNotFoundException) {
+            response.setStatus(401); // 존재하지 않는 계정
+            response.getWriter().write("존재하지 않는 계정입니다.");
+        } else {
+            response.setStatus(400); // 기본적으로 잘못된 요청
+            response.getWriter().write("로그인 요청이 올바르지 않습니다.");
+        }
     }
 
     // 비밀번호 검증 메서드
