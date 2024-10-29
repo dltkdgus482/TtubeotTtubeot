@@ -4,9 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from './AdventureScreen.styles';
 import TtubeotProfile from '../../components/TtubeotProfile';
 import CurrencyDisplay from '../../components/CurrencyDisplay';
-import AdventureMapScreen from './AdventureMapScreen';
+import AdventureMapScreen from '../../components/Adventure/AdventureMapScreen';
 import ButtonDefault from '../../components/Button/ButtonDefault';
-import AdventureAlert from '../../components/AdventureAlert/AdventureAlert';
+import AdventureAlert from '../../components/Adventure/AdventureAlert';
+import GPSAlertModal from '../../components/Adventure/GPSAlertModal';
 
 const background = require('../../assets/images/AdventureBackground.jpg');
 const CameraIcon = require('../../assets/icons/CameraIcon.png');
@@ -15,24 +16,36 @@ const MapIcon = require('../../assets/icons/MapIcon.png');
 
 const AdventureScreen = () => {
   const [adventureStart, setAdventureStart] = useState<boolean>(false);
-  const opacityAnim = useRef(new Animated.Value(1)).current;
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const opacityAnim = useRef(new Animated.Value(0.65)).current;
 
-  const handleStartAdventure = () => {
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
     setAdventureStart(!adventureStart);
     setTimeout(() => {
       Animated.timing(opacityAnim, {
-        toValue: adventureStart ? 0.62 : 0.3,
+        toValue: adventureStart ? 0.65 : 0.3,
         duration: 500,
         useNativeDriver: true,
       }).start();
     }, 100);
   };
 
+  const handleStartAdventure = () => {
+    if (!adventureStart) {
+      openModal();
+    } else {
+      closeModal();
+    }
+  };
+
   const handlePress = () => {
     console.log('ShopIcon pressed!');
   };
-
-  // TODO: 컴포넌트 분리
 
   const renderPage = () => {
     if (adventureStart) {
@@ -74,6 +87,8 @@ const AdventureScreen = () => {
           />
         </TouchableOpacity>
       </View>
+
+      <GPSAlertModal modalVisible={modalVisible} closeModal={closeModal} />
     </SafeAreaView>
   );
 };

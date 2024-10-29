@@ -1,12 +1,14 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
+    width: '100%',
     paddingHorizontal: 20,
   },
   mapContainer: {
+    width: '100%',
     height: 490,
     borderColor: '#C7E5C4',
     borderWidth: 5,

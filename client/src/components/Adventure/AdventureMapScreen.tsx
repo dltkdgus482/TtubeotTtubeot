@@ -1,11 +1,16 @@
-import React, {useState, useEffect, useRef} from 'react';
-import {View, PermissionsAndroid, Alert, ActivityIndicator} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  View,
+  PermissionsAndroid,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import MaskedView from '@react-native-masked-view/masked-view';
 import styles from './AdventureMapScreen.styles';
 import StyledText from '../../styles/StyledText';
-import {mapStyle} from '../../styles/mapStyle';
-import MapView, {PROVIDER_GOOGLE, Marker, Region} from 'react-native-maps';
+import { mapStyle } from '../../styles/mapStyle';
+import MapView, { PROVIDER_GOOGLE, Marker, Region } from 'react-native-maps';
 import Geolocation, {
   GeoCoordinates,
   GeoWatchOptions,
@@ -41,7 +46,7 @@ const AdventureMapScreen = () => {
   const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
       position => {
-        const {latitude, longitude} = position.coords;
+        const { latitude, longitude } = position.coords;
         setLocation(position.coords);
 
         setRegion({
@@ -57,7 +62,7 @@ const AdventureMapScreen = () => {
         setErrorMessage('위치 정보를 가져오는 데 실패했습니다.');
         setLoading(false);
       },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
   };
 
@@ -104,6 +109,7 @@ const AdventureMapScreen = () => {
   }, []);
 
   // TODO: 로딩창 커스터마이즈
+  // TODO: 공원 리스트
 
   return (
     <SafeAreaView style={styles.container}>
@@ -116,7 +122,7 @@ const AdventureMapScreen = () => {
             <StyledText>{errorMessage}</StyledText>
           ) : (
             <MaskedView
-              style={{height: 500, width: '100%'}}
+              style={{ height: 500, width: '100%' }}
               maskElement={
                 <View
                   style={{

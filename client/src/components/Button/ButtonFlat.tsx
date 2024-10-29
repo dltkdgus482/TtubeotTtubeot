@@ -22,7 +22,7 @@ const ButtonShadow = styled(View)<{ borderRadius: number }>`
   height: 100%;
   border-color: rgba(210, 183, 164, 0.75);
   border-width: 4px;
-  border-radius: 12px;
+  border-radius: ${({ borderRadius }) => `${borderRadius}px`};
 `;
 
 const ButtonContainer = styled(View)<{
@@ -47,6 +47,7 @@ type ButtonFlatProps = {
   borderRadius?: number;
   shadowDisplay?: boolean;
   fontSize?: number;
+  fontColor?: string;
 };
 
 const ButtonFlat = ({
@@ -57,6 +58,7 @@ const ButtonFlat = ({
   borderRadius = 12,
   shadowDisplay = true,
   fontSize = 16,
+  fontColor = 'black',
 }: ButtonFlatProps) => {
   return (
     <DefaultButton height={height} width={width}>
@@ -66,7 +68,7 @@ const ButtonFlat = ({
           height={height}
           color={color}
           borderRadius={borderRadius}>
-          <StyledText bold style={{ fontSize: fontSize }}>
+          <StyledText bold style={{ fontSize: fontSize, color: fontColor }}>
             {content}
           </StyledText>
         </ButtonContainer>
