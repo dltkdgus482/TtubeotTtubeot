@@ -51,7 +51,7 @@ public class UserController {
         try {
             log.info("토큰 재발급 요청이 들어왔습니다.");
 
-            String refreshToken = userService.extractRefreshTokenFromCookie(request);
+            String refreshToken = cookieUtil.extractRefreshToken(request);
 
             // 액세스 및 리프레시 토큰을 포함한 Dto 반환
             TokenDto tokens = userService.reissueTokens(refreshToken);

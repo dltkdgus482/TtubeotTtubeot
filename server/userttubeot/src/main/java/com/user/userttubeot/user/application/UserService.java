@@ -6,8 +6,6 @@ import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.exception.UserAlreadyExistsException;
 import com.user.userttubeot.user.domain.repository.UserRepository;
 import com.user.userttubeot.user.infrastructure.security.JWTUtil;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import java.time.Duration;
 import java.util.UUID;
@@ -126,25 +124,4 @@ public class UserService {
         return salt;
     }
 
-    /**
-     * 쿠키에서 리프레시 토큰 추출
-     *
-     * @param request HttpServletRequest 객체
-     * @return 쿠키에서 추출한 리프레시 토큰 값
-     */
-    public String extractRefreshTokenFromCookie(HttpServletRequest request) {
-        if (request.getCookies() == null) {
-            log.warn("쿠키가 없습니다.");
-            return null;
-        }
-
-        for (Cookie cookie : request.getCookies()) {
-            if ("refresh".equals(cookie.getName())) {
-                log.info("리프레시 토큰 추출 성공 - 토큰: {}", cookie.getValue());
-                return cookie.getValue();
-            }
-        }
-        log.warn("리프레시 토큰 쿠키가 존재하지 않습니다.");
-        return null;
-    }
 }
