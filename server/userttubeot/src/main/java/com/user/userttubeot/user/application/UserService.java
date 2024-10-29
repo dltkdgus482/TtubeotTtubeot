@@ -1,6 +1,7 @@
 package com.user.userttubeot.user.application;
 
 import com.user.userttubeot.user.domain.dto.TokenDto;
+import com.user.userttubeot.user.domain.dto.UserResponseDto;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
 import com.user.userttubeot.user.domain.dto.UserUpdateRequestDto;
 import com.user.userttubeot.user.domain.entity.User;
@@ -151,5 +152,9 @@ public class UserService {
 
     public boolean isUsernameAvailable(String username) {
         return !userRepository.existsByUserName(username);
+    }
+
+    public UserResponseDto getUserProfile(Integer userId) {
+        return UserResponseDto.fromEntity(findUserById(userId));
     }
 }

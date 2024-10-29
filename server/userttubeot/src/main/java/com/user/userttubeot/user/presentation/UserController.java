@@ -3,10 +3,12 @@ package com.user.userttubeot.user.presentation;
 import com.user.userttubeot.user.application.UserService;
 import com.user.userttubeot.user.domain.dto.CustomUserDetails;
 import com.user.userttubeot.user.domain.dto.TokenDto;
+import com.user.userttubeot.user.domain.dto.UserResponseDto;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
 import com.user.userttubeot.user.domain.dto.UserUpdateRequestDto;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.exception.ResponseMessage;
+import com.user.userttubeot.user.domain.exception.UserNotFoundException;
 import com.user.userttubeot.user.infrastructure.security.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -110,5 +112,23 @@ public class UserController {
         return ResponseEntity.ok(new ResponseMessage(message));
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<?> getUserProfile(
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Integer userId = userDetails.getUserId();
+        log.info("사용자 프로필 조회 요청 - 사용자 ID: {}", userId);
+
+        try {
+            UserResponseDto profile = userService.getUserProfile(userId);
+            log.info("사용자 프로필 조회 성공 - 사용자 ID: {}", userId);
+            return ResponseEntity.ok(profile);
+        } catch (UserNotFoundException e) {
+            log.warn("사용자 프로필 조회 실패 - 사용자 ID: {}: {}", userId, e.getMessage());
+            return ResponseEntity.status(404).body("사용자를 찾을 수 없습니다.");
+        } catch (Exception e) {
+            log.error("사용자 프로필 조회 실패 - 서버 오류: {}", e.getMessage());
+            return ResponseEntity.status(500).body("서버 오류가 발생했습니다.");
+        }
+    }
 
 }
