@@ -40,8 +40,9 @@ public class TtubeotServiceImpl implements TtubeotService {
     // 유저의 뚜벗 아이디 조회
     @Override
     public int getTtubeotOwnershipId(int userId) {
-
-        return 0;
+        return userTtubeotOwnershipRepository.findByUser_UserIdAndTtubeotStatus(userId, 0)
+            .map(UserTtuBeotOwnership::getUserTtubeotOwnershipId)
+            .orElseThrow(() -> new TtubeotNotFoundException("보유하고 있는 정상 상태의 뚜벗이 없습니다."));
     }
 
     // 유저의 뚜벗 상세 정보 조회 -> 정상인 것만.

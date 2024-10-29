@@ -11,4 +11,7 @@ public interface UserTtubeotOwnershipRepository extends JpaRepository<UserTtuBeo
     // userTtubeotOwnershipId와 상태를 기준으로 정상 상태의 뚜벗 조회
     Optional<UserTtuBeotOwnership> findByUserTtubeotOwnershipIdAndTtubeotStatus(
         Integer userTtubeotOwnershipId, Integer ttubeotStatus);
+
+    Optional<UserTtuBeotOwnership> findByUser_UserIdAndTtubeotStatus(Integer userId,
+        Integer ttubeotStatus);
 }
