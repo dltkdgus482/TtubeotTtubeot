@@ -157,4 +157,21 @@ public class UserService {
     public UserResponseDto getUserProfile(Integer userId) {
         return UserResponseDto.fromEntity(findUserById(userId));
     }
+
+    public void deleteUserById(Integer userId) {
+        User user = findUserById(userId);
+
+        // 이미 삭제된 사용자라면 예외 발생
+        if (user.getUserStatus() == -1) {
+            throw new IllegalStateException("이미 삭제된 사용자입니다.");
+        }
+
+        // 사용자 상태를 -1로 변경하여 비활성화
+        User deleteUser = user.toBuilder()
+            .userStatus((byte) -1)
+            .build();
+        userRepository.save(deleteUser);
+        log.info("사용자 상태 변경 완료 - 사용자 ID: {}, 상태: {}", userId, deleteUser.getUserStatus());
+    }
+
 }

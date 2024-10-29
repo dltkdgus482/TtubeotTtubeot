@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -130,5 +131,27 @@ public class UserController {
             return ResponseEntity.status(500).body("서버 오류가 발생했습니다.");
         }
     }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<?> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Integer userId = userDetails.getUserId();
+        log.info("사용자 삭제 요청 - 사용자 ID: {}", userId);
+
+        try {
+            // 사용자 삭제 처리
+            userService.deleteUserById(userId);
+            log.info("사용자 삭제 성공 - 사용자 ID: {}", userId);
+            return ResponseEntity.ok(new ResponseMessage("사용자가 성공적으로 삭제되었습니다."));
+        } catch (UserNotFoundException e) {
+            log.warn("사용자 삭제 실패 - 사용자 ID: {}: {}", userId, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ResponseMessage("사용자를 찾을 수 없습니다."));
+        } catch (Exception e) {
+            log.error("사용자 삭제 실패 - 서버 오류: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseMessage("서버 오류가 발생했습니다."));
+        }
+    }
+
 
 }
