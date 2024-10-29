@@ -57,8 +57,6 @@ const HomeScreen = () => {
       <ImageBackground
         source={background}
         style={styles.backgroundImage}></ImageBackground>
-
-      {/* WebView로 3D 모델 표시 */}
       <WebView
         originWhitelist={['*']}
         source={{ uri: 'file:///android_asset/renderModel.html' }}
@@ -82,7 +80,6 @@ const HomeScreen = () => {
           console.log('Message from WebView:', event.nativeEvent.data);
         }}
       />
-
       {/* 버튼 컨테이너 */}
       {!modalVisible && (
         <View style={styles.buttonContainer}>
@@ -118,6 +115,7 @@ const HomeScreen = () => {
         modalVisible={graduationAlbumModalVisible}
         closeAlbumModal={closeAlbumModal}
       />
+      {/* WebView로 3D 모델 표시 */}
     </View>
   );
 };

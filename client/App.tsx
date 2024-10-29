@@ -7,8 +7,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import {ThemeProvider} from 'styled-components/native';
-import {NavigationContainer} from '@react-navigation/native';
+import { ThemeProvider } from 'styled-components/native';
+import { NavigationContainer } from '@react-navigation/native';
 import BottomTabNavigator from './src/navigator/BottomTabNavigator/BottomTabNavigator';
 
 const theme = {
@@ -19,7 +19,7 @@ const theme = {
 function App(): React.JSX.Element {
   return (
     <ThemeProvider theme={theme}>
-      <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView style={{ flex: 1 }}>
         <StatusBar
           translucent
           backgroundColor="transparent"
