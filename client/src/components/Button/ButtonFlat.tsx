@@ -4,13 +4,13 @@ import { View } from 'react-native';
 import StyledText from '../../styles/StyledText';
 import LinearGradient from 'react-native-linear-gradient';
 
-const FlatButton = styled(View)<{ height?: number; width?: number }>`
+const FlatButton = styled(View)<{ height: number; width: number }>`
   position: relative;
-  height: ${({ height }) => (height ? `${height}px` : '40px')};
-  width: ${({ width }) => (width ? `${width}px` : '100px')};
+  height: ${({ height }) => `${height}px`};
+  width: ${({ width }) => `${width}px`};
 `;
 
-const ButtonContainer = styled(View)<{ color?: string; borderRadius?: number }>`
+const ButtonContainer = styled(View)<{ borderRadius: number }>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -20,7 +20,7 @@ const ButtonContainer = styled(View)<{ color?: string; borderRadius?: number }>`
   background-color: #4c669f;
 `;
 
-const GradientContainer = styled(LinearGradient)<{ borderRadius?: number }>`
+const GradientContainer = styled(LinearGradient)<{ borderRadius: number }>`
   flex: 1;
   justify-content: center;
   align-items: center;
@@ -33,20 +33,18 @@ type ButtonDefaultProps = {
   content: string;
   height?: number;
   width?: number;
-  color?: string;
   borderRadius?: number;
 };
 
-const ButtonDefault = ({
+const ButtonFlat = ({
   content,
-  height,
-  width,
-  color,
+  height = 40,
+  width = 100,
   borderRadius = 25,
 }: ButtonDefaultProps) => {
   return (
     <FlatButton height={height} width={width}>
-      <ButtonContainer color={color} borderRadius={borderRadius}>
+      <ButtonContainer borderRadius={borderRadius}>
         <GradientContainer
           colors={['#F9FBDD', '#ECCFAE']}
           start={{ x: 1, y: 0 }}
@@ -59,4 +57,4 @@ const ButtonDefault = ({
   );
 };
 
-export default ButtonDefault;
+export default ButtonFlat;

@@ -3,10 +3,10 @@ import styled from 'styled-components/native';
 import { View } from 'react-native';
 import StyledText from '../../styles/StyledText';
 
-const DefaultButton = styled(View)<{ height?: number; width?: number }>`
+const DefaultButton = styled(View)<{ height: number; width: number }>`
   position: relative;
-  height: ${({ height }) => (height ? `${height}px` : '40px')};
-  width: ${({ width }) => (width ? `${width}px` : '100px')};
+  height: ${({ height }) => `${height}px`};
+  width: ${({ width }) => `${width}px`};
 `;
 
 const ButtonShadowBox = styled(View)`
@@ -15,7 +15,7 @@ const ButtonShadowBox = styled(View)`
   width: 100%;
 `;
 
-const ButtonShadow = styled(View)<{ borderRadius?: number }>`
+const ButtonShadow = styled(View)<{ borderRadius: number }>`
   position: absolute;
   top: 0;
   width: 100%;
@@ -26,7 +26,7 @@ const ButtonShadow = styled(View)<{ borderRadius?: number }>`
 `;
 
 const ButtonContainer = styled(View)<{
-  height?: number;
+  height: number;
   color?: string;
   borderRadius?: number;
 }>`
@@ -34,25 +34,25 @@ const ButtonContainer = styled(View)<{
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: ${({ height }) => (height ? `${height - 2}px` : '38px')};
+  height: ${({ height }) => `${height - 2}px`};
   background-color: ${({ color }) => (color ? `${color}` : '#fbfaf5')};
   border-radius: ${({ borderRadius }) => `${borderRadius}px`};
 `;
 
 type ButtonDefaultProps = {
   content: string;
+  color?: string;
   height?: number;
   width?: number;
-  color?: string;
   borderRadius?: number;
   shadowDisplay?: boolean;
 };
 
 const ButtonDefault = ({
   content,
-  height,
-  width,
   color,
+  height = 40,
+  width = 100,
   borderRadius = 12,
   shadowDisplay = true,
 }: ButtonDefaultProps) => {
