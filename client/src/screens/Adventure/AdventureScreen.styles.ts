@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.62,
+    opacity: 0.65,
   },
   profileContainer: {
     position: 'absolute',
@@ -27,6 +27,10 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingTop: 120,
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
   startButtonContainer: {
     alignItems: 'center',
