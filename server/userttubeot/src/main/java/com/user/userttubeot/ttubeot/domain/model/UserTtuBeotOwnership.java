@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -62,12 +63,35 @@ public class UserTtuBeotOwnership {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        if (this.ttubeotStatus == null) {
+            this.ttubeotStatus = 0;
+        }
+        if (this.ttubeotScore == null) {
+            this.ttubeotScore = 0;
+        }
     }
 
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+
+    // 이름 업데이트 메서드
+    public UserTtuBeotOwnership updateTtubeotName(String newName) {
+        if (newName == null || newName.isEmpty()) {
+            throw new IllegalArgumentException("이름은 비어 있을 수 없습니다.");
+        }
+        this.ttubeotName = newName;
+        return this;
+    }
+
+    // 뚜벗의 상태 갱신 메서드
+    public void updateBreakUpAndStatus(LocalDateTime breakUpTime, Integer newStatus) {
+        this.breakUp = breakUpTime;
+        this.ttubeotStatus = newStatus;
+    }
+
 
     // DTO to Entity
     public static UserTtuBeotOwnership fromDTO(TtubeotNameRegisterRequestDTO dto, Ttubeot ttubeot,
@@ -78,14 +102,5 @@ public class UserTtuBeotOwnership {
             .ttubeot(ttubeot)
             .user(user)
             .build();
-    }
-
-    // 이름 업데이트 메서드
-    public UserTtuBeotOwnership updateTtubeotName(String newName) {
-        if (newName == null || newName.isEmpty()) {
-            throw new IllegalArgumentException("이름은 비어 있을 수 없습니다.");
-        }
-        this.ttubeotName = newName;
-        return this;
     }
 }

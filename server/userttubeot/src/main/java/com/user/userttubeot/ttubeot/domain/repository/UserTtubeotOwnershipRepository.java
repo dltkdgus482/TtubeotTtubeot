@@ -19,4 +19,5 @@ public interface UserTtubeotOwnershipRepository extends JpaRepository<UserTtuBeo
     // 특정 userId와 졸업 상태인 ttubeotStatus를 기준으로 졸업된 뚜벗 목록을 가져옴
     List<UserTtuBeotOwnership> findByUser_UserIdAndTtubeotStatus(int userId, int ttubeotStatus);
 
+
 }
