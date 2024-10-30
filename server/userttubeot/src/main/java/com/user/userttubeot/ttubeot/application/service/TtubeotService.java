@@ -9,6 +9,7 @@ import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
 
 public interface TtubeotService {
 
@@ -40,6 +41,6 @@ public interface TtubeotService {
     TtubeotDrawResponseDTO drawTtubeotByGrade(Integer userId, Integer grade);
 
     // 뚜벗 상태 확인
-    TtubeotLogListResponseDTO checkTtubeotStatus(Integer userId);
+    ResponseEntity<TtubeotLogListResponseDTO> checkTtubeotStatus(Integer userId);
 
 }

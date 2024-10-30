@@ -89,8 +89,7 @@ public class TtubeotController {
     // 뚜벗의 상태 조회
     @GetMapping("/auth/ttubeot/status")
     public ResponseEntity<?> getTtubeotStatus(@RequestAttribute("userId") Integer userId) {
-        TtubeotLogListResponseDTO ttubeotLogList = ttubeotService.checkTtubeotStatus(userId);
-        return ResponseEntity.ok(ttubeotLogList);
+        return ttubeotService.checkTtubeotStatus(userId);
     }
 
 

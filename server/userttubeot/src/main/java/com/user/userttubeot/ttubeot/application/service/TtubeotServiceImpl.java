@@ -26,6 +26,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -201,14 +203,31 @@ public class TtubeotServiceImpl implements TtubeotService {
     }
 
     @Override
-    public TtubeotLogListResponseDTO checkTtubeotStatus(Integer userId) {
+    public ResponseEntity<TtubeotLogListResponseDTO> checkTtubeotStatus(Integer userId) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime threeDaysAgo = now.minusDays(3);
 
         // 0. 유저가 보유중인 뚜벗을 조회
-        UserTtuBeotOwnership ownership = userTtubeotOwnershipRepository
-            .findByUser_UserIdAndTtubeotStatus(userId, Integer.valueOf(0))
-            .orElseThrow(() -> new IllegalArgumentException("해당 유저의 정상 보유 뚜벗이 없습니다."));
+        Optional<UserTtuBeotOwnership> ownershipOpt = userTtubeotOwnershipRepository
+            .findByUser_UserIdAndTtubeotStatus(userId, Integer.valueOf(0));
+
+        // 정상 상태의 뚜벗이 없으면 204 상태 코드와 빈 바디 반환
+        if (ownershipOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(new TtubeotLogListResponseDTO());
+        }
+
+        UserTtuBeotOwnership ownership = ownershipOpt.get();
+
+        // 뚜벗의 생성일자 확인
+        LocalDateTime createdAt = ownership.getCreatedAt();
+
+        // 생성 후 3일이 안 지났으면 break_up과 상태 변경 생략
+        if (createdAt.isAfter(threeDaysAgo)) {
+            return ResponseEntity.ok(TtubeotLogListResponseDTO.builder()
+                .ttubeotLogResponseList(Collections.emptyList())
+                .build());
+        }
 
         // 1. 3일 전 이후의 로그를 조회
         List<TtubeotLog> recentLogs = ttubeotLogRepository.findByUserTtuBeotOwnership_User_UserIdAndCreatedAtAfter(
@@ -224,9 +243,9 @@ public class TtubeotServiceImpl implements TtubeotService {
             && logTypes.contains(3))) {
             ownership.updateBreakUpAndStatus(now, 2);  // 현재 시점으로 break_up 갱신 및 중도 퇴소 처리
             userTtubeotOwnershipRepository.save(ownership);
-            return TtubeotLogListResponseDTO.builder()
+            return ResponseEntity.ok(TtubeotLogListResponseDTO.builder()
                 .ttubeotLogResponseList(Collections.emptyList())
-                .build();  // 비어있는 리스트 반환 -> early return
+                .build());  // 빈 리스트 반환 -> early return
         }
 
         // 4. 3일 전 로그 필터링 및 반환 준비
@@ -238,9 +257,9 @@ public class TtubeotServiceImpl implements TtubeotService {
             .map(log -> new TtubeotLogResponseDTO(log.getTtubeotLogType(), log.getCreatedAt()))
             .collect(Collectors.toList());
 
-        return TtubeotLogListResponseDTO.builder()
+        return ResponseEntity.ok(TtubeotLogListResponseDTO.builder()
             .ttubeotLogResponseList(logsDtos)
-            .build();
+            .build());
     }
 
     // TtubeotDrawResponseDTO 생성 메서드
