@@ -1,5 +1,6 @@
 package com.user.userttubeot.ttubeot.domain.model;
 
+import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.user.domain.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,10 +30,10 @@ public class UserTtuBeotOwnership {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userTtubeotOwnershipId;
+    private Long userTtubeotOwnershipId;
 
     @Column(name = "ttubeot_name")
-    private String ttubeotame;
+    private String ttubeotName;
 
     @Column(name = "ttubeot_status")
     private Integer ttubeotStatus = 0; // DEAULT
@@ -66,5 +67,25 @@ public class UserTtuBeotOwnership {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    // DTO to Entity
+    public static UserTtuBeotOwnership fromDTO(TtubeotNameRegisterRequestDTO dto, Ttubeot ttubeot,
+        User user) {
+        return UserTtuBeotOwnership.builder()
+            .userTtubeotOwnershipId(dto.getUserTtubeotOwnershipId())
+            .ttubeotName(dto.getUserTtubeotOwnershipName())
+            .ttubeot(ttubeot)
+            .user(user)
+            .build();
+    }
+
+    // 이름 업데이트 메서드
+    public UserTtuBeotOwnership updateTtubeotName(String newName) {
+        if (newName == null || newName.isEmpty()) {
+            throw new IllegalArgumentException("이름은 비어 있을 수 없습니다.");
+        }
+        this.ttubeotName = newName;
+        return this;
     }
 }

@@ -1,12 +1,11 @@
 package com.user.userttubeot.ttubeot.domain.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
-public class UserTtubeotIdResponseDTO {
+public class TtubeotNameRegisterRequestDTO {
 
     private Long userTtubeotOwnershipId;
+    private String userTtubeotOwnershipName; // 등록할 뚜벗의 이름
 
 }

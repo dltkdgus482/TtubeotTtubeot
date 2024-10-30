@@ -1,6 +1,6 @@
-package com.user.userttubeot.tokeninterceptor.interceptor;
+package com.user.userttubeot.common.interceptor;
 
-import com.user.userttubeot.tokeninterceptor.application.service.TokenInterceptorService;
+import com.user.userttubeot.common.application.service.TokenInterceptorService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +20,9 @@ public class TokenInterceptor implements HandlerInterceptor {
         String token = request.getHeader("Authorization");
 
         if (token != null && token.startsWith("Bearer ")) {
+            // "Bearer " 접두사를 제거하고 공백 제거
+            token = token.substring(7).trim();
+
             // userId 추출
             Integer userId = tokenInterceptorService.extractUserIdFromToken(token);
 
