@@ -79,4 +79,13 @@ public class UserTtuBeotOwnership {
             .user(user)
             .build();
     }
+
+    // 이름 업데이트 메서드
+    public UserTtuBeotOwnership updateTtubeotName(String newName) {
+        if (newName == null || newName.isEmpty()) {
+            throw new IllegalArgumentException("이름은 비어 있을 수 없습니다.");
+        }
+        this.ttubeotName = newName;
+        return this;
+    }
 }

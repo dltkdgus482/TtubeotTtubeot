@@ -86,16 +86,12 @@ public class TtubeotServiceImpl implements TtubeotService {
         if (ownershipOpt.isPresent()) {
             UserTtuBeotOwnership ownership = ownershipOpt.get();
 
-            // 새로운 이름을 가진 엔티티 생성
-            UserTtuBeotOwnership updatedOwnership = UserTtuBeotOwnership.fromDTO(
-                ttubeotNameRegisterRequestDTO,
-                ownership.getTtubeot(),
-                ownership.getUser()
-            );
+            // 엔티티의 비즈니스 메서드를 통해 이름 업데이트
+            ownership.updateTtubeotName(
+                ttubeotNameRegisterRequestDTO.getUserTtubeotOwnershipName());
 
             // 엔티티 저장
-            userTtubeotOwnershipRepository.save(updatedOwnership);
-
+            userTtubeotOwnershipRepository.save(ownership);
         } else {
             throw new IllegalArgumentException("해당 ID에 해당하는 뚜벗 소유 정보가 없습니다.");
         }
