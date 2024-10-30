@@ -1,6 +1,14 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, ImageBackground, Image, Animated } from 'react-native';
+import {
+  View,
+  Text,
+  ImageBackground,
+  Image,
+  Animated,
+  TouchableOpacity,
+} from 'react-native';
 import styles from './IntroScreen.styles';
+import ButtonDefault from '../components/Button/ButtonDefault';
 
 const background = require('../assets/images/IntroBackground.png');
 const title = require('../assets/images/TtubeotTitle.png');
@@ -21,47 +29,53 @@ const IntroScreen = () => {
   const rabbitAnim = useRef(new Animated.Value(500)).current;
   const titleAnim = useRef(new Animated.Value(-500)).current;
   const withAnim = useRef(new Animated.Value(-1000)).current;
+  const buttonAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.sequence([
       Animated.timing(sheepAnim, {
         toValue: 0,
-        duration: 500,
+        duration: 300,
         useNativeDriver: true,
       }),
       Animated.timing(dogAnim, {
         toValue: 0,
-        duration: 500,
+        duration: 300,
         useNativeDriver: true,
       }),
       Animated.timing(penguinAnim, {
         toValue: 0,
-        duration: 500,
+        duration: 300,
         useNativeDriver: true,
       }),
       Animated.timing(rhinoAnim, {
         toValue: 0,
-        duration: 500,
+        duration: 300,
         useNativeDriver: true,
       }),
       Animated.timing(hippoAnim, {
         toValue: 0,
-        duration: 500,
+        duration: 300,
         useNativeDriver: true,
       }),
       Animated.timing(rabbitAnim, {
         toValue: 0,
-        duration: 500,
+        duration: 300,
         useNativeDriver: true,
       }),
       Animated.timing(titleAnim, {
         toValue: 0,
-        duration: 500,
+        duration: 300,
         useNativeDriver: true,
       }),
       Animated.timing(withAnim, {
         toValue: 0,
-        duration: 800,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonAnim, {
+        toValue: 1,
+        duration: 300,
         useNativeDriver: true,
       }),
     ]).start();
@@ -83,6 +97,14 @@ const IntroScreen = () => {
           { transform: [{ translateY: withAnim }] },
         ]}>
         <Image source={withTtubeot} style={styles.withTtubeot} />
+      </Animated.View>
+      <Animated.View style={[styles.buttonContainer, { opacity: buttonAnim }]}>
+        <TouchableOpacity>
+          <ButtonDefault content="로그인" height={50} width={120} />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <ButtonDefault content="회원가입" height={50} width={120} />
+        </TouchableOpacity>
       </Animated.View>
       <View style={styles.ttubeotContainer}>
         <Animated.View

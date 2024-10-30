@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.6,
+    opacity: 0.5,
   },
   titleContainer: {
     position: 'absolute',
@@ -40,6 +40,15 @@ const styles = StyleSheet.create({
   withTtubeot: {
     width: 290,
     height: 88,
+  },
+  buttonContainer: {
+    position: 'absolute',
+    top: 300,
+    display: 'flex',
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 50,
   },
   ttubeotContainer: {
     position: 'absolute',
