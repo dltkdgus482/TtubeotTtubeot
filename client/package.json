@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.0.0",
     "@react-native-masked-view/masked-view": "^0.3.1",
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/native": "^6.1.18",
@@ -27,7 +28,8 @@
     "react-native-vector-icons": "^10.2.0",
     "react-native-webview": "^13.12.3",
     "styled-components": "^6.1.13",
-    "three": "^0.169.0"
+    "three": "^0.169.0",
+    "zustand": "^5.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
