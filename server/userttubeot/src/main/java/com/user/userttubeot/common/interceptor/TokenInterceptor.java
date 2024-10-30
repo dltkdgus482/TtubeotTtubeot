@@ -1,6 +1,6 @@
-package com.user.userttubeot.tokeninterceptor.interceptor;
+package com.user.userttubeot.common.interceptor;
 
-import com.user.userttubeot.tokeninterceptor.application.service.TokenInterceptorService;
+import com.user.userttubeot.common.application.service.TokenInterceptorService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

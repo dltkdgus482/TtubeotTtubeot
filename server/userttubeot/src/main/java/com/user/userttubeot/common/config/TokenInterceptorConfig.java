@@ -1,6 +1,6 @@
-package com.user.userttubeot.tokeninterceptor.config;
+package com.user.userttubeot.common.config;
 
-import com.user.userttubeot.tokeninterceptor.interceptor.TokenInterceptor;
+import com.user.userttubeot.common.interceptor.TokenInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

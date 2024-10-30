@@ -1,4 +1,4 @@
-package com.user.userttubeot.tokeninterceptor.application.service;
+package com.user.userttubeot.common.application.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

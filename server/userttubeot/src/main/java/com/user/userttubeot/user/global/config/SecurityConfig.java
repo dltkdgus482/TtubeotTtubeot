@@ -59,7 +59,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/user/login", "/user/reissue", "/user/signup", "/user/logout",
                     "/user/change-password", "/user/sms-verification/request",
-                    "/user/sms-verification/confirm", "/user/auth/**").permitAll()
+                    "/user/sms-verification/confirm", "/user/auth/**", "/healthz").permitAll()
                 .anyRequest().authenticated());
 
         LoginFilter loginFilter = new LoginFilter(
