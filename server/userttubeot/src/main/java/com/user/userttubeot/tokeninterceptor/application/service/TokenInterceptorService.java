@@ -44,6 +44,11 @@ public class TokenInterceptorService {
         try {
             Claims claims = parseClaims(token);
 
+            // claims가 null이거나 userId가 없는 경우 예외 발생
+            if (claims == null || !claims.containsKey("userId")) {
+                throw new IllegalArgumentException("토큰에서 유효한 userId를 찾을 수 없습니다.");
+            }
+
             // userId가 subject에 저장된다고 가정, 숫자 형식 여부 검증
             return claims.get("userId", Integer.class);
 
