@@ -19,7 +19,7 @@ class MainActivity : ReactActivity() {
     super.onCreate(savedInstanceState) // 또는 super.onCreate(savedInstanceState) 사용 가능
     // In order to handle permission contract results, we need to set the permission delegate.
     HealthConnectPermissionDelegate.setPermissionDelegate(this)
-  }5/
+  }
 
   /**
    * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]

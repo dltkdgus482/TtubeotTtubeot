@@ -1,8 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Modal, ScrollView, Image, TouchableOpacity } from 'react-native';
 import styles from './MissionModal.styles';
 import StyledText from '../../styles/StyledText';
 import Icon from 'react-native-vector-icons/AntDesign';
+
+// ----------------------------------
+
+import NfcManager, {NfcTech} from 'react-native-nfc-manager';
+
+NfcManager.start();
+
+// ----------------------------------
 
 const CharacterShopTitleContainer = require('../../assets/images/CharacterShopTitleContainer.png');
 const CharacterShopBackgound = require('../../assets/images/CharacterShopBackground.png');
@@ -109,6 +117,26 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
   const completeMission = () => {
     console.log('complete mission');
   };
+
+  const readNfc = async () => {
+      try {
+          await NfcManager.requestTechnology(NfcTech.Ndef);
+          const tag = await NfcManager.getTag();
+          await setSelectedMenu('일일 미션');
+          }
+      catch (ex) {
+          await setSelectedMenu('업적');
+          }
+      finally {
+            NfcManager.cancelTechnologyRequest().catch(error => {
+              console.warn("Failed to cancel NFC request:", error);
+            });
+          }
+      }
+
+  useEffect(() => {
+      readNfc();
+      }, [])
 
   return (
     <Modal
