@@ -9,6 +9,7 @@ import MissionModal from '../../components/Mission/MissionModal.tsx';
 import WebView from 'react-native-webview';
 import ButtonDefault from '../../components/Button/ButtonDefault.tsx';
 import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const background = require('../../assets/images/HomeBackground.jpg');
 const ShopIcon = require('../../assets/icons/ShopIcon.png');
@@ -48,32 +49,34 @@ const HomeScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* 배경 이미지 */}
-      <ImageBackground source={background} style={styles.backgroundImage} />
-      <WebView
-        originWhitelist={['*']}
-        source={{ uri: 'file:///android_asset/renderModel.html' }}
-        style={styles.ttubeotWebview}
-        allowFileAccess={true}
-        allowFileAccessFromFileURLs={true}
-        allowUniversalAccessFromFileURLs={true}
-        onLoadStart={syntheticEvent => {
-          const { nativeEvent } = syntheticEvent;
-          console.log('WebView Start: ', nativeEvent);
-        }}
-        onError={syntheticEvent => {
-          const { nativeEvent } = syntheticEvent;
-          console.error('WebView onError: ', nativeEvent);
-        }}
-        onHttpError={syntheticEvent => {
-          const { nativeEvent } = syntheticEvent;
-          console.error('WebView onHttpError: ', nativeEvent);
-        }}
-        onMessage={event => {
-          console.log('Message from WebView:', event.nativeEvent.data);
-        }}
-      />
+      <Image source={background} style={styles.backgroundImage} />
+      <View style={styles.ttubeotWebviewContainer}>
+        <WebView
+          originWhitelist={['*']}
+          source={{ uri: 'file:///android_asset/renderModel.html' }}
+          style={styles.ttubeotWebview}
+          allowFileAccess={true}
+          allowFileAccessFromFileURLs={true}
+          allowUniversalAccessFromFileURLs={true}
+          onLoadStart={syntheticEvent => {
+            const { nativeEvent } = syntheticEvent;
+            console.log('WebView Start: ', nativeEvent);
+          }}
+          onError={syntheticEvent => {
+            const { nativeEvent } = syntheticEvent;
+            console.error('WebView onError: ', nativeEvent);
+          }}
+          onHttpError={syntheticEvent => {
+            const { nativeEvent } = syntheticEvent;
+            console.error('WebView onHttpError: ', nativeEvent);
+          }}
+          onMessage={event => {
+            console.log('Message from WebView:', event.nativeEvent.data);
+          }}
+        />
+      </View>
 
       {/* 버튼 컨테이너 */}
       {!modalVisible && !missionModalVisible && (
@@ -115,7 +118,7 @@ const HomeScreen = () => {
         closeAlbumModal={closeAlbumModal}
       />
       {/* WebView로 3D 모델 표시 */}
-    </View>
+    </SafeAreaView>
   );
 };
 

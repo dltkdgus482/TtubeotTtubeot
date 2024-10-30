@@ -7,11 +7,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   backgroundImage: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
     opacity: 0.65,
   },
   profileContainer: {
@@ -25,7 +20,11 @@ const styles = StyleSheet.create({
     right: 10,
   },
   content: {
-    flex: 1,
+    position: 'absolute',
+    width: 460,
+    top: 0,
+    left: '50%',
+    transform: [{ translateX: -230 }],
     paddingTop: 120,
     display: 'flex',
     justifyContent: 'space-between',

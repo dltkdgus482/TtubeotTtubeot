@@ -6,14 +6,14 @@ import StyledText from '../styles/StyledText';
 
 const Profile = styled(View)`
   position: relative;
-  height: 80px;
+  height: 90px;
   display: 'flex';
   flex-direction: row;
 `;
 
 const ProfileImageContainer = styled(View)`
-  width: 80px;
-  height: 80px;
+  width: 85px;
+  height: 85px;
   border-radius: 50px;
   background-color: #b1baaa;
   justify-content: center;
@@ -21,8 +21,8 @@ const ProfileImageContainer = styled(View)`
 `;
 
 const ProfileImage = styled(Image)`
-  width: 65px;
-  height: 65px;
+  width: 73px;
+  height: 73px;
 `;
 
 const ProfileDetails = styled(View)`
@@ -90,17 +90,17 @@ const Shadow = styled(View)`
 
 const ImageShadowBox = styled(View)`
   position: relative;
-  left: -280px;
-  width: 80px;
-  height: 80px;
+  left: -285px;
+  width: 88px;
+  height: 88px;
 `;
 
 const ImageShadow = styled(View)`
   position: absolute;
   top: 0;
   width: 100%;
-  height: 82.5px;
-  border-bottom-width: 12px;
+  height: 87px;
+  border-bottom-width: 11px;
   border-left-width: 13px;
   border-color: rgba(0, 0, 0, 0.45);
   border-radius: 50px;
