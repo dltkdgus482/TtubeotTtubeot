@@ -87,7 +87,7 @@ public class UserService {
 
         // 비밀번호 유효성 검사
         validatePassword(request.getUserPassword());
-        
+
         validateUserPhoneNotExists(request.getUserPhone());
         verifyPhone(request.getUserPhone());
 
@@ -192,6 +192,8 @@ public class UserService {
      */
     public void changePassword(Integer userId, String userPhone, String newPassword) {
         log.info("비밀번호 변경 요청 - 사용자 ID: {}, 전화번호: {}", userId, userPhone);
+
+        validatePassword(newPassword);
 
         if (!smsVerificationService.isPhoneVerified(userPhone)) {
             log.warn("비밀번호 변경 실패 - 인증 코드가 일치하지 않음: 전화번호: {}", userPhone);

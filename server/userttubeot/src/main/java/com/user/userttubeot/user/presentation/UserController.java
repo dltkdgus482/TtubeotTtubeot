@@ -160,7 +160,7 @@ public class UserController {
     @PatchMapping("/change-password")
     public ResponseEntity<?> changePassword(
         @AuthenticationPrincipal CustomUserDetails userDetails,
-        @RequestBody UserChangePasswordRequestDto dto) {
+        @RequestBody @Valid UserChangePasswordRequestDto dto) {
 
         Integer userId = userDetails.getUserId();
 
