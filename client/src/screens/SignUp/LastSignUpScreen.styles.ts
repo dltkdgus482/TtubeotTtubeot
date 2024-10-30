@@ -15,7 +15,7 @@ export default StyleSheet.create({
     elevation: 5,
   },
   signUpButton: {
-    marginTop: 60,
+    marginTop: 32,
   },
   passwordHint: {
     color: '#3F3F3F',
