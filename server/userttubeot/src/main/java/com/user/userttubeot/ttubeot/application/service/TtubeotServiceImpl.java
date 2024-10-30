@@ -2,7 +2,9 @@ package com.user.userttubeot.ttubeot.application.service;
 
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
+import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
@@ -17,9 +19,11 @@ import com.user.userttubeot.ttubeot.global.exception.TtubeotNotFoundException;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.repository.UserRepository;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,6 +36,7 @@ public class TtubeotServiceImpl implements TtubeotService {
     private final UserTtubeotOwnershipRepository userTtubeotOwnershipRepository;
     private final TtubeotRepository TtubeotRepository;
     private final UserRepository userRepository;
+    private final TtubeotRepository ttubeotRepository;
 
     @Override
     public void addTtubeotLog(Long userTtubeotOwnershipId,
@@ -193,6 +198,49 @@ public class TtubeotServiceImpl implements TtubeotService {
         Ttubeot selectedTtubeot = ttubeotsByType.get(random.nextInt(ttubeotsByType.size()));
 
         return createTtubeotDrawResponseDTO(userId, selectedTtubeot);
+    }
+
+    @Override
+    public TtubeotLogListResponseDTO checkTtubeotStatus(Integer userId) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime threeDaysAgo = now.minusDays(3);
+
+        // 0. 유저가 보유중인 뚜벗을 조회
+        UserTtuBeotOwnership ownership = userTtubeotOwnershipRepository
+            .findByUser_UserIdAndTtubeotStatus(userId, Integer.valueOf(0))
+            .orElseThrow(() -> new IllegalArgumentException("해당 유저의 정상 보유 뚜벗이 없습니다."));
+
+        // 1. 3일 전 이후의 로그를 조회
+        List<TtubeotLog> recentLogs = ttubeotLogRepository.findByUserTtuBeotOwnership_User_UserIdAndCreatedAtAfter(
+            userId, threeDaysAgo);
+
+        // 2. 로그 타입 검사 및 필요한 갱신 작업
+        Set<Integer> logTypes = recentLogs.stream()
+            .map(TtubeotLog::getTtubeotLogType)
+            .collect(Collectors.toSet());
+
+        // 3. 로그 타입(0 ~ 3) 중 하나라도 누락된 경우 break_up을 갱신
+        if (!(logTypes.contains(0) && logTypes.contains(1) && logTypes.contains(2)
+            && logTypes.contains(3))) {
+            ownership.updateBreakUpAndStatus(now, 2);  // 현재 시점으로 break_up 갱신 및 중도 퇴소 처리
+            userTtubeotOwnershipRepository.save(ownership);
+            return TtubeotLogListResponseDTO.builder()
+                .ttubeotLogResponseList(Collections.emptyList())
+                .build();  // 비어있는 리스트 반환 -> early return
+        }
+
+        // 4. 3일 전 로그 필터링 및 반환 준비
+        List<TtubeotLog> threeDaysLogs = ttubeotLogRepository.findByUserTtuBeotOwnership_User_UserIdAndCreatedAtBetween(
+            userId, threeDaysAgo, now);
+
+        // 5. 로그 데이터를 DTO로 변환하여 반환
+        List<TtubeotLogResponseDTO> logsDtos = threeDaysLogs.stream()
+            .map(log -> new TtubeotLogResponseDTO(log.getTtubeotLogType(), log.getCreatedAt()))
+            .collect(Collectors.toList());
+
+        return TtubeotLogListResponseDTO.builder()
+            .ttubeotLogResponseList(logsDtos)
+            .build();
     }
 
     // TtubeotDrawResponseDTO 생성 메서드

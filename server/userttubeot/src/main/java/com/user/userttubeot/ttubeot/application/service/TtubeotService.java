@@ -2,6 +2,7 @@ package com.user.userttubeot.ttubeot.application.service;
 
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
+import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
@@ -37,4 +38,8 @@ public interface TtubeotService {
 
     // 뚜벗 등급 뽑기
     TtubeotDrawResponseDTO drawTtubeotByGrade(Integer userId, Integer grade);
+
+    // 뚜벗 상태 확인
+    TtubeotLogListResponseDTO checkTtubeotStatus(Integer userId);
+
 }

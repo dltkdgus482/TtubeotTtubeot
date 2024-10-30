@@ -4,6 +4,7 @@ import com.user.userttubeot.ttubeot.application.service.TtubeotService;
 import com.user.userttubeot.ttubeot.application.service.TtubeotServiceImpl;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
+import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
@@ -83,6 +84,13 @@ public class TtubeotController {
         TtubeotDrawResponseDTO ttubeotDrawResponse = ttubeotService.drawTtubeot(userId,
             TtubeotDrawRequest);
         return ResponseEntity.ok(ttubeotDrawResponse);
+    }
+
+    // 뚜벗의 상태 조회
+    @GetMapping("/auth/ttubeot/status")
+    public ResponseEntity<?> getTtubeotStatus(@RequestAttribute("userId") Integer userId) {
+        TtubeotLogListResponseDTO ttubeotLogList = ttubeotService.checkTtubeotStatus(userId);
+        return ResponseEntity.ok(ttubeotLogList);
     }
 
 
