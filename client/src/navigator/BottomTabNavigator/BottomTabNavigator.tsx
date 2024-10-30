@@ -1,6 +1,6 @@
 import React from 'react';
-import {View} from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import { View } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AdventureStackNavigator from './AdventureStackNavigator';
 import JournalStackNavigator from './JournalStackNavigator';
 import HomeStackNavigator from './HomeStackNavigator';
@@ -21,8 +21,8 @@ const BottomTabNavigator = () => {
   return (
     <Tab.Navigator
       initialRouteName="Home"
-      screenOptions={({route}) => ({
-        tabBarIcon: ({color, size, focused}) => {
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ color, size, focused }) => {
           let iconName;
           let iconType: IconType;
 
@@ -71,7 +71,7 @@ const BottomTabNavigator = () => {
           right: 0,
           height: 105,
           paddingBottom: 15,
-          backgroundColor: '#fff',
+          backgroundColor: '#F2F4F5',
           borderTopLeftRadius: 40,
           borderTopRightRadius: 40,
         },

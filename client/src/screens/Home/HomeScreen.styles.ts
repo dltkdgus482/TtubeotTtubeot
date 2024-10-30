@@ -3,13 +3,12 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
   container: {
     flex: 1,
+    position: 'relative',
+    width: '100%',
   },
   backgroundImage: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    width: '100%',
+    height: '100%',
     opacity: 0.7,
   },
   content: {
@@ -48,14 +47,15 @@ export default StyleSheet.create({
     top: 40,
     right: 10,
   },
-  ttubeotWebview: {
+  ttubeotWebviewContainer: {
     position: 'absolute',
     bottom: -70,
-    left: '50%',
-    transform: [{ translateX: -250 }], // 모델의 너비의 절반으로 설정
-    width: 500,
+    left: 0,
+  },
+  ttubeotWebview: {
+    width: 400,
     height: 500,
-    backgroundColor: 'transparent', // 투명 배경
+    backgroundColor: 'transparent',
   },
   startButtonContainer: {
     alignItems: 'center',
