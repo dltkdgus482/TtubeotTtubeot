@@ -7,14 +7,19 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
+import com.user.userttubeot.ttubeot.domain.model.Ttubeot;
 import com.user.userttubeot.ttubeot.domain.model.TtubeotLog;
 import com.user.userttubeot.ttubeot.domain.model.UserTtuBeotOwnership;
 import com.user.userttubeot.ttubeot.domain.repository.TtubeotLogRepository;
+import com.user.userttubeot.ttubeot.domain.repository.TtubeotRepository;
 import com.user.userttubeot.ttubeot.domain.repository.UserTtubeotOwnershipRepository;
 import com.user.userttubeot.ttubeot.global.exception.TtubeotNotFoundException;
+import com.user.userttubeot.user.domain.entity.User;
+import com.user.userttubeot.user.domain.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +30,8 @@ public class TtubeotServiceImpl implements TtubeotService {
 
     private final TtubeotLogRepository ttubeotLogRepository;
     private final UserTtubeotOwnershipRepository userTtubeotOwnershipRepository;
+    private final TtubeotRepository TtubeotRepository;
+    private final UserRepository userRepository;
 
     @Override
     public void addTtubeotLog(Long userTtubeotOwnershipId,
@@ -73,9 +80,25 @@ public class TtubeotServiceImpl implements TtubeotService {
     }
 
     @Override
-    public TtubeotDrawResponseDTO drawTtubeot(TtubeotDrawRequestDTO ttubeotDrawRequestDTO) {
+    public TtubeotDrawResponseDTO drawTtubeot(Integer userId,
+        TtubeotDrawRequestDTO ttubeotDrawRequestDTO) {
+        int type = ttubeotDrawRequestDTO.getType();
+        TtubeotDrawResponseDTO responseDTO;
 
-        return null;
+        switch (type) {
+            case 1:
+                responseDTO = drawRandomTtubeot(userId);
+                break;
+            case 2:
+                responseDTO = drawFixedTtubeot(userId, ttubeotDrawRequestDTO.getTtubeotId());
+                break;
+            case 3:
+                responseDTO = drawTtubeotByGrade(userId, ttubeotDrawRequestDTO.getGrade());
+                break;
+            default:
+                throw new IllegalArgumentException("뽑기 타입을 1~3 사이의 숫자로 선택해주십시오.");
+        }
+        return responseDTO;
     }
 
     @Override
@@ -126,5 +149,68 @@ public class TtubeotServiceImpl implements TtubeotService {
 
         // 정상 졸업한 뚜벗들의 정보를 리스트에 담아 return
         return response;
+    }
+
+    @Override
+    public TtubeotDrawResponseDTO drawRandomTtubeot(Integer userId) {
+        Random random = new Random();
+
+        // 1부터 3까지의 랜덤한 타입을 선택
+        int randomType = random.nextInt(3) + 1;
+
+        // 해당 타입의 모든 뚜벗 가져오기
+        List<Ttubeot> ttubeotsByType = TtubeotRepository.findAllByTtubeotType(randomType);
+
+        if (ttubeotsByType.isEmpty()) {
+            throw new IllegalArgumentException("해당 타입의 뚜벗이 존재하지 않습니다.");
+        }
+
+        // 해당 타입의 뚜벗 목록 중 하나를 랜덤하게 선택
+        Ttubeot selectedTtubeot = ttubeotsByType.get(random.nextInt(ttubeotsByType.size()));
+
+        return createTtubeotDrawResponseDTO(userId, selectedTtubeot);
+    }
+
+    @Override
+    public TtubeotDrawResponseDTO drawFixedTtubeot(Integer userId, Integer ttubeotId) {
+        Ttubeot selectedTtubeot = TtubeotRepository.findById(ttubeotId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 뚜벗을 찾을 수 없습니다."));
+        return createTtubeotDrawResponseDTO(userId, selectedTtubeot);
+    }
+
+    @Override
+    public TtubeotDrawResponseDTO drawTtubeotByGrade(Integer userId, Integer grade) {
+        Random random = new Random();
+
+        // 해당 타입의 모든 뚜벗 가져오기
+        List<Ttubeot> ttubeotsByType = TtubeotRepository.findAllByTtubeotType(grade);
+
+        if (ttubeotsByType.isEmpty()) {
+            throw new IllegalArgumentException("해당 타입의 뚜벗이 존재하지 않습니다.");
+        }
+
+        // 해당 타입의 뚜벗 목록 중 하나를 랜덤하게 선택
+        Ttubeot selectedTtubeot = ttubeotsByType.get(random.nextInt(ttubeotsByType.size()));
+
+        return createTtubeotDrawResponseDTO(userId, selectedTtubeot);
+    }
+
+    // TtubeotDrawResponseDTO 생성 메서드
+    private TtubeotDrawResponseDTO createTtubeotDrawResponseDTO(Integer userId,
+        Ttubeot selectedTtubeot) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자를 찾을 수 없습니다."));
+
+        // 새로운 UserTtuBeotOwnership 객체 생성 및 저장
+        UserTtuBeotOwnership ownership = UserTtuBeotOwnership.builder()
+            .user(user)
+            .ttubeot(selectedTtubeot)
+            .ttubeotName(null) // 초기 이름은 null로 설정
+            .build();
+        userTtubeotOwnershipRepository.save(ownership);
+
+        // 응답 DTO 생성 및 반환
+        return new TtubeotDrawResponseDTO(ownership.getUserTtubeotOwnershipId(),
+            selectedTtubeot.getTtubeotId(), selectedTtubeot.getTtubeotImage());
     }
 }

@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class TtubeotDrawRequestDTO {
 
-    private String type;
-    private Integer ttubeotId;
-    private String grade;
+    private Integer type; // 랜덤 - 1, 확정 - 2, 등급 - 3
+    private Integer ttubeotId; // 확정(null)
+    private Integer grade; // 등급(null)
 
 }

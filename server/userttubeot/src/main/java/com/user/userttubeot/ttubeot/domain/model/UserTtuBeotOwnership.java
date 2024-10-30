@@ -62,6 +62,12 @@ public class UserTtuBeotOwnership {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        if (this.ttubeotStatus == null) {
+            this.ttubeotStatus = 0;
+        }
+        if (this.ttubeotScore == null) {
+            this.ttubeotScore = 0;
+        }
     }
 
     @PreUpdate

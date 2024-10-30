@@ -21,7 +21,7 @@ public interface TtubeotService {
     UserTtubeotInfoResponseDTO getDdubeotInfo(int userId);
 
     // 뚜벗 뽑기
-    TtubeotDrawResponseDTO drawTtubeot(TtubeotDrawRequestDTO ttubeotDrawRequestDTO);
+    TtubeotDrawResponseDTO drawTtubeot(Integer userId, TtubeotDrawRequestDTO ttubeotDrawRequestDTO);
 
     // 뽑은 뚜벗의 이름 등록
     void registerTtubeotName(TtubeotNameRegisterRequestDTO ttubeotNameRegisterRequestDTO);
@@ -29,4 +29,12 @@ public interface TtubeotService {
     // 뚜벗 졸업앨범 조회
     UserTtubeotGraduationInfoListDTO getUserTtubeotGraduationInfoList(int userId);
 
+    // 뚜벗 랜덤뽑기
+    TtubeotDrawResponseDTO drawRandomTtubeot(Integer userId);
+
+    // 뚜벗 확정 뽑기 (특정 ID)
+    TtubeotDrawResponseDTO drawFixedTtubeot(Integer userId, Integer ttubeotId);
+
+    // 뚜벗 등급 뽑기
+    TtubeotDrawResponseDTO drawTtubeotByGrade(Integer userId, Integer grade);
 }

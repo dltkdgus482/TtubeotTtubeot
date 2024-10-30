@@ -2,6 +2,8 @@ package com.user.userttubeot.ttubeot.presentation.controller;
 
 import com.user.userttubeot.ttubeot.application.service.TtubeotService;
 import com.user.userttubeot.ttubeot.application.service.TtubeotServiceImpl;
+import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
@@ -72,6 +74,15 @@ public class TtubeotController {
             userId);
 
         return ResponseEntity.ok(graduationInfoList);
+    }
+
+    // 뚜벗 뽑기
+    @PostMapping("/auth/ttubeot/draw")
+    public ResponseEntity<?> drawTtubeot(@RequestAttribute("userId") Integer userId,
+        @RequestBody TtubeotDrawRequestDTO TtubeotDrawRequest) {
+        TtubeotDrawResponseDTO ttubeotDrawResponse = ttubeotService.drawTtubeot(userId,
+            TtubeotDrawRequest);
+        return ResponseEntity.ok(ttubeotDrawResponse);
     }
 
 
