@@ -13,12 +13,14 @@ import com.user.userttubeot.user.domain.exception.UserNotFoundException;
 import com.user.userttubeot.user.infrastructure.security.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
@@ -38,7 +41,7 @@ public class UserController {
     private final CookieUtil cookieUtil;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody UserSignupRequestDto request) {
+    public ResponseEntity<?> signup(@RequestBody @Valid UserSignupRequestDto request) {
         try {
             log.info("회원가입 요청이 들어왔습니다. 요청 사용자 이름: {}", request.getUserName());
 
