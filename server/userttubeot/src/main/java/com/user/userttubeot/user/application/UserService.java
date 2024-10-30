@@ -1,9 +1,12 @@
 package com.user.userttubeot.user.application;
 
 import com.user.userttubeot.user.domain.dto.TokenDto;
+import com.user.userttubeot.user.domain.dto.UserResponseDto;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
+import com.user.userttubeot.user.domain.dto.UserUpdateRequestDto;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.exception.UserAlreadyExistsException;
+import com.user.userttubeot.user.domain.exception.UserNotFoundException;
 import com.user.userttubeot.user.domain.repository.UserRepository;
 import com.user.userttubeot.user.infrastructure.security.JWTUtil;
 import jakarta.transaction.Transactional;
@@ -122,6 +125,82 @@ public class UserService {
         String salt = UUID.randomUUID().toString().substring(0, 10);
         log.debug("생성된 비밀번호 Salt: {}", salt);
         return salt;
+    }
+
+    public User findUserById(Integer userId) {
+        return userRepository.findById(userId)
+            .orElseThrow(
+                () -> new UserNotFoundException("ID: " + userId + "에 해당하는 사용자를 찾을 수 없습니다."));
+    }
+
+
+    public void partiallyUpdateUser(Integer userId, UserUpdateRequestDto updateDto) {
+        User user = findUserById(userId);
+
+        User updatedUser = user.toBuilder()
+            .userLocationAgreement(updateDto.getUserLocationAgreement() != null
+                ? updateDto.getUserLocationAgreement() == 1
+                : user.getUserLocationAgreement())
+            .userParent(updateDto.getUserParent() != null
+                ? updateDto.getUserParent()
+                : user.getUserParent())
+            .build();
+
+        // 수정된 사용자 정보를 저장
+        userRepository.save(updatedUser);
+    }
+
+    public boolean isUsernameAvailable(String username) {
+        return !userRepository.existsByUserName(username);
+    }
+
+    public UserResponseDto getUserProfile(Integer userId) {
+        return UserResponseDto.fromEntity(findUserById(userId));
+    }
+
+    public void deleteUserById(Integer userId) {
+        User user = findUserById(userId);
+
+        // 이미 삭제된 사용자라면 예외 발생
+        if (user.getUserStatus() == -1) {
+            throw new IllegalStateException("이미 삭제된 사용자입니다.");
+        }
+
+        // 사용자 상태를 -1로 변경하여 비활성화
+        User deleteUser = user.toBuilder()
+            .userStatus((byte) -1)
+            .build();
+        userRepository.save(deleteUser);
+        log.info("사용자 상태 변경 완료 - 사용자 ID: {}, 상태: {}", userId, deleteUser.getUserStatus());
+    }
+
+    /**
+     * 비밀번호 변경 처리
+     */
+    public void changePassword(Integer userId, String userPhone, String newPassword) {
+        log.info("비밀번호 변경 요청 - 사용자 ID: {}, 전화번호: {}", userId, userPhone);
+
+        // 인증 코드 검증
+        if (!smsVerificationService.isPhoneVerified(userPhone)) {
+            log.warn("비밀번호 변경 실패 - 인증 코드가 일치하지 않음: 전화번호: {}", userPhone);
+            throw new IllegalArgumentException("인증 코드가 일치하지 않습니다.");
+        }
+
+        // 전화번호 인증 정보 삭제
+        smsVerificationService.deleteVerificationCode(userPhone);
+
+        // 유저 조회 및 ID와 전화번호 일치 여부 확인
+        User user = userRepository.findById(userId)
+            .filter(u -> u.getUserPhone().equals(userPhone))
+            .orElseThrow(() -> new IllegalArgumentException("전화번호가 일치하지 않습니다."));
+
+        // 새 비밀번호 암호화 및 저장
+        String salt = user.getUserPasswordSalt();
+        String encryptedPassword = passwordEncoder.encode(newPassword + salt);
+
+        userRepository.save(user.toBuilder().userPassword(encryptedPassword).build());
+
+        log.info("비밀번호 변경 성공 - 사용자 ID: {}", user.getUserId());
     }
 
 }

@@ -57,7 +57,8 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/user/login", "/user/reissue", "/user/signup", "/user/logout",
+                .requestMatchers("/user/login", "/user/reissue", "/user/check-username",
+                    "/user/signup", "/user/logout",
                     "/user/change-password", "/user/sms-verification/request",
                     "/user/sms-verification/confirm").permitAll()
                 .anyRequest().authenticated());

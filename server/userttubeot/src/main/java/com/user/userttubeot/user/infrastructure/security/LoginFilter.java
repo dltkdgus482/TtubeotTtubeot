@@ -59,44 +59,66 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request,
+    protected void successfulAuthentication(
+        HttpServletRequest request,
         HttpServletResponse response,
-        FilterChain chain, Authentication authResult) {
+        FilterChain chain,
+        Authentication authResult) throws IOException {
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
-        String userPhone = customUserDetails.getUsername();
         Integer userId = customUserDetails.getUserId();
 
-        String accessToken = jwtUtil.createAccessToken(userId, userPhone);
-        String refreshToken = jwtUtil.createRefreshToken(userId, userPhone);
+        String accessToken = jwtUtil.createAccessToken(userId, customUserDetails.getUsername());
+        String refreshToken = jwtUtil.createRefreshToken(userId, customUserDetails.getUsername());
 
-        redisService.setValues("refresh_" + userPhone, refreshToken, Duration.ofDays(1));
+        // Refresh Token을 Redis에 저장
+        redisService.setValues("refresh_" + customUserDetails.getUsername(), refreshToken,
+            Duration.ofDays(1));
 
+        // Authorization 헤더에 Access Token 추가
         response.setHeader("Authorization", "Bearer " + accessToken);
         response.addCookie(cookieUtil.createCookie("refresh", refreshToken));
 
-        log.info("로그인 성공 - userId: {}, userPhone: {}", userId, userPhone);
+        // JSON 응답 생성 (message와 userId 포함)
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        String jsonResponse = String.format("{\"message\": \"로그인 성공\", \"userId\": %d}", userId);
+
+        // 응답에 JSON 작성
+        response.getWriter().write(jsonResponse);
+
+        log.info("로그인 성공 - userId: {}", userId);
         log.debug("AccessToken: {}", accessToken);
         log.debug("RefreshToken: {}", refreshToken);
     }
 
+
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request,
-        HttpServletResponse response, AuthenticationException failed) throws IOException {
+        HttpServletResponse response,
+        AuthenticationException failed) throws IOException {
 
-        log.warn("로그인 실패 - Exception: {}", failed.getMessage());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        String message;
 
         if (failed instanceof BadCredentialsException) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("잘못된 로그인 정보입니다.");
-        } else if (failed instanceof UsernameNotFoundException) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("존재하지 않는 계정입니다.");
+            message = "전화번호 혹은 비밀번호가 일치하지 않습니다.";
+        } else if (failed.getMessage().contains("disabled")) {
+            message = "현 서비스에서 사용할 수 없는 계정입니다.";
         } else {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("로그인 요청이 올바르지 않습니다.");
+            message = "알 수 없는 인증 오류가 발생했습니다.";
         }
+
+        // JSON 응답 생성
+        String jsonResponse = String.format("{\"message\": \"%s\"}", message);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write(jsonResponse);
+
+        log.warn("로그인 실패 - 이유: {}", message);
     }
+
 
     // 비밀번호 검증 메서드
     private boolean isPasswordValid(String rawPassword, String storedHash, String salt) {

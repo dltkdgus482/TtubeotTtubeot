@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor // 기본 생성자 생성
 @AllArgsConstructor // 모든 필드를 포함하는 생성자 생성
-@Builder // 빌더 패턴 사용 가능
+@Builder(toBuilder = true) // 빌더 패턴 사용 가능
 public class User {
 
     @Id

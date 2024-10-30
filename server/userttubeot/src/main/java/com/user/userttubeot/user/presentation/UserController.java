@@ -1,9 +1,15 @@
 package com.user.userttubeot.user.presentation;
 
 import com.user.userttubeot.user.application.UserService;
+import com.user.userttubeot.user.domain.dto.CustomUserDetails;
 import com.user.userttubeot.user.domain.dto.TokenDto;
+import com.user.userttubeot.user.domain.dto.UserChangePasswordRequestDto;
+import com.user.userttubeot.user.domain.dto.UserResponseDto;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
+import com.user.userttubeot.user.domain.dto.UserUpdateRequestDto;
 import com.user.userttubeot.user.domain.entity.User;
+import com.user.userttubeot.user.domain.exception.ResponseMessage;
+import com.user.userttubeot.user.domain.exception.UserNotFoundException;
 import com.user.userttubeot.user.infrastructure.security.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,9 +17,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -70,6 +82,106 @@ public class UserController {
             log.error("토큰 재발급 실패 - 서버 오류: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("토큰 재발급 실패: 서버 오류가 발생했습니다.");
+        }
+    }
+
+    @PatchMapping("/me")
+    public ResponseEntity<?> partiallyUpdateUserInfo(@RequestBody UserUpdateRequestDto updateDto,
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
+        try {
+            Integer userId = userDetails.getUserId();
+            userService.partiallyUpdateUser(userId, updateDto);
+            return ResponseEntity.ok(new ResponseMessage("사용자 정보가 수정되었습니다."));
+        } catch (IllegalArgumentException e) {
+            // 잘못된 요청에 대해 400 반환
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseMessage("잘못된 요청 방식입니다."));
+        } catch (AuthenticationException e) {
+            // 인증 실패에 대해 401 반환
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ResponseMessage("사용자 검증에 실패했습니다."));
+        } catch (Exception e) {
+            // 기타 예외는 500 에러로 반환
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseMessage("서버 오류가 발생했습니다."));
+        }
+    }
+
+    @GetMapping("/check-username")
+    public ResponseEntity<?> checkUsername(@RequestParam("username") String username) {
+        boolean isAvailable = userService.isUsernameAvailable(username);
+        String message = isAvailable ? "사용 가능한 사용자 이름입니다." : "이미 사용 중인 사용자 이름입니다.";
+        return ResponseEntity.ok(new ResponseMessage(message));
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> getUserProfile(
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Integer userId = userDetails.getUserId();
+        log.info("사용자 프로필 조회 요청 - 사용자 ID: {}", userId);
+
+        try {
+            UserResponseDto profile = userService.getUserProfile(userId);
+            log.info("사용자 프로필 조회 성공 - 사용자 ID: {}", userId);
+            return ResponseEntity.ok(profile);
+        } catch (UserNotFoundException e) {
+            log.warn("사용자 프로필 조회 실패 - 사용자 ID: {}: {}", userId, e.getMessage());
+            return ResponseEntity.status(404).body("사용자를 찾을 수 없습니다.");
+        } catch (Exception e) {
+            log.error("사용자 프로필 조회 실패 - 서버 오류: {}", e.getMessage());
+            return ResponseEntity.status(500).body("서버 오류가 발생했습니다.");
+        }
+    }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<?> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Integer userId = userDetails.getUserId();
+        log.info("사용자 삭제 요청 - 사용자 ID: {}", userId);
+
+        try {
+            // 사용자 삭제 처리
+            userService.deleteUserById(userId);
+            log.info("사용자 삭제 성공 - 사용자 ID: {}", userId);
+            return ResponseEntity.ok(new ResponseMessage("사용자가 성공적으로 삭제되었습니다."));
+        } catch (UserNotFoundException e) {
+            log.warn("사용자 삭제 실패 - 사용자 ID: {}: {}", userId, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ResponseMessage("사용자를 찾을 수 없습니다."));
+        } catch (Exception e) {
+            log.error("사용자 삭제 실패 - 서버 오류: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseMessage("서버 오류가 발생했습니다."));
+        }
+    }
+
+    @PatchMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @RequestBody UserChangePasswordRequestDto dto) {
+
+        Integer userId = userDetails.getUserId();
+
+        String userPhone = dto.getPhone();
+        String newPassword = dto.getPassword();
+
+        log.info("비밀번호 변경 요청 - 사용자 전화번호: {}", userPhone);
+        try {
+            // 새 비밀번호 업데이트
+            userService.changePassword(userId, userPhone, newPassword);
+            log.info("비밀번호 변경 성공 - 사용자 전화번호: {}", userPhone);
+            return ResponseEntity.ok(new ResponseMessage("비밀번호가 성공적으로 변경되었습니다."));
+        } catch (UserNotFoundException e) {
+            log.warn("비밀번호 변경 실패 - 사용자 없음: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ResponseMessage("사용자를 찾을 수 없습니다."));
+        } catch (IllegalArgumentException e) {
+            log.warn("비밀번호 변경 실패 - 인증 정보 없음: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseMessage("인증 정보가 존재하지 않습니다."));
+        } catch (Exception e) {
+            log.error("비밀번호 변경 실패 - 서버 오류: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseMessage("서버 오류가 발생했습니다."));
         }
     }
 
