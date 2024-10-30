@@ -56,6 +56,8 @@ public class UserService {
      * @return 새로운 액세스 및 리프레시 토큰 DTO
      */
     public TokenDto reissueTokens(String refreshToken) {
+        log.info("토큰 재발급 요청 - 리프레시 토큰: {}", refreshToken);
+
         String userPhone = jwtUtil.getUserPhone(refreshToken);
         Integer userId = jwtUtil.getUserId(refreshToken);
         String key = "refresh_" + userPhone;
@@ -74,11 +76,6 @@ public class UserService {
         return new TokenDto(newAccessToken, newRefreshToken);
     }
 
-    private boolean isInvalidRefreshToken(String refreshToken, String storedToken) {
-        return storedToken == null || !storedToken.equals(refreshToken) || jwtUtil.isExpired(
-            refreshToken);
-    }
-
     /**
      * 회원가입 처리 메서드
      *
@@ -88,6 +85,9 @@ public class UserService {
     public User signup(UserSignupRequestDto request) {
         log.info("회원가입 요청 - 사용자 이름: {}, 전화번호: {}", request.getUserName(), request.getUserPhone());
 
+        // 비밀번호 유효성 검사
+        validatePassword(request.getUserPassword());
+        
         validateUserPhoneNotExists(request.getUserPhone());
         verifyPhone(request.getUserPhone());
 
@@ -98,6 +98,117 @@ public class UserService {
 
         log.info("회원가입 성공 - userId: {}", savedUser.getUserId());
         return savedUser;
+    }
+
+    /**
+     * 사용자를 ID로 조회
+     *
+     * @param userId 사용자 ID
+     * @return 조회된 User 엔티티
+     */
+    public User findUserById(Integer userId) {
+        log.info("사용자 조회 요청 - 사용자 ID: {}", userId);
+        return userRepository.findById(userId)
+            .orElseThrow(
+                () -> new UserNotFoundException("ID: " + userId + "에 해당하는 사용자를 찾을 수 없습니다."));
+    }
+
+    /**
+     * 사용자 정보 업데이트 (부분 업데이트)
+     *
+     * @param userId    사용자 ID
+     * @param updateDto 업데이트 요청 정보
+     */
+    public void partiallyUpdateUser(Integer userId, UserUpdateRequestDto updateDto) {
+        log.info("사용자 정보 부분 업데이트 요청 - 사용자 ID: {}", userId);
+
+        User user = findUserById(userId);
+
+        User updatedUser = user.toBuilder()
+            .userLocationAgreement(updateDto.getUserLocationAgreement() != null
+                ? updateDto.getUserLocationAgreement() == 1
+                : user.getUserLocationAgreement())
+            .userParent(updateDto.getUserParent() != null
+                ? updateDto.getUserParent()
+                : user.getUserParent())
+            .build();
+
+        userRepository.save(updatedUser);
+        log.info("사용자 정보 업데이트 성공 - 사용자 ID: {}", userId);
+    }
+
+    /**
+     * 사용자 이름 중복 여부 확인
+     *
+     * @param username 확인할 사용자 이름
+     * @return 중복 여부
+     */
+    public boolean isUsernameAvailable(String username) {
+        log.debug("사용자 이름 중복 확인 - 사용자 이름: {}", username);
+        return !userRepository.existsByUserName(username);
+    }
+
+    /**
+     * 사용자 프로필 조회
+     *
+     * @param userId 사용자 ID
+     * @return 조회된 UserResponseDto 객체
+     */
+    public UserResponseDto getUserProfile(Integer userId) {
+        log.info("사용자 프로필 조회 - 사용자 ID: {}", userId);
+        return UserResponseDto.fromEntity(findUserById(userId));
+    }
+
+    /**
+     * 사용자 삭제
+     *
+     * @param userId 삭제할 사용자 ID
+     */
+    public void deleteUserById(Integer userId) {
+        log.info("사용자 삭제 요청 - 사용자 ID: {}", userId);
+
+        User user = findUserById(userId);
+
+        if (user.getUserStatus() == -1) {
+            log.warn("이미 삭제된 사용자 - 사용자 ID: {}", userId);
+            throw new IllegalStateException("이미 삭제된 사용자입니다.");
+        }
+
+        User deleteUser = user.toBuilder()
+            .userStatus((byte) -1)
+            .build();
+        userRepository.save(deleteUser);
+        log.info("사용자 상태 변경 완료 - 사용자 ID: {}, 상태: {}", userId, deleteUser.getUserStatus());
+    }
+
+    // Private helper methods
+
+    /**
+     * 비밀번호 변경 처리
+     *
+     * @param userId      사용자 ID
+     * @param userPhone   사용자 전화번호
+     * @param newPassword 새 비밀번호
+     */
+    public void changePassword(Integer userId, String userPhone, String newPassword) {
+        log.info("비밀번호 변경 요청 - 사용자 ID: {}, 전화번호: {}", userId, userPhone);
+
+        if (!smsVerificationService.isPhoneVerified(userPhone)) {
+            log.warn("비밀번호 변경 실패 - 인증 코드가 일치하지 않음: 전화번호: {}", userPhone);
+            throw new IllegalArgumentException("인증 코드가 일치하지 않습니다.");
+        }
+
+        smsVerificationService.deleteVerificationCode(userPhone);
+
+        User user = userRepository.findById(userId)
+            .filter(u -> u.getUserPhone().equals(userPhone))
+            .orElseThrow(() -> new IllegalArgumentException("전화번호가 일치하지 않습니다."));
+
+        String salt = user.getUserPasswordSalt();
+        String encryptedPassword = passwordEncoder.encode(newPassword + salt);
+
+        userRepository.save(user.toBuilder().userPassword(encryptedPassword).build());
+        log.info("비밀번호 변경 성공 - 사용자 ID: {}", user.getUserId());
     }
 
     private void validateUserPhoneNotExists(String userPhone) {
@@ -127,80 +238,24 @@ public class UserService {
         return salt;
     }
 
-    public User findUserById(Integer userId) {
-        return userRepository.findById(userId)
-            .orElseThrow(
-                () -> new UserNotFoundException("ID: " + userId + "에 해당하는 사용자를 찾을 수 없습니다."));
-    }
-
-
-    public void partiallyUpdateUser(Integer userId, UserUpdateRequestDto updateDto) {
-        User user = findUserById(userId);
-
-        User updatedUser = user.toBuilder()
-            .userLocationAgreement(updateDto.getUserLocationAgreement() != null
-                ? updateDto.getUserLocationAgreement() == 1
-                : user.getUserLocationAgreement())
-            .userParent(updateDto.getUserParent() != null
-                ? updateDto.getUserParent()
-                : user.getUserParent())
-            .build();
-
-        // 수정된 사용자 정보를 저장
-        userRepository.save(updatedUser);
-    }
-
-    public boolean isUsernameAvailable(String username) {
-        return !userRepository.existsByUserName(username);
-    }
-
-    public UserResponseDto getUserProfile(Integer userId) {
-        return UserResponseDto.fromEntity(findUserById(userId));
-    }
-
-    public void deleteUserById(Integer userId) {
-        User user = findUserById(userId);
-
-        // 이미 삭제된 사용자라면 예외 발생
-        if (user.getUserStatus() == -1) {
-            throw new IllegalStateException("이미 삭제된 사용자입니다.");
-        }
-
-        // 사용자 상태를 -1로 변경하여 비활성화
-        User deleteUser = user.toBuilder()
-            .userStatus((byte) -1)
-            .build();
-        userRepository.save(deleteUser);
-        log.info("사용자 상태 변경 완료 - 사용자 ID: {}, 상태: {}", userId, deleteUser.getUserStatus());
-    }
-
     /**
-     * 비밀번호 변경 처리
+     * 비밀번호 유효성 검사
+     *
+     * @param password 검사할 비밀번호
      */
-    public void changePassword(Integer userId, String userPhone, String newPassword) {
-        log.info("비밀번호 변경 요청 - 사용자 ID: {}, 전화번호: {}", userId, userPhone);
+    private void validatePassword(String password) {
+        // 비밀번호가 6~15자의 영문과 숫자 조합인지 확인하는 정규식
+        String passwordPattern = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,15}$";
 
-        // 인증 코드 검증
-        if (!smsVerificationService.isPhoneVerified(userPhone)) {
-            log.warn("비밀번호 변경 실패 - 인증 코드가 일치하지 않음: 전화번호: {}", userPhone);
-            throw new IllegalArgumentException("인증 코드가 일치하지 않습니다.");
+        if (!password.matches(passwordPattern)) {
+            log.warn("비밀번호 유효성 검사 실패 - 비밀번호가 조건에 맞지 않습니다: {}", password);
+            throw new IllegalArgumentException("비밀번호는 영문과 숫자를 포함한 6~15자 조합이어야 합니다.");
         }
-
-        // 전화번호 인증 정보 삭제
-        smsVerificationService.deleteVerificationCode(userPhone);
-
-        // 유저 조회 및 ID와 전화번호 일치 여부 확인
-        User user = userRepository.findById(userId)
-            .filter(u -> u.getUserPhone().equals(userPhone))
-            .orElseThrow(() -> new IllegalArgumentException("전화번호가 일치하지 않습니다."));
-
-        // 새 비밀번호 암호화 및 저장
-        String salt = user.getUserPasswordSalt();
-        String encryptedPassword = passwordEncoder.encode(newPassword + salt);
-
-        userRepository.save(user.toBuilder().userPassword(encryptedPassword).build());
-
-        log.info("비밀번호 변경 성공 - 사용자 ID: {}", user.getUserId());
     }
 
+
+    private boolean isInvalidRefreshToken(String refreshToken, String storedToken) {
+        return storedToken == null || !storedToken.equals(refreshToken) || jwtUtil.isExpired(
+            refreshToken);
+    }
 }
