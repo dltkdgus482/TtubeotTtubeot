@@ -1,8 +1,12 @@
 package com.user.userttubeot.tokeninterceptor.application.service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import java.security.Key;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,18 +25,32 @@ public class TokenInterceptorService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+        } catch (ExpiredJwtException e) {
+            throw new IllegalArgumentException("만료된 토큰입니다.", e);
+        } catch (UnsupportedJwtException e) {
+            throw new IllegalArgumentException("지원되지 않는 토큰 형식입니다.", e);
+        } catch (MalformedJwtException e) {
+            throw new IllegalArgumentException("잘못된 토큰 형식입니다.", e);
+        } catch (SignatureException e) {
+            throw new IllegalArgumentException("토큰 서명이 잘못되었습니다.", e);
         } catch (Exception e) {
-            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+            throw new IllegalArgumentException("유효하지 않은 토큰입니다.", e);
         }
     }
 
+
     // JWT에서 userId 추출
     public Integer extractUserIdFromToken(String token) {
-        Claims claims = parseClaims(token);
-        if (claims == null || claims.getSubject() == null) {
-            throw new IllegalArgumentException("토큰에서 유효한 userId를 찾을 수 없습니다.");
+        try {
+            Claims claims = parseClaims(token);
+
+            // userId가 subject에 저장된다고 가정, 숫자 형식 여부 검증
+            return claims.get("userId", Integer.class);
+
+
+        } catch (Exception e) {
+            throw new IllegalArgumentException("유효하지 않은 토큰입니다.", e);
         }
-        return Integer.parseInt(claims.getSubject()); // userId가 subject에 저장된다고 가정
     }
 
     // SecretKey 객체 생성

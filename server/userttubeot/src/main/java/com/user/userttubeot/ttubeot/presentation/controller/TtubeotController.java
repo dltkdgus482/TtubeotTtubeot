@@ -4,6 +4,7 @@ import com.user.userttubeot.ttubeot.application.service.TtubeotService;
 import com.user.userttubeot.ttubeot.application.service.TtubeotServiceImpl;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotIdResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,29 +21,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("user/ttubeot")
+@RequestMapping("user")
 public class TtubeotController {
 
     private final TtubeotServiceImpl ttubeotService;
 
     // 뚜벗 로그 추가
-    @PostMapping("/logs")
+    @PostMapping("/ttubeot/logs")
     public ResponseEntity<?> addTtubeotLog(@RequestBody TtubeotLogRequestDTO ttubeotLogRequestDTO) {
-        int userTtubeotId = ttubeotLogRequestDTO.getUserTtubeotOwnershipId();
+        Long userTtubeotId = ttubeotLogRequestDTO.getUserTtubeotOwnershipId();
         ttubeotService.addTtubeotLog(userTtubeotId, ttubeotLogRequestDTO);
 
         return ResponseEntity.ok("로그가 성공적으로 추가되었습니다.");
     }
 
     // 유저의 뚜벗 상세 정보 조회 -> 정상인 것만. (모험 사용)
-    @GetMapping("/adventure/{userId}/details")
+    @GetMapping("/ttubeot/adventure/{userId}/details")
     public ResponseEntity<?> getDdubeotInfo(@PathVariable int userId) {
         UserTtubeotInfoResponseDTO ttubeotInfo = ttubeotService.getDdubeotInfo(userId);
         return ResponseEntity.ok(ttubeotInfo);
     }
 
     // 회원의 뚜벗 아이디 조회 (모험 사용)
-    @GetMapping("/adventure/{userId}/id")
+    @GetMapping("/ttubeot/adventure/{userId}/id")
     public ResponseEntity<?> getDdubeotId(@PathVariable int userId) {
         Long ttubeotId = ttubeotService.getTtubeotOwnershipId(userId);
         UserTtubeotIdResponseDTO responseDTO = new UserTtubeotIdResponseDTO(ttubeotId);
@@ -49,7 +51,7 @@ public class TtubeotController {
     }
 
     // 뚜벗의 이름 등록
-    @PostMapping("/name")
+    @PostMapping("/ttubeot/name")
     public ResponseEntity<?> addTtubeotName(
         @RequestBody TtubeotNameRegisterRequestDTO ttubeotNameRegister) {
         try {
@@ -61,6 +63,15 @@ public class TtubeotController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("뚜벗 이름 등록 중 오류가 발생했습니다.");
         }
+    }
+
+    // 졸업사진 정보 조회
+    @GetMapping("/auth/ttubeot/album")
+    public ResponseEntity<?> getTtubeotAlbum(@RequestAttribute("userId") Integer userId) {
+        UserTtubeotGraduationInfoListDTO graduationInfoList = ttubeotService.getUserTtubeotGraduationInfoList(
+            userId);
+
+        return ResponseEntity.ok(graduationInfoList);
     }
 
 

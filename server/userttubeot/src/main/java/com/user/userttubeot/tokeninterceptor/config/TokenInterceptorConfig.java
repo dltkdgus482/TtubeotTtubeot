@@ -16,6 +16,6 @@ public class TokenInterceptorConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         // '/user/auth/**'경로만
         registry.addInterceptor(tokenInterceptor)
-            .addPathPatterns("/user/auth**");
+            .addPathPatterns("/user/auth/**");
     }
 }
