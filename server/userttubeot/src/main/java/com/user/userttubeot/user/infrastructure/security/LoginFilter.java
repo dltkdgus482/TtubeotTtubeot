@@ -82,7 +82,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // JSON 응답 생성 (message와 userId 포함)
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        String jsonResponse = String.format("{\"message\": \"로그인 성공\", \"userId\": %d}", userId);
+        String jsonResponse = String.format("{\"message\": \"로그인 성공\", \"userId\": \"%s\"}",
+            userId);
 
         // 응답에 JSON 작성
         response.getWriter().write(jsonResponse);

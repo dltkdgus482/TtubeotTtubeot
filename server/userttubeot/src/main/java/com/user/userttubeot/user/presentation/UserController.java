@@ -52,7 +52,7 @@ public class UserController {
 
         } catch (IllegalArgumentException e) {
             log.error("회원가입 실패 - 잘못된 요청 데이터: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원가입 실패: 잘못된 요청 데이터입니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원가입 실패: " + e.getMessage());
         } catch (Exception e) {
             log.error("회원가입 실패 - 서버 오류: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
