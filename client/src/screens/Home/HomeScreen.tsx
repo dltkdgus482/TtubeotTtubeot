@@ -10,11 +10,13 @@ import WebView from 'react-native-webview';
 import ButtonDefault from '../../components/Button/ButtonDefault.tsx';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import FriendsModal from '../../components/Friends/FriendsModal.tsx';
 
 const background = require('../../assets/images/HomeBackground.jpg');
 const ShopIcon = require('../../assets/icons/ShopIcon.png');
 const MissionIcon = require('../../assets/icons/MissionIcon.png');
 const AlbumIcon = require('../../assets/icons/AlbumIcon.png');
+const FriendIcon = require('../../assets/icons/FriendIcon.png');
 const MapIcon = require('../../assets/icons/MapIcon.png');
 
 const HomeScreen = () => {
@@ -22,6 +24,7 @@ const HomeScreen = () => {
   const [graduationAlbumModalVisible, setGraduationAlbumModalVisible] =
     useState(false);
   const [missionModalVisible, setMissionModalVisible] = useState(false);
+  const [friendsModalVisible, setFriendsModalVisible] = useState(false);
   const navigation = useNavigation();
 
   const openShopModal = () => {
@@ -46,6 +49,14 @@ const HomeScreen = () => {
 
   const closeMissionModal = () => {
     setMissionModalVisible(false);
+  };
+
+  const openFriendsModal = () => {
+    setFriendsModalVisible(true);
+  };
+
+  const closeFriendsModal = () => {
+    setFriendsModalVisible(false);
   };
 
   return (
@@ -90,6 +101,9 @@ const HomeScreen = () => {
           <TouchableOpacity onPress={openAlbumModal}>
             <Image source={AlbumIcon} style={styles.albumIcon} />
           </TouchableOpacity>
+          <TouchableOpacity onPress={openFriendsModal}>
+            <Image source={FriendIcon} style={styles.albumIcon} />
+          </TouchableOpacity>
         </View>
       )}
 
@@ -116,6 +130,11 @@ const HomeScreen = () => {
       <GraduationAlbumModal
         modalVisible={graduationAlbumModalVisible}
         closeAlbumModal={closeAlbumModal}
+      />
+
+      <FriendsModal
+        modalVisible={friendsModalVisible}
+        closeFriendsModal={closeFriendsModal}
       />
       {/* WebView로 3D 모델 표시 */}
     </SafeAreaView>

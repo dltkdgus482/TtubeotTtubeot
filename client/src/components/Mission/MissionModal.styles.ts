@@ -12,12 +12,11 @@ export default StyleSheet.create({
   },
   modalText: {
     fontSize: 18,
-    fontWeight: 'bold',
     textAlign: 'center',
   },
   titleBackContainer: {
     position: 'absolute',
-    width: '100%',
+    width: '104%',
     height: '100%',
     marginTop: 30,
     backgroundColor: '#DFD6C0',
@@ -35,7 +34,6 @@ export default StyleSheet.create({
   title: {
     position: 'absolute',
     fontSize: 20,
-    fontWeight: 'bold',
     color: 'white',
     textAlign: 'center',
     top: 11,
@@ -78,7 +76,6 @@ export default StyleSheet.create({
   },
   menuText: {
     fontSize: 16,
-    fontWeight: 'bold',
     color: '#231514',
   },
   stitchedBorder: {
@@ -135,7 +132,6 @@ export default StyleSheet.create({
   },
   itemName: {
     fontSize: 16,
-    fontWeight: 'bold',
     color: '#231514',
   },
   itemDescription: {
@@ -160,7 +156,6 @@ export default StyleSheet.create({
   },
   itemPrice: {
     fontSize: 16,
-    fontWeight: 'bold',
     color: '#231514',
   },
   coinIcon: {
@@ -196,7 +191,6 @@ export default StyleSheet.create({
     position: 'absolute',
     justifyContent: 'center',
     fontSize: 16,
-    fontWeight: 'bold',
     color: '#231514',
     alignSelf: 'center',
   },

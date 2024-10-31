@@ -34,7 +34,7 @@ const ButtonContainer = styled(View)<{
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: ${({ height }) => `${height - 2}px`};
+  height: ${({ height }) => `${height - 2.5}px`};
   background-color: ${({ color }) => (color ? `${color}` : '#fbfaf5')};
   border-radius: ${({ borderRadius }) => `${borderRadius}px`};
 `;
