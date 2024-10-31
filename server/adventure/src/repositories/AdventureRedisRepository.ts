@@ -19,6 +19,13 @@ class AdventureRedisRepository {
         return AdventureLogModel.create(JSON.parse(adventureLog))
     }
 
+    async getStepCount(userId: number): Promise<number> {
+        const userStepsKey = `user:${userId}:steps`;
+        const stepCount = await redisClient.get(userStepsKey) ?? "0";
+
+        return parseInt(stepCount);
+    }
+
     async storeGPSData(userId: number, lat: number, lng: number, steps: number): Promise<void> {
         if (!userId || userId <= 0) {
             return;
