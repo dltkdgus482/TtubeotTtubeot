@@ -3,7 +3,7 @@ import MonsterApiClient from "monsterapi";
 
 dotenv.config();
 
-class ImageGenService {
+class AIService {
   private apiKey: string;
   private client: MonsterApiClient;
 
@@ -37,4 +37,4 @@ class ImageGenService {
   }
 }
 
-export default ImageGenService;
+export default AIService;
