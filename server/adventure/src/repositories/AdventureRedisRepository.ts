@@ -47,10 +47,10 @@ class AdventureRedisRepository {
         await redisClient.incrBy(userStepsKey, currentStepCount);
 
         const userLocationKey = `user:${userId}:location_data`;
-        const timestamp = Date.now();
+        const timestamp = new Date().toISOString();
 
         await redisClient.zAdd(userLocationKey, {
-            score: timestamp,
+            score: Date.now(),
             value: JSON.stringify({
                 lat,
                 lng,
