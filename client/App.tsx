@@ -22,7 +22,7 @@ function App(): React.JSX.Element {
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar
           translucent
-          backgroundColor="transparent"
+          backgroundColor="#F2F2F2"
           barStyle="dark-content"
         />
         <NavigationContainer>
