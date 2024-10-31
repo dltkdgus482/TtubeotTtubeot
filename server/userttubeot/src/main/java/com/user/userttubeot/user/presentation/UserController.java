@@ -4,6 +4,7 @@ import com.user.userttubeot.user.application.UserService;
 import com.user.userttubeot.user.domain.dto.CustomUserDetails;
 import com.user.userttubeot.user.domain.dto.TokenDto;
 import com.user.userttubeot.user.domain.dto.UserChangePasswordRequestDto;
+import com.user.userttubeot.user.domain.dto.UserRankDto;
 import com.user.userttubeot.user.domain.dto.UserResponseDto;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
 import com.user.userttubeot.user.domain.dto.UserUpdateRequestDto;
@@ -14,6 +15,7 @@ import com.user.userttubeot.user.infrastructure.security.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -180,4 +182,20 @@ public class UserController {
                 .body(new ResponseMessage("서버 오류가 발생했습니다."));
         }
     }
+
+    @GetMapping("/ranking")
+    public ResponseEntity<?> getAllUserRanks() {
+        log.info("전체 사용자 순위 조회 요청");
+        try {
+            List<UserRankDto> ranks = userService.getAllUserRanks();
+            log.info("전체 사용자 순위 조회 성공 - 순위 개수: {}", ranks.size());
+            return ResponseEntity.ok(ranks);
+        } catch (Exception e) {
+            log.error("전체 사용자 순위 조회 실패 - 서버 오류: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseMessage("서버 오류가 발생했습니다."));
+        }
+    }
+
+
 }

@@ -1,6 +1,10 @@
 package com.user.userttubeot.user.application;
 
+import com.user.userttubeot.ttubeot.application.service.TtubeotServiceImpl;
+import com.user.userttubeot.ttubeot.domain.model.UserTtuBeotOwnership;
+import com.user.userttubeot.ttubeot.domain.repository.UserTtubeotOwnershipRepository;
 import com.user.userttubeot.user.domain.dto.TokenDto;
+import com.user.userttubeot.user.domain.dto.UserRankDto;
 import com.user.userttubeot.user.domain.dto.UserResponseDto;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
 import com.user.userttubeot.user.domain.dto.UserUpdateRequestDto;
@@ -12,7 +16,10 @@ import com.user.userttubeot.user.global.util.NameValidator;
 import com.user.userttubeot.user.infrastructure.security.JWTUtil;
 import jakarta.transaction.Transactional;
 import java.time.Duration;
+import java.util.Comparator;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +37,8 @@ public class UserService {
     private final JWTUtil jwtUtil;
     private final RedisService redisService;
     private final NameValidator nameValidator;
+    private final TtubeotServiceImpl ttubeotService;
+    private final UserTtubeotOwnershipRepository ownershipRepository;
 
     /**
      * 회원가입 요청 DTO를 User 엔티티로 변환
@@ -268,4 +277,24 @@ public class UserService {
         return storedToken == null || !storedToken.equals(refreshToken) || jwtUtil.isExpired(
             refreshToken);
     }
+
+    public List<UserRankDto> getAllUserRanks() {
+        return userRepository.findAll().stream()
+            .map(user -> {
+                Integer userId = user.getUserId();
+                int score = ownershipRepository.findByUser_UserId(userId).stream()
+                    .mapToInt(UserTtuBeotOwnership::getTtubeotScore)
+                    .sum();
+
+                return new UserRankDto(
+                    userId,
+                    user.getUserName(),
+                    score,
+                    ttubeotService.getTtubeotOwnershipId(userId)
+                );
+            })
+            .sorted(Comparator.comparingInt(UserRankDto::getScore).reversed())
+            .collect(Collectors.toList());
+    }
+
 }
