@@ -79,7 +79,6 @@ public class TtubeotServiceImpl implements TtubeotService {
         // DTO로 변환하여 반환
         return UserTtubeotInfoResponseDTO.builder()
             .ttubeotType(userTtuBeotOwnership.getTtubeot().getTtubeotType())
-            .ttubeotImage(userTtuBeotOwnership.getTtubeot().getTtubeotImage())
             .ttubeotName(userTtuBeotOwnership.getTtubeotName())
             .ttubeotScore(userTtuBeotOwnership.getTtubeotScore())
             .createdAt(userTtuBeotOwnership.getCreatedAt())
@@ -145,7 +144,6 @@ public class TtubeotServiceImpl implements TtubeotService {
                 dto.setBreakUp(ownership.getBreakUp());
                 dto.setCreatedAt(ownership.getCreatedAt());
                 dto.setTtubeotId(ownership.getTtubeot().getTtubeotId());
-                dto.setTtubeotImage(ownership.getTtubeot().getTtubeotImage());
                 return dto;
             })
             .collect(Collectors.toList());
@@ -278,6 +276,6 @@ public class TtubeotServiceImpl implements TtubeotService {
 
         // 응답 DTO 생성 및 반환
         return new TtubeotDrawResponseDTO(ownership.getUserTtubeotOwnershipId(),
-            selectedTtubeot.getTtubeotId(), selectedTtubeot.getTtubeotImage());
+            selectedTtubeot.getTtubeotId());
     }
 }
