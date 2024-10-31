@@ -1,7 +1,6 @@
 import { GeoReplyWith } from "redis";
 import redisClient from "../config/database/redis";
 import AdventureLogModel from "../models/AdventureLogModel";
-import { Socket } from "socket.io";
 
 class AdventureRedisRepository {
     private readonly locationKey: string = "user_locations";
