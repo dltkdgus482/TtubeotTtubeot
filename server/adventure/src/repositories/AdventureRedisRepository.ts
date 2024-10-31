@@ -30,6 +30,12 @@ class AdventureRedisRepository {
             latitude: lat,
         });
 
+        const userStepsKey = `user:${userId}:steps`;
+        const lastStepCount = await redisClient.get(userStepsKey);
+        const currentStepCount = steps - (lastStepCount ? parseInt(lastStepCount) : steps);
+
+        await redisClient.set(userStepsKey, steps);
+
         const userLocationKey = `user:${userId}:location_data`;
         const timestamp = Date.now();
 
@@ -38,7 +44,7 @@ class AdventureRedisRepository {
             value: JSON.stringify({
                 lat,
                 lng,
-                steps,
+                steps: currentStepCount,
                 timestamp,
             }),
         });
