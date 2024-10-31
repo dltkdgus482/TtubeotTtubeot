@@ -73,7 +73,10 @@ class AdventureRedisRepository {
 
     async flushUserLocationData(userId: number): Promise<void> {
         const userLocationKey = `user:${userId}:location_data`;
+        const userStepsKey = `user:${userId}:steps`;
+
         await redisClient.del(userLocationKey);
+        await redisClient.del(userStepsKey);
 
         await redisClient.zRem(this.locationKey, userId.toString());
     }
