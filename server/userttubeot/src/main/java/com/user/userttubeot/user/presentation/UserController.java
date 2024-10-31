@@ -48,15 +48,16 @@ public class UserController {
             User newUser = userService.signup(request);
             log.info("회원가입 성공. 사용자 ID: {}", newUser.getUserId());
 
-            return ResponseEntity.ok(newUser);
+            return ResponseEntity.ok(new ResponseMessage("회원가입 성공"));
 
         } catch (IllegalArgumentException e) {
             log.error("회원가입 실패 - 잘못된 요청 데이터: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원가입 실패: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseMessage("회원가입 실패: " + e.getMessage()));
         } catch (Exception e) {
             log.error("회원가입 실패 - 서버 오류: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("회원가입 실패: 서버 오류가 발생했습니다.");
+                .body(new ResponseMessage("회원가입 실패: 서버 오류가 발생했습니다."));
         }
     }
 
@@ -68,23 +69,22 @@ public class UserController {
 
             String refreshToken = cookieUtil.extractRefreshToken(request);
 
-            // 액세스 및 리프레시 토큰을 포함한 Dto 반환
             TokenDto tokens = userService.reissueTokens(refreshToken);
             log.info("토큰 재발급 성공.");
 
             response.setHeader("Authorization", "Bearer " + tokens.getAccessToken());
             response.addCookie(cookieUtil.createCookie("refresh", tokens.getRefreshToken()));
 
-            return ResponseEntity.ok("토큰 재발급 성공");
+            return ResponseEntity.ok(new ResponseMessage("토큰 재발급 성공"));
 
         } catch (IllegalArgumentException e) {
             log.error("토큰 재발급 실패 - 잘못된 리프레시 토큰: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("토큰 재발급 실패: 유효하지 않은 리프레시 토큰입니다.");
+                .body(new ResponseMessage("토큰 재발급 실패: 유효하지 않은 리프레시 토큰입니다."));
         } catch (Exception e) {
             log.error("토큰 재발급 실패 - 서버 오류: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("토큰 재발급 실패: 서버 오류가 발생했습니다.");
+                .body(new ResponseMessage("토큰 재발급 실패: 서버 오류가 발생했습니다."));
         }
     }
 
@@ -96,15 +96,12 @@ public class UserController {
             userService.partiallyUpdateUser(userId, updateDto);
             return ResponseEntity.ok(new ResponseMessage("사용자 정보가 수정되었습니다."));
         } catch (IllegalArgumentException e) {
-            // 잘못된 요청에 대해 400 반환
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ResponseMessage("잘못된 요청 방식입니다."));
         } catch (AuthenticationException e) {
-            // 인증 실패에 대해 401 반환
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ResponseMessage("사용자 검증에 실패했습니다."));
         } catch (Exception e) {
-            // 기타 예외는 500 에러로 반환
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ResponseMessage("서버 오류가 발생했습니다."));
         }
@@ -129,10 +126,10 @@ public class UserController {
             return ResponseEntity.ok(profile);
         } catch (UserNotFoundException e) {
             log.warn("사용자 프로필 조회 실패 - 사용자 ID: {}: {}", userId, e.getMessage());
-            return ResponseEntity.status(404).body("사용자를 찾을 수 없습니다.");
+            return ResponseEntity.status(404).body(new ResponseMessage("사용자를 찾을 수 없습니다."));
         } catch (Exception e) {
             log.error("사용자 프로필 조회 실패 - 서버 오류: {}", e.getMessage());
-            return ResponseEntity.status(500).body("서버 오류가 발생했습니다.");
+            return ResponseEntity.status(500).body(new ResponseMessage("서버 오류가 발생했습니다."));
         }
     }
 
@@ -142,7 +139,6 @@ public class UserController {
         log.info("사용자 삭제 요청 - 사용자 ID: {}", userId);
 
         try {
-            // 사용자 삭제 처리
             userService.deleteUserById(userId);
             log.info("사용자 삭제 성공 - 사용자 ID: {}", userId);
             return ResponseEntity.ok(new ResponseMessage("사용자가 성공적으로 삭제되었습니다."));
@@ -158,18 +154,15 @@ public class UserController {
     }
 
     @PatchMapping("/change-password")
-    public ResponseEntity<?> changePassword(
-        @AuthenticationPrincipal CustomUserDetails userDetails,
+    public ResponseEntity<?> changePassword(@AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestBody @Valid UserChangePasswordRequestDto dto) {
 
         Integer userId = userDetails.getUserId();
-
         String userPhone = dto.getPhone();
         String newPassword = dto.getPassword();
 
         log.info("비밀번호 변경 요청 - 사용자 전화번호: {}", userPhone);
         try {
-            // 새 비밀번호 업데이트
             userService.changePassword(userId, userPhone, newPassword);
             log.info("비밀번호 변경 성공 - 사용자 전화번호: {}", userPhone);
             return ResponseEntity.ok(new ResponseMessage("비밀번호가 성공적으로 변경되었습니다."));
@@ -187,6 +180,4 @@ public class UserController {
                 .body(new ResponseMessage("서버 오류가 발생했습니다."));
         }
     }
-
-
 }
