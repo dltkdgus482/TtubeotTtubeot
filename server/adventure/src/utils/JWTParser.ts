@@ -10,7 +10,7 @@ class JWTParser {
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
 
-      const userId = (decoded as any).user_id;
+      const userId = (decoded as any).userId;
 
       return userId;
     } catch (error) {
