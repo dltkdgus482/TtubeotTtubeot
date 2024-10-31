@@ -93,4 +93,12 @@ public class User {
         updatedAt = LocalDateTime.now();
     }
 
+    public void addCoins(Integer coinsToAdd) {
+        if (coinsToAdd == null || coinsToAdd < 0) {
+            throw new IllegalArgumentException("추가할 코인은 0 이상이어야 합니다.");
+        }
+        this.userCoin += coinsToAdd;
+    }
+
+
 }
