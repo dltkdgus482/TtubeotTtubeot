@@ -16,18 +16,18 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user/friend")
+@RequestMapping("/friend")
 public class FriendController {
 
     private final FriendService friendService;
 
-    @PostMapping("/request")
+    @PostMapping("/add")
     public ResponseEntity<?> sendFriendRequest(
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestBody FriendRequestDto friendRequest) {
 
         Integer userId = userDetails.getUserId();
-        Integer friendRequestId = friendRequest.getFriendRequestId();
+        Integer friendRequestId = friendRequest.getFriendId();
         log.info("친구 요청 - 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendRequestId);
 
         try {
@@ -35,8 +35,9 @@ public class FriendController {
             return ResponseEntity.ok(new ResponseMessage("친구 요청이 전송되었습니다."));
         } catch (Exception e) {
             log.error("친구 요청 실패 - 서버 오류: {}", e.getMessage());
-            return ResponseEntity.status(500).body(new ResponseMessage("서버 오류가 발생했습니다."));
+            return ResponseEntity.status(500).body(new ResponseMessage(e.getMessage()));
         }
     }
+
 
 }

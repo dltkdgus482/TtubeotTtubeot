@@ -19,9 +19,9 @@ import lombok.Setter;
 public class FriendId implements Serializable {
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private Integer userId;
 
     @Column(name = "friend_id", nullable = false)
-    private Long FriendId;
+    private Integer FriendId;
 }
 
