@@ -8,6 +8,7 @@ import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.exception.UserAlreadyExistsException;
 import com.user.userttubeot.user.domain.exception.UserNotFoundException;
 import com.user.userttubeot.user.domain.repository.UserRepository;
+import com.user.userttubeot.user.global.util.NameValidator;
 import com.user.userttubeot.user.infrastructure.security.JWTUtil;
 import jakarta.transaction.Transactional;
 import java.time.Duration;
@@ -28,6 +29,7 @@ public class UserService {
     private final SmsVerificationService smsVerificationService;
     private final JWTUtil jwtUtil;
     private final RedisService redisService;
+    private final NameValidator nameValidator;
 
     /**
      * 회원가입 요청 DTO를 User 엔티티로 변환
@@ -86,11 +88,11 @@ public class UserService {
         String userName = request.getUserName();
         String userPhone = request.getUserPhone();
         String userPassword = request.getUserPassword();
-        
+
         log.info("회원가입 요청 - 사용자 이름: {}, 전화번호: {}", userName, userPhone);
 
         // 사용자 이름 유효성 검사
-        validateNickname(userName);
+        nameValidator.validate(userName);
 
         // 비밀번호 유효성 검사
         validatePassword(userPassword);
@@ -259,21 +261,6 @@ public class UserService {
         if (!password.matches(passwordPattern)) {
             log.warn("비밀번호 유효성 검사 실패 - 비밀번호가 조건에 맞지 않습니다: {}", password);
             throw new IllegalArgumentException("비밀번호는 영문과 숫자를 포함한 6~15자 조합이어야 합니다.");
-        }
-    }
-
-    /**
-     * 닉네임 유효성 검사
-     *
-     * @param nickname 검사할 닉네임
-     */
-    private void validateNickname(String nickname) {
-        // 닉네임이 2~8자의 영문 또는 한글만으로 이루어졌는지 확인하는 정규식
-        String nicknamePattern = "^[A-Za-z가-힣]{2,8}$";
-
-        if (!nickname.matches(nicknamePattern)) {
-            log.warn("닉네임 유효성 검사 실패 - 닉네임이 조건에 맞지 않습니다: {}", nickname);
-            throw new IllegalArgumentException("닉네임은 영문 또는 한글만으로 2~8자여야 합니다.");
         }
     }
 
