@@ -30,11 +30,14 @@ class AdventureRedisRepository {
             latitude: lat,
         });
 
-        const userStepsKey = `user:${userId}:steps`;
-        const lastStepCount = await redisClient.get(userStepsKey);
+        const userLastStepsKey = `user:${userId}:last_steps`;
+        const lastStepCount = await redisClient.get(userLastStepsKey);
         const currentStepCount = steps - (lastStepCount ? parseInt(lastStepCount) : steps);
 
-        await redisClient.set(userStepsKey, steps);
+        await redisClient.set(userLastStepsKey, steps);
+
+        const userStepsKey = `user:${userId}:steps`;
+        await redisClient.incrBy(userStepsKey, currentStepCount);
 
         const userLocationKey = `user:${userId}:location_data`;
         const timestamp = Date.now();
@@ -73,9 +76,11 @@ class AdventureRedisRepository {
 
     async flushUserLocationData(userId: number): Promise<void> {
         const userLocationKey = `user:${userId}:location_data`;
+        const userLastStepsKey = `user:${userId}:last_steps`;
         const userStepsKey = `user:${userId}:steps`;
 
         await redisClient.del(userLocationKey);
+        await redisClient.del(userLastStepsKey);
         await redisClient.del(userStepsKey);
 
         await redisClient.zRem(this.locationKey, userId.toString());
