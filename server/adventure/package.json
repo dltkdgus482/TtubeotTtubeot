@@ -22,6 +22,7 @@
     "@types/jsonwebtoken": "^9.0.7",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "ftp": "^0.3.10",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.10.0",
     "monsterapi": "^0.0.5",
