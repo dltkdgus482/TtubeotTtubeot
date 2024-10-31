@@ -43,11 +43,14 @@ class AdventureService {
     let locationData = await this.adventureRedisRepository.findUserLocationData(userId);
     let mongoId = await this.adventureMongoRepository.insertUserLocationData(userId, locationData);
 
+    let userSteps = await this.adventureRedisRepository.getStepCount(userId);
+
     adventureLog.gpsLogKey = mongoId;
     adventureLog.gpsLog = locationData;
     adventureLog.endAt = new Date();
     adventureLog.adventureDistance = CalcAdventureStats.getDistanceFromGPSData(locationData);
-    adventureLog.adventureCalorie = CalcAdventureStats.getCalorieBurned(CalcAdventureStats.getCalorieBurned(CalcAdventureStats.getStepsFromGPSData(locationData)));
+    adventureLog.adventureCalorie = CalcAdventureStats.getCalorieBurned(userSteps);
+    adventureLog.adventureSteps = userSteps;
 
     await this.adventureMysqlRepository.updateAdventureLog(adventureLog);
 

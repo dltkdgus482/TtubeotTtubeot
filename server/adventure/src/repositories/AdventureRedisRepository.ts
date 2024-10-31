@@ -1,7 +1,6 @@
 import { GeoReplyWith } from "redis";
 import redisClient from "../config/database/redis";
 import AdventureLogModel from "../models/AdventureLogModel";
-import { Socket } from "socket.io";
 
 class AdventureRedisRepository {
     private readonly locationKey: string = "user_locations";
@@ -20,6 +19,13 @@ class AdventureRedisRepository {
         return AdventureLogModel.create(JSON.parse(adventureLog))
     }
 
+    async getStepCount(userId: number): Promise<number> {
+        const userStepsKey = `user:${userId}:steps`;
+        const stepCount = await redisClient.get(userStepsKey) ?? "0";
+
+        return parseInt(stepCount);
+    }
+
     async storeGPSData(userId: number, lat: number, lng: number, steps: number): Promise<void> {
         if (!userId || userId <= 0) {
             return;
@@ -31,15 +37,24 @@ class AdventureRedisRepository {
             latitude: lat,
         });
 
+        const userLastStepsKey = `user:${userId}:last_steps`;
+        const lastStepCount = await redisClient.get(userLastStepsKey);
+        const currentStepCount = steps - (lastStepCount ? parseInt(lastStepCount) : steps);
+
+        await redisClient.set(userLastStepsKey, steps);
+
+        const userStepsKey = `user:${userId}:steps`;
+        await redisClient.incrBy(userStepsKey, currentStepCount);
+
         const userLocationKey = `user:${userId}:location_data`;
-        const timestamp = Date.now();
+        const timestamp = new Date().toISOString();
 
         await redisClient.zAdd(userLocationKey, {
-            score: timestamp,
+            score: Date.now(),
             value: JSON.stringify({
                 lat,
                 lng,
-                steps,
+                steps: currentStepCount,
                 timestamp,
             }),
         });
@@ -68,7 +83,12 @@ class AdventureRedisRepository {
 
     async flushUserLocationData(userId: number): Promise<void> {
         const userLocationKey = `user:${userId}:location_data`;
+        const userLastStepsKey = `user:${userId}:last_steps`;
+        const userStepsKey = `user:${userId}:steps`;
+
         await redisClient.del(userLocationKey);
+        await redisClient.del(userLastStepsKey);
+        await redisClient.del(userStepsKey);
 
         await redisClient.zRem(this.locationKey, userId.toString());
     }

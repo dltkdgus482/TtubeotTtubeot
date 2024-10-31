@@ -5,6 +5,7 @@ class AdventureLogModel {
   adventureDistance: number;
   adventureCalorie: number;
   adventureCoin: number;
+  adventureSteps: number;
   startAt: Date;
   endAt: Date;
   gpsLogKey: string;
@@ -17,6 +18,7 @@ class AdventureLogModel {
     this.adventureDistance = data.adventureDistance ?? 0;
     this.adventureCalorie = data.adventureCalorie ?? 0;
     this.adventureCoin = data.adventureCoin ?? 0;
+    this.adventureSteps = data.adventureSteps ?? 0;
     this.startAt = data.startAt ?? new Date();
     this.endAt = data.endAt ?? new Date();
     this.gpsLogKey = data.gpsLogKey ?? '';
@@ -35,6 +37,7 @@ class AdventureLogModel {
       adventure_distance: this.adventureDistance,
       adventure_calorie: this.adventureCalorie,
       adventure_coin: this.adventureCoin,
+      adventure_steps: this.adventureSteps,
       start_at: this.startAt,
       end_at: this.endAt,
       gps_log_key: this.gpsLogKey,
