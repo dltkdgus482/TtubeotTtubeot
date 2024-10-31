@@ -15,6 +15,7 @@ class AdventureMysqlRepository {
         adventure_distance INT DEFAULT 0,
         adventure_calorie INT DEFAULT 0,
         adventure_coin INT DEFAULT 0,
+        adventure_steps INT DEFAULT 0,
         start_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         end_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         gps_log_key CHAR(24) DEFAULT NULL
@@ -34,11 +35,12 @@ class AdventureMysqlRepository {
 
   async updateAdventureLog(adventureLog: AdventureLogModel): Promise<void> {
     await connection.query(
-      `UPDATE adventure_log SET adventure_distance = ?, adventure_calorie = ?, adventure_coin = ?, end_at = ?, gps_log_key = ? WHERE adventure_log_id = ?`,
+      `UPDATE adventure_log SET adventure_distance = ?, adventure_calorie = ?, adventure_coin = ?, adventure_steps = ?, end_at = ?, gps_log_key = ? WHERE adventure_log_id = ?`,
       [
         adventureLog.adventureDistance,
         adventureLog.adventureCalorie,
         adventureLog.adventureCoin,
+        adventureLog.adventureSteps,
         adventureLog.endAt,
         adventureLog.gpsLogKey,
         adventureLog.adventureLogId,
