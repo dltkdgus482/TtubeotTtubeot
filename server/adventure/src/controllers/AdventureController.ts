@@ -1,13 +1,16 @@
 import { Socket } from "socket.io";
 import AdventureService from "../services/AdventureService";
+import ImageGenService from "../services/ImageGenService";
 import AdventureLogModel from '../models/AdventureLogModel';
 import JWTParser from '../utils/JWTParser';
 
 export class AdventureController {
   private adventureService: AdventureService;
+  private imageGenService: ImageGenService;
 
   constructor() {
     this.adventureService = new AdventureService();
+    this.imageGenService = new ImageGenService();
   }
 
   async handleInitAdventure(socket: Socket, data: { token: string }): Promise<void> {
@@ -44,6 +47,10 @@ export class AdventureController {
       let adventureLog = await this.adventureService.endAdventure(socket.id);
 
       socket.emit("adventure_result", { "data": adventureLog });
+
+      socket.disconnect();
+
+      this.imageGenService.generateImage(adventureLog);
     } catch (error) {
       console.error("Error in handleEndAdventure:", error);
       socket.emit("error", { message: "Failed to end adventure" });
