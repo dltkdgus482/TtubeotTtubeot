@@ -30,6 +30,9 @@ public class Friend {
     @Column(name = "last_greeting", nullable = false)
     private LocalDateTime lastGreeting;
 
+    @Column(name = "last_send")
+    private LocalDateTime lastSend;
+
     // 엔티티 생성 전에 실행되는 메서드로, 생성 시 기본값 설정
     @PrePersist
     public void prePersist() {
@@ -38,6 +41,10 @@ public class Friend {
     }
 
     public void meet() {
-        this.lastGreeting = this.lastGreeting == null ? LocalDateTime.now() : this.lastGreeting;
+        this.lastGreeting = LocalDateTime.now();
+    }
+
+    public void send() {
+        this.lastSend = LocalDateTime.now();
     }
 }

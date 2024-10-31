@@ -5,8 +5,12 @@ import com.user.userttubeot.user.domain.dto.FriendInfoDto;
 import com.user.userttubeot.user.domain.entity.Friend;
 import com.user.userttubeot.user.domain.entity.FriendId;
 import com.user.userttubeot.user.domain.entity.User;
+import com.user.userttubeot.user.domain.exception.CoinAlreadySentException;
+import com.user.userttubeot.user.domain.exception.FriendNotFoundException;
 import com.user.userttubeot.user.domain.repository.FriendRepository;
+import com.user.userttubeot.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +25,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class FriendService {
 
+    private final Integer SEND_COIN_AMOUNT = 100;
+
     private final FriendRepository friendRepository;
+    private final UserRepository userRepository;
     private final TtubeotService ttubeotService;
     private final UserService userService;
 
@@ -56,6 +63,35 @@ public class FriendService {
         return friendInfoDtoList;
     }
 
+    public void sendCoin(Integer userId, Integer friendUserId) {
+        // 친구 ID로 친구 관계 확인
+        FriendId friendId = new FriendId(userId, friendUserId);
+        Friend friend = friendRepository.findById(friendId).orElseThrow(() ->
+            new FriendNotFoundException(
+                "사용자 ID " + userId + "와 친구 ID " + friendUserId + "는 친구 관계가 아닙니다.")
+        );
+
+        User friendUser = userService.findUserById(friendUserId);
+
+        // 오늘 날짜를 구합니다.
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime lastSend = friend.getLastSend();
+
+        // 마지막 전송 날짜가 오늘인지 확인
+        if (lastSend != null && lastSend.toLocalDate().isEqual(now.toLocalDate())) {
+            throw new CoinAlreadySentException("사용자 ID " + userId + "는 오늘 이미 코인을 전송했습니다.");
+        }
+
+        // 마지막 전송 시간 갱신
+        friend.send();
+        friendUser.addCoins(SEND_COIN_AMOUNT);
+
+        // 변경된 Friend 엔티티 저장
+        friendRepository.save(friend);
+        userRepository.save(friendUser);
+    }
+
+
     /**
      * 두 사용자가 친구 관계인지 확인.
      */
@@ -63,7 +99,13 @@ public class FriendService {
         FriendId friendId = new FriendId(userId, friendUserId);
         boolean exists = friendRepository.existsById(friendId);
         log.debug("친구 관계 확인 - 사용자 ID: {}, 친구 ID: {}, 관계 여부: {}", userId, friendUserId, exists);
-        return exists;
+
+        if (!exists) {
+            throw new FriendNotFoundException(
+                "사용자 ID " + userId + "와 친구 ID " + friendUserId + "는 친구 관계가 아닙니다.");
+        }
+
+        return true;
     }
 
     /**
