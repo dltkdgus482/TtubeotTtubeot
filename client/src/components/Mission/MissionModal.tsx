@@ -43,8 +43,10 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
   const [selectedMenu, setSelectedMenu] = useState<string>('일일 미션');
   const [isNfcTagged, setIsNfcTagged] = useState<boolean>(false);
 
-  const openTagModal = () => setIsNfcTagged(true);
-  const closeTagModal = () => setIsNfcTagged(false);
+  const closeTagModal = async () => {
+    setIsNfcTagged(false);
+    await NfcManager.cancelTechnologyRequest();
+  };
 
   const missionList: string[] = ['일일 미션', '주간 미션', '업적'];
   const dailyMissionList: MissionProps[] = [
@@ -127,36 +129,36 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
 
   const readNfc = async () => {
     try {
+      console.log(NfcManager);
+
       if (!NfcManager.isEnabled()) {
         return;
       }
 
-      if (isNfcTagged) {
+      if (isNfcTagged === true) {
         return;
       }
 
       await NfcManager.requestTechnology(NfcTech.Ndef);
       const tag = await NfcManager.getTag();
       console.log(tag);
-      await setSelectedMenu('일일 미션');
-      await setIsNfcTagged(true);
-      // setInterval(() => {
-      //   setIsNfcTagged(false);
-      // }, 3000);
+      setIsNfcTagged(true);
     } catch (ex) {
       await setSelectedMenu('업적');
+      console.log('NFC Tagging failed', ex);
+      NfcManager.cancelTechnologyRequest();
+      readNfc();
     } finally {
-      await NfcManager.cancelTechnologyRequest();
+      NfcManager.cancelTechnologyRequest();
     }
   };
 
   useEffect(() => {
-    NfcManager.cancelTechnologyRequest();
-
-    if (selectedMenu === '주간 미션') {
+    if (!isNfcTagged) {
+      NfcManager.cancelTechnologyRequest();
       readNfc();
     }
-  }, [selectedMenu]);
+  }, [isNfcTagged]);
 
   return (
     <Modal
