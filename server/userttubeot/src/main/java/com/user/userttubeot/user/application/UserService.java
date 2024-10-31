@@ -83,16 +83,23 @@ public class UserService {
      * @return 저장된 User 엔티티 객체
      */
     public User signup(UserSignupRequestDto request) {
-        log.info("회원가입 요청 - 사용자 이름: {}, 전화번호: {}", request.getUserName(), request.getUserPhone());
+        String userName = request.getUserName();
+        String userPhone = request.getUserPhone();
+        String userPassword = request.getUserPassword();
+        
+        log.info("회원가입 요청 - 사용자 이름: {}, 전화번호: {}", userName, userPhone);
+
+        // 사용자 이름 유효성 검사
+        validateNickname(userName);
 
         // 비밀번호 유효성 검사
-        validatePassword(request.getUserPassword());
+        validatePassword(userPassword);
 
-        validateUserPhoneNotExists(request.getUserPhone());
-        verifyPhone(request.getUserPhone());
+        validateUserPhoneNotExists(userPhone);
+        verifyPhone(userPhone);
 
         String passwordSalt = generateSalt();
-        String encryptedPassword = passwordEncoder.encode(request.getUserPassword() + passwordSalt);
+        String encryptedPassword = passwordEncoder.encode(userPassword + passwordSalt);
         User user = fromDto(request, passwordSalt, encryptedPassword);
         User savedUser = userRepository.save(user);
 
@@ -255,6 +262,20 @@ public class UserService {
         }
     }
 
+    /**
+     * 닉네임 유효성 검사
+     *
+     * @param nickname 검사할 닉네임
+     */
+    private void validateNickname(String nickname) {
+        // 닉네임이 2~8자의 영문 또는 한글만으로 이루어졌는지 확인하는 정규식
+        String nicknamePattern = "^[A-Za-z가-힣]{2,8}$";
+
+        if (!nickname.matches(nicknamePattern)) {
+            log.warn("닉네임 유효성 검사 실패 - 닉네임이 조건에 맞지 않습니다: {}", nickname);
+            throw new IllegalArgumentException("닉네임은 영문 또는 한글만으로 2~8자여야 합니다.");
+        }
+    }
 
     private boolean isInvalidRefreshToken(String refreshToken, String storedToken) {
         return storedToken == null || !storedToken.equals(refreshToken) || jwtUtil.isExpired(
