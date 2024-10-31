@@ -33,9 +33,6 @@ public class Ttubeot {
     @Column(name = "ttubeot_type")
     private Integer ttubeotType;
 
-    @Column(name = "ttubeot_image")
-    private String ttubeotImage;
-
     @OneToMany(mappedBy = "ttubeot", fetch = FetchType.LAZY)
     private List<UserTtuBeotOwnership> userTtuBeotOwnershipList = new ArrayList<>();
 
