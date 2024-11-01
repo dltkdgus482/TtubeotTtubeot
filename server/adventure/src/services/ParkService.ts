@@ -10,10 +10,6 @@ class ParkService {
     async getNearestParks(lat: number, lng: number, limit: number = 5) {
         return await this.parkRepository.findNearestParks(lat, lng, limit);
     }
-
-    async getNearestParksWithDistance(lat: number, lng: number, distance: number) {
-        return await this.parkRepository.findNearestParksWithDistance(lat, lng, distance);
-    }
 }
 
 export default ParkService;
