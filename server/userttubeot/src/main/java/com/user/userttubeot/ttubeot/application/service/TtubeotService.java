@@ -4,13 +4,11 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
-import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
-import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistDTO;
-import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistDTO;
-import java.util.List;
+import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistToDbDTO;
+import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistToDbDTO;
 import org.springframework.http.ResponseEntity;
 
 public interface TtubeotService {
@@ -46,9 +44,9 @@ public interface TtubeotService {
     ResponseEntity<TtubeotLogListResponseDTO> checkTtubeotStatus(Integer userId);
 
     // 뚜벗 등록 (backend)
-    void registTtubeot(TtubeotRegistDTO ttubeotRegistDTO);
+    void registTtubeot(TtubeotRegistToDbDTO ttubeotRegistToDbDTO);
 
     // 미션 등록 (backend)
-    void registMission(MissionRegistDTO missionRegistDTO);
+    void registMission(MissionRegistToDbDTO missionRegistDTO);
 
 }

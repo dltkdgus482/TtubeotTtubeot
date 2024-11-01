@@ -1,7 +1,6 @@
 package com.user.userttubeot.ttubeot.domain.model;
 
-import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistDTO;
-import jakarta.persistence.CascadeType;
+import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistToDbDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -36,7 +35,7 @@ public class Ttubeot {
     @OneToMany(mappedBy = "ttubeot", fetch = FetchType.LAZY)
     private List<UserTtuBeotOwnership> userTtuBeotOwnershipList = new ArrayList<>();
 
-    public static Ttubeot fromDTO(TtubeotRegistDTO dto) {
+    public static Ttubeot fromDTO(TtubeotRegistToDbDTO dto) {
         return Ttubeot.builder()
             .ttubeotType(dto.getTtubeotType())
             .build();

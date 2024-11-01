@@ -1,6 +1,6 @@
 package com.user.userttubeot.ttubeot.domain.model;
 
-import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistDTO;
+import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistToDbDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -42,7 +42,7 @@ public class Mission {
     private List<UserTtubeotMission> userTtubeotMissions = new ArrayList<>();
 
     // DTO to Entity
-    public static Mission fromDTO(MissionRegistDTO dto) {
+    public static Mission fromDTO(MissionRegistToDbDTO dto) {
         return Mission.builder()
             .missionName(dto.getMissionName())
             .missionExplanation(dto.getMissionExplanation())

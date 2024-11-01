@@ -9,8 +9,8 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
-import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistDTO;
-import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistDTO;
+import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistToDbDTO;
+import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistToDbDTO;
 import com.user.userttubeot.ttubeot.domain.model.Mission;
 import com.user.userttubeot.ttubeot.domain.model.Ttubeot;
 import com.user.userttubeot.ttubeot.domain.model.TtubeotLog;
@@ -265,14 +265,14 @@ public class TtubeotServiceImpl implements TtubeotService {
     }
 
     @Override
-    public void registTtubeot(TtubeotRegistDTO ttubeotRegistDTO) {
-        Ttubeot ttubeot = Ttubeot.fromDTO(ttubeotRegistDTO);
+    public void registTtubeot(TtubeotRegistToDbDTO ttubeotRegistToDbDTO) {
+        Ttubeot ttubeot = Ttubeot.fromDTO(ttubeotRegistToDbDTO);
 
         TtubeotRepository.save(ttubeot);
     }
 
     @Override
-    public void registMission(MissionRegistDTO missionRegistDTO) {
+    public void registMission(MissionRegistToDbDTO missionRegistDTO) {
         Mission mission = Mission.fromDTO(missionRegistDTO);
 
         missionRepository.save(mission);

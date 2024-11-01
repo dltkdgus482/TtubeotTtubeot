@@ -3,7 +3,7 @@ package com.user.userttubeot.ttubeot.domain.dto.backend;
 import lombok.Data;
 
 @Data
-public class MissionRegistDTO {
+public class MissionRegistToDbDTO {
 
     private String missionName; // 미션 이름
     private String missionExplanation; // 미션 설명
