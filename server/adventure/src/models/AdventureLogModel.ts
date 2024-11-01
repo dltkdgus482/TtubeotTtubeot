@@ -10,6 +10,7 @@ class AdventureLogModel {
   endAt: Date;
   gpsLogKey: string;
   gpsLog: { lat: number, lng: number, steps: number, timestamp: number }[];
+  imgUrls: string[];
 
   constructor(data: Partial<AdventureLogModel>) {
     this.adventureLogId = data.adventureLogId ?? 0;
@@ -23,6 +24,7 @@ class AdventureLogModel {
     this.endAt = data.endAt ?? new Date();
     this.gpsLogKey = data.gpsLogKey ?? '';
     this.gpsLog = data.gpsLog ?? [];
+    this.imgUrls = data.imgUrls ?? [];
   }
 
   static create(data: Partial<AdventureLogModel>): AdventureLogModel {
@@ -42,6 +44,7 @@ class AdventureLogModel {
       end_at: this.endAt,
       gps_log_key: this.gpsLogKey,
       gps_log: this.gpsLog,
+      img_urls: this.imgUrls
     };
   }
 }

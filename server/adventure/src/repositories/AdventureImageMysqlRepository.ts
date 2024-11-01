@@ -26,6 +26,14 @@ class AdventureImageMysqlRepository {
       );
     }
   }
+
+  async findImageUrlsByAdventureLogId(adventureLogId: number): Promise<string[]> {
+    const [rows] = await connection.query(
+      `SELECT image_url FROM adventure_image WHERE adventure_log_id = ?`,
+      [adventureLogId]
+    );
+    return (rows as { image_url: string }[]).map((row) => row.image_url);
+  }
 }
 
 export default AdventureImageMysqlRepository;
