@@ -4,6 +4,7 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
@@ -49,7 +50,16 @@ public interface TtubeotService {
     // 미션 등록 (backend)
     void registMission(MissionRegistToDbDTO missionRegistDTO);
 
-    // 미션이 완료되면 보상 지금
+    // 유저 뚜벗의 일일미션 정보를 조회
+    UserTtubeotMissionListResponseDTO getUserDailyMissionList(int userId);
 
-    //
+    // 유저 뚜벗의 주간미션 정보를 조회
+    UserTtubeotMissionListResponseDTO getUserWeeklyMissionList(int userId);
+
+    // 미션 갱신 후 보상 지급
+
+    // 매일 자정 일일미션을 초기화
+
+    // 매주 일요일에서 월요일 넘어갈 때 주간미션을 초기화
+
 }

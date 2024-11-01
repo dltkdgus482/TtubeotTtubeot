@@ -10,6 +10,7 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotIdResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistToDbDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistToDbDTO;
 import lombok.RequiredArgsConstructor;
@@ -94,6 +95,21 @@ public class TtubeotController {
         return ttubeotService.checkTtubeotStatus(userId);
     }
 
+    // 유저 뚜벗의 일간 미션 목록 조회
+    @GetMapping("/auth/ttubeot/daily")
+    public ResponseEntity<?> getTtubeotDaily(@RequestAttribute("userId") Integer userId) {
+        UserTtubeotMissionListResponseDTO userTtubeotMissionList = ttubeotService.getUserDailyMissionList(
+            userId);
+        return ResponseEntity.ok(userTtubeotMissionList);
+    }
+
+    // 유저 뚜벗의 주간 미션 목록 조회
+    @GetMapping("/auth/ttubeot/weekly")
+    public ResponseEntity<?> getTtubeotWeekly(@RequestAttribute("userId") Integer userId) {
+        UserTtubeotMissionListResponseDTO userTtubeotMissionList = ttubeotService.getUserWeeklyMissionList(
+            userId);
+        return ResponseEntity.ok(userTtubeotMissionList);
+    }
 
     /*
      * api for backend
@@ -111,4 +127,6 @@ public class TtubeotController {
         ttubeotService.registMission(registMission);
         return ResponseEntity.ok("미션이 정상적으로 등록되었습니다.");
     }
+
+
 }
