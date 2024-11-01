@@ -35,8 +35,11 @@ public class Mission {
     @Column(name = "mission_explanation", length = 128)
     private String missionExplanation;
 
-    @Column(name = "mission_target_count")
+    @Column(name = "mission_target_count", nullable = false)
     private Integer missionTargetCount;
+
+    @Column(name = "mission_type", nullable = false)
+    private Integer missionType; // 일간 - 0, 주간 - 1 (default: 0)
 
     @OneToMany(mappedBy = "mission", fetch = FetchType.LAZY)
     private List<UserTtubeotMission> userTtubeotMissions = new ArrayList<>();

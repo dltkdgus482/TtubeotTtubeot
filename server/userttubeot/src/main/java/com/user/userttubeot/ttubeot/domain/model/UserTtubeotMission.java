@@ -33,8 +33,6 @@ public class UserTtubeotMission {
     @Column(name = "user_ttubeot_mission_action_count", nullable = false)
     private Integer userTtubeotMissionActionCount = 0;
 
-    @Column(name = "user_ttubeot_mission_type", nullable = false)
-    private Integer userTtubeotMissionType = 0;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
