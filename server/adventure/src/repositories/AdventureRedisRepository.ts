@@ -92,6 +92,28 @@ class AdventureRedisRepository {
 
         await redisClient.zRem(this.locationKey, userId.toString());
     }
+
+    async isExistRemainCounts(userId: number, id: string): Promise<boolean> {
+        const key = `user:${userId}:remain_counts:${id}`;
+        return await redisClient.exists(key) === 1;
+    }
+
+    async getRemainCounts(userId: number, id: string): Promise<number[]> {
+        const key = `user:${userId}:remain_counts:${id}`;
+        const remainCounts = await redisClient.get(key) ?? "[]";
+
+        return JSON.parse(remainCounts);
+    }
+
+    async setRemainCounts(userId: number, id: string, remainCounts: number[]): Promise<void> {
+        const key = `user:${userId}:remain_counts:${id}`;
+
+        const now = new Date();
+        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        const secondsUntilMidnight = Math.floor((tomorrow.getTime() - now.getTime()) / 1000);
+
+        await redisClient.setEx(key, secondsUntilMidnight, JSON.stringify(remainCounts));
+    }
 }
 
 export default AdventureRedisRepository;

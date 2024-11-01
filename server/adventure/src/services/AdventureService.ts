@@ -1,6 +1,7 @@
 import AdventureRedisRepository from '../repositories/AdventureRedisRepository';
 import AdventureMongoRepository from '../repositories/AdventureMongoRepository';
 import AdventureMysqlRepository from '../repositories/AdventureMysqlRepository';
+import ParkRepository from '../repositories/ParkRepository';
 import AdventureLogModel from '../models/AdventureLogModel';
 import CalcAdventureStats from '../utils/CalcAdventureStats';
 
@@ -8,11 +9,13 @@ class AdventureService {
   private adventureRedisRepository: AdventureRedisRepository;
   private adventureMongoRepository: AdventureMongoRepository;
   private adventureMysqlRepository: AdventureMysqlRepository;
+  private parkRepository: ParkRepository;
 
   constructor() {
     this.adventureRedisRepository = new AdventureRedisRepository();
     this.adventureMongoRepository = new AdventureMongoRepository();
     this.adventureMysqlRepository = new AdventureMysqlRepository();
+    this.parkRepository = new ParkRepository();
   }
 
   async initAdventure(userId: number, socket: string): Promise<void> {
@@ -58,6 +61,36 @@ class AdventureService {
     await this.adventureRedisRepository.setOffline(socket);
 
     return adventureLog;
+  }
+
+  async getParkInfos(socket: string, lat: number, lng: number): Promise<any[]> {
+    let adventureLog = await this.adventureRedisRepository.getAdventureLog(socket);
+    let userId = adventureLog.userId;
+
+    let parkList = await this.parkRepository.findNearestParksWithDistance(lat, lng, 1500);
+    let result = [];
+
+    for (let park of parkList) {
+      let remainCounts = await this.adventureRedisRepository.getRemainCounts(userId, park._id);
+
+      if (!await this.adventureRedisRepository.isExistRemainCounts(userId, park._id)) {
+        let repeat = Math.floor(Math.random() * 3) + 3;
+        for (let i = 0; i < repeat; i++) {
+          remainCounts.push(Math.floor(Math.random() * 200) + 300);
+        }
+        await this.adventureRedisRepository.setRemainCounts(userId, park._id, remainCounts);
+      }
+
+      result.push({
+        name: park.name,
+        lat: park.location.coordinates[1],
+        lng: park.location.coordinates[0],
+        distance: park.distance,
+        remain_count: remainCounts.length,
+      });
+    }
+
+    return result;
   }
 }
 

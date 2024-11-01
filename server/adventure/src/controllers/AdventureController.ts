@@ -36,8 +36,9 @@ export class AdventureController {
     const { lat, lng, steps } = data;
     try {
       let nearbyUsers = await this.adventureService.storeGPSData(socket.id, lat, lng, steps);
-      // TODO: adventure_park 정보 조회 후 반환 해야함.
+      let parkList = await this.adventureService.getParkInfos(socket.id, lat, lng);
 
+      socket.emit("adventure_park", { "parks": parkList });
       socket.emit("adventure_user", { "users": nearbyUsers });
     } catch (error) {
       console.error("Error in handleStoreGPSData:", error);
