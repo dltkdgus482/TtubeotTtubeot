@@ -25,12 +25,11 @@ import lombok.NoArgsConstructor;
 @Table(name = "ttubeot")
 public class Ttubeot {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer ttubeotId;
 
-    @Column(name = "ttubeot_type")
+    @Column(name = "ttubeot_type", nullable = false)
     private Integer ttubeotType;
 
     @OneToMany(mappedBy = "ttubeot", fetch = FetchType.LAZY)
