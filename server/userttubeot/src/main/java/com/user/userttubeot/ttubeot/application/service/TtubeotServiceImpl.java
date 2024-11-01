@@ -9,9 +9,13 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
+import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistDTO;
+import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistDTO;
+import com.user.userttubeot.ttubeot.domain.model.Mission;
 import com.user.userttubeot.ttubeot.domain.model.Ttubeot;
 import com.user.userttubeot.ttubeot.domain.model.TtubeotLog;
 import com.user.userttubeot.ttubeot.domain.model.UserTtuBeotOwnership;
+import com.user.userttubeot.ttubeot.domain.repository.MissionRepository;
 import com.user.userttubeot.ttubeot.domain.repository.TtubeotLogRepository;
 import com.user.userttubeot.ttubeot.domain.repository.TtubeotRepository;
 import com.user.userttubeot.ttubeot.domain.repository.UserTtubeotOwnershipRepository;
@@ -38,7 +42,7 @@ public class TtubeotServiceImpl implements TtubeotService {
     private final UserTtubeotOwnershipRepository userTtubeotOwnershipRepository;
     private final TtubeotRepository TtubeotRepository;
     private final UserRepository userRepository;
-    private final TtubeotRepository ttubeotRepository;
+    private final MissionRepository missionRepository;
 
     @Override
     public void addTtubeotLog(Long userTtubeotOwnershipId,
@@ -258,6 +262,20 @@ public class TtubeotServiceImpl implements TtubeotService {
         return ResponseEntity.ok(TtubeotLogListResponseDTO.builder()
             .ttubeotLogResponseList(logsDtos)
             .build());
+    }
+
+    @Override
+    public void registTtubeot(TtubeotRegistDTO ttubeotRegistDTO) {
+        Ttubeot ttubeot = Ttubeot.fromDTO(ttubeotRegistDTO);
+
+        TtubeotRepository.save(ttubeot);
+    }
+
+    @Override
+    public void registMission(MissionRegistDTO missionRegistDTO) {
+        Mission mission = Mission.fromDTO(missionRegistDTO);
+
+        missionRepository.save(mission);
     }
 
     // TtubeotDrawResponseDTO 생성 메서드

@@ -8,6 +8,8 @@ import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistDTO;
+import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistDTO;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 
@@ -42,5 +44,11 @@ public interface TtubeotService {
 
     // 뚜벗 상태 확인
     ResponseEntity<TtubeotLogListResponseDTO> checkTtubeotStatus(Integer userId);
+
+    // 뚜벗 등록 (backend)
+    void registTtubeot(TtubeotRegistDTO ttubeotRegistDTO);
+
+    // 미션 등록 (backend)
+    void registMission(MissionRegistDTO missionRegistDTO);
 
 }
