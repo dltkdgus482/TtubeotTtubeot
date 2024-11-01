@@ -1,7 +1,10 @@
 package com.user.userttubeot.ttubeot.domain.model;
 
+import com.user.userttubeot.ttubeot.domain.enums.MissionStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,6 +36,9 @@ public class UserTtubeotMission {
     @Column(name = "user_ttubeot_mission_action_count", nullable = false)
     private Integer userTtubeotMissionActionCount = 0;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MissionStatus missionStatus;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -52,6 +58,9 @@ public class UserTtubeotMission {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        if (this.missionStatus == null) {
+            this.missionStatus = MissionStatus.IN_PROGRESS;
+        }
     }
 
     @PreUpdate

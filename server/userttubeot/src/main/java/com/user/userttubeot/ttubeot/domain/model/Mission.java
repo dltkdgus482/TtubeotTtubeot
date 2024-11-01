@@ -41,6 +41,9 @@ public class Mission {
     @Column(name = "mission_type", nullable = false)
     private Integer missionType; // 일간 - 0, 주간 - 1 (default: 0)
 
+    @Column(name = "mission_theme", nullable = false)
+    private Integer missionTheme; // 상호작용 - 0, 모험 - 1, 사회성 - 2
+
     @OneToMany(mappedBy = "mission", fetch = FetchType.LAZY)
     private List<UserTtubeotMission> userTtubeotMissions = new ArrayList<>();
 
@@ -50,6 +53,7 @@ public class Mission {
             .missionName(dto.getMissionName())
             .missionExplanation(dto.getMissionExplanation())
             .missionTargetCount(dto.getMissioNTargetCount())
+            .missionTheme(dto.getMissionTheme())
             .build();
     }
 }

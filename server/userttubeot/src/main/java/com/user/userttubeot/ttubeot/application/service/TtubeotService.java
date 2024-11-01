@@ -49,4 +49,7 @@ public interface TtubeotService {
     // 미션 등록 (backend)
     void registMission(MissionRegistToDbDTO missionRegistDTO);
 
+    // 미션이 완료되면 보상 지금
+
+    //
 }
