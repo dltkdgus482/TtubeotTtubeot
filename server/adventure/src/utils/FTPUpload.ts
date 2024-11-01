@@ -6,16 +6,41 @@ import { Readable } from 'stream';
 dotenv.config();
 
 class FTPUpload {
-  private static client: ftp;
-  private static host: string = process.env.FTP_HOST || '';
-  private static user: string = process.env.FTP_USER || '';
-  private static password: string = process.env.FTP_PASSWORD || '';
+  private static instance: FTPUpload;
+  private client: ftp;
+  private host: string = process.env.FTP_HOST || '';
+  private user: string = process.env.FTP_USER || '';
+  private password: string = process.env.FTP_PASSWORD || '';
+  private connected: boolean = false;
 
-  private static connect(): Promise<void> {
+  private constructor() {
     this.client = new ftp();
+  }
+
+  public static getInstance(): FTPUpload {
+    if (!FTPUpload.instance) {
+      FTPUpload.instance = new FTPUpload();
+    }
+    return FTPUpload.instance;
+  }
+
+  private connect(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.client.on('ready', resolve);
-      this.client.on('error', reject);
+      if (this.connected) {
+        resolve();
+        return;
+      }
+
+      this.client.on('ready', () => {
+        this.connected = true;
+        resolve();
+      });
+
+      this.client.on('error', (error) => {
+        this.connected = false;
+        reject(error);
+      });
+
       this.client.connect({
         host: this.host,
         user: this.user,
@@ -25,7 +50,7 @@ class FTPUpload {
     });
   }
 
-  public static async uploadImage(imageBlob: Buffer): Promise<string> {
+  public async uploadImage(imageBlob: Buffer): Promise<string> {
     const timestamp = Date.now();
     const filename = `${uuidv4()}-${timestamp}.jpeg`;
 
@@ -37,7 +62,6 @@ class FTPUpload {
       imageStream.push(null);
 
       this.client.put(imageStream, `/generated/${filename}`, (err) => {
-        this.client.end();
         if (err) {
           reject(err);
         } else {
@@ -45,6 +69,13 @@ class FTPUpload {
         }
       });
     });
+  }
+
+  public closeConnection(): void {
+    if (this.connected) {
+      this.client.end();
+      this.connected = false;
+    }
   }
 }
 

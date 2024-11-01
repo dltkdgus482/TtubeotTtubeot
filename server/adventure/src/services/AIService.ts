@@ -24,11 +24,9 @@ class AIService {
       guidance_scale: 30,
       image_guidance_scale: 2,
     };
-    console.log(init_image_url);
 
     try {
       const response = await this.client.generate(model, input);
-      console.log(response);
       return response.output[0];
     } catch (error) {
       console.error("Error generating image:", error);

@@ -51,7 +51,9 @@ class ImageGenService {
       const buffer = await imageBlob.arrayBuffer();
       const imageBuffer = Buffer.from(buffer);
 
-      let filename = await FTPUpload.uploadImage(imageBuffer);
+      let ftpInstance = FTPUpload.getInstance();
+
+      let filename = await ftpInstance.uploadImage(imageBuffer);
       fileLinks.push(this.cdnUrl + filename);
     }
     await this.imageMysqlRepository.saveImageUrls(adventureLog.adventureLogId, fileLinks);
