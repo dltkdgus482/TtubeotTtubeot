@@ -87,7 +87,6 @@ const AdventureScreen = () => {
           />
         </TouchableOpacity>
       </View>
-
       <GPSAlertModal modalVisible={modalVisible} closeModal={closeModal} />
     </SafeAreaView>
   );

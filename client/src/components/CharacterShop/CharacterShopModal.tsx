@@ -1,8 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Modal, ScrollView, Image, TouchableOpacity } from 'react-native';
 import styles from './CharacterShopModal.styles';
 import StyledText from '../../styles/StyledText';
 import Icon from 'react-native-vector-icons/AntDesign';
+import ButtonFlat from '../Button/ButtonFlat';
+
+import {
+  initialize,
+  requestPermission,
+  readRecords,
+  getGrantedPermissions,
+  getSdkStatus,
+  revokeAllPermissions,
+} from 'react-native-health-connect';
 
 const CharacterShopTitleContainer = require('../../assets/images/CharacterShopTitleContainer.png');
 const CharacterShopBackgound = require('../../assets/images/CharacterShopBackground.png');
@@ -108,6 +118,106 @@ const CharacterShopModal: React.FC<CharacterShopModalProps> = ({
   const buyItem = () => {
     console.log('buy item');
   };
+
+  //   -------------------------------------
+  // const [healthData, setHealthData] = useState(null);
+  //
+  //  const init = async () => {
+  //     await initialize();
+  // };
+  //
+  //  const isAvailable = async () => {
+  //   const res = await getSdkStatus();
+  //   if (res === 1) {
+  //     return { status: false, message: "SDK unavailable" };
+  //   } else if (res === 2) {
+  //     return { status: false, message: "SDK update required" };
+  //   } else if (res === 3) {
+  //     return { status: true, message: "Health Connect available" };
+  //   }
+  // };
+  //
+  //  const getPermission = async () =>
+  //   new Promise((resolve, reject) => {
+  //     requestPermission([
+  //       { accessType: 'read', recordType: 'TotalCaloriesBurned' },
+  //       { accessType: 'read', recordType: 'Steps' },
+  //       { accessType: 'read', recordType: 'HeartRate' },
+  //       { accessType: 'read', recordType: 'Distance' },
+  //       { accessType: 'read', recordType: 'SleepSession' },
+  //     ])
+  //       .then(permissions => {
+  //         console.log('Requested permissions:', permissions);
+  //         resolve(permissions.length > 0);
+  //       })
+  //       .catch(e => {
+  //         reject(Error(e.message));
+  //       });
+  //   });
+  //
+  // useEffect(() => {
+  //   const getHealthData = async () => {
+  //     try {
+  //       // Initialize Health Connect SDK
+  //       await initialize();
+  //
+  //       // Check SDK status
+  //       const sdkStatus = await getSdkStatus();
+  //       if (sdkStatus !== 3) {
+  //         console.log("Health Connect SDK not available or needs update");
+  //         return;
+  //       }
+  //
+  //       // Request permissions
+  //       const hasPermission = await getPermission();
+  //       if (!hasPermission) {
+  //         console.log("Permission denied");
+  //         return;
+  //       }
+  //
+  //       // Confirm granted permissions
+  //       const grantedPermissions = await getGrantedPermissions();
+  //       console.log("Granted permissions:", grantedPermissions);
+  //
+  //       // Set start and end times for the past two weeks
+  //       const twoWeeksAgo = new Date();
+  //       twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+  //
+  //       const result = await readRecords('Steps', {
+  //         timeRangeFilter: {
+  //           operator: 'between',
+  //           startTime: twoWeeksAgo.toISOString(),
+  //           endTime: new Date().toISOString(),
+  //         },
+  //       });
+  //
+  //       setHealthData(result);
+  //       console.log("Health data:", result);
+  //
+  //       const readSampleData = () => {
+  //         readRecords('Steps', {
+  //           timeRangeFilter: {
+  //             operator: 'between',
+  //             startTime: '2023-01-09T12:00:00.405Z',
+  //             endTime: '2024-10-29T23:53:15.405Z',
+  //           },
+  //         }).then(({ records }) => {
+  //           console.log('Retrieved records: ', JSON.stringify({ records }, null, 2)); // Retrieved records:  {"records":[{"startTime":"2023-01-09T12:00:00.405Z","endTime":"2023-01-09T23:53:15.405Z","energy":{"inCalories":15000000,"inJoules":62760000.00989097,"inKilojoules":62760.00000989097,"inKilocalories":15000},"metadata":{"id":"239a8cfd-990d-42fc-bffc-c494b829e8e1","lastModifiedTime":"2023-01-17T21:06:23.335Z","clientRecordId":null,"dataOrigin":"com.healthconnectexample","clientRecordVersion":0,"device":0}}]}
+  //         });
+  //
+  //     readSampleData();
+  //       };
+  //     } catch (error) {
+  //       console.error("Error fetching health data:", error);
+  //     }
+  //   };
+  //
+  //   if (modalVisible) {
+  //     getHealthData();
+  //   }
+  // }, [modalVisible]);
+
+  //     ------------------------------
 
   return (
     <Modal
@@ -228,12 +338,11 @@ const CharacterShopModal: React.FC<CharacterShopModalProps> = ({
                       <TouchableOpacity
                         style={styles.itemPriceContainer}
                         onPress={buyItem}>
-                        <View style={styles.itemPriceInnerContainer}>
-                          <Image source={CoinIcon} style={styles.coinIcon} />
-                          <StyledText bold style={styles.itemPrice}>
-                            {item.price}
-                          </StyledText>
-                        </View>
+                        <Image source={CoinIcon} style={styles.coinIcon} />
+                        <ButtonFlat
+                          content={item.price.toLocaleString()}
+                          color="white"
+                        />
                       </TouchableOpacity>
                     </View>
                   </View>
