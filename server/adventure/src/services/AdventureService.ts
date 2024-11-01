@@ -27,14 +27,18 @@ class AdventureService {
     await this.adventureRedisRepository.setOnline(adventureLog, socket);
   }
 
-  // 위치 정보와 걸음 수를 저장, 근처 사용자 목록 반환
-  async storeGPSData(socket: string, lat: number, lng: number, steps: number): Promise<{ userId: number; distance: number }[]> {
+  async storeGPSData(socket: string, lat: number, lng: number, steps: number): Promise<{ lat: number, lng: number, steps: number, timestamp: string, }> {
     let adventureLog = await this.adventureRedisRepository.getAdventureLog(socket);
     let userId = adventureLog.userId;
 
-    await this.adventureRedisRepository.storeGPSData(userId, lat, lng, steps);
+    return await this.adventureRedisRepository.storeGPSData(userId, lat, lng, steps);
+  }
 
-    let nearbyUsers = await this.adventureRedisRepository.findNearbyUsers(lat, lng, 300);
+  async getNearbyUsers(socket: string, lat: number, lng: number, radius: number): Promise<{ userId: number; distance: number }[]> {
+    let adventureLog = await this.adventureRedisRepository.getAdventureLog(socket);
+    let userId = adventureLog.userId;
+
+    let nearbyUsers = await this.adventureRedisRepository.findNearbyUsers(lat, lng, radius);
     nearbyUsers = nearbyUsers.filter(user => user.userId !== userId);
     return nearbyUsers;
   }
@@ -91,6 +95,39 @@ class AdventureService {
     }
 
     return result;
+  }
+
+  async getReward(socket: string, lat: number, lng: number, steps: number): Promise<{ reward: number, remain_count: number }> {
+    let adventureLog = await this.adventureRedisRepository.getAdventureLog(socket);
+    let userId = adventureLog.userId;
+
+    let parkList = await this.parkRepository.findNearestParksWithDistance(lat, lng, 1500);
+
+    let park = parkList[0];
+
+    if (park.distance > 100) {
+      return { reward: 0, remain_count: 0 };
+    }
+
+    let remainCounts = await this.adventureRedisRepository.getRemainCounts(userId, park._id);
+    let remainCount = remainCounts[0] - steps;
+
+    if (remainCount <= 0) {
+      remainCounts.shift();
+      await this.adventureRedisRepository.setRemainCounts(userId, park._id, remainCounts);
+
+      let reward = Math.floor(Math.random() * 100) + 100;
+
+      adventureLog.adventureCoin += reward;
+      await this.adventureRedisRepository.setOnline(adventureLog, socket);
+
+      return { reward, remain_count: remainCounts.length };
+    }
+
+    remainCounts[0] = remainCount;
+    await this.adventureRedisRepository.setRemainCounts(userId, park._id, remainCounts);
+
+    return { reward: 0, remain_count: 0 };
   }
 }
 

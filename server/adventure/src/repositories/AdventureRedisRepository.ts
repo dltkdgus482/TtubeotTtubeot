@@ -26,9 +26,14 @@ class AdventureRedisRepository {
         return parseInt(stepCount);
     }
 
-    async storeGPSData(userId: number, lat: number, lng: number, steps: number): Promise<void> {
+    async storeGPSData(userId: number, lat: number, lng: number, steps: number): Promise<{ lat: number, lng: number, steps: number, timestamp: string, }> {
         if (!userId || userId <= 0) {
-            return;
+            return {
+                lat,
+                lng,
+                steps,
+                timestamp: new Date().toISOString(),
+            };
         }
 
         await redisClient.geoAdd(this.locationKey, {
@@ -58,6 +63,13 @@ class AdventureRedisRepository {
                 timestamp,
             }),
         });
+
+        return {
+            lat,
+            lng,
+            steps: currentStepCount,
+            timestamp,
+        };
     }
 
     async findNearbyUsers(lat: number, lng: number, radius: number): Promise<{ userId: number; distance: number }[]> {

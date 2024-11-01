@@ -35,8 +35,14 @@ export class AdventureController {
   async handleStoreGPSData(socket: Socket, data: { lat: number, lng: number, steps: number }): Promise<void> {
     const { lat, lng, steps } = data;
     try {
-      let nearbyUsers = await this.adventureService.storeGPSData(socket.id, lat, lng, steps);
+      let storedData = await this.adventureService.storeGPSData(socket.id, lat, lng, steps);
+      let nearbyUsers = await this.adventureService.getNearbyUsers(socket.id, lat, lng, 300);
+      let reward = await this.adventureService.getReward(socket.id, lat, lng, storedData.steps);
       let parkList = await this.adventureService.getParkInfos(socket.id, lat, lng);
+
+      if (reward.reward > 0) {
+        socket.emit("adventure_reward", { "type": 0, "reward": reward.reward, "remain_count": reward.remain_count });
+      }
 
       socket.emit("adventure_park", { "parks": parkList });
       socket.emit("adventure_user", { "users": nearbyUsers });
