@@ -3,8 +3,8 @@ import ParkRepository from "../repositories/ParkRepository";
 class ParkService {
     private parkRepository: ParkRepository;
 
-    constructor(parkRepository: ParkRepository) {
-        this.parkRepository = parkRepository;
+    constructor() {
+        this.parkRepository = new ParkRepository();
     }
 
     async getNearestParks(lat: number, lng: number, limit: number = 5) {

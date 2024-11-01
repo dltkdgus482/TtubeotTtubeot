@@ -26,9 +26,14 @@ class AdventureRedisRepository {
         return parseInt(stepCount);
     }
 
-    async storeGPSData(userId: number, lat: number, lng: number, steps: number): Promise<void> {
+    async storeGPSData(userId: number, lat: number, lng: number, steps: number): Promise<{ lat: number, lng: number, steps: number, timestamp: string, }> {
         if (!userId || userId <= 0) {
-            return;
+            return {
+                lat,
+                lng,
+                steps,
+                timestamp: new Date().toISOString(),
+            };
         }
 
         await redisClient.geoAdd(this.locationKey, {
@@ -58,6 +63,13 @@ class AdventureRedisRepository {
                 timestamp,
             }),
         });
+
+        return {
+            lat,
+            lng,
+            steps: currentStepCount,
+            timestamp,
+        };
     }
 
     async findNearbyUsers(lat: number, lng: number, radius: number): Promise<{ userId: number; distance: number }[]> {
@@ -91,6 +103,28 @@ class AdventureRedisRepository {
         await redisClient.del(userStepsKey);
 
         await redisClient.zRem(this.locationKey, userId.toString());
+    }
+
+    async isExistRemainCounts(userId: number, id: string): Promise<boolean> {
+        const key = `user:${userId}:remain_counts:${id}`;
+        return await redisClient.exists(key) === 1;
+    }
+
+    async getRemainCounts(userId: number, id: string): Promise<number[]> {
+        const key = `user:${userId}:remain_counts:${id}`;
+        const remainCounts = await redisClient.get(key) ?? "[]";
+
+        return JSON.parse(remainCounts);
+    }
+
+    async setRemainCounts(userId: number, id: string, remainCounts: number[]): Promise<void> {
+        const key = `user:${userId}:remain_counts:${id}`;
+
+        const now = new Date();
+        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        const secondsUntilMidnight = Math.floor((tomorrow.getTime() - now.getTime()) / 1000);
+
+        await redisClient.setEx(key, secondsUntilMidnight, JSON.stringify(remainCounts));
     }
 }
 
