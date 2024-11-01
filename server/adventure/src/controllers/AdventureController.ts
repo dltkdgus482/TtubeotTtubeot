@@ -1,16 +1,18 @@
 import { Socket } from "socket.io";
 import AdventureService from "../services/AdventureService";
 import ImageGenService from "../services/ImageGenService";
-import AdventureLogModel from '../models/AdventureLogModel';
+import ParkService from "../services/ParkService";
 import JWTParser from '../utils/JWTParser';
 
 export class AdventureController {
   private adventureService: AdventureService;
   private imageGenService: ImageGenService;
+  private parkService: ParkService;
 
   constructor() {
     this.adventureService = new AdventureService();
     this.imageGenService = new ImageGenService();
+    this.parkService = new ParkService();
   }
 
   async handleInitAdventure(socket: Socket, data: { token: string }): Promise<void> {
@@ -34,6 +36,7 @@ export class AdventureController {
     const { lat, lng, steps } = data;
     try {
       let nearbyUsers = await this.adventureService.storeGPSData(socket.id, lat, lng, steps);
+      // TODO: adventure_park 정보 조회 후 반환 해야함.
 
       socket.emit("adventure_user", { "users": nearbyUsers });
     } catch (error) {

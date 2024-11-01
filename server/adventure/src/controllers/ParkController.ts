@@ -1,10 +1,7 @@
 import { Request, Response } from "express";
-import client from "../config/database/mongo";
-import ParkRepository from "../repositories/ParkRepository";
 import ParkService from "../services/ParkService";
 
-const parkRepository = new ParkRepository(client.db("park_database"));
-const parkService = new ParkService(parkRepository);
+const parkService = new ParkService();
 
 class ParkController {
   async getNearestParks(req: Request, res: Response) {
@@ -15,7 +12,7 @@ class ParkController {
         res.status(400).json({ message: "위도와 경도를 입력해주세요." });
         return;
       }
-      
+
       const nearestParks = await parkService.getNearestParks(
         parseFloat(lat as string),
         parseFloat(lng as string)
