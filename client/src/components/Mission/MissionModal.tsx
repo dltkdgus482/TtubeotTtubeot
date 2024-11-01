@@ -3,37 +3,25 @@ import { View, Modal, ScrollView, Image, TouchableOpacity } from 'react-native';
 import styles from './MissionModal.styles';
 import StyledText from '../../styles/StyledText';
 import Icon from 'react-native-vector-icons/AntDesign';
-
-// ----------------------------------
-
-import NfcManager, { NfcTech } from 'react-native-nfc-manager';
-
-NfcManager.start();
-
-// ----------------------------------
-
-// Nfc 태깅 모달 테스트를 위한 컴포넌트
-
+import MissionList from './MissionList';
 import NfcTagging from '../NFC/NfcTagging';
-
+import {
+  dailyMissionList,
+  weeklyMissionList,
+  achievementList,
+} from './dummyData';
 // ----------------------------------
+
+import NfcManager, { NfcTech, Ndef } from 'react-native-nfc-manager';
+
+global.Buffer = require('buffer').Buffer;
 
 const CharacterShopTitleContainer = require('../../assets/images/CharacterShopTitleContainer.png');
 const CharacterShopBackgound = require('../../assets/images/CharacterShopBackground.png');
-const CoinIcon = require('../../assets/icons/coinIcon.png');
-const CompleteIcon = require('../../assets/icons/CompleteIcon.png');
 
 interface CharacterShopModalProps {
   missionModalVisible: boolean;
   closeMissionModal: () => void;
-}
-
-interface MissionProps {
-  name: string;
-  source: any;
-  description: string;
-  cur: number;
-  goal: number;
 }
 
 const MissionModal: React.FC<CharacterShopModalProps> = ({
@@ -42,6 +30,17 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
 }) => {
   const [selectedMenu, setSelectedMenu] = useState<string>('일일 미션');
   const [isNfcTagged, setIsNfcTagged] = useState<boolean>(false);
+  const [nfcData, setNfcData] = useState<string>('');
+  const [tagId, setTagId] = useState<string>('');
+
+  useEffect(() => {
+    NfcManager.start();
+    NfcManager.isSupported();
+
+    return () => {
+      NfcManager.cancelTechnologyRequest();
+    };
+  }, []);
 
   const closeTagModal = async () => {
     setIsNfcTagged(false);
@@ -49,114 +48,56 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
   };
 
   const missionList: string[] = ['일일 미션', '주간 미션', '업적'];
-  const dailyMissionList: MissionProps[] = [
-    {
-      name: '뚜벗 쓰다듬기',
-      source: require('../../assets/images/RandomCharacter.png'),
-      description: '자신의 뚜벗과 상호작용 1회',
-      cur: 1,
-      goal: 1,
-    },
-    {
-      name: '친구와 인사 나누기',
-      source: require('../../assets/images/RandomCharacter.png'),
-      description: '주변 친구들과 인사 2회',
-      cur: 1,
-      goal: 2,
-    },
-  ];
 
-  const weeklyMissionList: MissionProps[] = [
-    {
-      name: '뚜벗 쓰다듬기',
-      source: require('../../assets/images/RandomCharacter.png'),
-      description: '자신의 뚜벗과 상호작용 1회',
-      cur: 1,
-      goal: 1,
-    },
-    {
-      name: '친구와 인사 나누기',
-      source: require('../../assets/images/RandomCharacter.png'),
-      description: '주변 친구들과 인사 2회',
-      cur: 1,
-      goal: 2,
-    },
-    {
-      name: '걷기',
-      source: require('../../assets/images/RandomCharacter.png'),
-      description: '10000보 걷기',
-      cur: 5000,
-      goal: 10000,
-    },
-  ];
-  const achievementList: MissionProps[] = [
-    {
-      name: '뚜벗 쓰다듬기',
-      source: require('../../assets/images/RandomCharacter.png'),
-      description: '자신의 뚜벗과 상호작용 1회',
-      cur: 1,
-      goal: 1,
-    },
-    {
-      name: '친구와 인사 나누기',
-      source: require('../../assets/images/RandomCharacter.png'),
-      description: '주변 친구들과 인사 2회',
-      cur: 1,
-      goal: 2,
-    },
-    {
-      name: '걷기',
-      source: require('../../assets/images/RandomCharacter.png'),
-      description: '10000보 걷기',
-      cur: 5000,
-      goal: 10000,
-    },
-    {
-      name: '뚜벗 쓰다듬기',
-      source: require('../../assets/images/RandomCharacter.png'),
-      description: '자신의 뚜벗과 상호작용 1회',
-      cur: 1,
-      goal: 1,
-    },
-    {
-      name: '친구와 인사 나누기',
-      source: require('../../assets/images/RandomCharacter.png'),
-      description: '주변 친구들과 인사 2회',
-      cur: 1,
-      goal: 2,
-    },
-  ];
+  const handleNfcTagging = async () => {
+    if (isNfcTagged === true) return;
 
-  const readNfc = async () => {
+    if (!NfcManager.isEnabled()) {
+      console.log('NFC가 비활성화되어 있습니다.');
+      return;
+    }
+
+    await NfcManager.requestTechnology([
+      NfcTech.NdefFormatable,
+      NfcTech.Ndef,
+      NfcTech.NfcA,
+    ]);
+
+    // const tag = await NfcManager.getTag();
+    // console.log(tag);
+
+    // const message = Ndef.encodeMessage([Ndef.textRecord('12345')]);
+    // await NfcManager.ndefHandler.writeNdefMessage(message);
+    // 전송할 32비트 숫자를 바이트 배열로 변환
+    const message = new Uint8Array([0x12, 0x34, 0x56, 0x78]);
+    const temp = Array.from(message);
+
+    // `transceive`를 통해 데이터 전송
+    const response = await NfcManager.nfcAHandler.transceive([
+      0x12, 0x34, 0x56, 0x78,
+    ]);
+
+    console.log('NfcA Response:', response);
+
     try {
-      console.log(NfcManager);
-
-      if (!NfcManager.isEnabled()) {
-        return;
+      if (selectedMenu === '일일 미션') {
+      } else if (selectedMenu === '주간 미션') {
       }
 
-      if (isNfcTagged === true) {
-        return;
-      }
-
-      await NfcManager.requestTechnology(NfcTech.Ndef);
-      const tag = await NfcManager.getTag();
-      console.log(tag);
       setIsNfcTagged(true);
+      console.log('NFC 태깅 성공');
     } catch (ex) {
-      await setSelectedMenu('업적');
-      console.log('NFC Tagging failed', ex);
-      NfcManager.cancelTechnologyRequest();
-      readNfc();
+      console.log('NFC  태깅 실패', ex);
+      handleNfcTagging();
     } finally {
-      NfcManager.cancelTechnologyRequest();
+      await NfcManager.cancelTechnologyRequest();
     }
   };
 
   useEffect(() => {
     if (!isNfcTagged) {
       NfcManager.cancelTechnologyRequest();
-      readNfc();
+      handleNfcTagging();
     }
   }, [isNfcTagged]);
 
@@ -216,119 +157,24 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
           </View>
 
           <ScrollView style={styles.itemContainer}>
-            {selectedMenu === '일일 미션' &&
-              dailyMissionList.map((item, index) => {
-                const progress = (item.cur / item.goal) * 100;
-                return (
-                  <View style={styles.item} key={index}>
-                    <View style={styles.itemImageContainer}>
-                      <Image source={item.source} style={styles.itemImage} />
-                    </View>
-                    <View style={styles.itemInfoContainer}>
-                      <StyledText bold style={styles.itemName}>
-                        {item.name}
-                      </StyledText>
-                      <StyledText bold>{item.description}</StyledText>
-                      <View style={styles.progressBarContainer}>
-                        <View
-                          style={[
-                            styles.progressBar,
-                            { width: `${progress}%` },
-                          ]}
-                        />
-                        <StyledText bold style={styles.progressText}>
-                          {item.cur} / {item.goal}
-                        </StyledText>
-                      </View>
-                    </View>
-                    <View style={styles.completeCheckBox}>
-                      {item.cur === item.goal && (
-                        <Image
-                          source={CompleteIcon}
-                          style={styles.completeCheck}
-                        />
-                      )}
-                    </View>
-                  </View>
-                );
-              })}
-            {selectedMenu === '주간 미션' &&
-              weeklyMissionList.map((item, index) => {
-                const progress = (item.cur / item.goal) * 100;
-                return (
-                  <View style={styles.item} key={index}>
-                    <View style={styles.itemImageContainer}>
-                      <Image source={item.source} style={styles.itemImage} />
-                    </View>
-                    <View style={styles.itemInfoContainer}>
-                      <StyledText bold style={styles.itemName}>
-                        {item.name}
-                      </StyledText>
-                      <StyledText bold>{item.description}</StyledText>
-                      <View style={styles.progressBarContainer}>
-                        <View
-                          style={[
-                            styles.progressBar,
-                            { width: `${progress}%` },
-                          ]}
-                        />
-                        <StyledText bold style={styles.progressText}>
-                          {item.cur} / {item.goal}
-                        </StyledText>
-                      </View>
-                    </View>
-                    <View style={styles.completeCheckBox}>
-                      {item.cur === item.goal && (
-                        <Image
-                          source={CompleteIcon}
-                          style={styles.completeCheck}
-                        />
-                      )}
-                    </View>
-                  </View>
-                );
-              })}
-            {selectedMenu === '업적' &&
-              achievementList.map((item, index) => {
-                const progress = (item.cur / item.goal) * 100;
-                return (
-                  <View style={styles.item} key={index}>
-                    <View style={styles.itemImageContainer}>
-                      <Image source={item.source} style={styles.itemImage} />
-                    </View>
-                    <View style={styles.itemInfoContainer}>
-                      <StyledText bold style={styles.itemName}>
-                        {item.name}
-                      </StyledText>
-                      <StyledText bold>{item.description}</StyledText>
-                      <View style={styles.progressBarContainer}>
-                        <View
-                          style={[
-                            styles.progressBar,
-                            { width: `${progress}%` },
-                          ]}
-                        />
-                        <StyledText bold style={styles.progressText}>
-                          {item.cur} / {item.goal}
-                        </StyledText>
-                      </View>
-                    </View>
-                    <View style={styles.completeCheckBox}>
-                      {item.cur === item.goal && (
-                        <Image
-                          source={CompleteIcon}
-                          style={styles.completeCheck}
-                        />
-                      )}
-                    </View>
-                  </View>
-                );
-              })}
+            <MissionList
+              missionList={
+                selectedMenu === '일일 미션'
+                  ? dailyMissionList
+                  : selectedMenu === '주간 미션'
+                  ? weeklyMissionList
+                  : achievementList
+              }
+            />
           </ScrollView>
         </View>
       </View>
       {isNfcTagged && (
-        <NfcTagging visible={isNfcTagged} onClose={closeTagModal} />
+        <NfcTagging
+          visible={isNfcTagged}
+          onClose={closeTagModal}
+          tagId={tagId}
+        />
       )}
     </Modal>
   );
