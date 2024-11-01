@@ -33,10 +33,8 @@ class RoadViewService {
 
       const data = await response.json();
       if (data.status === "OK") {
-        console.log("Street View 이미지가 있습니다.");
         return true;
       } else if (data.status === "ZERO_RESULTS") {
-        console.log("Street View 이미지가 없습니다.");
         return false;
       } else {
         console.log("오류:", data.status);
