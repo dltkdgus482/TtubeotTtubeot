@@ -10,9 +10,31 @@ import {
   weeklyMissionList,
   achievementList,
 } from './dummyData';
-// ----------------------------------
 
-import NfcManager, { NfcTech, Ndef } from 'react-native-nfc-manager';
+import { stringToByteArray, byteArrayToString } from '../../utils/apis/Ble';
+
+// ---------------bluetooth-------------------
+
+import BLEAdvertiser from 'react-native-ble-advertiser';
+
+import {
+  NativeModules,
+  NativeEventEmitter,
+  PermissionsAndroid,
+  Platform,
+} from 'react-native';
+
+import BleManager, {
+  BleScanMode,
+  BleScanMatchMode,
+  BleScanCallbackType,
+  Peripheral,
+} from 'react-native-ble-manager';
+
+const BleManagerModule = NativeModules.BleManager;
+const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
+
+// ---------------bluetooth-------------------
 
 global.Buffer = require('buffer').Buffer;
 
@@ -30,76 +52,163 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
 }) => {
   const [selectedMenu, setSelectedMenu] = useState<string>('일일 미션');
   const [isNfcTagged, setIsNfcTagged] = useState<boolean>(false);
-  const [nfcData, setNfcData] = useState<string>('');
-  const [tagId, setTagId] = useState<string>('');
-
-  useEffect(() => {
-    NfcManager.start();
-    NfcManager.isSupported();
-
-    return () => {
-      NfcManager.cancelTechnologyRequest();
-    };
-  }, []);
+  const [isScanning, setIsScanning] = useState<boolean>(false);
+  const [devices, setDevices] = useState<Peripheral[]>([]);
+  const [connectedDevice, setConnectedDevice] = useState<Peripheral | null>(
+    null,
+  );
+  const missionList: string[] = ['일일 미션', '주간 미션', '업적'];
 
   const closeTagModal = async () => {
     setIsNfcTagged(false);
-    await NfcManager.cancelTechnologyRequest();
   };
 
-  const missionList: string[] = ['일일 미션', '주간 미션', '업적'];
+  const handleConnectPeripheral = async (
+    peripheral: Peripheral | { id: string },
+  ) => {
+    const peripheralId =
+      typeof peripheral === 'string' ? peripheral : peripheral.id;
 
-  const handleNfcTagging = async () => {
-    if (isNfcTagged === true) return;
-
-    if (!NfcManager.isEnabled()) {
-      console.log('NFC가 비활성화되어 있습니다.');
-      return;
-    }
-
-    await NfcManager.requestTechnology([
-      NfcTech.NdefFormatable,
-      NfcTech.Ndef,
-      NfcTech.NfcA,
-    ]);
-
-    // const tag = await NfcManager.getTag();
-    // console.log(tag);
-
-    // const message = Ndef.encodeMessage([Ndef.textRecord('12345')]);
-    // await NfcManager.ndefHandler.writeNdefMessage(message);
-    // 전송할 32비트 숫자를 바이트 배열로 변환
-    const message = new Uint8Array([0x12, 0x34, 0x56, 0x78]);
-    const temp = Array.from(message);
-
-    // `transceive`를 통해 데이터 전송
-    const response = await NfcManager.nfcAHandler.transceive([
-      0x12, 0x34, 0x56, 0x78,
-    ]);
-
-    console.log('NfcA Response:', response);
+    console.log(`Connected to peripheral: ${peripheralId}`);
+    setConnectedDevice(peripheral as Peripheral); // 기본 연결된 장치 설정
+    console.log('Peripheral', peripheral as Peripheral);
 
     try {
-      if (selectedMenu === '일일 미션') {
-      } else if (selectedMenu === '주간 미션') {
-      }
+      const peripheralInfo = await BleManager.retrieveServices(peripheralId);
+      console.log('Peripheral services and characteristics:', peripheralInfo);
+      const deviceUUID = peripheralInfo.id;
+      console.log(`Device UUID: ${deviceUUID}`);
 
-      setIsNfcTagged(true);
-      console.log('NFC 태깅 성공');
-    } catch (ex) {
-      console.log('NFC  태깅 실패', ex);
-      handleNfcTagging();
-    } finally {
-      await NfcManager.cancelTechnologyRequest();
+      // 필요한 경우 setConnectedDevice(peripheralInfo) 호출로 상태 업데이트
+      setConnectedDevice({ ...peripheral, ...peripheralInfo });
+    } catch (error) {
+      console.log('Error retrieving services:', error);
     }
+  };
+
+  const handleDisconnectPeripheral = (peripheral: Peripheral) => {
+    console.log(`Disconnected from peripheral: ${peripheral}`);
+    setConnectedDevice(null);
+  };
+
+  const handleStopScan = async () => {
+    console.log('Scan stopped!');
+    setIsScanning(false);
   };
 
   useEffect(() => {
-    if (!isNfcTagged) {
-      NfcManager.cancelTechnologyRequest();
-      handleNfcTagging();
+    BleManager.start({ showAlert: false }).then(() => {
+      console.log('BleManager started!');
+    });
+
+    const requestPermissions = async () => {
+      if (Platform.OS === 'android' && Platform.Version >= 23) {
+        await PermissionsAndroid.requestMultiple([
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_ADVERTISE,
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+        ]);
+      }
+    };
+
+    requestPermissions();
+
+    const handleDiscoverPeripheral = (peripheral: Peripheral) => {
+      if (peripheral.advertising.isConnectable === false) return;
+
+      // 필터링된 UUID만 검색
+      const serviceUUID = '12345678-1234-5678-1234-56789abcdef0';
+      if (peripheral.advertising.serviceUUIDs?.includes(serviceUUID)) {
+        const manufactureData = JSON.stringify(
+          peripheral.advertising.manufacturerData['004c'],
+        );
+        setDevices(prevDevices => {
+          console.log('Discovered peripheral:', peripheral);
+          console.log(manufactureData);
+
+          // 중복 추가 방지
+          const newDevices = prevDevices.some(
+            device => device.id === peripheral.id,
+          )
+            ? prevDevices
+            : [...prevDevices, peripheral];
+
+          // RSSI 기준으로 정렬
+          return newDevices.sort(
+            (a, b) => (b.rssi || -Infinity) - (a.rssi || -Infinity),
+          );
+        });
+      }
+    };
+
+    bleManagerEmitter.addListener('BleManagerStopScan', handleStopScan);
+    bleManagerEmitter.addListener(
+      'BleManagerDiscoverPeripheral',
+      handleDiscoverPeripheral,
+    );
+    bleManagerEmitter.addListener(
+      'BleManagerConnectPeripheral',
+      handleConnectPeripheral,
+    );
+    bleManagerEmitter.addListener(
+      'BleManagerDisconnectPeripheral',
+      handleDisconnectPeripheral,
+    );
+
+    return () => {
+      bleManagerEmitter.removeAllListeners('BleManagerStopScan');
+      bleManagerEmitter.removeAllListeners('BleManagerDiscoverPeripheral');
+      bleManagerEmitter.removeAllListeners('BleManagerConnectPeripheral');
+      bleManagerEmitter.removeAllListeners('BleManagerDisconnectPeripheral');
+    };
+  }, []);
+
+  const startScan = () => {
+    if (isScanning === true) return;
+
+    setIsScanning(true);
+    BleManager.scan([], 3, true, {
+      matchMode: BleScanMatchMode.Sticky,
+      scanMode: BleScanMode.LowLatency,
+      callbackType: BleScanCallbackType.AllMatches,
+    })
+      .then(() => {
+        console.log('Scanning started...');
+      })
+      .catch(e => {
+        console.log('Scan error', e);
+        setIsScanning(false);
+      });
+  };
+
+  const startAdvertising = () => {
+    const message = 'ssgs20';
+    const messageBytes = stringToByteArray(message);
+
+    BLEAdvertiser.setCompanyId(0x004c);
+    BLEAdvertiser.broadcast(
+      '12345678-1234-5678-1234-56789abcdef0',
+      messageBytes,
+      {},
+    )
+      .then(success => console.log('Broadcast success', success))
+      .catch(error => console.error('Broadcast error', error));
+  };
+
+  useEffect(() => {
+    if (selectedMenu === '주간 미션') {
+      startAdvertising();
+    } else if (selectedMenu === '업적') {
+      startScan();
+    } else {
+      BLEAdvertiser.stopBroadcast()
+        .then(() => console.log('Stopped advertising'))
+        .catch(error => console.log('Stop advertising error:', error));
+      BleManager.stopScan();
+      setIsScanning(false);
     }
-  }, [isNfcTagged]);
+  }, [selectedMenu]);
 
   return (
     <Modal
@@ -155,7 +264,6 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
               </TouchableOpacity>
             ))}
           </View>
-
           <ScrollView style={styles.itemContainer}>
             <MissionList
               missionList={
@@ -170,11 +278,7 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
         </View>
       </View>
       {isNfcTagged && (
-        <NfcTagging
-          visible={isNfcTagged}
-          onClose={closeTagModal}
-          tagId={tagId}
-        />
+        <NfcTagging visible={isNfcTagged} onClose={closeTagModal} />
       )}
     </Modal>
   );
