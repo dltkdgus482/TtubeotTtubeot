@@ -2150,6 +2150,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-async-storage/async-storage@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@react-native-async-storage/async-storage@npm:2.0.0"
+  dependencies:
+    merge-options: ^3.0.4
+  peerDependencies:
+    react-native: ^0.0.0-0 || >=0.65 <1.0
+  checksum: 7007a411f13988594a3f9b5ebb29f1554ab65ff2bd90814fa8b125fa68b69c431bdfcd38769ae2dcb6505aec2bad9296f0a0fa1ac8f123007eda49c826f2d138
+  languageName: node
+  linkType: hard
+
 "@react-native-community/cli-clean@npm:14.1.0":
   version: 14.1.0
   resolution: "@react-native-community/cli-clean@npm:14.1.0"
@@ -5260,9 +5271,9 @@ __metadata:
   linkType: hard
 
 "flow-parser@npm:0.*":
-  version: 0.251.1
-  resolution: "flow-parser@npm:0.251.1"
-  checksum: 66ccb941a9b2becdeaad72db08f6494d46e3b3f03ae4f4c2786e54e9b67b2e5e6f2d1166a1b7d81f403ad7ce690242c54204fe70674e4fd5620aa64f0f2530fc
+  version: 0.250.0
+  resolution: "flow-parser@npm:0.250.0"
+  checksum: db4b5a6056e9853d83e2743621fa32311aa6af9633ac4eb083a51bcf4bc62dbac7df29dd9514006b4137c0a339d572d17ec6feeaa443782ed40aee17f8124d4a
   languageName: node
   linkType: hard
 
