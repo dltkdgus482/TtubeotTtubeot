@@ -34,21 +34,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalButtonContainer: {
-    marginTop: 30,
+    marginTop: 20,
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
   cancelButton: {
     backgroundColor: '#E9E9E9',
-    paddingHorizontal: 30,
-    paddingVertical: 10,
-    borderRadius: 15,
+    paddingHorizontal: 40,
+    paddingVertical: 15,
+    borderRadius: 18,
   },
   confirmButton: {
     backgroundColor: '#3E4A3D',
-    paddingHorizontal: 30,
-    paddingVertical: 10,
-    borderRadius: 15,
+    paddingHorizontal: 40,
+    paddingVertical: 15,
+    borderRadius: 18,
   },
 });
 

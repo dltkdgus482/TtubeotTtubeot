@@ -73,8 +73,12 @@ const styles = StyleSheet.create({
     height: 22,
   },
   settings: {
-    fontSize: 18,
+    fontSize: 14,
     marginTop: 10,
+  },
+  cancelUserText: {
+    fontSize: 12,
+    color: '#949494',
   },
   cancelUser: {
     width: '100%',

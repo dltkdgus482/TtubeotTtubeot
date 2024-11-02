@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, Modal, Pressable } from 'react-native';
+import { View, Modal, Pressable, Alert } from 'react-native';
 import styles from './CancelUserModal.styles';
 import StyledText from '../../styles/StyledText';
+import { useUser } from '../../store/user';
+import { deleteUserApi } from '../../utils/apis/users';
 
 type CancelUserModalProps = {
   modalVisible: boolean;
@@ -12,8 +14,20 @@ const CancelUserModal = ({
   modalVisible,
   closeModal,
 }: CancelUserModalProps) => {
-  const handleCancelUser = () => {
-    // TODO: Cancel User logic
+  const { accessToken, setAccessToken, setIsLoggedIn } = useUser.getState();
+
+  const handleCancelUser = async () => {
+    // 회원 탈퇴 API 호출
+    const success = await deleteUserApi(accessToken, setAccessToken);
+
+    if (success) {
+      // 탈퇴 성공 시 로그아웃 처리 및 모달 닫기
+      setIsLoggedIn(false);
+      closeModal();
+      Alert.alert('회원 탈퇴가 완료되었습니다.');
+    } else {
+      Alert.alert('회원 탈퇴에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   return (
@@ -36,11 +50,12 @@ const CancelUserModal = ({
             </StyledText>
             <View style={styles.modalButtonContainer}>
               <Pressable style={styles.cancelButton}>
-                <StyledText onPress={closeModal}>취소</StyledText>
+                <StyledText bold color="#7C7C7C" onPress={closeModal}>취소</StyledText>
               </Pressable>
               <Pressable style={styles.confirmButton}>
                 <StyledText
                   color="white"
+                  bold
                   onPress={() => {
                     handleCancelUser;
                   }}>
