@@ -42,13 +42,8 @@ export default StyleSheet.create({
     height: 88,
   },
   formContainer: {
-    position: 'absolute',
-    top: 300,
-    left: 20,
-    right: 20,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flex: 1,
+    position: 'relative',
   },
   input: {
     width: '100%',
@@ -85,7 +80,7 @@ export default StyleSheet.create({
   },
   requestButton: {
     height: 50,
-    backgroundColor: '#8e8e8e',
+    backgroundColor: '#3E4A3D',
     borderRadius: 12,
     paddingHorizontal: 16,
     justifyContent: 'center',
@@ -100,6 +95,6 @@ export default StyleSheet.create({
     color: '#ffffff',
   },
   nextButton: {
-    marginTop: 80,
+    marginTop: 144,
   },
 });

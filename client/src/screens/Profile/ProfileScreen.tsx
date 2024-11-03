@@ -2,17 +2,18 @@ import React, { useState } from 'react';
 import {
   View,
   ImageBackground,
-  Text,
   Image,
   Pressable,
-  Button,
   TouchableOpacity,
+  Alert
 } from 'react-native';
 import styles from './ProfileScreen.styles';
 import StyledText from '../../styles/StyledText';
 import Toggle from '../../components/Button/Toggle';
 import CancelUserModal from '../../components/Profile/CancelUserModal';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useUser } from '../../store/user';
+import { logoutApi } from '../../utils/apis/users';
 
 const background = require('../../assets/images/IntroBackground.png');
 const settings1 = require('../../assets/icons/SettingsIcon1.png');
@@ -21,6 +22,7 @@ const settings3 = require('../../assets/icons/SettingsIcon3.png');
 const settings4 = require('../../assets/icons/SettingsIcon4.png');
 
 const ProfileScreen = () => {
+  const { setAccessToken, setIsLoggedIn, accessToken, clearUser } = useUser.getState();
   const [isGPSOn, setIsGPSOn] = useState<boolean>(false);
   const [isPushOn, setIsPushOn] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -37,8 +39,14 @@ const ProfileScreen = () => {
     setIsPushOn(!isPushOn);
   };
 
-  const handleLogout = () => {
-    // TODO: Logout logic
+  const handleLogout = async () => {
+    try {
+      await logoutApi(accessToken, setAccessToken, setIsLoggedIn);
+      clearUser(); // 로그아웃 후 사용자 상태 초기화
+      Alert.alert('로그아웃 되었습니다.');
+    } catch (error) {
+      Alert.alert(error.message);
+    }
   };
 
   const handleChangePassword = () => {
@@ -112,7 +120,7 @@ const ProfileScreen = () => {
         </View>
         <TouchableOpacity style={styles.cancelUser} onPress={handleCancelUser}>
           <View style={styles.cancelUserButton}>
-            <StyledText color="#949494">탈퇴하기</StyledText>
+            <StyledText style={styles.cancelUserText}>탈퇴하기</StyledText>
           </View>
         </TouchableOpacity>
       </View>

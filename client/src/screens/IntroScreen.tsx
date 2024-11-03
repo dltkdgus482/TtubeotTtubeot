@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import styles from './IntroScreen.styles';
 import ButtonDefault from '../components/Button/ButtonDefault';
+import { useUser } from '../store/user';
+import { useNavigation } from '@react-navigation/native';
 
 const background = require('../assets/images/IntroBackground.png');
 const title = require('../assets/images/TtubeotTitle.png');
@@ -21,6 +23,9 @@ const rhinoceros = require('../assets/ttubeot/IntroTtubeotRhinoceros.png');
 const sheep = require('../assets/ttubeot/IntroTtubeotSheep.png');
 
 const IntroScreen = () => {
+  const navigation = useNavigation();
+  const {setIsLoggedIn} = useUser();
+
   const sheepAnim = useRef(new Animated.Value(500)).current;
   const dogAnim = useRef(new Animated.Value(500)).current;
   const penguinAnim = useRef(new Animated.Value(500)).current;
@@ -99,10 +104,10 @@ const IntroScreen = () => {
         <Image source={withTtubeot} style={styles.withTtubeot} />
       </Animated.View>
       <Animated.View style={[styles.buttonContainer, { opacity: buttonAnim }]}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
           <ButtonDefault content="로그인" height={50} width={120} />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('SignUpScreen')}>
           <ButtonDefault content="회원가입" height={50} width={120} />
         </TouchableOpacity>
       </Animated.View>

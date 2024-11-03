@@ -1,6 +1,15 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
+  formContainer: {
+    position: 'absolute',
+    top: 300,
+    left: 20,
+    right: 20,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   input: {
     width: '100%',
     height: 50,
@@ -14,15 +23,7 @@ export default StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  signUpButton: {
+  loginButton: {
     marginTop: 32,
-  },
-  passwordHint: {
-    color: '#3F3F3F',
-    fontSize: 12,
-    marginTop: -24,
-    marginLeft: 10,
-    marginBottom: 8,
-    alignSelf: 'flex-start',
   },
 });
