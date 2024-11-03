@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, ImageBackground, Image, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, ImageBackground, Image, TouchableOpacity, Alert } from 'react-native';
 import defaultStyles from './SignUpScreen.styles';
 import styles from './LoginScreen.styles';
+import StyledTextInput from '../../styles/StyledTextInput';
 import ButtonFlat from '../../components/Button/ButtonFlat';
 import { loginApi, getInfoApi } from '../../utils/apis/users';
 import { useNavigation } from '@react-navigation/native';
@@ -74,7 +75,7 @@ const LoginScreen = () => {
         <Image source={withTtubeot} style={defaultStyles.withTtubeot} />
       </View>
       <View style={styles.formContainer}>
-        <TextInput
+        <StyledTextInput
           style={styles.input}
           placeholder="휴대폰 번호를 입력해주세요"
           placeholderTextColor="#C7C7CD"
@@ -82,7 +83,7 @@ const LoginScreen = () => {
           value={phone}
           onChangeText={setPhone}
         />
-        <TextInput
+        <StyledTextInput
           style={styles.input}
           placeholder="비밀번호를 입력해주세요"
           placeholderTextColor="#C7C7CD"
