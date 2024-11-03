@@ -56,10 +56,6 @@ public interface TtubeotService {
     // 유저 뚜벗의 주간미션 정보를 조회
     UserTtubeotMissionListResponseDTO getUserWeeklyMissionList(int userId);
 
-    // 미션 갱신 후 보상 지급
-
-    // 매일 자정 일일미션을 초기화
-
-    // 매주 일요일에서 월요일 넘어갈 때 주간미션을 초기화
+    // 미션 갱신 후 보상 지급 -> 걸음수만 일단 request로 받아오기
 
 }
