@@ -295,11 +295,9 @@ public class TtubeotServiceImpl implements TtubeotService {
             () -> new IllegalArgumentException("정상 상태의 뚜벗이 존재하지 않습니다."));
 
         // 2. 해당 뚜벗이 현재 진행하고 있는 일일 미션들을 조회합니다.
-        List<UserTtubeotMission> dailyMissions = userTtubeotMissionRepository.findByUserTtuBeotOwnershipAndMissionTypeAndMissionStatus(
+        List<UserTtubeotMission> dailyMissions = userTtubeotMissionRepository.findByUserTtuBeotOwnershipAndMission_MissionTypeAndMissionStatus(
             userTtubeot, 0,
             MissionStatus.IN_PROGRESS);
-
-        // 진행하고 있는 미션들의 정보도 조회
 
         // 3. 미션과 미션 진행 정보도 포함하여 DTO로 변환
         List<UserTtubeotMissionResponseDTO> missionDTOs = dailyMissions.stream()
@@ -322,13 +320,36 @@ public class TtubeotServiceImpl implements TtubeotService {
 
     @Override
     public UserTtubeotMissionListResponseDTO getUserWeeklyMissionList(int userId) {
-        // 1. 유저가 보유중인 뚜벗 중 살아있는 뚜벗을 조회합니다.
+        // 1. 유저가 보유 중인 뚜벗 중 정상 상태 (0)인 뚜벗을 조회합니다.
+        Optional<UserTtuBeotOwnership> optionalUserTtubeot = userTtubeotOwnershipRepository.findByUser_UserIdAndTtubeotStatus(
+            userId, 0);
+
+        // 정상 상태의 뚜벗이 없다면 예외를 발생시킵니다.
+        UserTtuBeotOwnership userTtubeot = optionalUserTtubeot.orElseThrow(
+            () -> new IllegalArgumentException("정상 상태의 뚜벗이 존재하지 않습니다."));
 
         // 2. 해당 뚜벗이 현재 진행하고 있는 주간 미션들을 조회합니다.
+        List<UserTtubeotMission> dailyMissions = userTtubeotMissionRepository.findByUserTtuBeotOwnershipAndMission_MissionTypeAndMissionStatus(
+            userTtubeot, 1,
+            MissionStatus.IN_PROGRESS);
 
-        // 3. 해당 미션들을 return해줍니다.
+        // 3. 미션과 미션 진행 정보도 포함하여 DTO로 변환
+        List<UserTtubeotMissionResponseDTO> missionDTOs = dailyMissions.stream()
+            .map(mission -> {
+                Mission missionInfo = mission.getMission();  // 미션 정보 가져오기
+                return new UserTtubeotMissionResponseDTO(
+                    mission.getMissionStatus().name(),
+                    mission.getMission().getMissionTheme(),
+                    mission.getMission().getMissionType(),
+                    mission.getMission().getMissionTargetCount(),
+                    mission.getMission().getMissionName(),
+                    mission.getMission().getMissionExplanation(),
+                    missionInfo.getMissionTargetCount()   // 미션 목표 수량
+                );
+            })
+            .collect(Collectors.toList());
 
-        return null;
+        return new UserTtubeotMissionListResponseDTO(missionDTOs);
     }
 
     // TtubeotDrawResponseDTO 생성 메서드

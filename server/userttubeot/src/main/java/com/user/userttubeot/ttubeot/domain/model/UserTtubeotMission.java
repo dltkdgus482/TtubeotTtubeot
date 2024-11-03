@@ -46,6 +46,9 @@ public class UserTtubeotMission {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(name = "break_up")
+    private LocalDateTime breakUp;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mission_id", nullable = false)
     private Mission mission;

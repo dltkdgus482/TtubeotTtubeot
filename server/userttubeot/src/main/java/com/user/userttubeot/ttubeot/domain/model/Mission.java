@@ -52,7 +52,8 @@ public class Mission {
         return Mission.builder()
             .missionName(dto.getMissionName())
             .missionExplanation(dto.getMissionExplanation())
-            .missionTargetCount(dto.getMissioNTargetCount())
+            .missionTargetCount(dto.getMissionTargetCount())
+            .missionType(dto.getMissionType())
             .missionTheme(dto.getMissionTheme())
             .build();
     }
