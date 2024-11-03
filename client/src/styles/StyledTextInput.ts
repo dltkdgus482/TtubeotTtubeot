@@ -1,16 +1,16 @@
 import styled from 'styled-components/native';
 
-interface StyledTextProps {
+interface StyledTextInputProps {
   bold?: boolean;
   color?: string;
 }
 
-const StyledText = styled.Text.attrs({
+const StyledTextInput = styled.TextInput.attrs({
   allowFontScaling: false,
-})<StyledTextProps>`
+})<StyledTextInputProps>`
   font-family: ${props =>
     props.bold ? props.theme.fontFamilyBold : props.theme.fontFamilyRegular};
   color: ${props => props.color || 'black'};
 `;
 
-export default StyledText;
+export default StyledTextInput;
