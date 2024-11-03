@@ -1,5 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, TouchableOpacity, Image, Animated } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  Image,
+  Animated,
+  Platform,
+} from 'react-native';
 import { useCameraPermission } from 'react-native-vision-camera';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from './AdventureScreen.styles';
@@ -17,6 +23,16 @@ const CameraIcon = require('../../assets/icons/CameraIcon.png');
 const MissionIcon = require('../../assets/icons/MissionIcon.png');
 const MapIcon = require('../../assets/icons/MapIcon.png');
 
+const isRunningOnEmulator = () => {
+  if (Platform.OS === 'android') {
+    const brand = Platform.constants?.Brand || '';
+    const model = Platform.constants?.Model || '';
+    console.log(brand, model);
+    return brand.includes('generic') || model.includes('Emulator');
+  }
+  return false;
+};
+
 const AdventureScreen = () => {
   const [adventureStart, setAdventureStart] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -26,6 +42,10 @@ const AdventureScreen = () => {
   const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
   const [isARMode, setIsARMode] = useState<boolean>(false);
   const { hasPermission, requestPermission } = useCameraPermission();
+
+  useEffect(() => {
+    isRunningOnEmulator();
+  }, []);
 
   useEffect(() => {
     const requestPermissions = async () => {
@@ -124,11 +144,11 @@ const AdventureScreen = () => {
       </View>
       <GPSAlertModal modalVisible={modalVisible} closeModal={closeModal} />
 
-      <CameraModal
+      {/* <CameraModal
         modalVisible={isCameraOpen}
         closeModal={handleCloseCamera}
         isARMode={isARMode}
-      />
+      /> */}
 
       <MissionModal
         missionModalVisible={missionVisible}
