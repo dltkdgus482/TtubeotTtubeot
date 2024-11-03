@@ -1,10 +1,6 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View, Text, Modal, Pressable } from 'react-native';
-import {
-  Camera,
-  useCameraDevice,
-  useCameraPermission,
-} from 'react-native-vision-camera';
+import { useCameraPermission } from 'react-native-vision-camera';
 import { ViroARSceneNavigator } from '@reactvision/react-viro';
 import styles from './CameraModal.styles';
 import StyledText from '../../styles/StyledText';
@@ -38,7 +34,7 @@ const CameraModal = ({
     <Modal
       visible={modalVisible}
       onRequestClose={closeModal}
-      animationType="slide"
+      animationType="fade"
       transparent={true}>
       <View style={styles.modalView}>
         <View style={styles.closeButtonContainer}>

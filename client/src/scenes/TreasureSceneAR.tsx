@@ -8,6 +8,7 @@ import {
   ViroAnimations,
   ViroSphere,
 } from '@reactvision/react-viro';
+import useTreasureStore from '../store/treasure';
 
 const woodenTexture = require('../assets/images/WoodenTexture.jpg');
 const coinIcon = require('../assets/icons/coinIcon.png');
@@ -54,7 +55,7 @@ ViroAnimations.registerAnimations({
       rotateX: '-=10',
       rotateZ: '-=10',
     },
-    duration: 50,
+    duration: 10,
     easing: 'Linear',
   },
   shakeRight: {
@@ -62,7 +63,7 @@ ViroAnimations.registerAnimations({
       rotateX: '+=10',
       rotateZ: '+=10',
     },
-    duration: 50,
+    duration: 10,
     easing: 'Linear',
   },
 });
@@ -74,7 +75,8 @@ const TreasureSceneAR = () => {
   const [currentAnimation, setCurrentAnimation] = useState('shakeLeft');
   const [unboxingListener, setUnboxingListener] = useState(false);
   const [isUnboxed, setIsUnboxed] = useState(false);
-  const [hasTreasure, setHasTreasure] = useState(false);
+
+  const setHasTreasure = useTreasureStore(state => state.setHasTreasure);
 
   const handlePlaneDetected = () => {
     const randomX = (Math.random() - 0.5) * 3;
@@ -94,7 +96,17 @@ const TreasureSceneAR = () => {
 
   const renderAnimation = () => {
     if (unboxingListener) {
-      return { name: currentAnimation, run: true, loop: false };
+      return {
+        name: currentAnimation,
+        run: true,
+        loop: false,
+        interruptible: true,
+        onFinish: () => {
+          setCurrentAnimation(prev =>
+            prev === 'shakeLeft' ? 'shakeRight' : 'shakeLeft',
+          );
+        },
+      };
     } else if (runAnimation) {
       return { name: 'loopRotate', run: true, loop: true };
     } else {
@@ -104,16 +116,7 @@ const TreasureSceneAR = () => {
 
   const getTreasure = () => {
     setHasTreasure(true);
-    // TODO: 보물 획득 여부 zustand로 관리, 카메라 모달 닫고 보물 모달 열기
   };
-
-  useEffect(() => {
-    if (hasTreasure) {
-      setRunAnimation(false);
-      setBoxPositionY(0);
-      setIsUnboxed(false);
-    }
-  }, [hasTreasure]);
 
   useEffect(() => {
     if (unboxingListener) {
@@ -134,7 +137,7 @@ const TreasureSceneAR = () => {
       setTimeout(() => {
         setUnboxingListener(false);
         setIsUnboxed(true);
-      }, 3500);
+      }, 2500);
     }
   }, [unboxingListener]);
 
@@ -159,7 +162,7 @@ const TreasureSceneAR = () => {
             scale={[0.2, 0.2, 0]}
             materials={['glowingCoin']}
             animation={{ name: 'loopRotate', run: true, loop: true }}
-            onClick={getTreasure}
+            onClick={() => getTreasure()}
           />
         ) : (
           boxPositionY > 0 && (
@@ -180,7 +183,7 @@ const TreasureSceneAR = () => {
         <ViroSphere
           position={[objectPosition[0], objectPosition[1], objectPosition[2]]}
           radius={0.6}
-          scale={[0.5, 0.1, 0.5]}
+          scale={[0.7, 0.1, 0.7]}
           materials={['glowingYellow']}
           onClick={handleClick}
         />

@@ -15,8 +15,9 @@ import AdventureMapScreen from '../../components/Adventure/AdventureMapScreen';
 import ButtonDefault from '../../components/Button/ButtonDefault';
 import AdventureAlert from '../../components/Adventure/AdventureAlert';
 import GPSAlertModal from '../../components/Adventure/GPSAlertModal';
-import CameraModal from '../../components/ARComponents/CameraModal';
 import MissionModal from '../../components/Mission/MissionModal';
+import useTreasureStore from '../../store/treasure';
+import GetTreasureModal from '../../components/ARComponents/GetTreasureModal';
 
 const background = require('../../assets/images/AdventureBackground.jpg');
 const CameraIcon = require('../../assets/icons/CameraIcon.png');
@@ -26,9 +27,7 @@ const MapIcon = require('../../assets/icons/MapIcon.png');
 const isRunningOnEmulator = () => {
   if (Platform.OS === 'android') {
     const brand = Platform.constants?.Brand || '';
-    const model = Platform.constants?.Model || '';
-    console.log(brand, model);
-    return brand.includes('generic') || model.includes('Emulator');
+    return brand.toLowerCase() === 'google';
   }
   return false;
 };
@@ -37,14 +36,30 @@ const AdventureScreen = () => {
   const [adventureStart, setAdventureStart] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [missionVisible, setMissionVisible] = useState<boolean>(false);
+  const [isCameraModalEnabled, setIsCameraModalEnabled] =
+    useState<boolean>(false);
   const opacityAnim = useRef(new Animated.Value(0.65)).current;
 
   const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
   const [isARMode, setIsARMode] = useState<boolean>(false);
   const { hasPermission, requestPermission } = useCameraPermission();
 
+  const [isTreasureOpen, setIsTreasureOpen] = useState<boolean>(false);
+
+  const hasTreasure = useTreasureStore(state => state.hasTreasure);
+
   useEffect(() => {
-    isRunningOnEmulator();
+    setIsCameraOpen(false);
+    setTimeout(() => {
+      if (hasTreasure) {
+        setIsTreasureOpen(true);
+      }
+    }, 500);
+  }, [hasTreasure]);
+
+  useEffect(() => {
+    const emulatorCheck = isRunningOnEmulator();
+    setIsCameraModalEnabled(!emulatorCheck);
   }, []);
 
   useEffect(() => {
@@ -102,6 +117,10 @@ const AdventureScreen = () => {
     setMissionVisible(false);
   };
 
+  const handleCloseTreasure = () => {
+    setIsTreasureOpen(false);
+  };
+
   const renderPage = () => {
     if (adventureStart) {
       return <AdventureMapScreen />;
@@ -109,6 +128,11 @@ const AdventureScreen = () => {
       return <AdventureAlert />;
     }
   };
+
+  let CameraModal;
+  if (isCameraModalEnabled) {
+    CameraModal = require('../../components/ARComponents/CameraModal').default;
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -144,11 +168,20 @@ const AdventureScreen = () => {
       </View>
       <GPSAlertModal modalVisible={modalVisible} closeModal={closeModal} />
 
-      {/* <CameraModal
-        modalVisible={isCameraOpen}
-        closeModal={handleCloseCamera}
-        isARMode={isARMode}
-      /> */}
+      {isCameraModalEnabled &&
+        CameraModal &&
+        (!hasTreasure ? (
+          <CameraModal
+            modalVisible={isCameraOpen}
+            closeModal={handleCloseCamera}
+            isARMode={isARMode}
+          />
+        ) : (
+          <GetTreasureModal
+            modalVisible={isTreasureOpen}
+            closeModal={handleCloseTreasure}
+          />
+        ))}
 
       <MissionModal
         missionModalVisible={missionVisible}
