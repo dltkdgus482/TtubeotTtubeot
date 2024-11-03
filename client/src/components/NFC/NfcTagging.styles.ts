@@ -59,5 +59,6 @@ export default StyleSheet.create({
     height: '50%',
     flexDirection: 'column',
     justifyContent: 'space-evenly',
+    alignItems: 'center',
   },
 });

@@ -57,6 +57,7 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
   const [connectedDevice, setConnectedDevice] = useState<Peripheral | null>(
     null,
   );
+  const [bluetoothId, setBluetoothId] = useState<string>('');
   const missionList: string[] = ['일일 미션', '주간 미션', '업적'];
 
   const closeTagModal = async () => {
@@ -94,6 +95,15 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
   const handleStopScan = async () => {
     console.log('Scan stopped!');
     setIsScanning(false);
+
+    if (selectedMenu === '업적') {
+      const closestDevice = devices[0];
+      const manufactureData =
+        closestDevice.advertising.manufacturerData['004c'];
+      const closestDeviceBluetoothId = byteArrayToString(manufactureData.bytes);
+      setBluetoothId(closestDeviceBluetoothId);
+      setIsNfcTagged(true);
+    }
   };
 
   useEffect(() => {
@@ -120,14 +130,7 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
       // 필터링된 UUID만 검색
       const serviceUUID = '12345678-1234-5678-1234-56789abcdef0';
       if (peripheral.advertising.serviceUUIDs?.includes(serviceUUID)) {
-        const manufactureData = JSON.stringify(
-          peripheral.advertising.manufacturerData['004c'],
-        );
         setDevices(prevDevices => {
-          console.log('Discovered peripheral:', peripheral);
-          console.log(manufactureData);
-
-          // 중복 추가 방지
           const newDevices = prevDevices.some(
             device => device.id === peripheral.id,
           )
@@ -183,7 +186,7 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
   };
 
   const startAdvertising = () => {
-    const message = 'ssgs20';
+    const message = 'FALCON';
     const messageBytes = stringToByteArray(message);
 
     BLEAdvertiser.setCompanyId(0x004c);
@@ -210,12 +213,22 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
     }
   }, [selectedMenu]);
 
+  useEffect(() => {
+    if (missionModalVisible === true) {
+      setIsNfcTagged(false);
+    }
+  }, [missionModalVisible]);
+
   return (
     <Modal
       animationType="slide"
       transparent={true}
       visible={missionModalVisible}
-      onRequestClose={closeMissionModal}>
+      onRequestClose={() => {
+        closeMissionModal();
+        setSelectedMenu('일일 미션');
+        setIsNfcTagged(false);
+      }}>
       <View style={styles.modalBackground}>
         <View style={styles.modalView}>
           <View style={styles.titleBackContainer}>
@@ -278,7 +291,11 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
         </View>
       </View>
       {isNfcTagged && (
-        <NfcTagging visible={isNfcTagged} onClose={closeTagModal} />
+        <NfcTagging
+          visible={isNfcTagged}
+          onClose={closeTagModal}
+          bluetoothId={bluetoothId}
+        />
       )}
     </Modal>
   );
