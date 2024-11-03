@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, Alert, BackHandler } from 'react-native';
+import { View, TouchableOpacity, Alert, BackHandler } from 'react-native';
 import styles from './FirstSignUpScreen.styles';
 import StyledText from '../../styles/StyledText';
+import StyledTextInput from '../../styles/StyledTextInput';
 import ButtonFlat from '../../components/Button/ButtonFlat';
 import { requestSmsVerificationApi, confirmSmsVerificationApi, validatePhone } from '../../utils/apis/users/signup';
 import { useUser } from '../../store/user';
@@ -49,11 +50,19 @@ const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({ onNext, onBack })
       return;
     }
 
-    const success = await requestSmsVerificationApi(phone);
-    if (success) {
-      Alert.alert('문자 인증 요청이 성공적으로 전송되었습니다.');
+    try {
+      const success = await requestSmsVerificationApi(phone);
+      if (success) {
+        Alert.alert('문자 인증 요청이 성공적으로 전송되었습니다.');
+      } else {
+        Alert.alert('인증 요청에 실패했습니다. 다시 시도해주세요.');
+      }
+    } catch (error) {
+      console.error('인증 요청 중 에러 발생:', error);
+      Alert.alert('인증 요청 중 오류가 발생했습니다.');
     }
   };
+
 
   const handleSmsConfirm = async () => {
     if (!verificationCode) {
@@ -76,7 +85,7 @@ const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({ onNext, onBack })
     <View style={styles.container}>
       <View style={styles.formContainer}>
         <View style={styles.phoneContainer}>
-          <TextInput
+          <StyledTextInput
             style={styles.phoneInput}
             placeholder="휴대폰 번호를 숫자만 입력해주세요"
             placeholderTextColor="#C7C7CD"
@@ -89,7 +98,7 @@ const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({ onNext, onBack })
           </TouchableOpacity>
         </View>
         <View style={styles.phoneContainer}>
-          <TextInput
+          <StyledTextInput
             style={styles.phoneInput}
             placeholder="인증번호를 입력해주세요"
             placeholderTextColor="#C7C7CD"

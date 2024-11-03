@@ -7,6 +7,7 @@ interface StyledTextInputProps {
 
 const StyledTextInput = styled.TextInput.attrs({
   allowFontScaling: false,
+  includeFontPadding: false,
 })<StyledTextInputProps>`
   font-family: ${props =>
     props.bold ? props.theme.fontFamilyBold : props.theme.fontFamilyRegular};
