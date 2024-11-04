@@ -14,6 +14,7 @@ import CancelUserModal from '../../components/Profile/CancelUserModal';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useUser } from '../../store/user';
 import { logoutApi } from '../../utils/apis/users';
+import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 
