@@ -3,7 +3,7 @@ import { View, Image, TouchableOpacity } from 'react-native';
 import StyledText from '../../styles/StyledText';
 import styles from './CharacterShopModal.styles';
 import { TtuBeotList, FoodList, EtcList } from './dummydata';
-import { drawTtubeot } from '../../utils/apis/Draw/Draw';
+import { drawTtubeot, confirmTtubeotName } from '../../utils/apis/Draw/Draw';
 import { useUser } from '../../store/user';
 import ButtonFlat from '../Button/ButtonFlat';
 
@@ -23,8 +23,27 @@ const CoinIcon = require('../../assets/icons/coinIcon.png');
 const CharacterShopitemList = ({ selectedMenu }) => {
   const { accessToken, setAccessToken } = useUser.getState();
 
-  const buyItem = () => {
-    drawTtubeot(accessToken, setAccessToken, 1, null, null);
+  const buyItem = async () => {
+    const drawTtubeotRes = await drawTtubeot(
+      accessToken,
+      setAccessToken,
+      1,
+      null,
+      null,
+    );
+
+    if (drawTtubeotRes === false) {
+      return;
+    }
+
+    const userTtubeotOwnershipId = drawTtubeotRes.userTtubeotOwnershipId;
+    const ttubeotId = drawTtubeotRes.ttubeotId;
+    const userTtubeotOwnershipName = 'Falcon';
+
+    const confirmTtubeotNameRes = await confirmTtubeotName(
+      userTtubeotOwnershipId,
+      userTtubeotOwnershipName,
+    );
   };
 
   return (

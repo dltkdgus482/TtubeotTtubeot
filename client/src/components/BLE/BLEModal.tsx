@@ -124,7 +124,7 @@ const BLEModal: React.FC<BLEModalProps> = ({ modalVisible, closeBLEModal }) => {
     if (isScanning === true) return;
 
     setIsScanning(true);
-    BleManager.scan([], 3, true, {
+    BleManager.scan([], 5, true, {
       matchMode: BleScanMatchMode.Sticky,
       scanMode: BleScanMode.LowLatency,
       callbackType: BleScanCallbackType.AllMatches,
@@ -210,11 +210,13 @@ const BLEModal: React.FC<BLEModalProps> = ({ modalVisible, closeBLEModal }) => {
               title={isAdvertising ? 'Stop Advertising' : 'Start Advertising'}
               onPress={() => {
                 isAdvertising ? stopAdvertising() : startAdvertising();
+                isScanning ? stopScanning() : startScan();
               }}
             />
             <Button
               title={isScanning ? 'Stop Scanning' : 'Start Scanning'}
               onPress={() => {
+                isAdvertising ? stopAdvertising() : startAdvertising();
                 isScanning ? stopScanning() : startScan();
               }}
             />
