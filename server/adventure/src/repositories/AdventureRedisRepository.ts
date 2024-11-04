@@ -36,7 +36,7 @@ class AdventureRedisRepository {
             };
         }
 
-        await redisClient.geoadd(this.locationKey, userId.toString(), lng, lat);
+        await redisClient.geoadd(this.locationKey, lng, lat, userId.toString());
 
         const userLastStepsKey = `user:${userId}:last_steps`;
         const lastStepCount = await redisClient.get(userLastStepsKey);
@@ -50,7 +50,7 @@ class AdventureRedisRepository {
         const userLocationKey = `user:${userId}:location_data`;
         const timestamp = new Date().toISOString();
 
-        await redisClient.zadd(userLocationKey, "XX", Date.now(), JSON.stringify({
+        await redisClient.zadd(userLocationKey, Date.now(), JSON.stringify({
             lat,
             lng,
             steps: currentStepCount,
