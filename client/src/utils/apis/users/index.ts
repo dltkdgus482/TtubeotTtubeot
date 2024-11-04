@@ -1,7 +1,6 @@
 import { defaultRequest, authRequest } from '../request';
 import { Alert } from 'react-native';
 
-
 // [POST] '/user/login'
 // 로그인
 // request body
@@ -122,7 +121,9 @@ export const logoutApi = async (accessToken, setAccessToken, setIsLoggedIn) => {
         case 405:
           throw new Error('잘못된 API 메소드입니다.');
         default:
-          throw new Error('로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.');
+          throw new Error(
+            '로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.',
+          );
       }
     } else {
       throw new Error('로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.');
@@ -131,9 +132,7 @@ export const logoutApi = async (accessToken, setAccessToken, setIsLoggedIn) => {
 };
 
 // 유저 정보 수정
-export const modifyUserInfo = async () => {
-
-};
+export const modifyUserInfo = async () => {};
 
 // Header
 // {

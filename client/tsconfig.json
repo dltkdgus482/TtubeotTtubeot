@@ -2,5 +2,6 @@
   "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
     "strict": false, // 엄격한 타입 검사 비활성화
+    "jsx": "react"
   }
 }

@@ -17,9 +17,9 @@ const createAxiosInstance = () => {
 export const setupInterceptors = (
   axiosInstance,
   accessToken,
-  setAccessToken
+  setAccessToken,
 ) => {
-  axiosInstance.interceptors.request.use(async (config) => {
+  axiosInstance.interceptors.request.use(async config => {
     if (accessToken && typeof accessToken === 'string') {
       try {
         const { exp } = jwtDecode(accessToken);
@@ -45,11 +45,11 @@ export const setupInterceptors = (
 
   // 응답 에러 처리
   axiosInstance.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      console.error('API 요청 오류:', error);
+    response => response,
+    error => {
+      console.log('API 요청 오류:', error);
       return Promise.reject(error);
-    }
+    },
   );
 };
 
@@ -71,7 +71,7 @@ const getNewToken = async () => {
 // 인증이 필요한 요청 클라이언트 생성 함수
 export const authRequest = (accessToken, setAccessToken) => {
   // accessToken 유효성 검사
-  console.log('Access token: ' + accessToken);
+  // console.log('Access token: ' + accessToken);
   if (!accessToken || typeof accessToken !== 'string') {
     console.warn('유효하지 않은 accessToken입니다.');
     // 필요시 여기서 추가 처리

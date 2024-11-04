@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { View, ImageBackground, Image, TouchableOpacity, TextInput, Alert } from 'react-native';
+import {
+  View,
+  ImageBackground,
+  Image,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+} from 'react-native';
 import defaultStyles from './SignUpScreen.styles';
 import styles from './LoginScreen.styles';
 import ButtonFlat from '../../components/Button/ButtonFlat';
@@ -36,7 +43,9 @@ const LoginScreen = () => {
         const currentAccessToken = useUser.getState().accessToken; // 비동기문제로 여기에서 토큰 가져옴
 
         if (!currentAccessToken) {
-          Alert.alert('액세스 토큰을 가져오지 못했습니다. 다시 로그인해주세요.');
+          Alert.alert(
+            '액세스 토큰을 가져오지 못했습니다. 다시 로그인해주세요.',
+          );
           return;
         }
 
@@ -66,7 +75,10 @@ const LoginScreen = () => {
 
   return (
     <View style={defaultStyles.container}>
-      <ImageBackground source={background} style={defaultStyles.backgroundImage} />
+      <ImageBackground
+        source={background}
+        style={defaultStyles.backgroundImage}
+      />
       <View style={defaultStyles.titleContainer}>
         <Image source={title} style={defaultStyles.title} />
       </View>
@@ -90,8 +102,18 @@ const LoginScreen = () => {
           value={passwordInput}
           onChangeText={setPasswordInput}
         />
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <ButtonFlat content="로그인" color="#FDFBF4" width={120} height={50} />
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => {
+            handleLogin();
+            // setIsLoggedIn(true);
+          }}>
+          <ButtonFlat
+            content="로그인"
+            color="#FDFBF4"
+            width={120}
+            height={50}
+          />
         </TouchableOpacity>
       </View>
     </View>
