@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { SERVER_URL } from '@env';
+import { useUser } from '../../store/user';
 
 // 공통 Axios 인스턴스 생성 함수
 const createAxiosInstance = () => {
@@ -71,11 +72,14 @@ const getNewToken = async () => {
 
 // 인증이 필요한 요청 클라이언트 생성 함수
 export const authRequest = (accessToken, setAccessToken) => {
-  // accessToken 유효성 검사
-  // console.log('Access token: ' + accessToken);
+  const { clearUser } = useUser.getState();
+
+   // accessToken 유효성 검사
   if (!accessToken || typeof accessToken !== 'string') {
     console.warn('유효하지 않은 accessToken입니다.');
-    // 필요시 여기서 추가 처리
+
+    // 유효하지 않은 경우 사용자 정보 초기화
+    clearUser();
     return null;
   }
 
