@@ -11,6 +11,8 @@ import ButtonDefault from '../../components/Button/ButtonDefault.tsx';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FriendsModal from '../../components/Friends/FriendsModal.tsx';
+import BLE from '../../components/BLE/BLEModal.tsx';
+import BLEModal from '../../components/BLE/BLEModal.tsx';
 
 const background = require('../../assets/images/HomeBackground.jpg');
 const ShopIcon = require('../../assets/icons/ShopIcon.png');
@@ -26,6 +28,7 @@ const HomeScreen = () => {
   const [missionModalVisible, setMissionModalVisible] = useState(false);
   const [friendsModalVisible, setFriendsModalVisible] = useState(false);
   const navigation = useNavigation();
+  const [BLEModalVisible, setBLEModalVisible] = useState(false);
 
   const openShopModal = () => {
     setModalVisible(true);
@@ -57,6 +60,14 @@ const HomeScreen = () => {
 
   const closeFriendsModal = () => {
     setFriendsModalVisible(false);
+  };
+
+  const openBLEModal = () => {
+    setBLEModalVisible(true);
+  };
+
+  const closeBLEModal = () => {
+    setBLEModalVisible(false);
   };
 
   return (
@@ -98,12 +109,15 @@ const HomeScreen = () => {
           <TouchableOpacity onPress={openMissionModal}>
             <Image source={MissionIcon} style={styles.missionIcon} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={openAlbumModal}>
+          <TouchableOpacity onPress={openBLEModal}>
             <Image source={AlbumIcon} style={styles.albumIcon} />
           </TouchableOpacity>
           <TouchableOpacity onPress={openFriendsModal}>
             <Image source={FriendIcon} style={styles.albumIcon} />
           </TouchableOpacity>
+          {/* <TouchableOpacity onPress={openAlbumModal}>
+            <Image source={AlbumIcon} style={styles.albumIcon} />
+          </TouchableOpacity> */}
         </View>
       )}
 
@@ -136,6 +150,7 @@ const HomeScreen = () => {
         modalVisible={friendsModalVisible}
         closeFriendsModal={closeFriendsModal}
       />
+      <BLEModal modalVisible={BLEModalVisible} closeBLEModal={closeBLEModal} />
       {/* WebView로 3D 모델 표시 */}
     </SafeAreaView>
   );

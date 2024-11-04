@@ -3,12 +3,19 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    position: 'relative',
-    width: '100%',
+    top: 120,
+  },
+  alertContainer: {
+    position: 'absolute',
+    left: '50%',
+    transform: [{ translateX: -150 }],
+    width: 300,
+    height: 200,
+    borderRadius: 40,
+    padding: 10,
   },
   alertBackground: {
     position: 'absolute',
-    top: 120,
     left: '50%',
     transform: [{ translateX: -150 }],
     width: 300,
@@ -21,7 +28,7 @@ const styles = StyleSheet.create({
   },
   triangle: {
     position: 'absolute',
-    top: 320,
+    top: 200,
     left: '50%',
     transform: [{ translateX: -10 }],
     width: 0,
@@ -32,16 +39,6 @@ const styles = StyleSheet.create({
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
     borderTopColor: 'white',
-  },
-  alertContainer: {
-    position: 'absolute',
-    top: 120,
-    left: '50%',
-    transform: [{ translateX: -150 }],
-    width: 300,
-    height: 200,
-    borderRadius: 40,
-    padding: 10,
   },
   alertTitle: {
     paddingTop: 10,

@@ -8,6 +8,7 @@ import ButtonFlat from '../Button/ButtonFlat';
 interface NfcTaggingProps {
   visible: boolean;
   onClose: () => void;
+  bluetoothId: string;
 }
 
 const ProfileImageContainer = styled(View)`
@@ -26,7 +27,11 @@ const ProfileImage = styled(Image)`
 
 const profileImageSource = require('../../assets/ttubeot/mockTtu.png');
 
-const NfcTagging: React.FC<NfcTaggingProps> = ({ visible, onClose }) => {
+const NfcTagging: React.FC<NfcTaggingProps> = ({
+  visible,
+  onClose,
+  bluetoothId,
+}) => {
   return (
     <Modal
       visible={visible}
@@ -49,7 +54,7 @@ const NfcTagging: React.FC<NfcTaggingProps> = ({ visible, onClose }) => {
               <ProfileImage source={profileImageSource} />
             </ProfileImageContainer>
             <StyledText bold style={styles.nameStyle}>
-              우리마루
+              블루투스 코드: {bluetoothId}
             </StyledText>
           </View>
           <View style={styles.buttonContainer}>

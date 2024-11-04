@@ -12,17 +12,20 @@ const Profile = styled(View)`
 `;
 
 const ProfileImageContainer = styled(View)`
-  width: 85px;
-  height: 85px;
+  position: absolute;
+  top: 7px;
+  left: 10px;
+  width: 40px;
+  height: 40px;
   border-radius: 50px;
-  background-color: #b1baaa;
+  background-color: #d4e6ad;
   justify-content: center;
   align-items: center;
 `;
 
 const ProfileImage = styled(Image)`
-  width: 73px;
-  height: 73px;
+  width: 38px;
+  height: 38px;
 `;
 
 const ProfileDetails = styled(View)`
@@ -32,15 +35,19 @@ const ProfileDetails = styled(View)`
   padding-right: 5px;
   flex-direction: column;
   justify-content: center;
-  width: 215px;
+  width: 220px;
   height: 97%;
 `;
 
 const ProfileTop = styled(View)`
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
+  margin-bottom: 12px;
+  margin-left: 40px;
+  margin-right: 10px;
+  gap: 10px;
   position: relative;
 `;
 
@@ -52,9 +59,6 @@ const ProfileName = styled(StyledText)`
 const RemainDays = styled(StyledText)`
   font-size: 16px;
   color: #fff;
-  position: absolute;
-  top: 2px;
-  right: 10px;
   background-color: rgba(96, 92, 80, 0.5);
   border-radius: 15px;
   padding: 2px 8px;
@@ -62,16 +66,12 @@ const RemainDays = styled(StyledText)`
 
 const ProfileBottom = styled(View)`
   display: flex;
+  width: 100%;
   flex-direction: row;
-  gap: 5px;
+  justify-content: space-between;
   align-items: center;
   position: relative;
-`;
-
-const WalkWith = styled(StyledText)`
-  position: absolute;
-  right: 5px;
-  color: #fff;
+  padding-right: 4px;
 `;
 
 const ShadowBox = styled(View)`
@@ -88,24 +88,6 @@ const Shadow = styled(View)`
   border-radius: 25px;
 `;
 
-const ImageShadowBox = styled(View)`
-  position: relative;
-  left: -285px;
-  width: 88px;
-  height: 88px;
-`;
-
-const ImageShadow = styled(View)`
-  position: absolute;
-  top: 0;
-  width: 100%;
-  height: 87px;
-  border-bottom-width: 11px;
-  border-left-width: 13px;
-  border-color: rgba(0, 0, 0, 0.45);
-  border-radius: 50px;
-`;
-
 const TtubeotProfile = () => {
   return (
     <Profile>
@@ -117,28 +99,29 @@ const TtubeotProfile = () => {
             <RemainDays bold>D-4</RemainDays>
           </ProfileTop>
           <ProfileBottom>
-            <StyledText bold style={{ color: 'white' }}>
-              함께한 거리
-            </StyledText>
-            <View
-              style={{
-                backgroundColor: '#605C50',
-                opacity: 0.5,
-                padding: 3,
-                borderRadius: 5,
-              }}>
-              <Icon type="FontAwesome5" name="paw" size={12} color="#000" />
+            <View style={{ display: 'flex', flexDirection: 'row', gap: 4 }}>
+              <StyledText bold style={{ color: 'white' }}>
+                함께한 거리
+              </StyledText>
+              <View
+                style={{
+                  backgroundColor: '#605C50',
+                  opacity: 0.5,
+                  padding: 3,
+                  borderRadius: 5,
+                }}>
+                <Icon type="FontAwesome5" name="paw" size={12} color="#000" />
+              </View>
             </View>
-            <WalkWith bold>55,000 걸음</WalkWith>
+            <StyledText color="white" bold>
+              55,000 걸음
+            </StyledText>
           </ProfileBottom>
         </ProfileDetails>
-      </ShadowBox>
-      <ImageShadowBox>
-        <ImageShadow />
         <ProfileImageContainer>
           <ProfileImage source={require('../assets/ttubeot/mockTtu.png')} />
         </ProfileImageContainer>
-      </ImageShadowBox>
+      </ShadowBox>
     </Profile>
   );
 };
