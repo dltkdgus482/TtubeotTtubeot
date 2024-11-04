@@ -24,6 +24,8 @@ export class AdventureController {
         throw new Error('Invalid JWT token');
       }
 
+      console.log(userId, "사용자가 모험을 시작합니다.");
+
       await this.adventureService.initAdventure(userId, socket.id);
     } catch (error) {
       console.error("Error in handleInitAdventure:", error);
@@ -35,6 +37,7 @@ export class AdventureController {
   async handleStoreGPSData(socket: Socket, data: { lat: number, lng: number, steps: number }): Promise<void> {
     const { lat, lng, steps } = data;
     try {
+      console.log("사용자의 위치 : ", lat, lng, "사용자의 걸음 수 : ", steps);
       let storedData = await this.adventureService.storeGPSData(socket.id, lat, lng, steps);
       let nearbyUsers = await this.adventureService.getNearbyUsers(socket.id, lat, lng, 300);
       let reward = await this.adventureService.getReward(socket.id, lat, lng, storedData.steps);
@@ -69,6 +72,7 @@ export class AdventureController {
 
   async handleDisconnect(socket: Socket): Promise<void> {
     try {
+      console.log("사용자가 접속을 종료합니다.");
       await this.adventureService.endAdventure(socket.id);
     } catch (error) {
       console.error("Error in handleDisconnect:", error);
