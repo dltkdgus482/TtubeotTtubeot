@@ -16,7 +16,13 @@ const useAdventureSocket = () => {
   const { accessToken, setAccessToken } = useUser();
 
   const connectSocket = useCallback(async () => {
+    if (socketRef.current !== null) {
+      console.error('이미 소켓이 연결되어 있습니다.');
+      return;
+    }
+
     const authClient = authRequest(accessToken, setAccessToken);
+
     if (!authClient) {
       console.error('유효한 토큰이 없어 소켓을 연결할 수 없습니다.');
       return;
@@ -41,9 +47,16 @@ const useAdventureSocket = () => {
 
   const disconnectSocket = useCallback(() => {
     if (socketRef.current) {
-      socketRef.current.disconnect();
-      console.log('소켓 연결이 종료되었습니다.');
-      socketRef.current = null;
+      socketRef.current.emit('adventure_end');
+      console.log('adventure_end 이벤트 전송');
+      socketRef.current.on('adventure_result', data => {
+        console.log('adventure_result 이벤트 수신:', data);
+
+        socketRef.current?.disconnect();
+        console.log('소켓 연결이 종료되었습니다.');
+        socketRef.current = null;
+        AdventureManager.destory();
+      });
     }
   }, []);
 

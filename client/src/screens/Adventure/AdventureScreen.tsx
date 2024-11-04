@@ -19,7 +19,7 @@ const AdventureScreen = () => {
   const [adventureStart, setAdventureStart] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const opacityAnim = useRef(new Animated.Value(0.65)).current;
-  const { connectSocket } = useAdventureSocket();
+  const { connectSocket, disconnectSocket } = useAdventureSocket();
 
   const openModal = () => {
     setModalVisible(true);
@@ -38,10 +38,12 @@ const AdventureScreen = () => {
   };
 
   const handleStartAdventure = () => {
+    console.log('여기', adventureStart);
     if (!adventureStart) {
       connectSocket();
       openModal();
     } else {
+      disconnectSocket();
       closeModal();
     }
   };

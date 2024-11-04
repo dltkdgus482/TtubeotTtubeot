@@ -29,7 +29,11 @@ const AdventureMapScreen = () => {
   const [isConnected, setIsConnected] = useState(true); // 소켓 연결 상태 추적
 
   // AdventureInfo의 싱글턴 인스턴스 가져오기
-  const adventureManager = AdventureManager.getInstance();
+  useEffect(() => {
+    if (socketRef.current === null) {
+      socketRef.current = AdventureManager.getInstance();
+    }
+  }, []);
 
   const requestLocationPermission = async (): Promise<boolean> => {
     try {
@@ -51,8 +55,8 @@ const AdventureMapScreen = () => {
   };
 
   const getCurrentLocation = useCallback(() => {
-    if (!disConnecte || !socketRef.current) {
-      console.log("소켓이 연결되지 않아 위치 정보를 전송하지 않습니다.");
+    if (!isConnected || !socketRef.current) {
+      console.log('소켓이 연결되지 않아 위치 정보를 전송하지 않습니다.');
       return;
     }
 
@@ -74,7 +78,11 @@ const AdventureMapScreen = () => {
           lng: longitude,
           steps: 10,
         });
-        console.log('Location sent:', { lat: latitude, lng: longitude, steps: 10 });
+        console.log('Location sent:', {
+          lat: latitude,
+          lng: longitude,
+          steps: 10,
+        });
       },
       error => {
         Alert.alert('위치 정보 오류', error.message);
