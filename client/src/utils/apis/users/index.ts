@@ -105,7 +105,7 @@ export const logoutApi = async (accessToken, setAccessToken, setIsLoggedIn) => {
   }
 
   try {
-    const response = await authClient.post('/user/logout');
+    // const response = await authClient.post('/user/logout');
 
     if (response.status === 200) {
       setIsLoggedIn(false); // 로그아웃 상태 설정
