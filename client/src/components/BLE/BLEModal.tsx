@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Modal, Text, Button } from 'react-native';
 import styles from './BLEModal.styles';
-import { useEffect, useState } from 'react';
 import {
   stringToByteArray,
   byteArrayToString,
@@ -42,6 +41,8 @@ const BLEModal: React.FC<BLEModalProps> = ({ modalVisible, closeBLEModal }) => {
   const [devices, setDevices] = useState<Peripheral[]>([]);
   const [bluetoothId, setBluetoothId] = useState<string>('');
 
+  const devicesRef = useRef<Peripheral[]>([]);
+
   const closeTagModal = async () => {
     setIsNfcTagged(false);
   };
@@ -70,19 +71,28 @@ const BLEModal: React.FC<BLEModalProps> = ({ modalVisible, closeBLEModal }) => {
     console.log('Scan stopped!');
     setIsScanning(false);
 
-    console.log(devices);
+    console.log(devicesRef.current);
 
-    if (devices.length === 0) {
-      setBluetoothId('No Device Found');
+    setTimeout(() => {
+      const sortedDevices = [...devicesRef.current].sort(
+        (a, b) => (b.rssi || -Infinity) - (a.rssi || -Infinity),
+      );
+
+      console.log('devices', sortedDevices);
+
+      if (sortedDevices.length === 0) {
+        setBluetoothId('No Device Found');
+        setIsNfcTagged(true);
+        return;
+      }
+
+      const closestDevice = sortedDevices[0];
+      const manufactureData =
+        closestDevice.advertising.manufacturerData['004c'];
+      const closestDeviceBluetoothId = byteArrayToString(manufactureData.bytes);
+      setBluetoothId(closestDeviceBluetoothId);
       setIsNfcTagged(true);
-      return;
-    }
-
-    const closestDevice = devices[0];
-    const manufactureData = closestDevice.advertising.manufacturerData['004c'];
-    const closestDeviceBluetoothId = byteArrayToString(manufactureData.bytes);
-    setBluetoothId(closestDeviceBluetoothId);
-    setIsNfcTagged(true);
+    }, 1000);
   };
 
   // BLE 초기화
@@ -114,7 +124,7 @@ const BLEModal: React.FC<BLEModalProps> = ({ modalVisible, closeBLEModal }) => {
     if (isScanning === true) return;
 
     setIsScanning(true);
-    BleManager.scan([], 5, true, {
+    BleManager.scan([], 3, true, {
       matchMode: BleScanMatchMode.Sticky,
       scanMode: BleScanMode.LowLatency,
       callbackType: BleScanCallbackType.AllMatches,
@@ -128,25 +138,22 @@ const BLEModal: React.FC<BLEModalProps> = ({ modalVisible, closeBLEModal }) => {
       });
   };
 
-  const handleDiscoverPeripheral = (peripheral: Peripheral) => {
+  const handleDiscoverPeripheral = async (peripheral: Peripheral) => {
     if (peripheral.advertising.isConnectable === false) return;
 
     // 필터링된 UUID만 검색
     const serviceUUID = '12345678-1234-5678-1234-56789abcdef0';
     if (peripheral.advertising.serviceUUIDs?.includes(serviceUUID)) {
+      console.log('peripheral', peripheral);
+
       setDevices(prevDevices => {
-        console.log(peripheral);
-
-        const newDevices = prevDevices.some(
-          device => device.id === peripheral.id,
-        )
-          ? prevDevices
-          : [...prevDevices, peripheral];
-
-        // RSSI 기준으로 정렬
-        return newDevices.sort(
-          (a, b) => (b.rssi || -Infinity) - (a.rssi || -Infinity),
-        );
+        const exists = prevDevices.some(device => device.id === peripheral.id);
+        if (!exists) {
+          const updatedDevices = [...prevDevices, peripheral];
+          devicesRef.current = updatedDevices;
+          return updatedDevices;
+        }
+        return prevDevices;
       });
     }
   };
@@ -159,7 +166,7 @@ const BLEModal: React.FC<BLEModalProps> = ({ modalVisible, closeBLEModal }) => {
     if (isAdvertising === true) return;
 
     setIsAdvertising(true);
-    const message = 'FALCON';
+    const message = '241104';
     const messageBytes = stringToByteArray(message);
 
     BLEAdvertiser.setCompanyId(0x004c);
