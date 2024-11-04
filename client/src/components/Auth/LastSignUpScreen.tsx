@@ -5,7 +5,7 @@ import defaulStyles from './FirstSignUpScreen.styles';
 import StyledText from '../../styles/StyledText';
 import StyledTextInput from '../../styles/StyledTextInput';
 import ButtonFlat from '../../components/Button/ButtonFlat';
-import { getUserData, useUser } from '../../store/user';
+import { useUser } from '../../store/user';
 import { signUpApi, userNameValidateApi, validatePassword } from '../../utils/apis/users/signup';
 import { useNavigation } from '@react-navigation/native';
 
@@ -57,16 +57,16 @@ const LastSignUpScreen: React.FC<LastSignUpScreenProps> = ({ onBack }) => {
     };
 
     const success = await signUpApi(formData);
-  if (success) {
-    setUser({
-      ...user,
-      userName: userNameInput,
-    });
-    Alert.alert('회원가입이 완료되었습니다.');
-    console.log('회원가입 완료', user);
-    // 회원가입 성공 시 인트로 스크린으로 이동
-    navigation.navigate('IntroScreen');
-  }
+    if (success) {
+      setUser({
+        ...user,
+        userName: userNameInput,
+      });
+      Alert.alert('회원가입이 완료되었습니다.');
+      console.log('회원가입 완료', user);
+      // 회원가입 성공 시 인트로 스크린으로 이동
+      navigation.navigate('IntroScreen');
+    }
   };
 
   return (
