@@ -57,6 +57,7 @@ export class AdventureController {
 
   async handleEndAdventure(socket: Socket): Promise<void> {
     try {
+      console.log("사용자가 모험을 종료합니다.");
       let adventureLog = await this.adventureService.endAdventure(socket.id);
 
       socket.emit("adventure_result", { "data": adventureLog });

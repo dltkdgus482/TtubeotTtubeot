@@ -46,8 +46,10 @@ class AdventureService {
   async endAdventure(socket: string): Promise<AdventureLogModel> {
     let adventureLog = await this.adventureRedisRepository.getAdventureLog(socket);
     let userId = adventureLog.userId;
+    console.log(adventureLog);
 
     let locationData = await this.adventureRedisRepository.findUserLocationData(userId);
+    console.log(locationData);
     let mongoId = await this.adventureMongoRepository.insertUserLocationData(userId, locationData);
 
     let userSteps = await this.adventureRedisRepository.getStepCount(userId);

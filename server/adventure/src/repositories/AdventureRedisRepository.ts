@@ -16,12 +16,14 @@ class AdventureRedisRepository {
 
     async getAdventureLog(socket: string): Promise<AdventureLogModel> {
         const adventureLog = await redisClient.hget(this.onlineUsersKey, socket) ?? "{}";
+        console.log("adventureLog", adventureLog);
         return AdventureLogModel.create(JSON.parse(adventureLog))
     }
 
     async getStepCount(userId: number): Promise<number> {
         const userStepsKey = `user:${userId}:steps`;
         const stepCount = await redisClient.get(userStepsKey) ?? "0";
+        console.log("stepCount", stepCount);
 
         return parseInt(stepCount);
     }
@@ -87,6 +89,10 @@ class AdventureRedisRepository {
         const userLocationKey = `user:${userId}:location_data`;
         const userLastStepsKey = `user:${userId}:last_steps`;
         const userStepsKey = `user:${userId}:steps`;
+
+        console.log("userlocationdata", redisClient.zrange(userLocationKey, 0, -1));
+        console.log("userlaststeps", redisClient.get(userLastStepsKey));
+        console.log("usersteps", redisClient.get(userStepsKey));
 
         await redisClient.del(userLocationKey);
         await redisClient.del(userLastStepsKey);
