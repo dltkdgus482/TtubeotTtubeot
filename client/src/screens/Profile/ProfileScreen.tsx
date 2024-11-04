@@ -14,6 +14,7 @@ import CancelUserModal from '../../components/Profile/CancelUserModal';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useUser } from '../../store/user';
 import { logoutApi } from '../../utils/apis/users';
+import { useNavigation } from '@react-navigation/native';
 
 const background = require('../../assets/images/IntroBackground.png');
 const settings1 = require('../../assets/icons/SettingsIcon1.png');
@@ -22,6 +23,7 @@ const settings3 = require('../../assets/icons/SettingsIcon3.png');
 const settings4 = require('../../assets/icons/SettingsIcon4.png');
 
 const ProfileScreen = () => {
+  const navigation = useNavigation();
   const { setAccessToken, setIsLoggedIn, accessToken, clearUser } = useUser.getState();
   const [isGPSOn, setIsGPSOn] = useState<boolean>(false);
   const [isPushOn, setIsPushOn] = useState<boolean>(false);
@@ -50,7 +52,7 @@ const ProfileScreen = () => {
   };
 
   const handleChangePassword = () => {
-    // TODO: Change password logic
+    navigation.navigate('FindPasswordScreen');
   };
 
   const handleCancelUser = () => {

@@ -23,7 +23,7 @@ export const setupInterceptors = (
     if (accessToken && typeof accessToken === 'string') {
       try {
         const { exp } = jwtDecode(accessToken);
-
+        // console.log('accessToken', accessToken)
         // 토큰 만료 확인 후 갱신
         if (exp && Date.now() >= exp * 1000) {
           const newToken = await getNewToken();
@@ -57,6 +57,7 @@ export const setupInterceptors = (
 const getNewToken = async () => {
   try {
     const res = await defaultRequest.post('/user/reissue');
+    // console.log('res', res);
     const authorizationHeader = res.headers.authorization;
     const accessToken = authorizationHeader
       ? authorizationHeader.replace(/^Bearer\s+/i, '')
@@ -71,7 +72,7 @@ const getNewToken = async () => {
 // 인증이 필요한 요청 클라이언트 생성 함수
 export const authRequest = (accessToken, setAccessToken) => {
   // accessToken 유효성 검사
-  console.log('Access token: ' + accessToken);
+  // console.log('Access token: ' + accessToken);
   if (!accessToken || typeof accessToken !== 'string') {
     console.warn('유효하지 않은 accessToken입니다.');
     // 필요시 여기서 추가 처리
