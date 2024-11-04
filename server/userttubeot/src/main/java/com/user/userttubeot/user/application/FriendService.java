@@ -7,6 +7,7 @@ import com.user.userttubeot.user.domain.entity.FriendId;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.exception.CoinAlreadySentException;
 import com.user.userttubeot.user.domain.exception.FriendNotFoundException;
+import com.user.userttubeot.user.domain.exception.ResponseMessage;
 import com.user.userttubeot.user.domain.repository.FriendRepository;
 import com.user.userttubeot.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -25,12 +26,36 @@ import org.springframework.stereotype.Service;
 @Service
 public class FriendService {
 
-    private static final Integer SEND_COIN_AMOUNT = 100;
-
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
     private final TtubeotService ttubeotService;
     private final UserService userService;
+
+    /**
+     * 친구 요청을 처리하는 메서드. 친구 상태에 따라 코인 전송 및 lastGreeting 업데이트.
+     */
+    public ResponseMessage handleFriendRequest(Integer userId, Integer friendId) {
+        log.info("친구 요청 처리 시작 - 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendId);
+
+        if (areFriends(userId, friendId)) {
+            Friend friend = findFriend(userId, friendId);
+            LocalDateTime now = LocalDateTime.now();
+
+            if (friend.getLastGreeting() != null && friend.getLastGreeting().toLocalDate()
+                .isEqual(now.toLocalDate())) {
+                return new ResponseMessage("이미 친구 관계입니다. 오늘 이미 인사하여 코인이 전송되지 않았습니다.");
+            }
+            sendCoins(userId, friendId, 100);
+            updateLastGreeting(userId, friendId);
+            updateLastGreeting(friendId, userId);
+            return new ResponseMessage("이미 친구 관계입니다. 마지막 인사 시간이 갱신되었습니다.");
+        }
+
+        sendFriendRequest(userId, friendId);
+        sendCoins(userId, friendId, 300);
+        updateLastGreeting(userId, friendId);
+        return new ResponseMessage("친구 요청이 전송되었습니다.");
+    }
 
     /**
      * 친구 요청을 보내는 메서드. 양방향 친구 관계를 추가.
@@ -48,102 +73,75 @@ public class FriendService {
     }
 
     /**
-     * 사용자 ID로 친구 정보를 조회하여 DTO 리스트로 반환.
+     * 친구 정보 리스트 조회.
      */
     public List<FriendInfoDto> getFriendInfoList(Integer userId) {
-        log.info("친구 정보 리스트 조회 시작 - 사용자 ID: {}", userId);
-
         List<Friend> friendList = friendRepository.findByIdUserId(userId);
-        List<FriendInfoDto> friendInfoDtoList = friendList.stream()
-            .map(this::mapToFriendInfoDto)
-            .toList();
-
-        log.info("친구 정보 리스트 조회 완료 - 사용자 ID: {}, 친구 수: {}", userId, friendInfoDtoList.size());
-        return friendInfoDtoList;
+        return friendList.stream().map(this::mapToFriendInfoDto).toList();
     }
 
     /**
-     * 친구에게 코인을 전송하는 메서드.
+     * 친구에게 일일 코인 전송. 같은 날 이미 전송한 경우 예외 발생.
      */
-    public void sendCoin(Integer userId, Integer friendUserId) {
-        log.info("코인 전송 시작 - 사용자 ID: {}, 친구 ID: {}", userId, friendUserId);
-
-        Friend friend = friendRepository.findById(new FriendId(userId, friendUserId))
-            .orElseThrow(() -> new FriendNotFoundException("사용자 ID " + userId + "와 친구 ID " + friendUserId + "는 친구 관계가 아닙니다."));
-
-        User friendUser = userService.findUserById(friendUserId);
+    public ResponseMessage dailyCoinSend(Integer senderId, Integer receiverId, Integer coinAmount) {
+        Friend friend = findFriend(senderId, receiverId);
         LocalDateTime now = LocalDateTime.now();
 
-        // 마지막 전송 날짜가 오늘인지 확인
-        if (friend.getLastSend() != null && friend.getLastSend().toLocalDate().isEqual(now.toLocalDate())) {
-            log.warn("이미 코인 전송 완료 - 사용자 ID: {}, 친구 ID: {}", userId, friendUserId);
-            throw new CoinAlreadySentException("사용자 ID " + userId + "는 오늘 이미 코인을 전송했습니다.");
+        if (friend.getLastSend() != null && friend.getLastSend().toLocalDate()
+            .isEqual(now.toLocalDate())) {
+            throw new CoinAlreadySentException("오늘 이미 코인이 전송되었습니다.");
         }
 
-        // 코인 전송 및 친구 정보 업데이트
-        friend.send();
-        friendUser.addCoins(SEND_COIN_AMOUNT);
-        friendRepository.save(friend);
-        userRepository.save(friendUser);
+        User receiver = userService.findUserById(receiverId);
+        receiver.addCoins(coinAmount);
+        userRepository.save(receiver);
 
-        log.info("코인 전송 완료 - 사용자 ID: {}, 친구 ID: {}", userId, friendUserId);
+        friend.send();
+        friendRepository.save(friend);
+        return new ResponseMessage("코인이 성공적으로 전송되었습니다. 수신자에게 전송된 코인: " + coinAmount);
     }
 
-    /**
-     * lastGreeting 필드를 갱신하는 메서드.
-     */
-    public void updateLastGreeting(Integer userId, Integer friendId) {
-        Friend friend = friendRepository.findById(new FriendId(userId, friendId))
+    private Friend findFriend(Integer userId, Integer friendId) {
+        return friendRepository.findById(new FriendId(userId, friendId))
             .orElseThrow(() -> new FriendNotFoundException("친구 관계가 존재하지 않습니다."));
+    }
 
+    private void sendCoins(Integer userId, Integer friendId, Integer coinAmount) {
+        User user = userService.findUserById(userId);
+        User friendUser = userService.findUserById(friendId);
+
+        user.addCoins(coinAmount);
+        friendUser.addCoins(coinAmount);
+
+        userRepository.save(user);
+        userRepository.save(friendUser);
+    }
+
+    private void updateLastGreeting(Integer userId, Integer friendId) {
+        Friend friend = findFriend(userId, friendId);
         friend.meet();
         friendRepository.save(friend);
-        log.info("lastGreeting 갱신 - 사용자 ID: {}, 친구 ID: {}, 갱신 시간: {}", userId, friendId, friend.getLastGreeting());
     }
 
-    /**
-     * 두 사용자가 친구 관계인지 확인.
-     */
     public boolean areFriends(Integer userId, Integer friendUserId) {
-        boolean exists = friendRepository.existsById(new FriendId(userId, friendUserId));
-        log.debug("친구 관계 확인 - 사용자 ID: {}, 친구 ID: {}, 관계 여부: {}", userId, friendUserId, exists);
-
-        return exists;
+        return friendRepository.existsById(new FriendId(userId, friendUserId));
     }
 
-    /**
-     * 양방향 친구 관계를 생성하는 헬퍼 메서드.
-     */
     private void createBidirectionalFriendship(Integer userId, Integer friendId) {
         saveFriendRelationship(userId, friendId);
         saveFriendRelationship(friendId, userId);
-        log.debug("양방향 친구 관계 생성 - 사용자 ID: {}, 친구 ID: {}", userId, friendId);
     }
 
-    /**
-     * 단방향 친구 관계를 저장하는 헬퍼 메서드.
-     */
     private void saveFriendRelationship(Integer userId, Integer friendId) {
         FriendId friendIdEntity = new FriendId(userId, friendId);
-        Friend friend = Friend.builder()
-            .id(friendIdEntity)
-            .build();
+        Friend friend = Friend.builder().id(friendIdEntity).build();
         friendRepository.save(friend);
-        log.debug("단방향 친구 관계 저장 - 사용자 ID: {}, 친구 ID: {}", userId, friendId);
     }
 
-    /**
-     * Friend 엔티티를 FriendInfoDto로 매핑하는 헬퍼 메서드.
-     */
     private FriendInfoDto mapToFriendInfoDto(Friend friend) {
         Integer friendId = friend.getId().getFriendId();
         User user = userService.findUserById(friendId);
-
-        return new FriendInfoDto(
-            friendId,
-            user.getUserName(),
-            user.getUserGoal(),
-            ttubeotService.getDdubeotInfo(friendId)
-        );
+        return new FriendInfoDto(friendId, user.getUserName(), user.getUserGoal(),
+            ttubeotService.getDdubeotInfo(friendId));
     }
 }
