@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     width: '100%',
-    height: 490,
+    height: 460,
     borderColor: '#C7E5C4',
     borderWidth: 5,
     borderRadius: 25,
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   mapShadow: {
     position: 'absolute',
     top: 0,
-    height: 493,
+    height: 463,
     width: '100%',
     borderColor: 'rgba(0, 0, 0, 0.23)',
     borderWidth: 5,
