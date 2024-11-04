@@ -25,10 +25,11 @@ export class AdventureController {
       }
 
       let userTtubeotOwnershipId = await this.userService.getUserTtubeot(userId);
+      let { username, ttubeot_id } = await this.userService.getUserInfo(userId);
 
       console.log(userId, "사용자가 모험을 시작합니다.");
 
-      await this.adventureService.initAdventure(userId, userTtubeotOwnershipId, socket.id);
+      await this.adventureService.initAdventure(userId, userTtubeotOwnershipId, username, ttubeot_id, socket.id);
     } catch (error) {
       console.error("Error in handleInitAdventure:", error);
       socket.emit("error", { message: "Failed to initialize adventure" });

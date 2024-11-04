@@ -6,12 +6,25 @@ class AdventureRedisRepository {
     private readonly locationKey: string = "user_locations";
     private readonly onlineUsersKey: string = "online_users";
 
-    async setOnline(adventureLog: AdventureLogModel, socket: string): Promise<void> {
+    async setOnline(adventureLog: AdventureLogModel, username: string, ttubeot_id: number, socket: string): Promise<void> {
         await redisClient.hset(this.onlineUsersKey, socket, JSON.stringify(adventureLog));
+
+        const userKey = `user:${adventureLog.userId}`;
+        await redisClient.hmset(userKey, "username", username, "ttubeot_id", ttubeot_id);
     }
 
     async setOffline(socket: string): Promise<void> {
+        let adventureLog = await redisClient.hget(this.onlineUsersKey, socket) ?? "{}";
+        let userId = JSON.parse(adventureLog).userId;
+
+        const userKey = `user:${userId}`;
+        await redisClient.del(userKey);
+
         await redisClient.hdel(this.onlineUsersKey, socket);
+    }
+
+    async updateUserInfo(adventureLog: AdventureLogModel, socket: string): Promise<void> {
+        await redisClient.hset(this.onlineUsersKey, socket, JSON.stringify(adventureLog));
     }
 
     async getAdventureLog(socket: string): Promise<AdventureLogModel> {

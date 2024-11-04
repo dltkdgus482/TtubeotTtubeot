@@ -21,13 +21,13 @@ class AdventureService {
     this.parkRepository = new ParkRepository();
   }
 
-  async initAdventure(userId: number, userTtubeotOwnershipId: number, socket: string): Promise<void> {
+  async initAdventure(userId: number, userTtubeotOwnershipId: number, username: string, ttubeot_id: number, socket: string): Promise<void> {
     let adventureLog = AdventureLogModel.create({ userId, userTtubeotOwnershipId });
 
     let adventureLogId = await this.adventureMysqlRepository.initAdventureLog(adventureLog);
     adventureLog.adventureLogId = adventureLogId;
 
-    await this.adventureRedisRepository.setOnline(adventureLog, socket);
+    await this.adventureRedisRepository.setOnline(adventureLog, username, ttubeot_id, socket);
   }
 
   async storeGPSData(socket: string, lat: number, lng: number, steps: number): Promise<{ lat: number, lng: number, steps: number, timestamp: string, }> {
@@ -124,7 +124,7 @@ class AdventureService {
       let reward = Math.floor(Math.random() * 100) + 100;
 
       adventureLog.adventureCoin += reward;
-      await this.adventureRedisRepository.setOnline(adventureLog, socket);
+      await this.adventureRedisRepository.updateUserInfo(adventureLog, socket);
 
       return { reward, remain_count: remainCounts.length };
     }
