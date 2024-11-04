@@ -14,7 +14,6 @@ import FriendsModal from '../../components/Friends/FriendsModal.tsx';
 import BLE from '../../components/BLE/BLEModal.tsx';
 import BLEModal from '../../components/BLE/BLEModal.tsx';
 
-
 const background = require('../../assets/images/HomeBackground.jpg');
 const ShopIcon = require('../../assets/icons/ShopIcon.png');
 const MissionIcon = require('../../assets/icons/MissionIcon.png');
@@ -61,6 +60,8 @@ const HomeScreen = () => {
 
   const closeFriendsModal = () => {
     setFriendsModalVisible(false);
+  };
+
   const openBLEModal = () => {
     setBLEModalVisible(true);
   };
