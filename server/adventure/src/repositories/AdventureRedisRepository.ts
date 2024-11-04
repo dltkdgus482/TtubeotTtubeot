@@ -7,15 +7,15 @@ class AdventureRedisRepository {
     private readonly onlineUsersKey: string = "online_users";
 
     async setOnline(adventureLog: AdventureLogModel, socket: string): Promise<void> {
-        await redisClient.hSet(this.onlineUsersKey, socket, JSON.stringify(adventureLog));
+        await redisClient.hset(this.onlineUsersKey, socket, JSON.stringify(adventureLog));
     }
 
     async setOffline(socket: string): Promise<void> {
-        await redisClient.hDel(this.onlineUsersKey, socket);
+        await redisClient.hdel(this.onlineUsersKey, socket);
     }
 
     async getAdventureLog(socket: string): Promise<AdventureLogModel> {
-        const adventureLog = await redisClient.hGet(this.onlineUsersKey, socket) ?? "{}";
+        const adventureLog = await redisClient.hget(this.onlineUsersKey, socket) ?? "{}";
         return AdventureLogModel.create(JSON.parse(adventureLog))
     }
 
@@ -36,11 +36,7 @@ class AdventureRedisRepository {
             };
         }
 
-        await redisClient.geoAdd(this.locationKey, {
-            member: userId.toString(),
-            longitude: lng,
-            latitude: lat,
-        });
+        await redisClient.geoadd(this.locationKey, userId.toString(), lng, lat);
 
         const userLastStepsKey = `user:${userId}:last_steps`;
         const lastStepCount = await redisClient.get(userLastStepsKey);
@@ -49,20 +45,17 @@ class AdventureRedisRepository {
         await redisClient.set(userLastStepsKey, steps);
 
         const userStepsKey = `user:${userId}:steps`;
-        await redisClient.incrBy(userStepsKey, currentStepCount);
+        await redisClient.incrby(userStepsKey, currentStepCount);
 
         const userLocationKey = `user:${userId}:location_data`;
         const timestamp = new Date().toISOString();
 
-        await redisClient.zAdd(userLocationKey, {
-            score: Date.now(),
-            value: JSON.stringify({
-                lat,
-                lng,
-                steps: currentStepCount,
-                timestamp,
-            }),
-        });
+        await redisClient.zadd(userLocationKey, "XX", Date.now(), JSON.stringify({
+            lat,
+            lng,
+            steps: currentStepCount,
+            timestamp,
+        }));
 
         return {
             lat,
@@ -73,22 +66,19 @@ class AdventureRedisRepository {
     }
 
     async findNearbyUsers(lat: number, lng: number, radius: number): Promise<{ userId: number; distance: number }[]> {
-        const nearbyUsers = await redisClient.geoSearchWith(
-            this.locationKey,
-            { longitude: lng, latitude: lat },
-            { radius, unit: "m" },
-            [GeoReplyWith.DISTANCE]
-        );
+        const nearbyUsers = await redisClient.georadius(this.locationKey, lng, lat, radius, "m", "WITHDIST");
 
-        return nearbyUsers.map((user) => ({
-            userId: parseInt(user.member),
-            distance: user.distance ?? 0,
-        }));
+        let result: { userId: number; distance: number }[] = [];
+        for (const [userId, distance] of nearbyUsers as [string, string][]) {
+            result.push({ userId: parseInt(userId), distance: parseFloat(distance) });
+        }
+
+        return result;
     }
 
     async findUserLocationData(userId: number): Promise<{ lat: number; lng: number; steps: number; timestamp: number }[]> {
         const userLocationKey = `user:${userId}:location_data`;
-        const locationData = await redisClient.zRange(userLocationKey, 0, -1);
+        const locationData = await redisClient.zrange(userLocationKey, 0, -1);
 
         return locationData.map((data) => JSON.parse(data));
     }
@@ -102,7 +92,7 @@ class AdventureRedisRepository {
         await redisClient.del(userLastStepsKey);
         await redisClient.del(userStepsKey);
 
-        await redisClient.zRem(this.locationKey, userId.toString());
+        await redisClient.zrem(this.locationKey, userId.toString());
     }
 
     async isExistRemainCounts(userId: number, id: string): Promise<boolean> {
@@ -124,7 +114,7 @@ class AdventureRedisRepository {
         const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
         const secondsUntilMidnight = Math.floor((tomorrow.getTime() - now.getTime()) / 1000);
 
-        await redisClient.setEx(key, secondsUntilMidnight, JSON.stringify(remainCounts));
+        await redisClient.setex(key, secondsUntilMidnight, JSON.stringify(remainCounts));
     }
 }
 
