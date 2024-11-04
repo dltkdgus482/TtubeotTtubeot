@@ -4,6 +4,7 @@ import com.user.userttubeot.user.application.UserService;
 import com.user.userttubeot.user.domain.dto.CustomUserDetails;
 import com.user.userttubeot.user.domain.dto.TokenDto;
 import com.user.userttubeot.user.domain.dto.UserChangePasswordRequestDto;
+import com.user.userttubeot.user.domain.dto.UserProfileDto;
 import com.user.userttubeot.user.domain.dto.UserRankDto;
 import com.user.userttubeot.user.domain.dto.UserResponseDto;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
@@ -26,6 +27,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -192,6 +194,24 @@ public class UserController {
             return ResponseEntity.ok(ranks);
         } catch (Exception e) {
             log.error("전체 사용자 순위 조회 실패 - 서버 오류: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseMessage("서버 오류가 발생했습니다."));
+        }
+    }
+
+    @GetMapping("/other-profile/{userId}")
+    public ResponseEntity<?> getUserProfile(@PathVariable("userId") Integer userId) {
+        log.info("사용자 정보 조회 요청 - 사용자 ID: {}", userId);
+        try {
+            UserProfileDto userProfile = userService.getUserDetail(userId);
+            log.info("사용자 정보 조회 성공 - 사용자 ID: {}, 사용자 이름: {}", userId, userProfile.getUsername());
+            return ResponseEntity.ok(userProfile);
+        } catch (IllegalArgumentException e) {
+            log.warn("사용자 정보 조회 실패 - 사용자 ID: {}, 에러: {}", userId, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ResponseMessage("사용자를 찾을 수 없습니다."));
+        } catch (Exception e) {
+            log.error("사용자 정보 조회 실패 - 서버 오류: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ResponseMessage("서버 오류가 발생했습니다."));
         }

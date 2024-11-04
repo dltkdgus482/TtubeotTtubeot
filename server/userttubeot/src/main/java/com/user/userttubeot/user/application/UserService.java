@@ -4,6 +4,7 @@ import com.user.userttubeot.ttubeot.application.service.TtubeotServiceImpl;
 import com.user.userttubeot.ttubeot.domain.model.UserTtuBeotOwnership;
 import com.user.userttubeot.ttubeot.domain.repository.UserTtubeotOwnershipRepository;
 import com.user.userttubeot.user.domain.dto.TokenDto;
+import com.user.userttubeot.user.domain.dto.UserProfileDto;
 import com.user.userttubeot.user.domain.dto.UserRankDto;
 import com.user.userttubeot.user.domain.dto.UserResponseDto;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
@@ -297,4 +298,19 @@ public class UserService {
             .collect(Collectors.toList());
     }
 
+    /**
+     * 특정 사용자에 대한 상세 정보를 조회하는 메서드.
+     */
+    public UserProfileDto getUserDetail(Integer userId) {
+        // 사용자 정보 조회
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 사용자 이름과 Ttubeot ID 반환
+        UserProfileDto userProfile = new UserProfileDto();
+        userProfile.setUsername(user.getUserName());
+        userProfile.setTtubeotId(ttubeotService.getTtubeotOwnershipId(userId));
+
+        return userProfile;
+    }
 }
