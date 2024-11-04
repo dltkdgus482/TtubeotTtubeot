@@ -4,11 +4,12 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
-import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
-import java.util.List;
+import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistToDbDTO;
+import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistToDbDTO;
 import org.springframework.http.ResponseEntity;
 
 public interface TtubeotService {
@@ -42,5 +43,19 @@ public interface TtubeotService {
 
     // 뚜벗 상태 확인
     ResponseEntity<TtubeotLogListResponseDTO> checkTtubeotStatus(Integer userId);
+
+    // 뚜벗 등록 (backend)
+    void registTtubeot(TtubeotRegistToDbDTO ttubeotRegistToDbDTO);
+
+    // 미션 등록 (backend)
+    void registMission(MissionRegistToDbDTO missionRegistDTO);
+
+    // 유저 뚜벗의 일일미션 정보를 조회
+    UserTtubeotMissionListResponseDTO getUserDailyMissionList(int userId);
+
+    // 유저 뚜벗의 주간미션 정보를 조회
+    UserTtubeotMissionListResponseDTO getUserWeeklyMissionList(int userId);
+
+    // 미션 갱신 후 보상 지급 -> 걸음수만 일단 request로 받아오기
 
 }

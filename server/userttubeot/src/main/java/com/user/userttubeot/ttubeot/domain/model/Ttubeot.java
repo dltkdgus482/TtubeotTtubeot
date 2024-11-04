@@ -1,6 +1,6 @@
 package com.user.userttubeot.ttubeot.domain.model;
 
-import jakarta.persistence.CascadeType;
+import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistToDbDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -25,15 +25,20 @@ import lombok.NoArgsConstructor;
 @Table(name = "ttubeot")
 public class Ttubeot {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer ttubeotId;
 
-    @Column(name = "ttubeot_type")
+    @Column(name = "ttubeot_type", nullable = false)
     private Integer ttubeotType;
 
     @OneToMany(mappedBy = "ttubeot", fetch = FetchType.LAZY)
     private List<UserTtuBeotOwnership> userTtuBeotOwnershipList = new ArrayList<>();
+
+    public static Ttubeot fromDTO(TtubeotRegistToDbDTO dto) {
+        return Ttubeot.builder()
+            .ttubeotType(dto.getTtubeotType())
+            .build();
+    }
 
 }

@@ -10,6 +10,9 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotIdResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO;
+import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistToDbDTO;
+import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistToDbDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -90,6 +93,39 @@ public class TtubeotController {
     @GetMapping("/auth/ttubeot/status")
     public ResponseEntity<?> getTtubeotStatus(@RequestAttribute("userId") Integer userId) {
         return ttubeotService.checkTtubeotStatus(userId);
+    }
+
+    // 유저 뚜벗의 일간 미션 목록 조회
+    @GetMapping("/auth/ttubeot/daily")
+    public ResponseEntity<?> getTtubeotDaily(@RequestAttribute("userId") Integer userId) {
+        UserTtubeotMissionListResponseDTO userTtubeotMissionList = ttubeotService.getUserDailyMissionList(
+            userId);
+        return ResponseEntity.ok(userTtubeotMissionList);
+    }
+
+    // 유저 뚜벗의 주간 미션 목록 조회
+    @GetMapping("/auth/ttubeot/weekly")
+    public ResponseEntity<?> getTtubeotWeekly(@RequestAttribute("userId") Integer userId) {
+        UserTtubeotMissionListResponseDTO userTtubeotMissionList = ttubeotService.getUserWeeklyMissionList(
+            userId);
+        return ResponseEntity.ok(userTtubeotMissionList);
+    }
+
+    /*
+     * api for backend
+     * */
+    // 뚜벗 등록
+    @PostMapping("/admin/ttubeot/register")
+    public ResponseEntity<?> registerTtubeot(@RequestBody TtubeotRegistToDbDTO registTtubeot) {
+        ttubeotService.registTtubeot(registTtubeot);
+        return ResponseEntity.ok("뚜벗이 정상적으로 등록되었습니다.");
+    }
+
+    // 미션 등록
+    @PostMapping("/admin/mission/register")
+    public ResponseEntity<?> registerMission(@RequestBody MissionRegistToDbDTO registMission) {
+        ttubeotService.registMission(registMission);
+        return ResponseEntity.ok("미션이 정상적으로 등록되었습니다.");
     }
 
 
