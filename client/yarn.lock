@@ -8462,6 +8462,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-ble-advertiser@npm:^0.0.17":
+  version: 0.0.17
+  resolution: "react-native-ble-advertiser@npm:0.0.17"
+  peerDependencies:
+    react-native: ">=0.50"
+  checksum: 004008f405d46cb33f6316bdda3cb2c2d34f353217196378dd1973077aa411cbdfdd5c9c847f6830ce4f738d29a790d97c36211d0e2188b4c44de4717a114c5e
+  languageName: node
+  linkType: hard
+
+"react-native-ble-manager@npm:^11.5.6":
+  version: 11.5.6
+  resolution: "react-native-ble-manager@npm:11.5.6"
+  peerDependencies:
+    react-native: ">=0.60.0"
+  checksum: d4a1b86fa382bfea5277b23a90597dc007760354b56febfaa425b234039c369819c1d3207c4b71a9b853034ca8854b973f343ffa8eb2b496691b1624b703b12e
+  languageName: node
+  linkType: hard
+
 "react-native-dotenv@npm:^3.4.11":
   version: 3.4.11
   resolution: "react-native-dotenv@npm:3.4.11"
@@ -9889,6 +9907,8 @@ __metadata:
     prettier: 2.8.8
     react: 18.3.1
     react-native: 0.75.4
+    react-native-ble-advertiser: ^0.0.17
+    react-native-ble-manager: ^11.5.6
     react-native-dotenv: ^3.4.11
     react-native-geolocation-service: ^5.3.1
     react-native-gesture-handler: ^2.20.2

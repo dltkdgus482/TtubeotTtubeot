@@ -83,13 +83,15 @@ def googleMapApiKey = properties.getProperty('google_map_api_key')
 android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
-    compileSdk rootProject.ext.compileSdkVersion
+    compileSdkVersion rootProject.ext.hasProperty('compileSdkVersion')  ? rootProject.ext.compileSdkVersion : 34
 
     namespace "com.ttubeot"
     defaultConfig {
         applicationId "com.ttubeot"
+        buildToolsVersion "34.0.0"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        compileSdkVersion rootProject.ext.hasProperty('compileSdkVersion')  ? rootProject.ext.compileSdkVersion : 34
         versionCode 1
         versionName "1.0"
         manifestPlaceholders = [googleMapApiKey:googleMapApiKey] 
