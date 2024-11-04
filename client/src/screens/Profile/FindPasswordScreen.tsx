@@ -1,33 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { View, TouchableOpacity, Alert, BackHandler } from 'react-native';
-import styles from './FirstSignUpScreen.styles';
-import StyledText from '../../styles/StyledText';
+import React, { useState } from 'react';
+import { View, ImageBackground, Image, TouchableOpacity, Alert } from 'react-native';
+import defaultStyles from '../Auth/SignUpScreen.styles';
+import styles from '../../components/Auth/FirstSignUpScreen.styles';
 import StyledTextInput from '../../styles/StyledTextInput';
+import StyledText from '../../styles/StyledText';
 import ButtonFlat from '../../components/Button/ButtonFlat';
 import { requestSmsVerificationApi, confirmSmsVerificationApi, validatePhone } from '../../utils/apis/users/signup';
-import { useUser } from '../../store/user';
+import { useNavigation } from '@react-navigation/native';
 
-interface FirstSignUpScreenProps {
-  onNext: () => void;
-  onBack: () => void;
-}
+const background = require('../../assets/images/IntroBackground.png');
+const title = require('../../assets/images/TtubeotTitle.png');
+const withTtubeot = require('../../assets/images/WithTtubeot.png');
 
-const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({ onNext, onBack }) => {
-  const user = useUser((state) => state.user); // 현재 user 상태 가져오기
-  const setUser = useUser((state) => state.setUser); // 전체 user 객체를 설정하는 함수
+const FindPasswordScreen = () => {
+  const navigation = useNavigation();
   const [phone, setPhone] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
-  const [isSmsConfirmed, setIsSmsConfirmed] = useState(false); // 인증 완료 여부 상태
-
-
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      onBack(); // 뒤로가기 버튼 누르면 onBack 함수 호출
-      return true; // 기본 뒤로가기 동작 막기
-    });
-
-    return () => backHandler.remove(); // 컴포넌트 언마운트 시 이벤트 리스너 제거
-  }, [onBack]);
+  const [isSmsConfirmed, setIsSmsConfirmed] = useState(false); // todo: 나중에 false 로
 
   const handleNextPress = () => {
     if (!isSmsConfirmed) {
@@ -35,13 +24,7 @@ const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({ onNext, onBack })
       return;
     }
 
-    setUser({
-      ...user,
-      phoneNumber: phone,
-    });
-    console.log('유저', user);
-
-    onNext();
+    navigation.navigate('SetNewPasswordScreen'); // 새 비밀번호 설정 페이지로 이동
   };
 
   const handleSmsRequest = async () => {
@@ -63,7 +46,6 @@ const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({ onNext, onBack })
     }
   };
 
-
   const handleSmsConfirm = async () => {
     if (!verificationCode) {
       Alert.alert('인증번호를 입력해주세요.');
@@ -82,7 +64,14 @@ const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({ onNext, onBack })
   };
 
   return (
-    <View style={styles.container}>
+    <View style={defaultStyles.container}>
+      <ImageBackground source={background} style={defaultStyles.backgroundImage} />
+      <View style={defaultStyles.titleContainer}>
+        <Image source={title} style={defaultStyles.title} />
+      </View>
+      <View style={defaultStyles.withContainer}>
+        <Image source={withTtubeot} style={defaultStyles.withTtubeot} />
+      </View>
       <View style={styles.formContainer}>
         <View style={styles.phoneContainer}>
           <StyledTextInput
@@ -121,8 +110,7 @@ const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({ onNext, onBack })
         </View>
         <TouchableOpacity
           style={styles.nextButton}
-          onPress={handleNextPress} // handleSmsConfirm에서 인증 성공 시 onNext 호출
-          disabled={!verificationCode}
+          onPress={handleNextPress}
         >
           <ButtonFlat content="다음" color="#FDFBF4" width={120} height={50} />
         </TouchableOpacity>
@@ -131,4 +119,4 @@ const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({ onNext, onBack })
   );
 };
 
-export default FirstSignUpScreen;
+export default FindPasswordScreen;
