@@ -1,6 +1,9 @@
 import AdventureRedisRepository from '../repositories/AdventureRedisRepository';
 import AdventureMongoRepository from '../repositories/AdventureMongoRepository';
 import AdventureMysqlRepository from '../repositories/AdventureMysqlRepository';
+
+import UserService from './UserService';
+
 import ParkRepository from '../repositories/ParkRepository';
 import AdventureLogModel from '../models/AdventureLogModel';
 import CalcAdventureStats from '../utils/CalcAdventureStats';
@@ -11,15 +14,19 @@ class AdventureService {
   private adventureMysqlRepository: AdventureMysqlRepository;
   private parkRepository: ParkRepository;
 
+  private userService: UserService;
+
   constructor() {
     this.adventureRedisRepository = new AdventureRedisRepository();
     this.adventureMongoRepository = new AdventureMongoRepository();
     this.adventureMysqlRepository = new AdventureMysqlRepository();
     this.parkRepository = new ParkRepository();
+    this.userService = new UserService();
   }
 
   async initAdventure(userId: number, socket: string): Promise<void> {
-    let adventureLog = AdventureLogModel.create({ userId, userTtubeotOwnershipId: 0 }); // TODO: 현재는 userTtubeotOwnershipId를 0으로 설정, 추후 user 서비스와 연동하여 수정해야 함.
+    let userTtubeotOwnershipId = await this.userService.getUserTtubeot(userId);
+    let adventureLog = AdventureLogModel.create({ userId, userTtubeotOwnershipId });
 
     let adventureLogId = await this.adventureMysqlRepository.initAdventureLog(adventureLog);
     adventureLog.adventureLogId = adventureLogId;
