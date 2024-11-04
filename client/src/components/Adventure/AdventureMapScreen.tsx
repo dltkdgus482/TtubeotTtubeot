@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   PermissionsAndroid,
@@ -15,6 +15,7 @@ import Geolocation, {
   GeoCoordinates,
   GeoWatchOptions,
 } from 'react-native-geolocation-service';
+import AdventureManager from '../../utils/apis/adventure/AdventureManager';
 
 const AdventureMapScreen = () => {
   const [location, setLocation] = useState<GeoCoordinates | null>(null);
@@ -23,6 +24,12 @@ const AdventureMapScreen = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const mapRef = useRef<MapView>(null);
   const watchId = useRef<number | null>(null);
+  const intervalId = useRef<NodeJS.Timeout | null>(null); // Interval ID 추가
+  const socketRef = useRef<AdventureManager | null>(null); // AdventureManager 인스턴스 관리
+  const [isConnected, setIsConnected] = useState(true); // 소켓 연결 상태 추적
+
+  // AdventureInfo의 싱글턴 인스턴스 가져오기
+  const adventureManager = AdventureManager.getInstance();
 
   const requestLocationPermission = async (): Promise<boolean> => {
     try {
@@ -43,7 +50,12 @@ const AdventureMapScreen = () => {
     }
   };
 
-  const getCurrentLocation = () => {
+  const getCurrentLocation = useCallback(() => {
+    if (!disConnecte || !socketRef.current) {
+      console.log("소켓이 연결되지 않아 위치 정보를 전송하지 않습니다.");
+      return;
+    }
+
     Geolocation.getCurrentPosition(
       position => {
         const { latitude, longitude } = position.coords;
@@ -56,6 +68,13 @@ const AdventureMapScreen = () => {
           longitudeDelta: 0.01,
         });
         setLoading(false);
+
+        socketRef.current.sendPosition({
+          lat: latitude,
+          lng: longitude,
+          steps: 10,
+        });
+        console.log('Location sent:', { lat: latitude, lng: longitude, steps: 10 });
       },
       error => {
         Alert.alert('위치 정보 오류', error.message);
@@ -64,13 +83,13 @@ const AdventureMapScreen = () => {
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
-  };
+  }, [isConnected]);
 
   const startWatchingLocation = () => {
     const watchOptions: GeoWatchOptions = {
       enableHighAccuracy: true,
-      distanceFilter: 10,
-      interval: 5000,
+      // distanceFilter: 10,
+      interval: 2000, // 2초
       fastestInterval: 2000,
     };
 
@@ -92,7 +111,10 @@ const AdventureMapScreen = () => {
       const hasPermission = await requestLocationPermission();
       if (hasPermission) {
         getCurrentLocation();
-        startWatchingLocation();
+        // startWatchingLocation();
+
+        // 2초마다 getCurrentLocation 호출하여 위치 전송
+        intervalId.current = setInterval(getCurrentLocation, 2000);
       } else {
         setErrorMessage('위치 권한이 없습니다.');
         setLoading(false);
@@ -102,11 +124,24 @@ const AdventureMapScreen = () => {
     initializeLocation();
 
     return () => {
-      if (watchId.current !== null) {
-        Geolocation.clearWatch(watchId.current);
+      // if (watchId.current !== null) {
+      //   clearInterval(intervalId.current);
+      //   Geolocation.clearWatch(watchId.current);
+      // }
+      if (intervalId.current !== null) {
+        clearInterval(intervalId.current);
+        intervalId.current = null;
       }
     };
   }, []);
+
+  const handleDisconnect = () => {
+    setIsConnected(false);
+    if (intervalId.current) {
+      clearInterval(intervalId.current);
+      intervalId.current = null;
+    }
+  };
 
   // TODO: 로딩창 커스터마이즈
   // TODO: 공원 리스트

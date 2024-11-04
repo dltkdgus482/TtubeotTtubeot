@@ -129,7 +129,7 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
 
   const readNfc = async () => {
     try {
-      console.log(NfcManager);
+      // console.log(NfcManager);
 
       if (!NfcManager.isEnabled()) {
         return;
@@ -141,11 +141,11 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
 
       await NfcManager.requestTechnology(NfcTech.Ndef);
       const tag = await NfcManager.getTag();
-      console.log(tag);
+      // console.log(tag);
       setIsNfcTagged(true);
     } catch (ex) {
       await setSelectedMenu('업적');
-      console.log('NFC Tagging failed', ex);
+      // console.log('NFC Tagging failed', ex);
       NfcManager.cancelTechnologyRequest();
       readNfc();
     } finally {
