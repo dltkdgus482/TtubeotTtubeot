@@ -42,7 +42,16 @@ public class FriendController {
         log.info("[친구 요청] 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendRequestId);
 
         try {
+            // 이미 친구 관계인 경우 lastGreeting 을 갱신하고 반환
+            if (friendService.areFriends(userId, friendRequestId)) {
+                friendService.updateLastGreeting(userId, friendRequestId);
+                log.info("[이미 친구 관계] 사용자 ID: {}, 친구 ID: {}", userId, friendRequestId);
+                return ResponseEntity.ok(new ResponseMessage("이미 친구 관계입니다. 마지막 인사 시간이 갱신되었습니다."));
+            }
+
+            // 새로운 친구 요청 처리
             friendService.sendFriendRequest(userId, friendRequestId);
+            friendService.updateLastGreeting(userId, friendRequestId); // lastGreeting 갱신
             log.info("[친구 요청 성공] 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendRequestId);
             return ResponseEntity.ok(new ResponseMessage("친구 요청이 전송되었습니다."));
         } catch (Exception e) {

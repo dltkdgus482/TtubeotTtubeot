@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class FriendService {
 
-    private final Integer SEND_COIN_AMOUNT = 100;
+    private static final Integer SEND_COIN_AMOUNT = 100;
 
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
@@ -43,8 +43,7 @@ public class FriendService {
             throw new IllegalArgumentException("이미 친구 관계입니다.");
         }
 
-        saveFriendRelationship(userId, friendId);
-        saveFriendRelationship(friendId, userId);
+        createBidirectionalFriendship(userId, friendId);
         log.info("양방향 친구 관계 저장 완료 - 사용자 ID: {}, 친구 ID: {}", userId, friendId);
     }
 
@@ -63,49 +62,62 @@ public class FriendService {
         return friendInfoDtoList;
     }
 
+    /**
+     * 친구에게 코인을 전송하는 메서드.
+     */
     public void sendCoin(Integer userId, Integer friendUserId) {
-        // 친구 ID로 친구 관계 확인
-        FriendId friendId = new FriendId(userId, friendUserId);
-        Friend friend = friendRepository.findById(friendId).orElseThrow(() ->
-            new FriendNotFoundException(
-                "사용자 ID " + userId + "와 친구 ID " + friendUserId + "는 친구 관계가 아닙니다.")
-        );
+        log.info("코인 전송 시작 - 사용자 ID: {}, 친구 ID: {}", userId, friendUserId);
+
+        Friend friend = friendRepository.findById(new FriendId(userId, friendUserId))
+            .orElseThrow(() -> new FriendNotFoundException("사용자 ID " + userId + "와 친구 ID " + friendUserId + "는 친구 관계가 아닙니다."));
 
         User friendUser = userService.findUserById(friendUserId);
-
-        // 오늘 날짜를 구합니다.
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime lastSend = friend.getLastSend();
 
         // 마지막 전송 날짜가 오늘인지 확인
-        if (lastSend != null && lastSend.toLocalDate().isEqual(now.toLocalDate())) {
+        if (friend.getLastSend() != null && friend.getLastSend().toLocalDate().isEqual(now.toLocalDate())) {
+            log.warn("이미 코인 전송 완료 - 사용자 ID: {}, 친구 ID: {}", userId, friendUserId);
             throw new CoinAlreadySentException("사용자 ID " + userId + "는 오늘 이미 코인을 전송했습니다.");
         }
 
-        // 마지막 전송 시간 갱신
+        // 코인 전송 및 친구 정보 업데이트
         friend.send();
         friendUser.addCoins(SEND_COIN_AMOUNT);
-
-        // 변경된 Friend 엔티티 저장
         friendRepository.save(friend);
         userRepository.save(friendUser);
+
+        log.info("코인 전송 완료 - 사용자 ID: {}, 친구 ID: {}", userId, friendUserId);
     }
 
+    /**
+     * lastGreeting 필드를 갱신하는 메서드.
+     */
+    public void updateLastGreeting(Integer userId, Integer friendId) {
+        Friend friend = friendRepository.findById(new FriendId(userId, friendId))
+            .orElseThrow(() -> new FriendNotFoundException("친구 관계가 존재하지 않습니다."));
+
+        friend.meet();
+        friendRepository.save(friend);
+        log.info("lastGreeting 갱신 - 사용자 ID: {}, 친구 ID: {}, 갱신 시간: {}", userId, friendId, friend.getLastGreeting());
+    }
 
     /**
      * 두 사용자가 친구 관계인지 확인.
      */
     public boolean areFriends(Integer userId, Integer friendUserId) {
-        FriendId friendId = new FriendId(userId, friendUserId);
-        boolean exists = friendRepository.existsById(friendId);
+        boolean exists = friendRepository.existsById(new FriendId(userId, friendUserId));
         log.debug("친구 관계 확인 - 사용자 ID: {}, 친구 ID: {}, 관계 여부: {}", userId, friendUserId, exists);
 
-        if (!exists) {
-            throw new FriendNotFoundException(
-                "사용자 ID " + userId + "와 친구 ID " + friendUserId + "는 친구 관계가 아닙니다.");
-        }
+        return exists;
+    }
 
-        return true;
+    /**
+     * 양방향 친구 관계를 생성하는 헬퍼 메서드.
+     */
+    private void createBidirectionalFriendship(Integer userId, Integer friendId) {
+        saveFriendRelationship(userId, friendId);
+        saveFriendRelationship(friendId, userId);
+        log.debug("양방향 친구 관계 생성 - 사용자 ID: {}, 친구 ID: {}", userId, friendId);
     }
 
     /**
@@ -117,7 +129,7 @@ public class FriendService {
             .id(friendIdEntity)
             .build();
         friendRepository.save(friend);
-        log.debug("친구 관계 저장 - 사용자 ID: {}, 친구 ID: {}", userId, friendId);
+        log.debug("단방향 친구 관계 저장 - 사용자 ID: {}, 친구 ID: {}", userId, friendId);
     }
 
     /**
