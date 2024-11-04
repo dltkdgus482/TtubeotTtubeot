@@ -8,6 +8,7 @@ import AdventureMapScreen from '../../components/Adventure/AdventureMapScreen';
 import ButtonDefault from '../../components/Button/ButtonDefault';
 import AdventureAlert from '../../components/Adventure/AdventureAlert';
 import GPSAlertModal from '../../components/Adventure/GPSAlertModal';
+import useAdventureSocket from '../../utils/apis/adventure/AdventureInit';
 
 const background = require('../../assets/images/AdventureBackground.jpg');
 const CameraIcon = require('../../assets/icons/CameraIcon.png');
@@ -18,6 +19,7 @@ const AdventureScreen = () => {
   const [adventureStart, setAdventureStart] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const opacityAnim = useRef(new Animated.Value(0.65)).current;
+  const { connectSocket } = useAdventureSocket();
 
   const openModal = () => {
     setModalVisible(true);
@@ -37,6 +39,7 @@ const AdventureScreen = () => {
 
   const handleStartAdventure = () => {
     if (!adventureStart) {
+      connectSocket();
       openModal();
     } else {
       closeModal();
