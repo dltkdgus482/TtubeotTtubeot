@@ -33,21 +33,31 @@ public class FriendController {
      * 친구 요청을 전송하는 엔드포인트.
      */
     @PostMapping("/add")
-    public ResponseEntity<?> sendFriendRequest(
+    public ResponseEntity<ResponseMessage> sendFriendRequest(
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestBody FriendRequestDto friendRequest) {
 
         Integer userId = userDetails.getUserId();
         Integer friendRequestId = friendRequest.getFriendId();
-        log.info("친구 요청 - 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendRequestId);
+        log.info("[친구 요청] 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendRequestId);
 
         try {
+            // 이미 친구 관계인 경우 lastGreeting 을 갱신하고 반환
+            if (friendService.areFriends(userId, friendRequestId)) {
+                friendService.updateLastGreeting(userId, friendRequestId);
+                log.info("[이미 친구 관계] 사용자 ID: {}, 친구 ID: {}", userId, friendRequestId);
+                return ResponseEntity.ok(new ResponseMessage("이미 친구 관계입니다. 마지막 인사 시간이 갱신되었습니다."));
+            }
+
+            // 새로운 친구 요청 처리
             friendService.sendFriendRequest(userId, friendRequestId);
-            log.info("친구 요청 성공 - 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendRequestId);
+            friendService.updateLastGreeting(userId, friendRequestId); // lastGreeting 갱신
+            log.info("[친구 요청 성공] 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendRequestId);
             return ResponseEntity.ok(new ResponseMessage("친구 요청이 전송되었습니다."));
         } catch (Exception e) {
-            log.error("친구 요청 실패 - 서버 오류: {}", e.getMessage());
-            return ResponseEntity.status(500).body(new ResponseMessage(e.getMessage()));
+            log.error("[친구 요청 실패] 사용자 ID: {}, 에러: {}", userId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseMessage("서버 오류로 친구 요청을 전송하지 못했습니다."));
         }
     }
 
@@ -59,40 +69,61 @@ public class FriendController {
         @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Integer userId = userDetails.getUserId();
-        log.info("친구 정보 조회 요청 - 사용자 ID: {}", userId);
+        log.info("[친구 정보 조회 요청] 사용자 ID: {}", userId);
 
         try {
             List<FriendInfoDto> friendInfoList = friendService.getFriendInfoList(userId);
-            log.info("친구 정보 조회 성공 - 사용자 ID: {}, 친구 수: {}", userId, friendInfoList.size());
+            log.info("[친구 정보 조회 성공] 사용자 ID: {}, 친구 수: {}", userId, friendInfoList.size());
             return ResponseEntity.ok(friendInfoList);
         } catch (Exception e) {
-            log.error("친구 정보 조회 실패 - 서버 오류: {}", e.getMessage());
-            return ResponseEntity.status(500).body(new ResponseMessage(e.getMessage()));
+            log.error("[친구 정보 조회 실패] 사용자 ID: {}, 에러: {}", userId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseMessage("서버 오류로 친구 정보를 조회하지 못했습니다."));
         }
     }
 
+    /**
+     * 친구에게 코인을 전송하는 엔드포인트.
+     */
     @GetMapping("/send-coin/{friendId}")
     public ResponseEntity<ResponseMessage> sendCoin(
         @AuthenticationPrincipal CustomUserDetails userDetails,
-        @PathVariable("friendId") Integer friendId
-    ) {
+        @PathVariable("friendId") Integer friendId) {
+
         Integer userId = userDetails.getUserId();
-        log.info("친구 코인 전송 요청 - 사용자 ID: {}, 친구 ID:{}", userId, friendId);
+        log.info("[코인 전송 요청] 사용자 ID: {}, 친구 ID: {}", userId, friendId);
 
         try {
-            // 코인 전송 서비스 호출
             friendService.sendCoin(userId, friendId);
-
-            // 성공 응답 반환
+            log.info("[코인 전송 성공] 사용자 ID: {}, 친구 ID: {}", userId, friendId);
             return ResponseEntity.ok(new ResponseMessage("코인이 성공적으로 전송되었습니다."));
         } catch (Exception e) {
-            log.error("코인 전송 중 오류 발생: {}", e.getMessage());
-
-            // 에러 응답 반환
+            log.error("[코인 전송 실패] 사용자 ID: {}, 친구 ID: {}, 에러: {}", userId, friendId, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ResponseMessage(e.getMessage()));
+                .body(new ResponseMessage("서버 오류로 코인을 전송하지 못했습니다."));
         }
     }
 
+    /**
+     * 친구 여부를 확인하는 엔드포인트.
+     */
+    @GetMapping("/check-friend/{friendId}")
+    public ResponseEntity<ResponseMessage> checkFriend(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @PathVariable("friendId") Integer friendId) {
 
+        Integer userId = userDetails.getUserId();
+        log.info("[친구 여부 확인 요청] 사용자 ID: {}, 친구 ID: {}", userId, friendId);
+
+        try {
+            boolean areFriends = friendService.areFriends(userId, friendId);
+            log.info("[친구 여부 확인 성공] 사용자 ID: {}, 친구 ID: {}, 친구 여부: {}", userId, friendId, areFriends);
+            String message = areFriends ? "친구입니다." : "친구가 아닙니다.";
+            return ResponseEntity.ok(new ResponseMessage(message));
+        } catch (Exception e) {
+            log.error("[친구 여부 확인 실패] 사용자 ID: {}, 친구 ID: {}, 에러: {}", userId, friendId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseMessage("서버 오류로 친구 여부를 확인하지 못했습니다."));
+        }
+    }
 }
