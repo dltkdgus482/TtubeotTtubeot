@@ -1,18 +1,18 @@
 import { Socket } from "socket.io";
 import AdventureService from "../services/AdventureService";
 import ImageGenService from "../services/ImageGenService";
-import ParkService from "../services/ParkService";
+import UserService from "../services/UserService";
 import JWTParser from '../utils/JWTParser';
 
 export class AdventureController {
   private adventureService: AdventureService;
   private imageGenService: ImageGenService;
-  private parkService: ParkService;
+  private userService: UserService;
 
   constructor() {
     this.adventureService = new AdventureService();
     this.imageGenService = new ImageGenService();
-    this.parkService = new ParkService();
+    this.userService = new UserService();
   }
 
   async handleInitAdventure(socket: Socket, data: { token: string }): Promise<void> {
@@ -24,9 +24,11 @@ export class AdventureController {
         throw new Error('Invalid JWT token');
       }
 
+      let userTtubeotOwnershipId = await this.userService.getUserTtubeot(userId);
+
       console.log(userId, "사용자가 모험을 시작합니다.");
 
-      await this.adventureService.initAdventure(userId, socket.id);
+      await this.adventureService.initAdventure(userId, userTtubeotOwnershipId, socket.id);
     } catch (error) {
       console.error("Error in handleInitAdventure:", error);
       socket.emit("error", { message: "Failed to initialize adventure" });

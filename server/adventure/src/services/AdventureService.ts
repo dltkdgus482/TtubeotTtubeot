@@ -14,18 +14,14 @@ class AdventureService {
   private adventureMysqlRepository: AdventureMysqlRepository;
   private parkRepository: ParkRepository;
 
-  private userService: UserService;
-
   constructor() {
     this.adventureRedisRepository = new AdventureRedisRepository();
     this.adventureMongoRepository = new AdventureMongoRepository();
     this.adventureMysqlRepository = new AdventureMysqlRepository();
     this.parkRepository = new ParkRepository();
-    this.userService = new UserService();
   }
 
-  async initAdventure(userId: number, socket: string): Promise<void> {
-    let userTtubeotOwnershipId = await this.userService.getUserTtubeot(userId);
+  async initAdventure(userId: number, userTtubeotOwnershipId: number, socket: string): Promise<void> {
     let adventureLog = AdventureLogModel.create({ userId, userTtubeotOwnershipId });
 
     let adventureLogId = await this.adventureMysqlRepository.initAdventureLog(adventureLog);
