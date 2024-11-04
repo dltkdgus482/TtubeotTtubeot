@@ -25,6 +25,7 @@ const mockTtu = require('../../assets/ttubeot/IntroTtubeotDog.png');
 
 const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
   const flipAnimation = useRef(new Animated.Value(0)).current;
+  const colorAnimation = useRef(new Animated.Value(0)).current;
   const [isFrontView, setIsFrontView] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -42,6 +43,29 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
     };
   }, [isFrontView, flipAnimation]);
 
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(colorAnimation, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: false,
+        }),
+        Animated.timing(colorAnimation, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: false,
+        }),
+      ]),
+      { iterations: 3 },
+    ).start();
+  }, [colorAnimation]);
+
+  const animatedColor = colorAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['#7A7A7A', '#303030'],
+  });
+
   const flipContainer = () => {
     Animated.timing(flipAnimation, {
       toValue: isFrontView ? 1 : 0,
@@ -58,6 +82,11 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
   const backOpacity = flipAnimation.interpolate({
     inputRange: [0, 0.1, 1],
     outputRange: [0, 0.9, 1],
+  });
+
+  const shadowOpacity = flipAnimation.interpolate({
+    inputRange: [0, 0.1, 0.9, 1],
+    outputRange: [1, 0, 0, 1],
   });
 
   const frontRotateY = flipAnimation.interpolate({
@@ -82,9 +111,12 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.backgroundCircle} />
       <TouchableOpacity onPress={flipContainer}>
-        <Image style={styles.flipButton} source={flipIcon} />
+        <Animated.View
+          style={[styles.flipContainer, { backgroundColor: animatedColor }]}>
+          <Image style={styles.flipButton} source={flipIcon} />
+        </Animated.View>
       </TouchableOpacity>
-      <Animated.View style={[styles.shadow, { opacity: frontOpacity }]} />
+      <Animated.View style={[styles.shadow, { opacity: shadowOpacity }]} />
       {isFrontView ? (
         <Animated.View
           style={[
@@ -173,9 +205,7 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
           </View>
         </Animated.View>
       )}
-      <TouchableOpacity
-        style={styles.returnButton}
-        onPress={closeJournalDetail}>
+      <TouchableOpacity style={styles.backButton} onPress={closeJournalDetail}>
         <ButtonFlat content="돌아가기" />
       </TouchableOpacity>
 

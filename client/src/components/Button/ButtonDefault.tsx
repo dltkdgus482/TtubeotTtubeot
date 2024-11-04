@@ -4,7 +4,7 @@ import { Image, ImageSourcePropType, View } from 'react-native';
 import StyledText from '../../styles/StyledText';
 import LinearGradient from 'react-native-linear-gradient';
 
-const FlatButton = styled(View)<{ height: number; width: number }>`
+const DefaultButton = styled(View)<{ height: number; width: number }>`
   position: relative;
   height: ${({ height }) => `${height}px`};
   width: ${({ width }) => `${width}px`};
@@ -56,7 +56,7 @@ const ButtonDefault = ({
   fontSize = 16,
 }: ButtonDefaultProps) => {
   return (
-    <FlatButton height={height} width={width}>
+    <DefaultButton height={height} width={width}>
       <ButtonContainer borderRadius={borderRadius}>
         <GradientContainer
           colors={['#F9FBDD', '#ECCFAE']}
@@ -77,7 +77,7 @@ const ButtonDefault = ({
           </StyledText>
         </GradientContainer>
       </ButtonContainer>
-    </FlatButton>
+    </DefaultButton>
   );
 };
 

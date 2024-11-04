@@ -3,7 +3,7 @@ import styled from 'styled-components/native';
 import { View } from 'react-native';
 import StyledText from '../../styles/StyledText';
 
-const DefaultButton = styled(View)<{ height: number; width: number }>`
+const FlatButton = styled(View)<{ height: number; width: number }>`
   position: relative;
   height: ${({ height }) => `${height}px`};
   width: ${({ width }) => `${width}px`};
@@ -61,7 +61,7 @@ const ButtonFlat = ({
   fontColor = 'black',
 }: ButtonFlatProps) => {
   return (
-    <DefaultButton height={height} width={width}>
+    <FlatButton height={height} width={width}>
       <ButtonShadowBox>
         {shadowDisplay && <ButtonShadow borderRadius={borderRadius} />}
         <ButtonContainer
@@ -73,7 +73,7 @@ const ButtonFlat = ({
           </StyledText>
         </ButtonContainer>
       </ButtonShadowBox>
-    </DefaultButton>
+    </FlatButton>
   );
 };
 

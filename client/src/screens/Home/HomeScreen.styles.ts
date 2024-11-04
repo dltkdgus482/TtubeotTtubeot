@@ -40,7 +40,7 @@ export default StyleSheet.create({
   profileContainer: {
     position: 'absolute',
     top: 40,
-    left: 75,
+    left: 15,
   },
   currencyContainer: {
     position: 'absolute',
