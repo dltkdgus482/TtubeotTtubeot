@@ -1,18 +1,25 @@
-import { createClient } from 'redis';
+import { Cluster } from 'ioredis';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const redisClient = createClient({
-  url: process.env.REDIS_URL,
-  password: process.env.REDIS_PASSWORD,
+const redisCluster = new Cluster(
+  [
+    { host: 'redis-cluster-0.redis-cluster-headless.ttubeot-adventure.svc.cluster.local', port: 6379 },
+    { host: 'redis-cluster-1.redis-cluster-headless.ttubeot-adventure.svc.cluster.local', port: 6379 },
+    { host: 'redis-cluster-2.redis-cluster-headless.ttubeot-adventure.svc.cluster.local', port: 6379 }
+  ],
+  {
+    redisOptions: {
+      password: process.env.REDIS_PASSWORD as string
+    }
+  }
+);
+
+redisCluster.on('error', (err: Error) => console.error('Redis Cluster Error', err));
+
+redisCluster.on('connect', () => {
+  console.log('Connected to Redis Cluster');
 });
 
-redisClient.on('error', (err) => console.error('Redis Client Error', err));
-
-(async () => {
-  await redisClient.connect();
-  console.log('Connected to Redis');
-})();
-
-export default redisClient;
+export default redisCluster;
