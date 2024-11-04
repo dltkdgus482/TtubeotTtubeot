@@ -9,11 +9,20 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionResponseDTO;
+import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistToDbDTO;
+import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistToDbDTO;
+import com.user.userttubeot.ttubeot.domain.enums.MissionStatus;
+import com.user.userttubeot.ttubeot.domain.model.Mission;
 import com.user.userttubeot.ttubeot.domain.model.Ttubeot;
 import com.user.userttubeot.ttubeot.domain.model.TtubeotLog;
 import com.user.userttubeot.ttubeot.domain.model.UserTtuBeotOwnership;
+import com.user.userttubeot.ttubeot.domain.model.UserTtubeotMission;
+import com.user.userttubeot.ttubeot.domain.repository.MissionRepository;
 import com.user.userttubeot.ttubeot.domain.repository.TtubeotLogRepository;
 import com.user.userttubeot.ttubeot.domain.repository.TtubeotRepository;
+import com.user.userttubeot.ttubeot.domain.repository.UserTtubeotMissionRepository;
 import com.user.userttubeot.ttubeot.domain.repository.UserTtubeotOwnershipRepository;
 import com.user.userttubeot.ttubeot.global.exception.TtubeotNotFoundException;
 import com.user.userttubeot.user.domain.entity.User;
@@ -38,7 +47,8 @@ public class TtubeotServiceImpl implements TtubeotService {
     private final UserTtubeotOwnershipRepository userTtubeotOwnershipRepository;
     private final TtubeotRepository TtubeotRepository;
     private final UserRepository userRepository;
-    private final TtubeotRepository ttubeotRepository;
+    private final MissionRepository missionRepository;
+    private final UserTtubeotMissionRepository userTtubeotMissionRepository;
 
     @Override
     public void addTtubeotLog(Long userTtubeotOwnershipId,
@@ -132,7 +142,7 @@ public class TtubeotServiceImpl implements TtubeotService {
         int graduationStatus = 1;
         // userId와 졸업 상태를 기준으로 소유 뚜벗 목록을 조회
         List<UserTtuBeotOwnership> graduatedTtubeots =
-            userTtubeotOwnershipRepository.findByUser_UserIdAndTtubeotStatus(userId,
+            userTtubeotOwnershipRepository.findAllByUser_UserIdAndTtubeotStatus(userId,
                 graduationStatus);
 
         // 조회된 entity 목록을 dto로 변환
@@ -258,6 +268,88 @@ public class TtubeotServiceImpl implements TtubeotService {
         return ResponseEntity.ok(TtubeotLogListResponseDTO.builder()
             .ttubeotLogResponseList(logsDtos)
             .build());
+    }
+
+    @Override
+    public void registTtubeot(TtubeotRegistToDbDTO ttubeotRegistToDbDTO) {
+        Ttubeot ttubeot = Ttubeot.fromDTO(ttubeotRegistToDbDTO);
+
+        TtubeotRepository.save(ttubeot);
+    }
+
+    @Override
+    public void registMission(MissionRegistToDbDTO missionRegistDTO) {
+        Mission mission = Mission.fromDTO(missionRegistDTO);
+
+        missionRepository.save(mission);
+    }
+
+    @Override
+    public UserTtubeotMissionListResponseDTO getUserDailyMissionList(int userId) {
+        // 1. 유저가 보유 중인 뚜벗 중 정상 상태 (0)인 뚜벗을 조회합니다.
+        Optional<UserTtuBeotOwnership> optionalUserTtubeot = userTtubeotOwnershipRepository.findByUser_UserIdAndTtubeotStatus(
+            userId, 0);
+
+        // 정상 상태의 뚜벗이 없다면 예외를 발생시킵니다.
+        UserTtuBeotOwnership userTtubeot = optionalUserTtubeot.orElseThrow(
+            () -> new IllegalArgumentException("정상 상태의 뚜벗이 존재하지 않습니다."));
+
+        // 2. 해당 뚜벗이 현재 진행하고 있는 일일 미션들을 조회합니다.
+        List<UserTtubeotMission> dailyMissions = userTtubeotMissionRepository.findByUserTtuBeotOwnershipAndMission_MissionTypeAndMissionStatus(
+            userTtubeot, 0,
+            MissionStatus.IN_PROGRESS);
+
+        // 3. 미션과 미션 진행 정보도 포함하여 DTO로 변환
+        List<UserTtubeotMissionResponseDTO> missionDTOs = dailyMissions.stream()
+            .map(mission -> {
+                Mission missionInfo = mission.getMission();  // 미션 정보 가져오기
+                return new UserTtubeotMissionResponseDTO(
+                    mission.getMissionStatus().name(),
+                    mission.getMission().getMissionTheme(),
+                    mission.getMission().getMissionType(),
+                    mission.getMission().getMissionTargetCount(),
+                    mission.getMission().getMissionName(),
+                    mission.getMission().getMissionExplanation(),
+                    missionInfo.getMissionTargetCount()   // 미션 목표 수량
+                );
+            })
+            .collect(Collectors.toList());
+
+        return new UserTtubeotMissionListResponseDTO(missionDTOs);
+    }
+
+    @Override
+    public UserTtubeotMissionListResponseDTO getUserWeeklyMissionList(int userId) {
+        // 1. 유저가 보유 중인 뚜벗 중 정상 상태 (0)인 뚜벗을 조회합니다.
+        Optional<UserTtuBeotOwnership> optionalUserTtubeot = userTtubeotOwnershipRepository.findByUser_UserIdAndTtubeotStatus(
+            userId, 0);
+
+        // 정상 상태의 뚜벗이 없다면 예외를 발생시킵니다.
+        UserTtuBeotOwnership userTtubeot = optionalUserTtubeot.orElseThrow(
+            () -> new IllegalArgumentException("정상 상태의 뚜벗이 존재하지 않습니다."));
+
+        // 2. 해당 뚜벗이 현재 진행하고 있는 주간 미션들을 조회합니다.
+        List<UserTtubeotMission> dailyMissions = userTtubeotMissionRepository.findByUserTtuBeotOwnershipAndMission_MissionTypeAndMissionStatus(
+            userTtubeot, 1,
+            MissionStatus.IN_PROGRESS);
+
+        // 3. 미션과 미션 진행 정보도 포함하여 DTO로 변환
+        List<UserTtubeotMissionResponseDTO> missionDTOs = dailyMissions.stream()
+            .map(mission -> {
+                Mission missionInfo = mission.getMission();  // 미션 정보 가져오기
+                return new UserTtubeotMissionResponseDTO(
+                    mission.getMissionStatus().name(),
+                    mission.getMission().getMissionTheme(),
+                    mission.getMission().getMissionType(),
+                    mission.getMission().getMissionTargetCount(),
+                    mission.getMission().getMissionName(),
+                    mission.getMission().getMissionExplanation(),
+                    missionInfo.getMissionTargetCount()   // 미션 목표 수량
+                );
+            })
+            .collect(Collectors.toList());
+
+        return new UserTtubeotMissionListResponseDTO(missionDTOs);
     }
 
     // TtubeotDrawResponseDTO 생성 메서드

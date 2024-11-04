@@ -10,11 +10,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.criteria.CriteriaBuilder.In;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,22 +36,22 @@ public class UserTtuBeotOwnership {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userTtubeotOwnershipId;
 
-    @Column(name = "ttubeot_name")
+    @Column(name = "ttubeot_name", nullable = false)
     private String ttubeotName;
 
-    @Column(name = "ttubeot_status")
+    @Column(name = "ttubeot_status", nullable = false)
     private Integer ttubeotStatus = 0; // DEAULT
 
-    @Column(name = "ttubeot_score")
+    @Column(name = "ttubeot_score", nullable = false)
     private Integer ttubeotScore = 0; // default
 
     @Column(name = "break_up")
     private LocalDateTime breakUp;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -58,6 +61,13 @@ public class UserTtuBeotOwnership {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "userTtuBeotOwnership", fetch = FetchType.LAZY)
+    private List<TtubeotLog> ttubeotLogs = new ArrayList<>();
+
+    @OneToMany(mappedBy = "userTtuBeotOwnership", fetch = FetchType.LAZY)
+    private List<UserTtubeotMission> userTtubeotMissions = new ArrayList<>();
+
 
     @PrePersist
     protected void onCreate() {

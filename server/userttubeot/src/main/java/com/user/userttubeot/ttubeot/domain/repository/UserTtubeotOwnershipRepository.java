@@ -18,8 +18,11 @@ public interface UserTtubeotOwnershipRepository extends JpaRepository<UserTtuBeo
         Integer ttubeotStatus);
 
     // 특정 userId와 졸업 상태인 ttubeotStatus를 기준으로 졸업된 뚜벗 목록을 가져옴
-    List<UserTtuBeotOwnership> findByUser_UserIdAndTtubeotStatus(int userId, int ttubeotStatus);
+    List<UserTtuBeotOwnership> findAllByUser_UserIdAndTtubeotStatus(int userId, int ttubeotStatus);
 
+    // 특정 상태(0)로 필터링하여 활성 뚜벗 조회
+    List<UserTtuBeotOwnership> findByTtubeotStatus(int ttubeotStatus);
+    
     // 사용자가 함께 했던 모든 뚜벗 리스트 조회
     List<UserTtuBeotOwnership> findByUser_UserId(Integer userId);
 
