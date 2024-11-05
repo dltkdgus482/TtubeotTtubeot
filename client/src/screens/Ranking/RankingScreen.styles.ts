@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
   },
   rankingList: {
     width: '100%',
-    height: '55%',
     marginVertical: '1%',
     backgroundColor: 'white',
     borderRadius: 30,
@@ -63,9 +62,36 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     borderRadius: 10,
     paddingHorizontal: 20,
+    marginHorizontal: '1%',
   },
   ranking: {
-    fontSize: 20,
+    width: '20%',
+    fontSize: 24,
+    borderWidth: 1,
+    borderColor: 'blue',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+  rankingImage: {
+    width: 50,
+    height: 50,
+  },
+  rankingInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '80%',
+    backgroundColor: '#E6E6E6',
+    borderRadius: 20,
+    padding: '1%',
+    paddingHorizontal: '5%',
+  },
+  rankingName: {
+    fontSize: 16,
+  },
+  rankingScore: {
+    fontSize: 16,
   },
 });
 
