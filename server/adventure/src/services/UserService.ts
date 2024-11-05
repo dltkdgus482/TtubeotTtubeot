@@ -1,6 +1,10 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
 class UserService {
 
   private readonly baseUrl = 'user.ttubeot-user.svc.cluster.local';
+  private secretKey: string = process.env.DEV_SECRET_KEY || '';
 
   async getUserTtubeot(userId: number): Promise<number> {
     let response = await fetch(`http://${this.baseUrl}/user/ttubeot/adventure/${userId}/id`);
@@ -27,6 +31,27 @@ class UserService {
     return response.status === 200;
   }
 
+  async tagFriend(userId: number, friendId: number): Promise<number> {
+    let requestBody = { userId, friendId };
+    let response = await fetch(`http://${this.baseUrl}/user/friend/tag`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
+    });
+
+    let result = await response.json();
+
+    return result.coin || 0;
+  }
+
+  async postAdventureCoin(userId: number, coin: number): Promise<void> {
+    let requestBody = { userId, coin };
+    await fetch(`http://${this.baseUrl}/user/adventure-coin`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', "Secret-Key": this.secretKey },
+      body: JSON.stringify(requestBody)
+    });
+  }
 }
 
 export default UserService;

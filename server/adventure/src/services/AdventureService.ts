@@ -2,11 +2,11 @@ import AdventureRedisRepository from '../repositories/AdventureRedisRepository';
 import AdventureMongoRepository from '../repositories/AdventureMongoRepository';
 import AdventureMysqlRepository from '../repositories/AdventureMysqlRepository';
 
-import UserService from './UserService';
-
 import ParkRepository from '../repositories/ParkRepository';
 import AdventureLogModel from '../models/AdventureLogModel';
 import CalcAdventureStats from '../utils/CalcAdventureStats';
+
+import UserService from './UserService';
 
 class AdventureService {
   private adventureRedisRepository: AdventureRedisRepository;
@@ -14,11 +14,15 @@ class AdventureService {
   private adventureMysqlRepository: AdventureMysqlRepository;
   private parkRepository: ParkRepository;
 
+  private userService: UserService;
+
   constructor() {
     this.adventureRedisRepository = new AdventureRedisRepository();
     this.adventureMongoRepository = new AdventureMongoRepository();
     this.adventureMysqlRepository = new AdventureMysqlRepository();
     this.parkRepository = new ParkRepository();
+
+    this.userService = new UserService();
   }
 
   async initAdventure(userId: number, userTtubeotOwnershipId: number, username: string, ttubeot_id: number, socket: string): Promise<void> {
@@ -68,6 +72,8 @@ class AdventureService {
 
     await this.adventureRedisRepository.flushUserLocationData(adventureLog.userId);
     await this.adventureRedisRepository.setOffline(socket);
+
+    await this.userService.postAdventureCoin(userId, adventureLog.adventureCoin);
 
     return adventureLog;
   }
