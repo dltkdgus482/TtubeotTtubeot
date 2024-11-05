@@ -33,25 +33,25 @@ class MQController {
     });
   }
 
-  handleReward(msg: any) {
+  async handleReward(msg: any) {
     console.log('Handling reward:', msg);
     let user_id = msg.data.user_id;
 
     let socket = this.userMap.get(user_id);
     if (socket) {
       socket.emit('adventure_reward', msg.data.data);
-      this.mqService.ack(msg);
+      await this.mqService.ack(msg);
     }
   }
 
-  handleRequest(msg: any) {
+  async handleRequest(msg: any) {
     console.log('Handling request:', msg);
     let user_id = msg.data.user_id;
     let socket = this.userMap.get(user_id);
 
     if (socket) {
       socket.emit('adventure_request', msg.data.data);
-      this.mqService.ack(msg);
+      await this.mqService.ack(msg);
     }
   }
 }
