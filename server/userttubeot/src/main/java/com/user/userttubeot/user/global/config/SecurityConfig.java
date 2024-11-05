@@ -60,7 +60,8 @@ public class SecurityConfig {
                 .requestMatchers("/user/login", "/user/reissue", "/user/check-username",
                     "/user/signup", "/user/logout",
                     "/user/change-password", "/user/sms-verification/request",
-                    "/user/sms-verification/confirm", "/user/auth/**", "/healthz", "/user/ttubeot/**", "/user/admin/**").permitAll()
+                    "/user/sms-verification/confirm", "/user/auth/**", "/healthz",
+                    "/user/ttubeot/**", "/user/admin/**", "/user/other-profile/**").permitAll()
                 .anyRequest().authenticated());
 
         LoginFilter loginFilter = new LoginFilter(
