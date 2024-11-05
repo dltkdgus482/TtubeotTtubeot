@@ -16,7 +16,6 @@ import { useUser } from '../../store/user';
 import { logoutApi } from '../../utils/apis/users';
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { useNavigation } from '@react-navigation/native';
 
 const background = require('../../assets/images/IntroBackground.png');
 const settings1 = require('../../assets/icons/SettingsIcon1.png');

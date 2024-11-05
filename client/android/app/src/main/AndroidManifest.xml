@@ -21,7 +21,6 @@
     <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false" tools:replace="required" />
     <uses-feature android:name="android.hardware.nfc" android:required="false" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
-    <uses-feature android:name="android.hardware.nfc" android:required="true" />
     <!-- Only when targeting Android 12 or higher -->
     <!--
       Please make sure you read the following documentation
