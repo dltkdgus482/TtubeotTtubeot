@@ -8,14 +8,18 @@ class UserService {
 
   async getUserTtubeot(userId: number): Promise<number> {
     let response = await fetch(`http://${this.baseUrl}/user/ttubeot/adventure/${userId}/id`);
+    console.log(response);
     let result = await response.json();
+    console.log(result);
 
     return result.userTtubeotId;
   }
 
   async getUserInfo(userId: number): Promise<{ username: string, ttubeot_id: number }> {
     let response = await fetch(`http://${this.baseUrl}/other-profile/${userId}`);
+    console.log(response);
     let result = await response.json();
+    console.log(result);
 
     return { username: result.username, ttubeot_id: result.ttubeot_id };
   }

@@ -29,7 +29,7 @@ export class AdventureController {
         throw new Error('Invalid JWT token');
       }
 
-      console.log("사용자가 모험을 시작합니다.");
+      console.log(userId, " 사용자가 모험을 시작합니다.");
 
       this.userMap.set(userId, socket);
 
