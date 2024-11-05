@@ -7,4 +7,5 @@ public interface AlertService {
 
     void updateFcmTokenForUser(FcmTokenRequestDTO fcmTokenRequestDTO);
 
+    void sendMissionNotaification(String fcmToken, String title, String body);
 }
