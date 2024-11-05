@@ -1,7 +1,9 @@
 package com.user.userttubeot.ttubeot.presentation.controller;
 
+import com.user.userttubeot.ttubeot.application.service.AlertServiceImpl;
 import com.user.userttubeot.ttubeot.application.service.TtubeotService;
 import com.user.userttubeot.ttubeot.application.service.TtubeotServiceImpl;
+import com.user.userttubeot.ttubeot.domain.dto.FcmTokenRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogListResponseDTO;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TtubeotController {
 
     private final TtubeotServiceImpl ttubeotService;
+    private final AlertServiceImpl alertService;
 
     // 뚜벗 로그 추가
     @PostMapping("/ttubeot/logs")
@@ -109,6 +112,16 @@ public class TtubeotController {
         UserTtubeotMissionListResponseDTO userTtubeotMissionList = ttubeotService.getUserWeeklyMissionList(
             userId);
         return ResponseEntity.ok(userTtubeotMissionList);
+    }
+
+    /*
+    * api for firebase
+    * */
+    // fcm token 등록
+    @PostMapping("/admin/update-fcm-token")
+    public ResponseEntity<?> updateFcmToken(@RequestBody FcmTokenRequestDTO fcmTokenRequestDTO) {
+        alertService.updateFcmTokenForUser(fcmTokenRequestDTO);
+        return ResponseEntity.ok(fcmTokenRequestDTO);
     }
 
     /*
