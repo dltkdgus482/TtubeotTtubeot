@@ -126,8 +126,12 @@ public class FriendController {
 
         try {
             boolean areFriends = friendService.areFriends(userId, friendId);
-            String message = areFriends ? "친구입니다." : "친구가 아닙니다.";
-            return ResponseEntity.ok(new ResponseMessage(message));
+            if (areFriends) {
+                return ResponseEntity.ok(new ResponseMessage("친구입니다."));
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseMessage("친구가 아닙니다."));
+            }
         } catch (Exception e) {
             log.error("[친구 여부 확인 실패] 사용자 ID: {}, 친구 ID: {}, 에러: {}", userId, friendId,
                 e.getMessage());
