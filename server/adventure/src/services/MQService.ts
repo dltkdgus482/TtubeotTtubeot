@@ -34,7 +34,7 @@ class MQService {
     });
   }
 
-  async ack(msg: any) {
+  async check(msg: any) {
     if (!this.channel) {
       throw new Error("Channel is not initialized");
     }

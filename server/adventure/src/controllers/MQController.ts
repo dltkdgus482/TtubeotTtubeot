@@ -12,7 +12,9 @@ class MQController {
     this.userService = new UserService();
     this.userMap = userMap;
 
-    this.handleEvents();
+    this.mqService.init().then(() => {
+      this.handleEvents();
+    });
   }
 
 
@@ -40,7 +42,7 @@ class MQController {
     let socket = this.userMap.get(user_id);
     if (socket) {
       socket.emit('adventure_reward', msg.data.data);
-      await this.mqService.ack(msg);
+      await this.mqService.check(msg);
     }
   }
 
@@ -51,7 +53,7 @@ class MQController {
 
     if (socket) {
       socket.emit('adventure_request', msg.data.data);
-      await this.mqService.ack(msg);
+      await this.mqService.check(msg);
     }
   }
 }
