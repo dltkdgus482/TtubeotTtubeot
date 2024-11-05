@@ -50,7 +50,7 @@ export default StyleSheet.create({
   ttubeotWebviewContainer: {
     position: 'absolute',
     bottom: -70,
-    left: 0,
+    alignSelf: 'center',
   },
   ttubeotWebview: {
     width: 400,
