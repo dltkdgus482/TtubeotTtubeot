@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 class UserService {
 
-  private readonly baseUrl = 'user.ttubeot-user.svc.cluster.local';
+  private readonly baseUrl = 'user.ttubeot-user.svc.cluster.local:8080';
   private secretKey: string = process.env.DEV_SECRET_KEY || '';
 
   async getUserTtubeot(userId: number): Promise<number> {
