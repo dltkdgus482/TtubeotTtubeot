@@ -134,6 +134,11 @@ class AdventureService {
 
     return { reward: 0, remain_count: 0 };
   }
+
+  async getUserIdBySocket(socket: string): Promise<number> {
+    let adventureLog = await this.adventureRedisRepository.getAdventureLog(socket);
+    return adventureLog.userId;
+  }
 }
 
 export default AdventureService;

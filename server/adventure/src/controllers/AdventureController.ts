@@ -58,6 +58,22 @@ export class AdventureController {
     }
   }
 
+  async handleGreetRequest(socket: Socket, data: { user_id: number }): Promise<void> {
+    try {
+      const oppositeUserId = data.user_id;
+      const userId = await this.adventureService.getUserIdBySocket(socket.id);
+
+      if (!userId || !oppositeUserId) {
+        throw new Error("Invalid user id");
+      }
+
+      let isFriend = await this.userService.checkFriendship(userId, oppositeUserId);
+    } catch (error) {
+      console.error("Error in handleGreetRequest:", error);
+      socket.emit("error", { message: "Failed to greet request" });
+    }
+  }
+
   async handleEndAdventure(socket: Socket): Promise<void> {
     try {
       console.log("사용자가 모험을 종료합니다.");

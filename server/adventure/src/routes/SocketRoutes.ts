@@ -11,9 +11,7 @@ export default function socketRoutes(io: Server) {
 
     socket.on("adventure_info", (data) => adventureController.handleStoreGPSData(socket, data));
 
-    // TODO: adventure_claim 이벤트 추가
-
-    // TODO: adventure_greet 이벤트 추가
+    socket.on("adventure_request", (data) => adventureController.handleGreetRequest(socket, data));
 
     socket.on("adventure_end", () => adventureController.handleEndAdventure(socket));
 
