@@ -1,13 +1,18 @@
-// src/services/mqService.ts
+import dotenv from 'dotenv';
 import amqp from 'amqplib';
+
+dotenv.config();
 
 class MQService {
   private channel: amqp.Channel | undefined;
+  private rabbitMQUrl = process.env.RABBITMQ_URL || 'amqp://localhost';
+  private rabbitMQPassword = process.env.RABBITMQ_PASSWORD || 'guest';
+  private rabbitMQUser = process.env.RABBITMQ_USER || 'guest';
 
   constructor(private exchangeName: string) { }
 
   async init() {
-    const connection = await amqp.connect('amqp://rabbitmq');
+    const connection = await amqp.connect('amqp://' + this.rabbitMQUser + ':' + this.rabbitMQPassword + '@' + this.rabbitMQUrl);
     this.channel = await connection.createChannel();
     await this.channel.assertExchange(this.exchangeName, 'fanout', { durable: false });
   }
