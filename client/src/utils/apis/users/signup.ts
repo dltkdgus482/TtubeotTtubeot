@@ -123,7 +123,6 @@ export const confirmSmsVerificationApi = async (userPhone: string, code: string)
 // 회원가입 api
 // [POST] '/user/signup'
 
-
 export const signUpApi = async (formData) => {
   try {
     const signUpRes = await defaultRequest.post('/user/signup', formData);

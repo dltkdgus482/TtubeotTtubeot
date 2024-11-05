@@ -44,7 +44,7 @@ const LoginScreen = () => {
 
         // 프로필 정보 조회
         const userInfo = await getInfoApi(currentAccessToken, setAccessToken);
-  
+
         // 프로필 정보로 사용자 상태 업데이트
         setUser({
           userId: userId,

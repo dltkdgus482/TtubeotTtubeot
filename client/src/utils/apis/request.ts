@@ -20,25 +20,37 @@ export const setupInterceptors = (
   accessToken,
   setAccessToken,
 ) => {
-  axiosInstance.interceptors.request.use(async config => {
+  const { clearUser } = useUser.getState();
+
+  axiosInstance.interceptors.request.use(async (config) => {
     if (accessToken && typeof accessToken === 'string') {
       try {
         const { exp } = jwtDecode(accessToken);
-        // console.log('accessToken', accessToken)
+        console.log('이거야!!!!!!!!', accessToken);
         // 토큰 만료 확인 후 갱신
         if (exp && Date.now() >= exp * 1000) {
-          const newToken = await getNewToken();
-          setAccessToken(newToken);
-          config.headers.Authorization = `Bearer ${newToken}`;
+          try {
+            const newToken = await getNewToken();
+            setAccessToken(newToken);
+            console.log('newToken', newToken);
+            config.headers.Authorization = `Bearer ${newToken}`;
+          } catch (error) {
+            console.error('토큰 갱신 중 오류 발생:', error);
+            clearUser(); // 토큰 갱신 실패 시 사용자 정보 초기화
+            throw error;
+          }
         } else {
           config.headers.Authorization = `Bearer ${accessToken}`;
+          console.log('config.headers.Authorization', config.headers.Authorization);
         }
       } catch (error) {
         console.error('토큰 디코딩 중 오류 발생:', error);
+        clearUser(); // 디코딩 실패 시 사용자 정보 초기화
         throw error;
       }
     } else {
       console.warn('유효하지 않은 액세스 토큰입니다.');
+      clearUser(); // 유효하지 않은 토큰일 때도 초기화
     }
 
     return config;
@@ -75,10 +87,9 @@ export const authRequest = (accessToken, setAccessToken) => {
   const { clearUser } = useUser.getState();
 
    // accessToken 유효성 검사
-  if (!accessToken || typeof accessToken !== 'string') {
+   console.log('access token: ' + accessToken);
+   if (!accessToken || typeof accessToken !== 'string') {
     console.warn('유효하지 않은 accessToken입니다.');
-
-    // 유효하지 않은 경우 사용자 정보 초기화
     clearUser();
     return null;
   }
