@@ -29,7 +29,7 @@ class MQService {
       throw new Error("Channel is not initialized");
     }
 
-    const queue = await this.channel.assertQueue(queueName, { exclusive: true });
+    const queue = await this.channel.assertQueue(queueName);
     await this.channel.bindQueue(queue.queue, this.exchangeName, '');
 
     this.channel.consume(queue.queue, (msg) => {
