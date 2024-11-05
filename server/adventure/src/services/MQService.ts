@@ -34,10 +34,11 @@ class MQService {
 
     this.channel.consume(queue.queue, (msg) => {
       if (msg) {
-        handler(JSON.parse(msg.content.toString()));
+        handler({ originalMsg: msg, content: JSON.parse(msg.content.toString()) });
       }
     });
   }
+
 
   async check(msg: any) {
     if (!this.channel) {

@@ -20,9 +20,9 @@ class MQController {
 
   handleEvents() {
     this.mqService.subscribe('adventure', (msg) => {
-      console.log('Received message:', msg);
+      console.log('Received message:', msg.content);
 
-      switch (msg.type) {
+      switch (msg.content.type) {
         case 'adventure_reward':
           this.handleReward(msg);
           break;
@@ -30,30 +30,30 @@ class MQController {
           this.handleRequest(msg);
           break;
         default:
-          console.error('Invalid message type:', msg.type);
+          console.error('Invalid message type:', msg.content.type);
       }
     });
   }
 
   async handleReward(msg: any) {
-    console.log('Handling reward:', msg);
-    let user_id = msg.data.user_id;
+    console.log('Handling reward:', msg.content);
+    let user_id = msg.content.data.user_id;
 
     let socket = this.userMap.get(user_id);
     if (socket) {
-      socket.emit('adventure_reward', msg.data.data);
-      await this.mqService.check(msg);
+      socket.emit('adventure_reward', msg.content.data.data);
+      await this.mqService.check(msg.originalMsg);  // 원본 msg 전달
     }
   }
 
   async handleRequest(msg: any) {
-    console.log('Handling request:', msg);
-    let user_id = msg.data.user_id;
+    console.log('Handling request:', msg.content);
+    let user_id = msg.content.data.user_id;
     let socket = this.userMap.get(user_id);
 
     if (socket) {
-      socket.emit('adventure_request', msg.data.data);
-      await this.mqService.check(msg);
+      socket.emit('adventure_request', msg.content.data.data);
+      await this.mqService.check(msg.originalMsg);  // 원본 msg 전달
     }
   }
 }
