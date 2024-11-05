@@ -4,6 +4,7 @@ import com.user.userttubeot.user.application.FriendService;
 import com.user.userttubeot.user.domain.dto.CustomUserDetails;
 import com.user.userttubeot.user.domain.dto.FriendInfoDto;
 import com.user.userttubeot.user.domain.dto.FriendRequestDto;
+import com.user.userttubeot.user.domain.dto.FriendResponseDto;
 import com.user.userttubeot.user.domain.exception.CoinAlreadySentException;
 import com.user.userttubeot.user.domain.exception.FriendNotFoundException;
 import com.user.userttubeot.user.domain.exception.ResponseMessage;
@@ -36,7 +37,7 @@ public class FriendController {
      * 친구 요청을 전송하는 엔드포인트.
      */
     @PostMapping("/tag")
-    public ResponseEntity<ResponseMessage> sendFriendRequest(
+    public ResponseEntity<?> sendFriendRequest(
         @RequestBody FriendRequestDto friendRequest) {
 
         Integer userId = friendRequest.getUserId();
@@ -44,9 +45,9 @@ public class FriendController {
         log.info("[친구 요청] 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendRequestId);
 
         try {
-            ResponseMessage responseMessage = friendService.handleFriendRequest(userId,
+            FriendResponseDto friendResponseDto = friendService.handleFriendRequest(userId,
                 friendRequestId);
-            return ResponseEntity.ok(responseMessage);
+            return ResponseEntity.ok(friendResponseDto);
         } catch (FriendNotFoundException e) {
             log.warn("[친구 요청 실패 - 친구 없음] 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendRequestId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

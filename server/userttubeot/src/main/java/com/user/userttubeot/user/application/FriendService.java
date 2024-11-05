@@ -2,6 +2,7 @@ package com.user.userttubeot.user.application;
 
 import com.user.userttubeot.ttubeot.application.service.TtubeotService;
 import com.user.userttubeot.user.domain.dto.FriendInfoDto;
+import com.user.userttubeot.user.domain.dto.FriendResponseDto;
 import com.user.userttubeot.user.domain.entity.Friend;
 import com.user.userttubeot.user.domain.entity.FriendId;
 import com.user.userttubeot.user.domain.entity.User;
@@ -34,7 +35,7 @@ public class FriendService {
     /**
      * 친구 요청을 처리하는 메서드. 친구 상태에 따라 코인 전송 및 lastGreeting 업데이트.
      */
-    public ResponseMessage handleFriendRequest(Integer userId, Integer friendId) {
+    public FriendResponseDto handleFriendRequest(Integer userId, Integer friendId) {
         log.info("친구 요청 처리 시작 - 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendId);
 
         if (areFriends(userId, friendId)) {
@@ -43,18 +44,18 @@ public class FriendService {
 
             if (friend.getLastGreeting() != null && friend.getLastGreeting().toLocalDate()
                 .isEqual(now.toLocalDate())) {
-                return new ResponseMessage("이미 친구 관계입니다. 오늘 이미 인사하여 코인이 전송되지 않았습니다.");
+                return new FriendResponseDto("이미 친구 관계입니다. 오늘 이미 인사하여 코인이 전송되지 않았습니다.", 0);
             }
             sendCoins(userId, friendId, 100);
             updateLastGreeting(userId, friendId);
             updateLastGreeting(friendId, userId);
-            return new ResponseMessage("이미 친구 관계입니다. 마지막 인사 시간이 갱신되었습니다.");
+            return new FriendResponseDto("이미 친구 관계입니다. 마지막 인사 시간이 갱신되었습니다.", 100);
         }
 
         sendFriendRequest(userId, friendId);
         sendCoins(userId, friendId, 300);
         updateLastGreeting(userId, friendId);
-        return new ResponseMessage("친구 요청이 전송되었습니다.");
+        return new FriendResponseDto("친구 요청이 전송되었습니다.", 300);
     }
 
     /**
