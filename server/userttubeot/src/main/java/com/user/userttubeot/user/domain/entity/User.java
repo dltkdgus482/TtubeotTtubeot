@@ -60,6 +60,9 @@ public class User {
     @Column(name = "user_coin", nullable = false)
     private Integer userCoin = 0;
 
+    @Column(name = "fcm_token")
+    private String fcmToken;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
