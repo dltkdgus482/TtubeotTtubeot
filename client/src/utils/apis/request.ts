@@ -60,7 +60,7 @@ export const setupInterceptors = (
   axiosInstance.interceptors.response.use(
     response => response,
     error => {
-      console.error('API 요청 오류:', error);
+      console.log('API 요청 오류:', error);
       return Promise.reject(error);
     },
   );

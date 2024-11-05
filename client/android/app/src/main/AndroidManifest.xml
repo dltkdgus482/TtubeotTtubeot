@@ -20,6 +20,26 @@
     <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="false" tools:replace="required" />
     <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false" tools:replace="required" />
     <uses-feature android:name="android.hardware.nfc" android:required="false" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <uses-feature android:name="android.hardware.nfc" android:required="true" />
+    <!-- Only when targeting Android 12 or higher -->
+    <!--
+      Please make sure you read the following documentation
+      to have a better understanding of the new permissions.
+      https://developer.android.com/guide/topics/connectivity/bluetooth/permissions#assert-never-for-location
+    -->
+
+    <!-- Needed if your app search for Bluetooth devices. -->
+     <!--
+      If your app doesn't use Bluetooth scan results to derive physical location information,
+      you can strongly assert that your app doesn't derive physical location.
+    -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+                     android:usesPermissionFlags="neverForLocation" />
+    <!-- Needed if you want to interact with a BLE device. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <!-- Needed if your app makes the current device discoverable to other Bluetooth devices. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
 
     <queries>
         <package android:name="com.google.android.apps.healthdata" />

@@ -2,7 +2,6 @@ import React from 'react';
 import styles from './MissionModal.styles';
 import { View, Image } from 'react-native';
 import StyledText from '../../styles/StyledText';
-
 const CompleteIcon = require('../../assets/icons/CompleteIcon.png');
 
 interface MissionProps {
