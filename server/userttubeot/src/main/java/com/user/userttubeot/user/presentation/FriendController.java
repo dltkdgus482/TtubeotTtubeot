@@ -1,9 +1,12 @@
 package com.user.userttubeot.user.presentation;
 
 import com.user.userttubeot.user.application.FriendService;
+import com.user.userttubeot.user.domain.dto.CheckFriendDto;
 import com.user.userttubeot.user.domain.dto.CustomUserDetails;
 import com.user.userttubeot.user.domain.dto.FriendInfoDto;
 import com.user.userttubeot.user.domain.dto.FriendRequestDto;
+import com.user.userttubeot.user.domain.exception.CoinAlreadySentException;
+import com.user.userttubeot.user.domain.exception.FriendNotFoundException;
 import com.user.userttubeot.user.domain.exception.ResponseMessage;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,15 +27,16 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/friend")
+@RequestMapping("/user/friend")
 public class FriendController {
 
+    private static final Integer DAILY_COIN = 100;
     private final FriendService friendService;
 
     /**
      * 친구 요청을 전송하는 엔드포인트.
      */
-    @PostMapping("/add")
+    @PostMapping("/request")
     public ResponseEntity<ResponseMessage> sendFriendRequest(
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestBody FriendRequestDto friendRequest) {
@@ -42,20 +46,15 @@ public class FriendController {
         log.info("[친구 요청] 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendRequestId);
 
         try {
-            // 이미 친구 관계인 경우 lastGreeting 을 갱신하고 반환
-            if (friendService.areFriends(userId, friendRequestId)) {
-                friendService.updateLastGreeting(userId, friendRequestId);
-                log.info("[이미 친구 관계] 사용자 ID: {}, 친구 ID: {}", userId, friendRequestId);
-                return ResponseEntity.ok(new ResponseMessage("이미 친구 관계입니다. 마지막 인사 시간이 갱신되었습니다."));
-            }
-
-            // 새로운 친구 요청 처리
-            friendService.sendFriendRequest(userId, friendRequestId);
-            friendService.updateLastGreeting(userId, friendRequestId); // lastGreeting 갱신
-            log.info("[친구 요청 성공] 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendRequestId);
-            return ResponseEntity.ok(new ResponseMessage("친구 요청이 전송되었습니다."));
+            ResponseMessage responseMessage = friendService.handleFriendRequest(userId,
+                friendRequestId);
+            return ResponseEntity.ok(responseMessage);
+        } catch (FriendNotFoundException e) {
+            log.warn("[친구 요청 실패 - 친구 없음] 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendRequestId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ResponseMessage("친구 관계가 존재하지 않습니다."));
         } catch (Exception e) {
-            log.error("[친구 요청 실패] 사용자 ID: {}, 에러: {}", userId, e.getMessage(), e);
+            log.error("[친구 요청 실패 - 서버 오류] 사용자 ID: {}, 에러: {}", userId, e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ResponseMessage("서버 오류로 친구 요청을 전송하지 못했습니다."));
         }
@@ -67,7 +66,6 @@ public class FriendController {
     @GetMapping("/info-list")
     public ResponseEntity<?> getFriendInfoList(
         @AuthenticationPrincipal CustomUserDetails userDetails) {
-
         Integer userId = userDetails.getUserId();
         log.info("[친구 정보 조회 요청] 사용자 ID: {}", userId);
 
@@ -76,14 +74,14 @@ public class FriendController {
             log.info("[친구 정보 조회 성공] 사용자 ID: {}, 친구 수: {}", userId, friendInfoList.size());
             return ResponseEntity.ok(friendInfoList);
         } catch (Exception e) {
-            log.error("[친구 정보 조회 실패] 사용자 ID: {}, 에러: {}", userId, e.getMessage(), e);
+            log.error("[친구 정보 조회 실패] 사용자 ID: {}, 에러: {}", userId, e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ResponseMessage("서버 오류로 친구 정보를 조회하지 못했습니다."));
         }
     }
 
     /**
-     * 친구에게 코인을 전송하는 엔드포인트.
+     * 친구에게 데일리 코인을 전송하는 엔드포인트.
      */
     @GetMapping("/send-coin/{friendId}")
     public ResponseEntity<ResponseMessage> sendCoin(
@@ -94,11 +92,21 @@ public class FriendController {
         log.info("[코인 전송 요청] 사용자 ID: {}, 친구 ID: {}", userId, friendId);
 
         try {
-            friendService.sendCoin(userId, friendId);
+            ResponseMessage responseMessage = friendService.dailyCoinSend(userId, friendId,
+                DAILY_COIN);
             log.info("[코인 전송 성공] 사용자 ID: {}, 친구 ID: {}", userId, friendId);
-            return ResponseEntity.ok(new ResponseMessage("코인이 성공적으로 전송되었습니다."));
+            return ResponseEntity.ok(responseMessage);
+        } catch (CoinAlreadySentException e) {
+            log.warn("[코인 전송 실패 - 이미 전송 완료] 사용자 ID: {}, 친구 ID: {}", userId, friendId);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseMessage("오늘 이미 코인이 전송되었습니다."));
+        } catch (FriendNotFoundException e) {
+            log.error("[코인 전송 실패 - 친구 없음] 사용자 ID: {}, 친구 ID: {}", userId, friendId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ResponseMessage("친구 관계가 존재하지 않습니다."));
         } catch (Exception e) {
-            log.error("[코인 전송 실패] 사용자 ID: {}, 친구 ID: {}, 에러: {}", userId, friendId, e.getMessage(), e);
+            log.error("[코인 전송 실패 - 서버 오류] 사용자 ID: {}, 친구 ID: {}, 에러: {}", userId, friendId,
+                e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ResponseMessage("서버 오류로 코인을 전송하지 못했습니다."));
         }
@@ -109,19 +117,24 @@ public class FriendController {
      */
     @GetMapping("/check-friend/{friendId}")
     public ResponseEntity<ResponseMessage> checkFriend(
-        @AuthenticationPrincipal CustomUserDetails userDetails,
-        @PathVariable("friendId") Integer friendId) {
+        @RequestBody CheckFriendDto dto) {
 
-        Integer userId = userDetails.getUserId();
+        Integer userId = dto.getUserId();
+        Integer friendId = dto.getFriendId();
+
         log.info("[친구 여부 확인 요청] 사용자 ID: {}, 친구 ID: {}", userId, friendId);
 
         try {
             boolean areFriends = friendService.areFriends(userId, friendId);
-            log.info("[친구 여부 확인 성공] 사용자 ID: {}, 친구 ID: {}, 친구 여부: {}", userId, friendId, areFriends);
-            String message = areFriends ? "친구입니다." : "친구가 아닙니다.";
-            return ResponseEntity.ok(new ResponseMessage(message));
+            if (areFriends) {
+                return ResponseEntity.ok(new ResponseMessage("친구입니다."));
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseMessage("친구가 아닙니다."));
+            }
         } catch (Exception e) {
-            log.error("[친구 여부 확인 실패] 사용자 ID: {}, 친구 ID: {}, 에러: {}", userId, friendId, e.getMessage(), e);
+            log.error("[친구 여부 확인 실패] 사용자 ID: {}, 친구 ID: {}, 에러: {}", userId, friendId,
+                e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ResponseMessage("서버 오류로 친구 여부를 확인하지 못했습니다."));
         }
