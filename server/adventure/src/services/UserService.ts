@@ -12,7 +12,7 @@ class UserService {
     let result = await response.json();
     console.log(result);
 
-    return result.userTtubeotId;
+    return result.user_ttubeot_ownership_id;
   }
 
   async getUserInfo(userId: number): Promise<{ username: string, ttubeot_id: number }> {
