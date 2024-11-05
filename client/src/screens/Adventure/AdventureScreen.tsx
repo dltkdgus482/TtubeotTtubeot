@@ -5,6 +5,9 @@ import {
   Image,
   Animated,
   Platform,
+  NativeEventEmitter,
+  NativeModules,
+  PermissionsAndroid,
 } from 'react-native';
 import { useCameraPermission } from 'react-native-vision-camera';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,6 +22,9 @@ import useAdventureSocket from '../../utils/apis/adventure/AdventureInit';
 import MissionModal from '../../components/Mission/MissionModal';
 import useTreasureStore from '../../store/treasure';
 import GetTreasureModal from '../../components/ARComponents/GetTreasureModal';
+
+const { RnSensorStep } = NativeModules;
+const stepCounterEmitter = new NativeEventEmitter(RnSensorStep);
 
 const background = require('../../assets/images/AdventureBackground.jpg');
 const CameraIcon = require('../../assets/icons/CameraIcon.png');
@@ -49,6 +55,46 @@ const AdventureScreen = () => {
   const [isTreasureOpen, setIsTreasureOpen] = useState<boolean>(false);
 
   const hasTreasure = useTreasureStore(state => state.hasTreasure);
+
+  // ------------------------------
+
+  const [steps, setSteps] = useState<number>(0);
+  const [initialSteps, setInitialSteps] = useState<number>(0);
+
+  useEffect(() => {
+    const requestActivityPermission = async () => {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION,
+      );
+
+      if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Permission denied');
+        return;
+      }
+    };
+
+    requestActivityPermission();
+  }, []);
+
+  const startStepCounter = async () => {
+    RnSensorStep.start(500, 'COUNTER');
+    stepCounterEmitter.addListener('StepCounter', event => {
+      if (initialSteps === 0) {
+        setInitialSteps(event.steps);
+      } else {
+        setSteps(event.steps - initialSteps);
+      }
+    });
+  };
+
+  const stopStepCounter = () => {
+    RnSensorStep.stop();
+    stepCounterEmitter.removeAllListeners('StepCounter');
+    setSteps(0);
+    setInitialSteps(0);
+  };
+
+  // ------------------------------
 
   useEffect(() => {
     setIsCameraOpen(false);
@@ -91,12 +137,15 @@ const AdventureScreen = () => {
 
   const handleStartAdventure = () => {
     console.log('여기', adventureStart);
+
     if (!adventureStart) {
       connectSocket();
       openModal();
+      startStepCounter();
     } else {
       disconnectSocket();
       closeModal();
+      stopStepCounter();
     }
   };
 
@@ -163,7 +212,8 @@ const AdventureScreen = () => {
       <View style={styles.startButtonContainer}>
         <TouchableOpacity onPress={handleStartAdventure}>
           <ButtonDefault
-            content={adventureStart ? 'STOP' : 'START'}
+            content={steps.toString()}
+            // content={adventureStart ? 'STOP' : 'START'}
             iconSource={MapIcon}
             height={60}
             width={140}
