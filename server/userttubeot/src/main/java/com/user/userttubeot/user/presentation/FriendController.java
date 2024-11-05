@@ -1,6 +1,7 @@
 package com.user.userttubeot.user.presentation;
 
 import com.user.userttubeot.user.application.FriendService;
+import com.user.userttubeot.user.domain.dto.CheckFriendDto;
 import com.user.userttubeot.user.domain.dto.CustomUserDetails;
 import com.user.userttubeot.user.domain.dto.FriendInfoDto;
 import com.user.userttubeot.user.domain.dto.FriendRequestDto;
@@ -116,10 +117,11 @@ public class FriendController {
      */
     @GetMapping("/check-friend/{friendId}")
     public ResponseEntity<ResponseMessage> checkFriend(
-        @AuthenticationPrincipal CustomUserDetails userDetails,
-        @PathVariable("friendId") Integer friendId) {
+        @RequestBody CheckFriendDto dto) {
 
-        Integer userId = userDetails.getUserId();
+        Integer userId = dto.getUserId();
+        Integer friendId = dto.getFriendId();
+        
         log.info("[친구 여부 확인 요청] 사용자 ID: {}, 친구 ID: {}", userId, friendId);
 
         try {
