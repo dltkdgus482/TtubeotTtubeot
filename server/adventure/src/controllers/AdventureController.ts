@@ -18,6 +18,16 @@ export class AdventureController {
     this.userService = new UserService();
     this.mqService = new MQService('adventure');
     this.userMap = userMap;
+    this.initializeMQService();
+  }
+
+  private async initializeMQService() {
+    try {
+      await this.mqService.init(); // MQService 초기화
+      console.log("MQService initialized successfully.");
+    } catch (error) {
+      console.error("Failed to initialize MQService:", error);
+    }
   }
 
   async handleInitAdventure(socket: Socket, data: { token: string }): Promise<void> {
