@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/friend")
+@RequestMapping("/user/friend")
 public class FriendController {
 
     private static final Integer DAILY_COIN = 100;
@@ -121,7 +121,7 @@ public class FriendController {
 
         Integer userId = dto.getUserId();
         Integer friendId = dto.getFriendId();
-        
+
         log.info("[친구 여부 확인 요청] 사용자 ID: {}, 친구 ID: {}", userId, friendId);
 
         try {
