@@ -8,6 +8,10 @@ import { getRankingInfo } from '../../utils/apis/Ranking/getRankingInfo';
 import { useUser } from '../../store/user';
 
 const IntroTtubeotRabbit = require('../../assets/ttubeot/IntroTtubeotRabbit.png');
+const gold = require('../../assets/medals/gold.png');
+const silver = require('../../assets/medals/silver.png');
+const bronze = require('../../assets/medals/bronze.png');
+const ttubeotDog = require('../../assets/ttubeot/IntroTtubeotDog.png');
 
 interface RankingProps {
   user_id: number;
@@ -31,7 +35,7 @@ const RankingScreen = () => {
       console.log(res);
     };
 
-    // fetchRankingInfo();
+    fetchRankingInfo();
   }, []);
 
   return (
@@ -39,32 +43,59 @@ const RankingScreen = () => {
       <RankingScreenButtonContainer />
       <View style={styles.topThreeList}>
         <View style={styles.second}>
-          <StyledText bold>{rankingList[1].username}</StyledText>
+          <View style={styles.playerImageContainer}>
+            <Image source={ttubeotDog} style={styles.playerImage} />
+          </View>
+          {/* <StyledText bold style={styles.playerName}>
+            {rankingList[1].username}
+          </StyledText> */}
+          <Image source={silver} style={styles.medal} />
         </View>
         <View style={styles.first}>
-          <StyledText bold>{rankingList[0].username}</StyledText>
+          <View style={styles.playerImageContainer}>
+            <Image source={ttubeotDog} style={styles.playerImage} />
+          </View>
+          {/* <StyledText bold style={styles.playerName}>
+            {rankingList[0].username}
+          </StyledText> */}
+          <Image source={gold} style={styles.medal} />
         </View>
         <View style={styles.third}>
-          <StyledText bold>{rankingList[2].username}</StyledText>
+          <View style={styles.playerImageContainer}>
+            <Image source={ttubeotDog} style={styles.playerImage} />
+          </View>
+          {/* <StyledText bold style={styles.playerName}>
+            {rankingList[2].username}
+          </StyledText> */}
+          <Image source={bronze} style={styles.medal} />
         </View>
       </View>
-      <ScrollView style={styles.rankingList}>
-        {rankingList.map((ranking, index) => (
-          <View style={styles.rankingContainer} key={index}>
-            <StyledText bold style={styles.ranking}>
-              {index + 1}
-            </StyledText>
-            <View style={styles.rankingInfo}>
-              <Image source={IntroTtubeotRabbit} style={styles.rankingImage} />
-              <StyledText bold style={styles.rankingName}>
-                {ranking.username}
-              </StyledText>
-              <StyledText bold style={styles.rankingScore}>
-                {ranking.score.toLocaleString()}
-              </StyledText>
-            </View>
-          </View>
-        ))}
+      <ScrollView
+        style={styles.rankingList}
+        contentContainerStyle={{ paddingBottom: 120 }}>
+        {rankingList.map(
+          (ranking, index) =>
+            index > 2 &&
+            index < 999 && (
+              <View style={styles.rankingContainer} key={index}>
+                <StyledText bold style={styles.ranking}>
+                  {index + 1}
+                </StyledText>
+                <View style={styles.rankingInfo}>
+                  <Image
+                    source={IntroTtubeotRabbit}
+                    style={styles.rankingImage}
+                  />
+                  <StyledText bold style={styles.rankingName}>
+                    {ranking.username}
+                  </StyledText>
+                  <StyledText bold style={styles.rankingScore}>
+                    {ranking.score.toLocaleString()}
+                  </StyledText>
+                </View>
+              </View>
+            ),
+        )}
       </ScrollView>
     </View>
   );
