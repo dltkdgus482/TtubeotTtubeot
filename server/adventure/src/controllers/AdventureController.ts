@@ -29,12 +29,14 @@ export class AdventureController {
         throw new Error('Invalid JWT token');
       }
 
+      console.log("사용자가 모험을 시작합니다.");
+
       this.userMap.set(userId, socket);
 
       let userTtubeotOwnershipId = await this.userService.getUserTtubeot(userId);
+      console.log("사용자의 튜브옷 소유권 ID : ", userTtubeotOwnershipId);
       let { username, ttubeot_id } = await this.userService.getUserInfo(userId);
-
-      console.log(userId, "사용자가 모험을 시작합니다.");
+      console.log("사용자의 이름 : ", username, "사용자의 튜브옷 ID : ", ttubeot_id);
 
       await this.adventureService.initAdventure(userId, userTtubeotOwnershipId, username, ttubeot_id, socket.id);
     } catch (error) {
