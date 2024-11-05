@@ -30,9 +30,15 @@ class MQService {
     this.channel.consume(queue.queue, (msg) => {
       if (msg) {
         handler(JSON.parse(msg.content.toString()));
-        this.channel!.ack(msg);
       }
     });
+  }
+
+  async ack(msg: any) {
+    if (!this.channel) {
+      throw new Error("Channel is not initialized");
+    }
+    this.channel.ack(msg);
   }
 }
 

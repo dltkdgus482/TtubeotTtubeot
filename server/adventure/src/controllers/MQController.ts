@@ -40,6 +40,7 @@ class MQController {
     let socket = this.userMap.get(user_id);
     if (socket) {
       socket.emit('adventure_reward', msg.data.data);
+      this.mqService.ack(msg);
     }
   }
 
@@ -50,6 +51,7 @@ class MQController {
 
     if (socket) {
       socket.emit('adventure_request', msg.data.data);
+      this.mqService.ack(msg);
     }
   }
 }
