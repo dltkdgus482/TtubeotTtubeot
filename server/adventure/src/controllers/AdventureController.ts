@@ -1,18 +1,23 @@
 import { Socket } from "socket.io";
 import AdventureService from "../services/AdventureService";
 import ImageGenService from "../services/ImageGenService";
-import ParkService from "../services/ParkService";
+import UserService from "../services/UserService";
+import MQService from "../services/MQService";
 import JWTParser from '../utils/JWTParser';
 
 export class AdventureController {
   private adventureService: AdventureService;
   private imageGenService: ImageGenService;
-  private parkService: ParkService;
+  private userService: UserService;
+  private mqService: MQService;
+  private userMap: Map<number, Socket>;
 
-  constructor() {
+  constructor(userMap: Map<number, Socket>) {
     this.adventureService = new AdventureService();
     this.imageGenService = new ImageGenService();
-    this.parkService = new ParkService();
+    this.userService = new UserService();
+    this.mqService = new MQService('adventure');
+    this.userMap = userMap;
   }
 
   async handleInitAdventure(socket: Socket, data: { token: string }): Promise<void> {
@@ -24,9 +29,14 @@ export class AdventureController {
         throw new Error('Invalid JWT token');
       }
 
+      this.userMap.set(userId, socket);
+
+      let userTtubeotOwnershipId = await this.userService.getUserTtubeot(userId);
+      let { username, ttubeot_id } = await this.userService.getUserInfo(userId);
+
       console.log(userId, "사용자가 모험을 시작합니다.");
 
-      await this.adventureService.initAdventure(userId, socket.id);
+      await this.adventureService.initAdventure(userId, userTtubeotOwnershipId, username, ttubeot_id, socket.id);
     } catch (error) {
       console.error("Error in handleInitAdventure:", error);
       socket.emit("error", { message: "Failed to initialize adventure" });
@@ -52,6 +62,83 @@ export class AdventureController {
     } catch (error) {
       console.error("Error in handleStoreGPSData:", error);
       socket.emit("error", { message: "Failed to store GPS data" });
+    }
+  }
+
+  async handleGreetRequest(socket: Socket, data: { user_id: number }): Promise<void> {
+    try {
+      const oppositeUserId = data.user_id;
+      const userId = await this.adventureService.getUserIdBySocket(socket.id);
+
+      if (!userId || !oppositeUserId) {
+        throw new Error("Invalid user id");
+      }
+
+      let isFriend = await this.userService.checkFriendship(userId, oppositeUserId);
+
+      if (isFriend) {
+        let reward = await this.userService.tagFriend(userId, oppositeUserId);
+
+        socket.emit("adventure_reward", { "type": 1, "reward": reward });
+
+        await this.mqService.publish({
+          type: "adventure_reward",
+          data: {
+            user_id: oppositeUserId,
+            data: {
+              "type": 1,
+              "reward": reward
+            }
+          }
+        });
+      } else {
+        let userInfo = await this.userService.getUserInfo(userId);
+        await this.mqService.publish({
+          type: "adventure_request",
+          data: {
+            user_id: oppositeUserId,
+            data: {
+              user_id: userId,
+              username: userInfo.username,
+              ttubeot_id: userInfo.ttubeot_id
+            }
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Error in handleGreetRequest:", error);
+      socket.emit("error", { message: "Failed to greet request" });
+    }
+  }
+
+  async handleConfirmRequest(socket: Socket, data: { user_id: number, answer: boolean }): Promise<void> {
+    try {
+      const oppositeUserId = data.user_id;
+      const userId = await this.adventureService.getUserIdBySocket(socket.id);
+
+      if (!userId || !oppositeUserId) {
+        throw new Error("Invalid user id");
+      }
+
+      if (data.answer) {
+        let reward = await this.userService.tagFriend(userId, oppositeUserId);
+
+        socket.emit("adventure_reward", { "type": 1, "reward": reward });
+
+        await this.mqService.publish({
+          type: "adventure_reward",
+          data: {
+            user_id: oppositeUserId,
+            data: {
+              "type": 1,
+              "reward": reward
+            }
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Error in handleConfirmRequest:", error);
+      socket.emit("error", { message: "Failed to confirm request" });
     }
   }
 

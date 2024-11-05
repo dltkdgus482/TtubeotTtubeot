@@ -1,9 +1,12 @@
 import AdventureRedisRepository from '../repositories/AdventureRedisRepository';
 import AdventureMongoRepository from '../repositories/AdventureMongoRepository';
 import AdventureMysqlRepository from '../repositories/AdventureMysqlRepository';
+
 import ParkRepository from '../repositories/ParkRepository';
 import AdventureLogModel from '../models/AdventureLogModel';
 import CalcAdventureStats from '../utils/CalcAdventureStats';
+
+import UserService from './UserService';
 
 class AdventureService {
   private adventureRedisRepository: AdventureRedisRepository;
@@ -11,20 +14,24 @@ class AdventureService {
   private adventureMysqlRepository: AdventureMysqlRepository;
   private parkRepository: ParkRepository;
 
+  private userService: UserService;
+
   constructor() {
     this.adventureRedisRepository = new AdventureRedisRepository();
     this.adventureMongoRepository = new AdventureMongoRepository();
     this.adventureMysqlRepository = new AdventureMysqlRepository();
     this.parkRepository = new ParkRepository();
+
+    this.userService = new UserService();
   }
 
-  async initAdventure(userId: number, socket: string): Promise<void> {
-    let adventureLog = AdventureLogModel.create({ userId, userTtubeotOwnershipId: 0 }); // TODO: 현재는 userTtubeotOwnershipId를 0으로 설정, 추후 user 서비스와 연동하여 수정해야 함.
+  async initAdventure(userId: number, userTtubeotOwnershipId: number, username: string, ttubeot_id: number, socket: string): Promise<void> {
+    let adventureLog = AdventureLogModel.create({ userId, userTtubeotOwnershipId });
 
     let adventureLogId = await this.adventureMysqlRepository.initAdventureLog(adventureLog);
     adventureLog.adventureLogId = adventureLogId;
 
-    await this.adventureRedisRepository.setOnline(adventureLog, socket);
+    await this.adventureRedisRepository.setOnline(adventureLog, username, ttubeot_id, socket);
   }
 
   async storeGPSData(socket: string, lat: number, lng: number, steps: number): Promise<{ lat: number, lng: number, steps: number, timestamp: string, }> {
@@ -65,6 +72,8 @@ class AdventureService {
 
     await this.adventureRedisRepository.flushUserLocationData(adventureLog.userId);
     await this.adventureRedisRepository.setOffline(socket);
+
+    await this.userService.postAdventureCoin(userId, adventureLog.adventureCoin);
 
     return adventureLog;
   }
@@ -121,7 +130,7 @@ class AdventureService {
       let reward = Math.floor(Math.random() * 100) + 100;
 
       adventureLog.adventureCoin += reward;
-      await this.adventureRedisRepository.setOnline(adventureLog, socket);
+      await this.adventureRedisRepository.updateUserInfo(adventureLog, socket);
 
       return { reward, remain_count: remainCounts.length };
     }
@@ -130,6 +139,11 @@ class AdventureService {
     await this.adventureRedisRepository.setRemainCounts(userId, park._id, remainCounts);
 
     return { reward: 0, remain_count: 0 };
+  }
+
+  async getUserIdBySocket(socket: string): Promise<number> {
+    let adventureLog = await this.adventureRedisRepository.getAdventureLog(socket);
+    return adventureLog.userId;
   }
 }
 

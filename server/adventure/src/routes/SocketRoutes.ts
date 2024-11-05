@@ -1,8 +1,12 @@
 import { Server, Socket } from "socket.io";
 import { AdventureController } from "../controllers/AdventureController";
+import MQController from "../controllers/MQController";
 
 export default function socketRoutes(io: Server) {
-  const adventureController = new AdventureController();
+  let userMap: Map<number, Socket> = new Map();
+
+  const adventureController = new AdventureController(userMap);
+  const mqController = new MQController(userMap);
 
   io.on("connection", (socket: Socket) => {
     console.log("New client connected:", socket.id);
@@ -11,9 +15,9 @@ export default function socketRoutes(io: Server) {
 
     socket.on("adventure_info", (data) => adventureController.handleStoreGPSData(socket, data));
 
-    // TODO: adventure_claim 이벤트 추가
+    socket.on("adventure_request", (data) => adventureController.handleGreetRequest(socket, data));
 
-    // TODO: adventure_greet 이벤트 추가
+    socket.on("adventure_confirm", (data) => adventureController.handleConfirmRequest(socket, data));
 
     socket.on("adventure_end", () => adventureController.handleEndAdventure(socket));
 
