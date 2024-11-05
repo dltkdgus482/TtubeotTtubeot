@@ -5,7 +5,7 @@ dotenv.config();
 
 class MQService {
   private channel: amqp.Channel | undefined;
-  private rabbitMQUrl = process.env.RABBITMQ_URL || 'amqp://localhost';
+  private rabbitMQUrl = process.env.RABBITMQ_HOST || 'amqp://localhost';
   private rabbitMQPassword = process.env.RABBITMQ_PASSWORD || 'guest';
   private rabbitMQUser = process.env.RABBITMQ_USER || 'guest';
 
