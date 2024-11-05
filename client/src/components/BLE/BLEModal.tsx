@@ -7,6 +7,8 @@ import {
   requestPermissions,
 } from '../../utils/apis/Ble';
 
+import StepCounter from '../StepCounter/StepCounter';
+
 // ---------------bluetooth-------------------
 
 import BLEAdvertiser from 'react-native-ble-advertiser';
@@ -206,6 +208,7 @@ const BLEModal: React.FC<BLEModalProps> = ({ modalVisible, closeBLEModal }) => {
         <View style={styles.modalBackground}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>레전드 블루투스</Text>
+            <StepCounter />
             <Button
               title={isAdvertising ? 'Stop Advertising' : 'Start Advertising'}
               onPress={() => {
