@@ -16,7 +16,7 @@ class UserService {
   }
 
   async getUserInfo(userId: number): Promise<{ username: string, ttubeot_id: number }> {
-    let response = await fetch(`http://${this.baseUrl}/other-profile/${userId}`);
+    let response = await fetch(`http://${this.baseUrl}/user/other-profile/${userId}`);
     console.log(response);
     let result = await response.json();
     console.log(result);
