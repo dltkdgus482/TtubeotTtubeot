@@ -1,7 +1,6 @@
 package com.user.userttubeot.user.presentation;
 
 import com.user.userttubeot.user.application.FriendService;
-import com.user.userttubeot.user.domain.dto.CheckFriendDto;
 import com.user.userttubeot.user.domain.dto.CustomUserDetails;
 import com.user.userttubeot.user.domain.dto.FriendInfoDto;
 import com.user.userttubeot.user.domain.dto.FriendRequestDto;
@@ -36,12 +35,11 @@ public class FriendController {
     /**
      * 친구 요청을 전송하는 엔드포인트.
      */
-    @PostMapping("/request")
+    @PostMapping("/tag")
     public ResponseEntity<ResponseMessage> sendFriendRequest(
-        @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestBody FriendRequestDto friendRequest) {
 
-        Integer userId = userDetails.getUserId();
+        Integer userId = friendRequest.getUserId();
         Integer friendRequestId = friendRequest.getFriendId();
         log.info("[친구 요청] 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendRequestId);
 
@@ -117,10 +115,10 @@ public class FriendController {
      */
     @GetMapping("/check-friend/{friendId}")
     public ResponseEntity<ResponseMessage> checkFriend(
-        @RequestBody CheckFriendDto dto) {
+        @RequestBody FriendRequestDto friendRequestDto) {
 
-        Integer userId = dto.getUserId();
-        Integer friendId = dto.getFriendId();
+        Integer userId = friendRequestDto.getUserId();
+        Integer friendId = friendRequestDto.getFriendId();
 
         log.info("[친구 여부 확인 요청] 사용자 ID: {}, 친구 ID: {}", userId, friendId);
 
