@@ -15,6 +15,7 @@ import AdventureMapScreen from '../../components/Adventure/AdventureMapScreen';
 import ButtonDefault from '../../components/Button/ButtonDefault';
 import AdventureAlert from '../../components/Adventure/AdventureAlert';
 import GPSAlertModal from '../../components/Adventure/GPSAlertModal';
+import useAdventureSocket from '../../utils/apis/adventure/AdventureInit';
 import MissionModal from '../../components/Mission/MissionModal';
 import useTreasureStore from '../../store/treasure';
 import GetTreasureModal from '../../components/ARComponents/GetTreasureModal';
@@ -39,6 +40,7 @@ const AdventureScreen = () => {
   const [isCameraModalEnabled, setIsCameraModalEnabled] =
     useState<boolean>(false);
   const opacityAnim = useRef(new Animated.Value(0.65)).current;
+  const { connectSocket, disconnectSocket } = useAdventureSocket();
 
   const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
   const [isARMode, setIsARMode] = useState<boolean>(false);
@@ -88,9 +90,12 @@ const AdventureScreen = () => {
   };
 
   const handleStartAdventure = () => {
+    console.log('여기', adventureStart);
     if (!adventureStart) {
+      connectSocket();
       openModal();
     } else {
+      disconnectSocket();
       closeModal();
     }
   };

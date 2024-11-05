@@ -36,8 +36,10 @@
     "react-native-vector-icons": "^10.2.0",
     "react-native-vision-camera": "^4.6.0",
     "react-native-webview": "^13.12.3",
+    "socket.io-client": "^4.8.1",
     "styled-components": "^6.1.13",
     "three": "^0.169.0",
+    "yarn": "^1.22.22",
     "zustand": "^5.0.0"
   },
   "devDependencies": {

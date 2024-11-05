@@ -18,7 +18,7 @@ const createAxiosInstance = () => {
 export const setupInterceptors = (
   axiosInstance,
   accessToken,
-  setAccessToken
+  setAccessToken,
 ) => {
   const { clearUser } = useUser.getState();
 
@@ -58,11 +58,11 @@ export const setupInterceptors = (
 
   // 응답 에러 처리
   axiosInstance.interceptors.response.use(
-    (response) => response,
-    (error) => {
+    response => response,
+    error => {
       console.error('API 요청 오류:', error);
       return Promise.reject(error);
-    }
+    },
   );
 };
 
