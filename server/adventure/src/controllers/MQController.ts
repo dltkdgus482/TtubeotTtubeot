@@ -43,6 +43,8 @@ class MQController {
     if (socket) {
       socket.emit('adventure_reward', msg.content.data.data);
       await this.mqService.check(msg.originalMsg);  // 원본 msg 전달
+    } else {
+      console.error('Socket not found for user:', user_id);
     }
   }
 
@@ -54,6 +56,8 @@ class MQController {
     if (socket) {
       socket.emit('adventure_request', msg.content.data.data);
       await this.mqService.check(msg.originalMsg);  // 원본 msg 전달
+    } else {
+      console.error('Socket not found for user:', user_id);
     }
   }
 }
