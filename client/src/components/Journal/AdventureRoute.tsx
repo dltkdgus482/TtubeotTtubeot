@@ -6,37 +6,28 @@ import MapView, { PROVIDER_GOOGLE, Polyline, Marker } from 'react-native-maps';
 import { mapStyle } from '../../styles/mapStyle';
 import MaskedView from '@react-native-masked-view/masked-view';
 import StyledText from '../../styles/StyledText';
+import { Location } from '../../types/Location';
 
 type AdventureRouteProps = {
   modalVisible: boolean;
   closeModal: () => void;
-};
-
-type Location = {
-  latitude: number;
-  longitude: number;
+  gpsLog: Location[];
 };
 
 const startIcon = require('../../assets/icons/start.png');
 const finishIcon = require('../../assets/icons/finish.png');
 
-const AdventureRoute = ({ modalVisible, closeModal }: AdventureRouteProps) => {
+const AdventureRoute = ({
+  modalVisible,
+  closeModal,
+  gpsLog,
+}: AdventureRouteProps) => {
   const mapRef = useRef<MapView>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [locations, setLocations] = useState<Location[]>([
-    { latitude: 35.0935, longitude: 128.8546 },
-    { latitude: 35.0935, longitude: 128.8536 },
-    { latitude: 35.0935, longitude: 128.8526 },
-    { latitude: 35.0925, longitude: 128.8526 },
-    { latitude: 35.0915, longitude: 128.8526 },
-    { latitude: 35.0905, longitude: 128.8526 },
-    { latitude: 35.0895, longitude: 128.8526 },
-    { latitude: 35.0885, longitude: 128.8526 },
-  ]);
 
   const fitMapToCoordinates = () => {
-    if (mapRef.current && locations.length > 0) {
-      mapRef.current.fitToCoordinates(locations, {
+    if (mapRef.current && gpsLog.length > 0) {
+      mapRef.current.fitToCoordinates(gpsLog, {
         edgePadding: { top: 150, right: 150, bottom: 150, left: 150 },
         animated: true,
       });
@@ -73,30 +64,30 @@ const AdventureRoute = ({ modalVisible, closeModal }: AdventureRouteProps) => {
                 provider={PROVIDER_GOOGLE}
                 customMapStyle={mapStyle}
                 initialRegion={{
-                  latitude: locations[0].latitude,
-                  longitude: locations[0].longitude,
+                  latitude: gpsLog[0].latitude,
+                  longitude: gpsLog[0].longitude,
                   latitudeDelta: 0.0922,
                   longitudeDelta: 0.0421,
                 }}
                 style={styles.map}
                 onMapReady={fitMapToCoordinates}>
                 <Polyline
-                  coordinates={locations}
+                  coordinates={gpsLog}
                   strokeColor="#FF0000"
                   strokeWidth={3}
                 />
                 <Marker
                   coordinate={{
-                    latitude: locations[0].latitude,
-                    longitude: locations[0].longitude,
+                    latitude: gpsLog[0].latitude,
+                    longitude: gpsLog[0].longitude,
                   }}
                   title="시작"
                   icon={startIcon}
                 />
                 <Marker
                   coordinate={{
-                    latitude: locations[locations.length - 1].latitude,
-                    longitude: locations[locations.length - 1].longitude,
+                    latitude: gpsLog[gpsLog.length - 1].latitude,
+                    longitude: gpsLog[gpsLog.length - 1].longitude,
                   }}
                   title="종료"
                   icon={finishIcon}
