@@ -22,7 +22,6 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
     console.log('[Response Headers]:', loginRes.headers);
     console.log('[Response Data]:', loginRes.data);
     if (loginRes.status === 200) {
-      
       const userId = loginRes.data.userId;
       const authorizationHeader = loginRes.headers.authorization;
       const accessToken = authorizationHeader
@@ -40,7 +39,7 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
         // send FCM
         const response = await defaultRequest.post(
           '/user/admin/update-fcm-token',
-          {userId, fcmToken},
+          { userId, fcmToken },
         );
 
         console.log('[+] FCM Token 전송 성공:', response.data);
