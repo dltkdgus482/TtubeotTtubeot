@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
-import { View, Image, ImageBackground, TouchableOpacity } from 'react-native';
+import React, { useRef, useState } from 'react';
+import {
+  View,
+  Image,
+  ImageBackground,
+  TouchableOpacity,
+  Pressable,
+} from 'react-native';
 import styles from './HomeScreen.styles';
 import TtubeotProfile from '../../components/TtubeotProfile';
 import CurrencyDisplay from '../../components/CurrencyDisplay.tsx';
@@ -13,6 +19,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import FriendsModal from '../../components/Friends/FriendsModal.tsx';
 import BLE from '../../components/BLE/BLEModal.tsx';
 import BLEModal from '../../components/BLE/BLEModal.tsx';
+import StyledTextInput from '../../styles/StyledTextInput.ts';
+import ButtonFlat from '../../components/Button/ButtonFlat.tsx';
 
 const background = require('../../assets/images/HomeBackground.jpg');
 const ShopIcon = require('../../assets/icons/ShopIcon.png');
@@ -29,6 +37,9 @@ const HomeScreen = () => {
   const [friendsModalVisible, setFriendsModalVisible] = useState(false);
   const navigation = useNavigation();
   const [BLEModalVisible, setBLEModalVisible] = useState(false);
+
+  const webViewRef = useRef(null);
+  const [inputValue, setInputValue] = useState('1');
 
   const openShopModal = () => {
     setModalVisible(true);
@@ -70,12 +81,20 @@ const HomeScreen = () => {
     setBLEModalVisible(false);
   };
 
+  const sendId = () => {
+    const id = parseInt(inputValue, 10);
+    if (webViewRef.current && id > 0 && id < 46) {
+      webViewRef.current.postMessage(JSON.stringify({ type: 'changeId', id }));
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* 배경 이미지 */}
       <Image source={background} style={styles.backgroundImage} />
       <View style={styles.ttubeotWebviewContainer}>
         <WebView
+          ref={webViewRef}
           originWhitelist={['*']}
           source={{ uri: 'file:///android_asset/renderModel.html' }}
           style={styles.ttubeotWebview}
@@ -120,6 +139,12 @@ const HomeScreen = () => {
           </TouchableOpacity> */}
         </View>
       )}
+      <View style={{ position: 'absolute', top: 200, left: '50%' }}>
+        <StyledTextInput value={inputValue} onChangeText={setInputValue} />
+        <TouchableOpacity onPress={sendId}>
+          <ButtonFlat content="변경" />
+        </TouchableOpacity>
+      </View>
 
       {/* 프로필 컨테이너 */}
       <View style={styles.profileContainer}>

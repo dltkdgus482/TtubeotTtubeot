@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Modal, ScrollView, Image, TouchableOpacity } from 'react-native';
 import styles from './MissionModal.styles';
 import StyledText from '../../styles/StyledText';
@@ -9,6 +9,12 @@ import {
   weeklyMissionList,
   achievementList,
 } from './dummyData';
+import { useUser } from '../../store/user';
+import {
+  getDailyMissionList,
+  getWeeklyMissionList,
+} from '../../utils/apis/Mission/getMissionList';
+import { authRequest } from '../../utils/apis/request';
 
 const CharacterShopTitleContainer = require('../../assets/images/CharacterShopTitleContainer.png');
 const CharacterShopBackgound = require('../../assets/images/CharacterShopBackground.png');
@@ -24,6 +30,25 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
 }) => {
   const [selectedMenu, setSelectedMenu] = useState<string>('일일 미션');
   const missionList: string[] = ['일일 미션', '주간 미션', '업적'];
+  const { accessToken, setAccessToken } = useUser.getState();
+  const authClient = authRequest(accessToken, setAccessToken);
+
+  useEffect(() => {
+    if (missionModalVisible === false) return;
+
+    const fetchDailyMissionlist = async () => {
+      const res = await getDailyMissionList(accessToken, setAccessToken);
+      console.log(res);
+    };
+
+    const fetchWeeklyMissionlist = async () => {
+      const res = await getWeeklyMissionList(accessToken, setAccessToken);
+      console.log(res);
+    };
+
+    if (selectedMenu === '일일 미션') fetchDailyMissionlist();
+    if (selectedMenu === '주간 미션') fetchWeeklyMissionlist();
+  }, [missionModalVisible, selectedMenu]);
 
   return (
     <Modal

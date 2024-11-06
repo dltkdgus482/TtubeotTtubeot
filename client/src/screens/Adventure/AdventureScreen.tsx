@@ -19,6 +19,9 @@ import useAdventureSocket from '../../utils/apis/adventure/AdventureInit';
 import MissionModal from '../../components/Mission/MissionModal';
 import useTreasureStore from '../../store/treasure';
 import GetTreasureModal from '../../components/ARComponents/GetTreasureModal';
+import StyledTextInput from '../../styles/StyledTextInput';
+import ButtonFlat from '../../components/Button/ButtonFlat';
+import WebView from 'react-native-webview';
 
 const background = require('../../assets/images/AdventureBackground.jpg');
 const CameraIcon = require('../../assets/icons/CameraIcon.png');
@@ -49,6 +52,9 @@ const AdventureScreen = () => {
   const [isTreasureOpen, setIsTreasureOpen] = useState<boolean>(false);
 
   const hasTreasure = useTreasureStore(state => state.hasTreasure);
+
+  const webViewRef = useRef(null);
+  const [inputValue, setInputValue] = useState('1');
 
   useEffect(() => {
     setIsCameraOpen(false);
@@ -139,6 +145,13 @@ const AdventureScreen = () => {
     CameraModal = require('../../components/ARComponents/CameraModal').default;
   }
 
+  const sendId = () => {
+    const id = parseInt(inputValue, 10);
+    if (webViewRef.current && id > 0 && id < 46) {
+      webViewRef.current.postMessage(JSON.stringify({ type: 'changeId', id }));
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Animated.Image
@@ -172,6 +185,39 @@ const AdventureScreen = () => {
         </TouchableOpacity>
       </View>
       <GPSAlertModal modalVisible={modalVisible} closeModal={closeModal} />
+      <View style={{ position: 'absolute', top: 200, left: '50%' }}>
+        <StyledTextInput value={inputValue} onChangeText={setInputValue} />
+        <TouchableOpacity onPress={sendId}>
+          <ButtonFlat content="변경" />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.ttubeotWebviewContainer}>
+        <WebView
+          ref={webViewRef}
+          originWhitelist={['*']}
+          source={{ uri: 'file:///android_asset/renderRunModel.html' }}
+          style={styles.ttubeotWebview}
+          allowFileAccess={true}
+          allowFileAccessFromFileURLs={true}
+          allowUniversalAccessFromFileURLs={true}
+          onLoadStart={syntheticEvent => {
+            const { nativeEvent } = syntheticEvent;
+            console.log('WebView Start: ', nativeEvent);
+          }}
+          onError={syntheticEvent => {
+            const { nativeEvent } = syntheticEvent;
+            console.error('WebView onError: ', nativeEvent);
+          }}
+          onHttpError={syntheticEvent => {
+            const { nativeEvent } = syntheticEvent;
+            console.error('WebView onHttpError: ', nativeEvent);
+          }}
+          onMessage={event => {
+            console.log('Message from WebView:', event.nativeEvent.data);
+          }}
+        />
+      </View>
 
       {isCameraModalEnabled &&
         CameraModal &&
