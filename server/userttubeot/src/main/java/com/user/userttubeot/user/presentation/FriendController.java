@@ -124,12 +124,10 @@ public class FriendController {
     /**
      * 친구 여부를 확인하는 엔드포인트.
      */
-    @GetMapping("/check-friend/{friendId}")
+    @GetMapping("/check-friend/{userId}/{friendId}")
     public ResponseEntity<ResponseMessage> checkFriend(
-        @RequestBody FriendRequestDto friendRequestDto) {
-
-        Integer userId = friendRequestDto.getUserId();
-        Integer friendId = friendRequestDto.getFriendId();
+        @PathVariable Integer userId,
+        @PathVariable Integer friendId) {
 
         log.info("[친구 여부 확인 요청] 사용자 ID: {}, 친구 ID: {}", userId, friendId);
 
@@ -148,4 +146,5 @@ public class FriendController {
                 .body(new ResponseMessage("서버 오류로 친구 여부를 확인하지 못했습니다."));
         }
     }
+
 }
