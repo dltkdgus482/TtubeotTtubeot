@@ -40,9 +40,12 @@ public class FriendController {
     public ResponseEntity<?> sendFriendRequest(
         @RequestBody FriendRequestDto friendRequest) {
 
+        // 요청 바디 로그 출력
+        log.info("[친구 요청 바디] 요청 내용: {}", friendRequest);
+
         Integer userId = friendRequest.getUserId();
         Integer friendRequestId = friendRequest.getFriendId();
-        log.info("[친구 요청] 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendRequestId);
+        log.info("[친구 요청 바디] 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendRequestId);
 
         try {
             FriendResponseDto friendResponseDto = friendService.handleFriendRequest(userId,
@@ -58,6 +61,7 @@ public class FriendController {
                 .body(new ResponseMessage("서버 오류로 친구 요청을 전송하지 못했습니다."));
         }
     }
+
 
     /**
      * 친구 정보 리스트를 조회하는 엔드포인트.
@@ -114,12 +118,10 @@ public class FriendController {
     /**
      * 친구 여부를 확인하는 엔드포인트.
      */
-    @GetMapping("/check-friend/{friendId}")
+    @GetMapping("/check-friend/{userId}/{friendId}")
     public ResponseEntity<ResponseMessage> checkFriend(
-        @RequestBody FriendRequestDto friendRequestDto) {
-
-        Integer userId = friendRequestDto.getUserId();
-        Integer friendId = friendRequestDto.getFriendId();
+        @PathVariable Integer userId,
+        @PathVariable Integer friendId) {
 
         log.info("[친구 여부 확인 요청] 사용자 ID: {}, 친구 ID: {}", userId, friendId);
 
@@ -138,4 +140,5 @@ public class FriendController {
                 .body(new ResponseMessage("서버 오류로 친구 여부를 확인하지 못했습니다."));
         }
     }
+
 }
