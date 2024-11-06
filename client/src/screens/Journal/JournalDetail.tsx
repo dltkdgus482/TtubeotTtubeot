@@ -12,6 +12,9 @@ import Icon from '../../components/Icon';
 import styles from './JournalDetail.styles';
 import ButtonFlat from '../../components/Button/ButtonFlat';
 import AdventureRoute from '../../components/Journal/AdventureRoute';
+import { JournalDetailData } from '../../types/JournalData';
+import { getJournalDetail } from '../../utils/apis/Journal/Journal';
+import { useUser } from '../../store/user';
 
 type JournalDetailProps = {
   id: number;
@@ -24,10 +27,18 @@ const ttubeot = require('../../assets/images/TtubeotTitle.png');
 const mockTtu = require('../../assets/ttubeot/IntroTtubeotDog.png');
 
 const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
+  const { accessToken, setAccessToken } = useUser.getState();
   const flipAnimation = useRef(new Animated.Value(0)).current;
   const colorAnimation = useRef(new Animated.Value(0)).current;
   const [isFrontView, setIsFrontView] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [journalDetail, setJournalDetail] = useState<JournalDetailData | null>(
+    null,
+  );
+
+  useEffect(() => {
+    loadJournalDetail();
+  }, []);
 
   useEffect(() => {
     const listenerId = flipAnimation.addListener(({ value }) => {
@@ -60,6 +71,18 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
       { iterations: 3 },
     ).start();
   }, [colorAnimation]);
+
+  const loadJournalDetail = async () => {
+    try {
+      const res = await getJournalDetail(id, accessToken, setAccessToken);
+      console.log(res);
+      if (res) {
+        setJournalDetail(res);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const animatedColor = colorAnimation.interpolate({
     inputRange: [0, 1],
@@ -152,7 +175,8 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
                 우리마루<StyledText>와 함께한</StyledText>
               </StyledText>
               <StyledText bold style={styles.journalTitle}>
-                2024 / 10 / 30일<StyledText>의 모험 일지</StyledText>
+                {journalDetail.start_at}
+                <StyledText>의 모험 일지</StyledText>
               </StyledText>
             </View>
             <View style={styles.journalContentContainer}>
@@ -161,7 +185,9 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
                 <StyledText style={styles.journalDetail}>
                   총 모험 시간
                 </StyledText>
-                <StyledText style={styles.journalDetail}>45 분</StyledText>
+                <StyledText style={styles.journalDetail}>
+                  {journalDetail.duration} 분
+                </StyledText>
               </View>
               <View style={styles.journalDetailSection}>
                 <Icon
@@ -170,8 +196,12 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
                   size={25}
                   color="#A5C168"
                 />
-                <StyledText style={styles.journalDetail}>3,720 걸음</StyledText>
-                <StyledText style={styles.journalDetail}>약 50 kcal</StyledText>
+                <StyledText style={styles.journalDetail}>
+                  {journalDetail.adventure_steps} 걸음
+                </StyledText>
+                <StyledText style={styles.journalDetail}>
+                  약 {journalDetail.adventure_calorie} kcal
+                </StyledText>
               </View>
               <View style={styles.journalDetailSection}>
                 <Icon
@@ -181,9 +211,11 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
                   color="#A5C168"
                 />
                 <StyledText style={styles.journalDetail}>
-                  새로운 친구
+                  획득한 보물
                 </StyledText>
-                <StyledText style={styles.journalDetail}>1 명</StyledText>
+                <StyledText style={styles.journalDetail}>
+                  {journalDetail.adventure_coin}
+                </StyledText>
               </View>
               <View style={styles.journalDetailSection}>
                 <Icon
@@ -209,7 +241,11 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
         <ButtonFlat content="돌아가기" />
       </TouchableOpacity>
 
-      <AdventureRoute modalVisible={isModalOpen} closeModal={closeRouteModal} />
+      <AdventureRoute
+        modalVisible={isModalOpen}
+        closeModal={closeRouteModal}
+        gpsLog={journalDetail.gps_log}
+      />
     </SafeAreaView>
   );
 };
