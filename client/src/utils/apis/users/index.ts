@@ -38,7 +38,7 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
       if (accessToken) {
         setAccessToken(accessToken); // 유저 액세스 토큰 저장
         setIsLoggedIn(true); // 로그인 상태 설정
-        Alert.alert('로그인에 성공했습니다.'); // todo: 나중에 지워도 될 듯
+        // Alert.alert('로그인에 성공했습니다.'); // todo: 나중에 지워도 될 듯
         return loginRes.data.userId; // 로그인된 사용자 ID 반환
       } else {
         Alert.alert('토큰이 존재하지 않습니다.');
@@ -104,7 +104,7 @@ export const logoutApi = async (accessToken, setAccessToken, setIsLoggedIn) => {
   }
 
   try {
-    // const response = await authClient.post('/user/logout');
+    const response = await authClient.post('/user/logout');
 
     if (response.status === 200) {
       setIsLoggedIn(false); // 로그아웃 상태 설정
@@ -163,7 +163,33 @@ export const logoutApi = async (accessToken, setAccessToken, setIsLoggedIn) => {
 // {
 // 	"message": "사용자 검증에 실패했습니다."
 // }
-export const modifyUserInfo = async (accessToken, setAccessToken) => {
+// export const modifyUserInfo = async (accessToken, setAccessToken) => {
+//   try {
+//     const authClient = authRequest(accessToken, setAccessToken);
+//     if (!authClient) {
+//       Alert.alert('유효하지 않은 accessToken입니다.');
+//       return false;
+//     }
+
+//     const response = await authClient.patch('/user/me', {
+//       // todo: 추가
+//     });
+//   } catch (error) {
+
+//   }
+// };
+
+// 유저 정보 수정 API
+export const modifyUserInfoApi = async (
+  accessToken: string,
+  setAccessToken: (newToken: string) => void,
+  userData: {
+    user_location_agreement?: number;
+    user_goal?: number;
+    user_parent?: number;
+    password?: string;
+  }
+) => {
   try {
     const authClient = authRequest(accessToken, setAccessToken);
     if (!authClient) {
@@ -171,11 +197,34 @@ export const modifyUserInfo = async (accessToken, setAccessToken) => {
       return false;
     }
 
-    const response = await authClient.put('/user/me', {
-      // todo: 추가
-    });
-  } catch (error) {
+    const response = await authClient.patch('/user/me', userData);
 
+    if (response.status === 200) {
+      return true;
+    } else {
+      Alert.alert('유저 정보 수정에 실패했습니다. 다시 시도해주세요.');
+      return false;
+    }
+  } catch (error) {
+    console.error('유저 정보 수정 실패:', error);
+    if (error.response) {
+      switch (error.response.status) {
+        case 400:
+          Alert.alert('잘못된 요청 방식입니다.');
+          break;
+        case 401:
+          Alert.alert('잘못된 인증 정보입니다. 다시 로그인해주세요.');
+          break;
+        case 405:
+          Alert.alert('잘못된 API 메소드입니다.');
+          break;
+        default:
+          Alert.alert('유저 정보 수정 중 오류가 발생했습니다. 다시 시도해주세요.');
+      }
+    } else {
+      Alert.alert('유저 정보 수정 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+    return false;
   }
 };
 
