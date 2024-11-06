@@ -51,6 +51,9 @@ dependencies {
     // 비속어 필터 라이브러리
     implementation 'io.github.vaneproject:badwordfiltering:1.0.0'
 
+    implementation group: 'com.google.firebase', name: 'firebase-admin', version: '8.1.0'
+
+
 }
 
 tasks.named('test') {

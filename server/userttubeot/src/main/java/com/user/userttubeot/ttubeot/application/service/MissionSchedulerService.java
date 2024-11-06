@@ -22,19 +22,20 @@ public class MissionSchedulerService {
     private final MissionRepository missionRepository;
     private final UserTtubeotMissionRepository userTtubeotMissionRepository;
     private final UserTtubeotOwnershipRepository userTtubeotOwnershipRepository;
+    private final AlertServiceImpl alertService;
 
     // 매일 자정에 일일 미션 초기화
     @Scheduled(cron = "0 0 0 * * *")
     public void assignDailyMissions() {
         List<Mission> dailyMissions = getRandomMissionsByType(0); // missionType 0 (일일미션)
-        assignMissionsToActiveTtubeots(dailyMissions);
+        assignMissionsToActiveTtubeots(dailyMissions, "일일 미션이 새로 할당되었습니다.");
     }
 
     // 매주 일요일 자정에 주간 미션 초기화
     @Scheduled(cron = "0 0 0 * * SUN")
     public void assignWeeklyMissions() {
         List<Mission> weeklyMissions = getRandomMissionsByType(1);
-        assignMissionsToActiveTtubeots(weeklyMissions);
+        assignMissionsToActiveTtubeots(weeklyMissions, "주간 미션이 새로 할당되었습니다.");
     }
 
     // missionType과 missionTheme에 따라 랜덤으로 미션 선택
@@ -55,12 +56,18 @@ public class MissionSchedulerService {
     }
 
     // 상태가 0인 활성 뚜벗에게 미션을 할당
-    private void assignMissionsToActiveTtubeots(List<Mission> missions) {
+    private void assignMissionsToActiveTtubeots(List<Mission> missions,
+        String notificationMessage) {
         // 상태가 0인 유저의 뚜벗을 조회
         List<UserTtuBeotOwnership> activeTtubeots = userTtubeotOwnershipRepository.findByTtubeotStatus(
             0);
 
         for (UserTtuBeotOwnership ttubeot : activeTtubeots) {
+            String fcmToken = ttubeot.getUser().getFcmToken();
+            if (fcmToken != null && !fcmToken.isEmpty()) {
+                alertService.sendMissionNotaification(fcmToken, "미션 알림", notificationMessage);
+            }
+
             for (Mission mission : missions) {
                 // builder pattern
                 UserTtubeotMission userTtubeotMission = UserTtubeotMission.builder()
