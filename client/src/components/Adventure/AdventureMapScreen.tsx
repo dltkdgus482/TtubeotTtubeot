@@ -17,7 +17,11 @@ import Geolocation, {
 } from 'react-native-geolocation-service';
 import AdventureManager from '../../utils/apis/adventure/AdventureManager';
 
-const AdventureMapScreen = () => {
+interface AdventureMapScreenProps {
+  steps: number;
+}
+
+const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   const [location, setLocation] = useState<GeoCoordinates | null>(null);
   const [region, setRegion] = useState<Region | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -27,6 +31,15 @@ const AdventureMapScreen = () => {
   const intervalId = useRef<NodeJS.Timeout | null>(null); // Interval ID 추가
   const socketRef = useRef<AdventureManager | null>(null); // AdventureManager 인스턴스 관리
   const [isConnected, setIsConnected] = useState(true); // 소켓 연결 상태 추적
+  const currentSteps = useRef<number>(0);
+
+  // -----------------------------
+
+  useEffect(() => {
+    currentSteps.current = steps;
+  }, [steps]);
+
+  // -----------------------------
 
   // AdventureInfo의 싱글턴 인스턴스 가져오기
   useEffect(() => {
@@ -76,12 +89,12 @@ const AdventureMapScreen = () => {
         socketRef.current.sendPosition({
           lat: latitude,
           lng: longitude,
-          steps: 10,
+          steps: currentSteps.current,
         });
         console.log('Location sent:', {
           lat: latitude,
           lng: longitude,
-          steps: 10,
+          steps: currentSteps.current,
         });
       },
       error => {

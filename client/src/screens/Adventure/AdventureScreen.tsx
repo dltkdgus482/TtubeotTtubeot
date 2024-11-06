@@ -62,36 +62,40 @@ const AdventureScreen = () => {
   const [initialSteps, setInitialSteps] = useState<number>(0);
 
   useEffect(() => {
-    const requestActivityPermission = async () => {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION,
-      );
+    const stepListener = stepCounterEmitter.addListener(
+      'StepCounter',
+      event => {
+        if (initialSteps === null) {
+          setInitialSteps(event.steps);
+        } else {
+          setSteps(event.steps - initialSteps);
+        }
+      },
+    );
 
-      if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('Permission denied');
-        return;
-      }
+    return () => {
+      stepListener.remove();
     };
-
-    requestActivityPermission();
-  }, []);
+  }, [initialSteps]);
 
   const startStepCounter = async () => {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION,
+    );
+    if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+      console.log('Permission denied');
+      return;
+    }
+
+    setSteps(0);
+    setInitialSteps(null);
     RnSensorStep.start(500, 'COUNTER');
-    stepCounterEmitter.addListener('StepCounter', event => {
-      if (initialSteps === 0) {
-        setInitialSteps(event.steps);
-      } else {
-        setSteps(event.steps - initialSteps);
-      }
-    });
   };
 
   const stopStepCounter = () => {
     RnSensorStep.stop();
-    stepCounterEmitter.removeAllListeners('StepCounter');
     setSteps(0);
-    setInitialSteps(0);
+    setInitialSteps(null);
   };
 
   // ------------------------------
@@ -177,7 +181,7 @@ const AdventureScreen = () => {
 
   const renderPage = () => {
     if (adventureStart) {
-      return <AdventureMapScreen />;
+      return <AdventureMapScreen steps={steps} />;
     } else {
       return <AdventureAlert />;
     }
