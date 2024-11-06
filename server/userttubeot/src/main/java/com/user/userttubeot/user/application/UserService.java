@@ -12,6 +12,7 @@ import com.user.userttubeot.user.domain.dto.UserUpdateRequestDto;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.exception.UserAlreadyExistsException;
 import com.user.userttubeot.user.domain.exception.UserNotFoundException;
+import com.user.userttubeot.user.domain.repository.FriendRepository;
 import com.user.userttubeot.user.domain.repository.UserRepository;
 import com.user.userttubeot.user.global.util.NameValidator;
 import com.user.userttubeot.user.infrastructure.security.JWTUtil;
@@ -40,6 +41,7 @@ public class UserService {
     private final NameValidator nameValidator;
     private final TtubeotServiceImpl ttubeotService;
     private final UserTtubeotOwnershipRepository ownershipRepository;
+    private final FriendRepository friendRepository;
 
     /**
      * 회원가입 요청 DTO를 User 엔티티로 변환
@@ -188,13 +190,12 @@ public class UserService {
 
         User user = findUserById(userId);
 
-//        if (user.getUserStatus() == -1) {
-//            log.warn("이미 삭제된 사용자 - 사용자 ID: {}", userId);
-//            throw new IllegalStateException("이미 삭제된 사용자입니다.");
-//        }
+        // 사용자와 관련된 친구 관계 삭제
+        friendRepository.deleteAllByUserOrFriend(user, user);
 
+        // 사용자 삭제
         userRepository.delete(user);
-        log.info("사용자 완전 삭제 완료 - 사용자 ID: {}", userId);
+        log.info("사용자 완전 삭제 및 관련 친구 관계 삭제 완료 - 사용자 ID: {}", userId);
     }
 
     // Private helper methods
