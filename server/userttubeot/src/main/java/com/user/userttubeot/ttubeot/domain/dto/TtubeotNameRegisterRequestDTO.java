@@ -5,10 +5,10 @@ import lombok.Data;
 @Data
 public class TtubeotNameRegisterRequestDTO {
 
-    @JsonProperty("user_ttubeot_ownership_id")
+    @JsonProperty("userTtubeotOwnershipId")
     private Long userTtubeotOwnershipId;
 
-    @JsonProperty("ttubeot_name")
+    @JsonProperty("userTtubeotOwnershipName")
     private String userTtubeotOwnershipName;
 
 }
