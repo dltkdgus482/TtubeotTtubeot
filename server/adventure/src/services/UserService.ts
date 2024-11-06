@@ -38,11 +38,13 @@ class UserService {
     let requestBody = { userId, friendId };
     console.log(requestBody);
     console.log(JSON.stringify(requestBody));
-    let response = await fetch(`http://${this.baseUrl}/user/friend/tag`, {
+    let reqeust = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody)
-    });
+    }
+    console.log(reqeust);
+    let response = await fetch(`http://${this.baseUrl}/user/friend/tag`, reqeust);
     console.log(response);
 
     let result = await response.json();
