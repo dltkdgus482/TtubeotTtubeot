@@ -25,6 +25,7 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
     Alert.alert('아이디와 비밀번호를 입력해주세요.');
     return false;
   }
+
   try {
     const loginRes = await defaultRequest.post('/user/login', {
       user_phone: formData.id,

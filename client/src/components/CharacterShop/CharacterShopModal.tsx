@@ -3,7 +3,6 @@ import { View, Modal, ScrollView, Image, TouchableOpacity } from 'react-native';
 import styles from './CharacterShopModal.styles';
 import StyledText from '../../styles/StyledText';
 import Icon from 'react-native-vector-icons/AntDesign';
-import { useUser } from '../../store/user';
 import CharacterShopitemList from './CharacterShopItemList';
 
 const CharacterShopTitleContainer = require('../../assets/images/CharacterShopTitleContainer.png');

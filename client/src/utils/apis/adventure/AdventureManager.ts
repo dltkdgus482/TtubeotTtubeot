@@ -77,6 +77,12 @@ class AdventureManager {
     this.socket.on('adventure_confirm', callback);
   }
 
+  // 근처 사용자에게 친구 요청 전송 메서드
+  public sendFriendRequest(user_id: string) {
+    this.socket.emit('adventure_request', { user_id });
+    console.log('adventure_request event를 전송합니다. ', user_id);
+  }
+
   // 위치 정보 전송 메서드
   public sendPosition(data: PositionData) {
     this.socket.emit('adventure_info', data);

@@ -46,7 +46,7 @@ const NfcTagging: React.FC<NfcTaggingProps> = ({
               뚜벗
             </StyledText>
             <StyledText bold style={styles.tagSubTitle}>
-              우리마루님과 태깅하시겠습니까?
+              {bluetoothId}님과 태깅하시겠습니까?
             </StyledText>
           </View>
           <View style={styles.profileContainer}>
@@ -54,7 +54,7 @@ const NfcTagging: React.FC<NfcTaggingProps> = ({
               <ProfileImage source={profileImageSource} />
             </ProfileImageContainer>
             <StyledText bold style={styles.nameStyle}>
-              블루투스 코드: {bluetoothId}
+              상대방 이름: {bluetoothId}
             </StyledText>
           </View>
           <View style={styles.buttonContainer}>

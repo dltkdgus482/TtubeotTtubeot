@@ -17,6 +17,8 @@ import Geolocation, {
 } from 'react-native-geolocation-service';
 import AdventureManager from '../../utils/apis/adventure/AdventureManager';
 import NfcTagging from '../NFC/NfcTagging';
+import { getUsername } from '../../utils/apis/adventure/getUsername';
+import { useUser } from '../../store/user';
 
 interface AdventureMapScreenProps {
   steps: number;
@@ -30,6 +32,7 @@ interface UserProps {
 }
 
 const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
+  const { accessToken, setAccessToken } = useUser.getState();
   const [location, setLocation] = useState<GeoCoordinates | null>(null);
   const [region, setRegion] = useState<Region | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -40,8 +43,11 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   const socketRef = useRef<AdventureManager | null>(null); // AdventureManager 인스턴스 관리
   const [isConnected, setIsConnected] = useState(true); // 소켓 연결 상태 추적
   const currentSteps = useRef<number>(0);
-  const [nearbyUserList, setNearbyUserList] = useState<UserProps[]>([]);
+  const [nearbyUsers, setNearbyUsers] = useState<UserProps[]>([]);
+  const [veryNearbyUsers, setVeryNearbyUsers] = useState<UserProps[]>([]);
   const [isNfcTagged, setIsNfcTagged] = useState<boolean>(false);
+  const [opponentUsername, setOpponentUsername] = useState<string>('');
+  const [opponentUserId, setOpponentUserId] = useState<number>(0);
 
   // -----------------------------
 
@@ -57,17 +63,17 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       socketRef.current = AdventureManager.getInstance();
 
       socketRef.current.addAdventureUserListener(data => {
+        // console.log('근처 사용자 목록 수신:', data);
+
         // 근처 사용자 목록 수신 시 상태 업데이트
-        setNearbyUserList(
+        setNearbyUsers(
           Array.isArray(data.users) && data.users.length > 0
             ? data.users
             : [
-                {
-                  user_id: 1,
-                  username: 'test',
-                  ttubeot_id: 1,
-                  distance: 10,
-                },
+                // {
+                //   user_id: 1,
+                //   distance: 10,
+                // },
               ],
         );
       });
@@ -85,6 +91,8 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
 
       socketRef.current.addAdventureRequestListener(data => {
         console.log('친구 요청 수신:', data);
+        setOpponentUserId(data.user_id);
+        setOpponentUsername(data.username);
 
         // 친구 요청 수신 시 모달 띄우기
         setIsNfcTagged(true);
@@ -99,16 +107,28 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     }
   }, []);
 
-  useEffect(() => {
-    // 30m 이내 다른 사용자가 있는지 판별
-    if (nearbyUserList.some(user => user.distance < 30)) {
-      console.log('근처에 사용자가 있습니다.');
-
-      // BLE 스캔 시작
-    } else {
-      console.log('근처에 사용자가 없습니다.');
+  const fetchUsername = async (userId: number) => {
+    try {
+      const res = await getUsername(userId);
+      setOpponentUsername(res);
+    } catch (error) {
+      console.log(error);
     }
-  }, [nearbyUserList]);
+  };
+
+  useEffect(() => {
+    setVeryNearbyUsers(nearbyUsers.filter(user => user.distance < 30));
+  }, [nearbyUsers]);
+
+  useEffect(() => {
+    console.log('veryNearbyUsers:', veryNearbyUsers);
+    // BLE 이용 친구 추가 로직
+    if (veryNearbyUsers.length === 0) return;
+
+    const veryNearbyUser = veryNearbyUsers[0];
+    fetchUsername(veryNearbyUser.userId);
+    setIsNfcTagged(true);
+  }, [veryNearbyUsers]);
 
   const requestLocationPermission = async (): Promise<boolean> => {
     try {
@@ -159,11 +179,6 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
         setLoading(false);
 
         socketRef.current.sendPosition({
-          lat: latitude,
-          lng: longitude,
-          steps: currentSteps.current,
-        });
-        console.log('Location sent:', {
           lat: latitude,
           lng: longitude,
           steps: currentSteps.current,
@@ -225,11 +240,16 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
               {region ? (
                 <>
                   <StyledText bold style={styles.nearbyUserList}>
-                    근처 사용자 수:{' '}
+                    {/* 근처 사용자 수:{' '}
                     {nearbyUserList && nearbyUserList.length
                       ? nearbyUserList.length
                       : 0}{' '}
-                    명
+                    명 */}
+                    팔콘으로부터의 거리:{' '}
+                    {nearbyUsers && nearbyUsers.length
+                      ? nearbyUsers[0].distance.toFixed(2)
+                      : 0}
+                    {'m'}
                   </StyledText>
                   <MapView
                     ref={mapRef}
@@ -259,13 +279,13 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
           )}
         </View>
       </View>
-      {isNfcTagged && (
+      {isNfcTagged && opponentUsername !== '' && (
         <NfcTagging
           visible={isNfcTagged}
           onClose={() => {
             setIsNfcTagged(false);
           }}
-          bluetoothId={'Falcon'}
+          bluetoothId={opponentUsername}
         />
       )}
     </SafeAreaView>

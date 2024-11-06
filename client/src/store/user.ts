@@ -26,21 +26,21 @@ interface UserState {
 
 // AsyncStorage를 zustand persist에 맞게 래핑하는 함수
 const asyncStorageWrapper: PersistStorage<UserState> = {
-  getItem: async (name) => {
+  getItem: async name => {
     const value = await AsyncStorage.getItem(name);
     return value ? JSON.parse(value) : null;
   },
   setItem: async (name, value) => {
     await AsyncStorage.setItem(name, JSON.stringify(value));
   },
-  removeItem: async (name) => {
+  removeItem: async name => {
     await AsyncStorage.removeItem(name);
   },
 };
 
 export const useUser = create<UserState>()(
   persist(
-    (set) => ({
+    set => ({
       user: {
         userId: '',
         userName: '',
@@ -55,9 +55,16 @@ export const useUser = create<UserState>()(
       isLoggedIn: false,
       accessToken: null,
 
-      setUser: (user: User) => set(() => ({ user })),
+      setUser: (updatedProperties: Partial<User>) =>
+        set(state => ({
+          user: {
+            ...state.user,
+            ...updatedProperties,
+          },
+        })),
       setIsLoggedIn: (status: boolean) => set(() => ({ isLoggedIn: status })),
-      setAccessToken: (token: string | null) => set(() => ({ accessToken: token })),
+      setAccessToken: (token: string | null) =>
+        set(() => ({ accessToken: token })),
 
       // 로그아웃 시 또는 필요할 때 사용자 정보 지우기
       clearUser: () =>
@@ -80,6 +87,6 @@ export const useUser = create<UserState>()(
     {
       name: 'user-storage', // AsyncStorage 키 이름
       storage: asyncStorageWrapper, // AsyncStorage 래퍼 사용
-    }
-  )
+    },
+  ),
 );
