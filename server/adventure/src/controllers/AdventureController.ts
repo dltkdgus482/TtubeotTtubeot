@@ -163,7 +163,9 @@ export class AdventureController {
 
       socket.disconnect();
 
-      this.imageGenService.generateImage(adventureLog);
+      await this.imageGenService.generateImage(adventureLog);
+
+      // TODO: 여기 FCM 관련 호출 들어가면 됨당
     } catch (error) {
       console.error("Error in handleEndAdventure:", error);
       socket.emit("error", { message: "Failed to end adventure" });
