@@ -47,6 +47,8 @@ public class FriendController {
         headers.forEach((key, value) -> log.info("Header '{}': {}", key, value));
 
         // 요청 바디 로그 출력
+        log.info("[친구 요청 바디] 요청 내용: {}", friendRequest);
+
         Integer userId = friendRequest.getUserId();
         Integer friendRequestId = friendRequest.getFriendId();
         log.info("[친구 요청 바디] 사용자 ID: {}, 친구 요청 대상 ID: {}", userId, friendRequestId);
