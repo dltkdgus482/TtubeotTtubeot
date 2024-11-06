@@ -90,6 +90,7 @@ export class AdventureController {
 
       if (isFriend) {
         let reward = await this.userService.tagFriend(userId, oppositeUserId);
+        console.log("reward: ", reward);
 
         socket.emit("adventure_reward", { "type": 1, "reward": reward });
 

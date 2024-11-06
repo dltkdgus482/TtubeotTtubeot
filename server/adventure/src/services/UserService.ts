@@ -37,6 +37,7 @@ class UserService {
 
   async tagFriend(userId: number, friendId: number): Promise<number> {
     let requestBody = { userId, friendId };
+    console.log(requestBody);
     let response = await fetch(`http://${this.baseUrl}/user/friend/tag`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
