@@ -42,8 +42,10 @@ class UserService {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody)
     });
+    console.log(response);
 
     let result = await response.json();
+    console.log(result);
 
     return result.coin || 0;
   }
