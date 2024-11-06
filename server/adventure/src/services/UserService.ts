@@ -25,11 +25,9 @@ class UserService {
   }
 
   async checkFriendship(userId: number, friendId: number): Promise<boolean> {
-    let requestBody = { userId, friendId };
-    let response = await fetch(`http://${this.baseUrl}/user/friend/check-friend`, {
+    let response = await fetch(`http://${this.baseUrl}/user/friend/check-friend/${userId}/${friendId}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody)
     });
     console.log("checkFriendship response: ", response);
 
