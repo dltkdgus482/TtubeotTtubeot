@@ -17,6 +17,9 @@ type Location = {
   longitude: number;
 };
 
+const startIcon = require('../../assets/icons/start.png');
+const finishIcon = require('../../assets/icons/finish.png');
+
 const AdventureRoute = ({ modalVisible, closeModal }: AdventureRouteProps) => {
   const mapRef = useRef<MapView>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -88,6 +91,7 @@ const AdventureRoute = ({ modalVisible, closeModal }: AdventureRouteProps) => {
                     longitude: locations[0].longitude,
                   }}
                   title="시작"
+                  icon={startIcon}
                 />
                 <Marker
                   coordinate={{
@@ -95,6 +99,7 @@ const AdventureRoute = ({ modalVisible, closeModal }: AdventureRouteProps) => {
                     longitude: locations[locations.length - 1].longitude,
                   }}
                   title="종료"
+                  icon={finishIcon}
                 />
               </MapView>
             </MaskedView>
