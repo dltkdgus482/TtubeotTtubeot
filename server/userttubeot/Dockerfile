@@ -14,6 +14,6 @@ WORKDIR /app
 
 COPY --from=build /app/build/libs/*-SNAPSHOT.jar app.jar
 
-COPY src/main/resources/ttubeotttubeot-firebase-key.json /app/config/ttubeotttubeot-firebase-key.json
+COPY src/main/resources/ttubeotttubeot-firebase-key.json src/main/resources/ttubeotttubeot-firebase-key.json
 
 CMD ["java", "-jar", "app.jar"]
