@@ -135,7 +135,9 @@ public class FriendService {
 
     private void saveFriendRelationship(Integer userId, Integer friendId) {
         FriendId friendIdEntity = new FriendId(userId, friendId);
-        Friend friend = Friend.builder().id(friendIdEntity).build();
+        User user = userService.findUserById(userId);
+        User friendUser = userService.findUserById(friendId);
+        Friend friend = Friend.builder().id(friendIdEntity).user(user).friend(friendUser).build();
         friendRepository.save(friend);
     }
 
