@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   ImageBackground,
@@ -16,6 +16,7 @@ import { useUser } from '../../store/user';
 import { logoutApi } from '../../utils/apis/users';
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { modifyUserInfoApi } from '../../utils/apis/users';
 
 const background = require('../../assets/images/IntroBackground.png');
 const settings1 = require('../../assets/icons/SettingsIcon1.png');
@@ -25,21 +26,41 @@ const settings4 = require('../../assets/icons/SettingsIcon4.png');
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-  const { setAccessToken, setIsLoggedIn, accessToken, clearUser } =
+  const { user, setUser, setAccessToken, setIsLoggedIn, accessToken, clearUser } =
     useUser.getState();
-  const [isGPSOn, setIsGPSOn] = useState<boolean>(false);
-  const [isPushOn, setIsPushOn] = useState<boolean>(false);
+  const [isGPSOn, setIsGPSOn] = useState<boolean>(!!user.userLocationAgreement);
+  const [isPushOn, setIsPushOn] = useState<boolean>(!!user.userPushNotificationAgreement);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  // TODO: 위치정보는 회원 db에 저장
+  useEffect(() => {
+    setIsPushOn(!!user.userPushNotificationAgreement);
+  }, [user.userPushNotificationAgreement]);
 
-  const handlePressGPSToggle = () => {
-    setIsGPSOn(!isGPSOn);
+  const handlePressGPSToggle = async () => {
+    const newLocationAgreement = isGPSOn ? 0 : 1;
+
+    setIsGPSOn(!isGPSOn); // 로컬 상태 업데이트
+
+    try {
+      const success = await modifyUserInfoApi(accessToken, setAccessToken, {
+        user_location_agreement: newLocationAgreement,
+      });
+
+      if (success) {
+        setUser({ ...user, userLocationAgreement: newLocationAgreement });
+      }
+    } catch (error) {
+      console.error('위치 정보 동의 업데이트 실패:', error);
+      Alert.alert('위치 정보 동의 업데이트 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
   };
 
-  // TODO: 상태관리
-
   const handlePressPushToggle = () => {
+    const newPushAgreement = isPushOn ? 0 : 1;
+    setUser({
+      ...user,
+      userPushNotificationAgreement: newPushAgreement,
+    });
     setIsPushOn(!isPushOn);
   };
 
@@ -74,7 +95,7 @@ const ProfileScreen = () => {
           source={require('../../assets/icons/tempProfile.png')}
         />
         <StyledText bold style={styles.nickName}>
-          참참참
+          {user.userName}
         </StyledText>
       </View>
       <View style={styles.settingsContainer}>

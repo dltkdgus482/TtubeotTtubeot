@@ -59,7 +59,7 @@ const LoginScreen = () => {
           userId: userId,
           userName: userInfo.user_name,
           phoneNumber: userInfo.user_phone,
-          userLocationAgreement: userInfo.user_location_agreement,
+          userLocationAgreement: userInfo.user_location_agreement ? 1 : 0,
           userPushNotificationAgreement: user.userPushNotificationAgreement, // 상태에 저장되어 있던 값 그대로
           userType: 0, // 기본값 (자녀/부모 등 사용자 유형)
           goal: userInfo.user_goal,

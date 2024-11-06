@@ -26,7 +26,6 @@ export const setupInterceptors = (
     if (accessToken && typeof accessToken === 'string') {
       try {
         const { exp } = jwtDecode(accessToken);
-        console.log('이거야!!!!!!!!', accessToken);
         // 토큰 만료 확인 후 갱신
         if (exp && Date.now() >= exp * 1000) {
           try {
