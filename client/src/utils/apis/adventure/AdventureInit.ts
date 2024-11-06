@@ -13,7 +13,7 @@ interface InitMessage {
 
 const useAdventureSocket = () => {
   const socketRef = useRef<Socket | null>(null);
-  const { accessToken, setAccessToken } = useUser();
+  const { accessToken, setAccessToken } = useUser.getState();
 
   const connectSocket = useCallback(async () => {
     if (socketRef.current !== null) {
@@ -28,15 +28,15 @@ const useAdventureSocket = () => {
       return;
     }
 
-    const updatedToken = `Bearer ${accessToken}`;
-
     socketRef.current = io(SOCKET_SERVER_URL, {
       path: SOCKET_PATH,
       transports: ['websocket'],
     });
 
+    const updatedToken = useUser.getState().accessToken;
+
     socketRef.current.on('connect', () => {
-      const initMessage: InitMessage = { token: updatedToken };
+      const initMessage: InitMessage = { token: `Bearer ${updatedToken}` };
       socketRef.current?.emit('adventure_init', initMessage);
       console.log('소켓 연결 수립 및 adventure_init 이벤트 전송:', initMessage);
 

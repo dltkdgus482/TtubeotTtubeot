@@ -1,5 +1,6 @@
 import { defaultRequest, authRequest } from '../request';
 import { Alert } from 'react-native';
+import { SERVER_URL } from '@env';
 
 // [POST] '/user/login'
 // 로그인
@@ -19,6 +20,7 @@ import { Alert } from 'react-native';
 // 	"userId": 1
 // }
 export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
+  // console.log(SERVER_URL);
   if (!formData.id || !formData.password) {
     Alert.alert('아이디와 비밀번호를 입력해주세요.');
     return false;
@@ -104,15 +106,15 @@ export const logoutApi = async (accessToken, setAccessToken, setIsLoggedIn) => {
   }
 
   try {
-    // const response = await authClient.post('/user/logout');
+    const response = await authClient.post('/user/logout');
 
     if (response.status === 200) {
       setIsLoggedIn(false); // 로그아웃 상태 설정
     } else {
       throw new Error('로그아웃에 실패했습니다. 다시 시도해주세요.');
     }
-    // setIsLoggedIn(false);
-    // setAccessToken(null);
+    setIsLoggedIn(false);
+    setAccessToken(null);
   } catch (error) {
     if (error.response) {
       switch (error.response.status) {
@@ -174,9 +176,7 @@ export const modifyUserInfo = async (accessToken, setAccessToken) => {
     const response = await authClient.put('/user/me', {
       // todo: 추가
     });
-  } catch (error) {
-
-  }
+  } catch (error) {}
 };
 
 // Header

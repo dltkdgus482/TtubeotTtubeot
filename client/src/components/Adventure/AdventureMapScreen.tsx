@@ -16,9 +16,17 @@ import Geolocation, {
   GeoWatchOptions,
 } from 'react-native-geolocation-service';
 import AdventureManager from '../../utils/apis/adventure/AdventureManager';
+import NfcTagging from '../NFC/NfcTagging';
 
 interface AdventureMapScreenProps {
   steps: number;
+}
+
+interface UserProps {
+  user_id: number;
+  username: string;
+  ttubeot_id: number;
+  distance: number;
 }
 
 const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
@@ -32,6 +40,8 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   const socketRef = useRef<AdventureManager | null>(null); // AdventureManager 인스턴스 관리
   const [isConnected, setIsConnected] = useState(true); // 소켓 연결 상태 추적
   const currentSteps = useRef<number>(0);
+  const [nearbyUserList, setNearbyUserList] = useState<UserProps[]>([]);
+  const [isNfcTagged, setIsNfcTagged] = useState<boolean>(false);
 
   // -----------------------------
 
@@ -45,8 +55,60 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   useEffect(() => {
     if (socketRef.current === null) {
       socketRef.current = AdventureManager.getInstance();
+
+      socketRef.current.addAdventureUserListener(data => {
+        // 근처 사용자 목록 수신 시 상태 업데이트
+        setNearbyUserList(
+          Array.isArray(data.users) && data.users.length > 0
+            ? data.users
+            : [
+                {
+                  user_id: 1,
+                  username: 'test',
+                  ttubeot_id: 1,
+                  distance: 10,
+                },
+              ],
+        );
+      });
+
+      socketRef.current.addAdventureResultListener(data => {
+        console.log('모험 결과 수신:', data);
+
+        // 모험 결과 수신 시 모달 띄우기
+      });
+
+      // socketRef.current.addAdventureParkListener(data => {
+      // console.log('공원 정보 수신:', data);
+      // 공원 목록 수신 시 지도에 마커 추가
+      // });
+
+      socketRef.current.addAdventureRequestListener(data => {
+        console.log('친구 요청 수신:', data);
+
+        // 친구 요청 수신 시 모달 띄우기
+        setIsNfcTagged(true);
+      });
+
+      socketRef.current.addAdventureConfirmListener(data => {
+        console.log('친구 요청 응답 수신:', data);
+
+        // 친구 요청 응답 수신 시 모달 닫기
+        setIsNfcTagged(false);
+      });
     }
   }, []);
+
+  useEffect(() => {
+    // 30m 이내 다른 사용자가 있는지 판별
+    if (nearbyUserList.some(user => user.distance < 30)) {
+      console.log('근처에 사용자가 있습니다.');
+
+      // BLE 스캔 시작
+    } else {
+      console.log('근처에 사용자가 없습니다.');
+    }
+  }, [nearbyUserList]);
 
   const requestLocationPermission = async (): Promise<boolean> => {
     try {
@@ -62,7 +124,7 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       );
       return granted === PermissionsAndroid.RESULTS.GRANTED;
     } catch (err) {
-      console.warn(err);
+      console.log(err);
       return false;
     }
   };
@@ -78,11 +140,21 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
         const { latitude, longitude } = position.coords;
         setLocation(position.coords);
 
-        setRegion({
-          latitude,
-          longitude,
-          latitudeDelta: 0.02,
-          longitudeDelta: 0.01,
+        setRegion(prevRegion => {
+          if (prevRegion === null) {
+            return {
+              latitude,
+              longitude,
+              latitudeDelta: 0.01, // 초기 줌 레벨
+              longitudeDelta: 0.01, // 초기 줌 레벨
+            };
+          }
+
+          return {
+            ...prevRegion,
+            latitude,
+            longitude,
+          };
         });
         setLoading(false);
 
@@ -106,35 +178,11 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     );
   }, [isConnected]);
 
-  const startWatchingLocation = () => {
-    const watchOptions: GeoWatchOptions = {
-      enableHighAccuracy: true,
-      // distanceFilter: 10,
-      interval: 2000, // 2초
-      fastestInterval: 2000,
-    };
-
-    watchId.current = Geolocation.watchPosition(
-      position => {
-        setLocation(position.coords);
-      },
-      error => {
-        Alert.alert('위치 정보 오류', error.message);
-        setErrorMessage('위치 정보를 가져오는 데 실패했습니다.');
-        setLoading(false);
-      },
-      watchOptions,
-    );
-  };
-
   useEffect(() => {
     const initializeLocation = async () => {
       const hasPermission = await requestLocationPermission();
       if (hasPermission) {
         getCurrentLocation();
-        // startWatchingLocation();
-
-        // 2초마다 getCurrentLocation 호출하여 위치 전송
         intervalId.current = setInterval(getCurrentLocation, 2000);
       } else {
         setErrorMessage('위치 권한이 없습니다.');
@@ -145,27 +193,12 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     initializeLocation();
 
     return () => {
-      // if (watchId.current !== null) {
-      //   clearInterval(intervalId.current);
-      //   Geolocation.clearWatch(watchId.current);
-      // }
       if (intervalId.current !== null) {
         clearInterval(intervalId.current);
         intervalId.current = null;
       }
     };
   }, []);
-
-  const handleDisconnect = () => {
-    setIsConnected(false);
-    if (intervalId.current) {
-      clearInterval(intervalId.current);
-      intervalId.current = null;
-    }
-  };
-
-  // TODO: 로딩창 커스터마이즈
-  // TODO: 공원 리스트
 
   return (
     <SafeAreaView style={styles.container}>
@@ -190,23 +223,35 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
                 />
               }>
               {region ? (
-                <MapView
-                  ref={mapRef}
-                  provider={PROVIDER_GOOGLE}
-                  region={region}
-                  customMapStyle={mapStyle}
-                  style={styles.map}>
-                  {location && (
-                    <Marker
-                      coordinate={{
-                        latitude: location.latitude,
-                        longitude: location.longitude,
-                      }}
-                      title="현재위치"
-                      icon={require('../../assets/ttubeot/mockTtu.png')}
-                    />
-                  )}
-                </MapView>
+                <>
+                  <StyledText bold style={styles.nearbyUserList}>
+                    근처 사용자 수:{' '}
+                    {nearbyUserList && nearbyUserList.length
+                      ? nearbyUserList.length
+                      : 0}{' '}
+                    명
+                  </StyledText>
+                  <MapView
+                    ref={mapRef}
+                    provider={PROVIDER_GOOGLE}
+                    region={region}
+                    customMapStyle={mapStyle}
+                    style={styles.map}
+                    onRegionChangeComplete={updatedRegion => {
+                      setRegion(updatedRegion);
+                    }}>
+                    {location && (
+                      <Marker
+                        coordinate={{
+                          latitude: location.latitude,
+                          longitude: location.longitude,
+                        }}
+                        title="현재위치"
+                        icon={require('../../assets/ttubeot/mockTtu.png')}
+                      />
+                    )}
+                  </MapView>
+                </>
               ) : (
                 <StyledText>현재 위치를 불러올 수 없습니다.</StyledText>
               )}
@@ -214,6 +259,15 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
           )}
         </View>
       </View>
+      {isNfcTagged && (
+        <NfcTagging
+          visible={isNfcTagged}
+          onClose={() => {
+            setIsNfcTagged(false);
+          }}
+          bluetoothId={'Falcon'}
+        />
+      )}
     </SafeAreaView>
   );
 };

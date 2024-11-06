@@ -42,7 +42,6 @@ const BLEModal: React.FC<BLEModalProps> = ({ modalVisible, closeBLEModal }) => {
   const [isAdvertising, setIsAdvertising] = useState<boolean>(false);
   const [devices, setDevices] = useState<Peripheral[]>([]);
   const [bluetoothId, setBluetoothId] = useState<string>('');
-
   const devicesRef = useRef<Peripheral[]>([]);
 
   const closeTagModal = async () => {
@@ -75,12 +74,12 @@ const BLEModal: React.FC<BLEModalProps> = ({ modalVisible, closeBLEModal }) => {
 
     console.log(devicesRef.current);
 
+    if (devicesRef.current.length === 0) return;
+
     setTimeout(() => {
       const sortedDevices = [...devicesRef.current].sort(
         (a, b) => (b.rssi || -Infinity) - (a.rssi || -Infinity),
       );
-
-      console.log('devices', sortedDevices);
 
       if (sortedDevices.length === 0) {
         setBluetoothId('No Device Found');

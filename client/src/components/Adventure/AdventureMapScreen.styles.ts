@@ -37,6 +37,13 @@ const styles = StyleSheet.create({
     borderWidth: 5,
     borderRadius: 25,
   },
+  nearbyUserList: {
+    position: 'absolute',
+    fontSize: 20,
+    zIndex: 10000,
+    top: 40,
+    left: 15,
+  },
 });
 
 export default styles;
