@@ -188,7 +188,7 @@ export const modifyUserInfoApi = async (
     user_goal?: number;
     user_parent?: number;
     password?: string;
-  }
+  },
 ) => {
   try {
     const authClient = authRequest(accessToken, setAccessToken);
@@ -197,35 +197,10 @@ export const modifyUserInfoApi = async (
       return false;
     }
 
-    const response = await authClient.patch('/user/me', userData);
-
-    if (response.status === 200) {
-      return true;
-    } else {
-      Alert.alert('유저 정보 수정에 실패했습니다. 다시 시도해주세요.');
-      return false;
-    }
-  } catch (error) {
-    console.error('유저 정보 수정 실패:', error);
-    if (error.response) {
-      switch (error.response.status) {
-        case 400:
-          Alert.alert('잘못된 요청 방식입니다.');
-          break;
-        case 401:
-          Alert.alert('잘못된 인증 정보입니다. 다시 로그인해주세요.');
-          break;
-        case 405:
-          Alert.alert('잘못된 API 메소드입니다.');
-          break;
-        default:
-          Alert.alert('유저 정보 수정 중 오류가 발생했습니다. 다시 시도해주세요.');
-      }
-    } else {
-      Alert.alert('유저 정보 수정 중 오류가 발생했습니다. 다시 시도해주세요.');
-    }
-    return false;
-  }
+    const response = await authClient.put('/user/me', {
+      // todo: 추가
+    });
+  } catch (error) {}
 };
 
 // Header
