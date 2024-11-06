@@ -7,6 +7,11 @@ import com.user.userttubeot.ttubeot.domain.model.UserTtubeotMission;
 import com.user.userttubeot.ttubeot.domain.repository.MissionRepository;
 import com.user.userttubeot.ttubeot.domain.repository.UserTtubeotMissionRepository;
 import com.user.userttubeot.ttubeot.domain.repository.UserTtubeotOwnershipRepository;
+import com.user.userttubeot.user.domain.entity.User;
+import com.user.userttubeot.user.domain.repository.UserRepository;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +28,21 @@ public class MissionSchedulerService {
     private final UserTtubeotMissionRepository userTtubeotMissionRepository;
     private final UserTtubeotOwnershipRepository userTtubeotOwnershipRepository;
     private final AlertServiceImpl alertService;
+    private final UserRepository userRepository;
+
+    // 매일 일정시간에 모든 유저에게 테스트 알림 전송
+    @Scheduled(cron = "00 30 00 * * *")
+    public void sendTestNotification() {
+        // 모든 유저 조회
+        List<User> users = userRepository.findAll();
+
+        for (User user : users) {
+            String fcmToken = user.getFcmToken();
+            if (fcmToken != null && !fcmToken.isEmpty()) {
+                alertService.sendMissionNotaification(fcmToken, "482야 레전드 불꺼라", "불끄고 자세요 여러분");
+            }
+        }
+    }
 
     // 매일 자정에 일일 미션 초기화
     @Scheduled(cron = "0 0 0 * * *")
@@ -30,6 +50,8 @@ public class MissionSchedulerService {
         List<Mission> dailyMissions = getRandomMissionsByType(0); // missionType 0 (일일미션)
         assignMissionsToActiveTtubeots(dailyMissions, "일일 미션이 새로 할당되었습니다.");
     }
+
+
 
     // 매주 일요일 자정에 주간 미션 초기화
     @Scheduled(cron = "0 0 0 * * SUN")
