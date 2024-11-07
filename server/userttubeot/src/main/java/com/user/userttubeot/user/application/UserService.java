@@ -106,6 +106,12 @@ public class UserService {
         // 사용자 이름 유효성 검사
         nameValidator.validate(userName);
 
+        // 사용자 이름 중복 여부 확인
+        if (!isUsernameAvailable(userName)) {
+            log.warn("닉네임 중복 오류 - 이미 존재하는 닉네임: {}", userName);
+            throw new UserAlreadyExistsException("이미 사용 중인 닉네임입니다.");
+        }
+
         // 비밀번호 유효성 검사
         validatePassword(userPassword);
 
