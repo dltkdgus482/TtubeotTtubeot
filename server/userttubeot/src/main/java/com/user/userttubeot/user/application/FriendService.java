@@ -102,6 +102,25 @@ public class FriendService {
         return new ResponseMessage("코인이 성공적으로 전송되었습니다. 수신자에게 전송된 코인: " + coinAmount);
     }
 
+    /**
+     * 친구 관계를 제거하는 메서드. 양방향 관계를 모두 삭제.
+     */
+    public void removeFriend(Integer userId, Integer friendId) {
+        log.info("친구 관계 제거 시작 - 사용자 ID: {}, 친구 ID: {}", userId, friendId);
+
+        // 사용자와 친구 간의 관계가 존재하는지 확인
+        if (!areFriends(userId, friendId)) {
+            log.warn("친구 관계가 존재하지 않음 - 사용자 ID: {}, 친구 ID: {}", userId, friendId);
+            throw new FriendNotFoundException("친구 관계가 존재하지 않습니다.");
+        }
+
+        // 양방향 친구 관계 삭제
+        friendRepository.deleteById(new FriendId(userId, friendId));
+        friendRepository.deleteById(new FriendId(friendId, userId));
+
+        log.info("친구 관계 제거 완료 - 사용자 ID: {}, 친구 ID: {}", userId, friendId);
+    }
+
     private Friend findFriend(Integer userId, Integer friendId) {
         return friendRepository.findById(new FriendId(userId, friendId))
             .orElseThrow(() -> new FriendNotFoundException("친구 관계가 존재하지 않습니다."));
