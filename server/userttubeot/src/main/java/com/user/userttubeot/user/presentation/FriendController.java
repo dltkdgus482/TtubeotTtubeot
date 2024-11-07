@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -120,8 +121,8 @@ public class FriendController {
      */
     @GetMapping("/check-friend/{userId}/{friendId}")
     public ResponseEntity<ResponseMessage> checkFriend(
-        @PathVariable Integer userId,
-        @PathVariable Integer friendId) {
+        @PathVariable("userId") Integer userId,
+        @PathVariable("friendId") Integer friendId) {
 
         log.info("[친구 여부 확인 요청] 사용자 ID: {}, 친구 ID: {}", userId, friendId);
 
@@ -140,5 +141,28 @@ public class FriendController {
                 .body(new ResponseMessage("서버 오류로 친구 여부를 확인하지 못했습니다."));
         }
     }
+
+    @DeleteMapping("/{userId}/{friendId}")
+    public ResponseEntity<ResponseMessage> deleteFriend(
+        @PathVariable("userId") Integer userId,
+        @PathVariable("friendId") Integer friendId
+    ) {
+        log.info("친구 관계 삭제 요청 시작 - 사용자 ID: {}, 친구 ID: {}", userId, friendId);
+
+        try {
+            friendService.removeFriend(userId, friendId);
+            log.info("친구 관계 삭제 성공 - 사용자 ID: {}, 친구 ID: {}", userId, friendId);
+            return ResponseEntity.ok(new ResponseMessage("친구 관계가 성공적으로 삭제되었습니다."));
+        } catch (FriendNotFoundException e) {
+            log.warn("친구 관계 삭제 실패 - 사용자 ID: {}, 친구 ID: {}: {}", userId, friendId, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ResponseMessage("친구 관계가 존재하지 않습니다."));
+        } catch (Exception e) {
+            log.error("친구 관계 삭제 중 예외 발생 - 사용자 ID: {}, 친구 ID: {}", userId, friendId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseMessage("친구 관계 삭제 중 오류가 발생했습니다."));
+        }
+    }
+
 
 }
