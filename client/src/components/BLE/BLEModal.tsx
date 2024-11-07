@@ -171,11 +171,7 @@ const BLEModal: React.FC<BLEModalProps> = ({ modalVisible, closeBLEModal }) => {
     const messageBytes = stringToByteArray(message);
 
     BLEAdvertiser.setCompanyId(0x004c);
-    BLEAdvertiser.broadcast(
-      '12345678-1234-5678-1234-56789abcdef0',
-      messageBytes,
-      {},
-    )
+    BLEAdvertiser.broadcast('', messageBytes, {})
       .then(success => console.log('Broadcast success', success))
       .catch(error => console.error('Broadcast error', error));
   };

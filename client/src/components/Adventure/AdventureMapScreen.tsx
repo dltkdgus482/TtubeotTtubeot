@@ -4,21 +4,51 @@ import {
   PermissionsAndroid,
   Alert,
   ActivityIndicator,
+  Modal,
+  Text,
+  Button,
 } from 'react-native';
+import {
+  decimalToAscii,
+  asciiToDecimal,
+  stringToByteArray,
+  byteArrayToString,
+  requestPermissions,
+} from '../../utils/apis/Ble';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaskedView from '@react-native-masked-view/masked-view';
 import styles from './AdventureMapScreen.styles';
 import StyledText from '../../styles/StyledText';
 import { mapStyle } from '../../styles/mapStyle';
 import MapView, { PROVIDER_GOOGLE, Marker, Region } from 'react-native-maps';
-import Geolocation, {
-  GeoCoordinates,
-  GeoWatchOptions,
-} from 'react-native-geolocation-service';
+import Geolocation, { GeoCoordinates } from 'react-native-geolocation-service';
 import AdventureManager from '../../utils/apis/adventure/AdventureManager';
 import NfcTagging from '../NFC/NfcTagging';
 import { getUsername } from '../../utils/apis/adventure/getUsername';
 import { useUser } from '../../store/user';
+
+// ------------------------------
+
+// BLE 관련 모듈 추가
+
+import BLEAdvertiser from 'react-native-ble-advertiser';
+import { SERVICE_UUID } from '@env';
+
+import { NativeModules, NativeEventEmitter } from 'react-native';
+
+import BleManager, {
+  BleScanMode,
+  BleScanMatchMode,
+  Peripheral,
+  BleScanCallbackType,
+} from 'react-native-ble-manager';
+
+const BleManagerModule = NativeModules.BleManager;
+const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
+
+global.Buffer = require('buffer').Buffer;
+
+// ------------------------------
 
 interface AdventureMapScreenProps {
   steps: number;
@@ -47,9 +77,136 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   const [veryNearbyUsers, setVeryNearbyUsers] = useState<UserProps[]>([]);
   const [isNfcTagged, setIsNfcTagged] = useState<boolean>(false);
   const [opponentUsername, setOpponentUsername] = useState<string>('');
-  const [opponentUserId, setOpponentUserId] = useState<number>(0);
+  const [opponentUserId, setOpponentUserId] = useState<number>(-1);
 
-  // -----------------------------
+  // BLE 모드 관련 상태 추가
+  const [isAdvertising, setIsAdvertising] = useState<boolean>(false);
+  const [isScanning, setIsScanning] = useState<boolean>(false);
+  const [devices, setDevices] = useState<Peripheral[]>([]);
+  const devicesRef = useRef<Peripheral[]>([]);
+
+  // BLE 관련 권한 요청
+  useEffect(() => {
+    BleManager.start({ showAlert: false }).then(() => {
+      console.log('BleManager is started');
+    });
+
+    requestPermissions();
+
+    bleManagerEmitter.addListener('BleManagerStopScan', stopScanning);
+    bleManagerEmitter.addListener(
+      'BleManagerDiscoverPeripheral',
+      discoverPeripheral,
+    );
+
+    return () => {
+      bleManagerEmitter.removeAllListeners('BleManagerStopScan');
+      bleManagerEmitter.removeAllListeners('BleManagerDiscoverPeripheral');
+    };
+  }, []);
+
+  // BLE 관련 함수 추가
+  const startScanning = (): void => {
+    if (isScanning === true) return;
+
+    setIsScanning(true);
+    BleManager.scan([], 5, true, {
+      matchMode: BleScanMatchMode.Sticky,
+      scanMode: BleScanMode.LowLatency,
+      callbackType: BleScanCallbackType.AllMatches,
+    })
+      .then(() => {
+        console.log('startScanning');
+      })
+      .catch(error => {
+        console.log('startScanning error:', error);
+        setIsScanning(false);
+      });
+  };
+
+  const stopScanning = async (): Promise<void> => {
+    if (isScanning === false) return;
+
+    try {
+      await BleManager.stopScan();
+      setIsScanning(false);
+      console.log('stopScanning');
+    } catch (error) {
+      console.log('stopScanning error:', error);
+    }
+  };
+
+  const startAdvertising = (): void => {
+    if (isAdvertising === true) return;
+
+    setIsAdvertising(true);
+    const { user } = useUser.getState();
+    const userId = user.userId;
+    const message = decimalToAscii(userId);
+    const messageBytes = stringToByteArray(message);
+
+    BLEAdvertiser.setCompanyId(0x004c);
+    BLEAdvertiser.broadcast(SERVICE_UUID, messageBytes, {})
+      .then(() => {
+        console.log('startAdvertising');
+      })
+      .catch(error => {
+        console.log('startAdvertising error:', error);
+      });
+  };
+
+  const stopAdvertising = async (): Promise<void> => {
+    if (isAdvertising === false) return;
+
+    try {
+      await BLEAdvertiser.stopBroadcast();
+      setIsAdvertising(false);
+      console.log('stopAdvertising');
+    } catch (error) {
+      console.log('stopAdvertising error:', error);
+    }
+  };
+
+  const discoverPeripheral = async (peripheral: Peripheral) => {
+    if (peripheral.advertising.isConnectable === false) return;
+
+    if (peripheral.advertising.serviceUUIDs?.includes(SERVICE_UUID)) {
+      console.log('주변 사용자 감지', peripheral);
+
+      setDevices(prevDevices => {
+        const exists = prevDevices.some(device => device.id === peripheral.id);
+
+        if (exists === false) {
+          const updatedDevices = [...prevDevices, peripheral];
+          devicesRef.current = updatedDevices;
+          return updatedDevices;
+        }
+        return prevDevices;
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (devicesRef.current.length === 0) return;
+    console.log('useEffect devices');
+
+    const sortedDevices = [...devicesRef.current].sort(
+      (a, b) => (b.rssi || -Infinity) - (a.rssi || -Infinity),
+    );
+
+    const closestDevice = sortedDevices[0];
+    const manufactureData = closestDevice.advertising.manufacturerData['004c'];
+    const closestUserIdByteArray = byteArrayToString(manufactureData.bytes);
+    const closestUserId = asciiToDecimal(closestUserIdByteArray);
+    setOpponentUserId(closestUserId);
+
+    getUsername(closestUserId).then(username => {
+      setOpponentUsername(username);
+      setIsNfcTagged(true);
+    });
+  }, [devices]);
+
+  //------------------------------
 
   useEffect(() => {
     currentSteps.current = steps;
@@ -63,34 +220,20 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       socketRef.current = AdventureManager.getInstance();
 
       socketRef.current.addAdventureUserListener(data => {
-        // console.log('근처 사용자 목록 수신:', data);
+        console.log('addAdventureUserListener', data);
 
         // 근처 사용자 목록 수신 시 상태 업데이트
-        setNearbyUsers(
-          Array.isArray(data.users) && data.users.length > 0
-            ? data.users
-            : [
-                // {
-                //   user_id: 1,
-                //   distance: 10,
-                // },
-              ],
-        );
+        setNearbyUsers(data.users);
       });
 
       socketRef.current.addAdventureResultListener(data => {
-        console.log('모험 결과 수신:', data);
+        console.log('addAdventureResultListener:', data);
 
         // 모험 결과 수신 시 모달 띄우기
       });
 
-      // socketRef.current.addAdventureParkListener(data => {
-      // console.log('공원 정보 수신:', data);
-      // 공원 목록 수신 시 지도에 마커 추가
-      // });
-
       socketRef.current.addAdventureRequestListener(data => {
-        console.log('친구 요청 수신:', data);
+        console.log('addAdventureRequestListener', data);
         setOpponentUserId(data.user_id);
         setOpponentUsername(data.username);
 
@@ -99,7 +242,7 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       });
 
       socketRef.current.addAdventureConfirmListener(data => {
-        console.log('친구 요청 응답 수신:', data);
+        console.log('친구 요청을 수신합니다', data);
 
         // 친구 요청 응답 수신 시 모달 닫기
         setIsNfcTagged(false);
@@ -117,18 +260,30 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   };
 
   useEffect(() => {
+    console.log('useEffect nearbyUsers', nearbyUsers.length);
+    // 30m 이내 사용자 필터링
     setVeryNearbyUsers(nearbyUsers.filter(user => user.distance < 30));
+
+    // 30m 이내 사용자 있을 경우 스캔, 광고 시작
+    if (nearbyUsers.length === 0) {
+      if (isScanning === true) {
+        stopScanning();
+      }
+
+      if (isAdvertising === true) {
+        stopAdvertising();
+      }
+      return;
+    }
+
+    if (isScanning === false) {
+      startScanning();
+    }
+
+    if (isAdvertising === false) {
+      startAdvertising();
+    }
   }, [nearbyUsers]);
-
-  useEffect(() => {
-    console.log('veryNearbyUsers:', veryNearbyUsers);
-    // BLE 이용 친구 추가 로직
-    if (veryNearbyUsers.length === 0) return;
-
-    const veryNearbyUser = veryNearbyUsers[0];
-    fetchUsername(veryNearbyUser.userId);
-    setIsNfcTagged(true);
-  }, [veryNearbyUsers]);
 
   const requestLocationPermission = async (): Promise<boolean> => {
     try {
@@ -215,6 +370,14 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     };
   }, []);
 
+  const onAccept = (opponnentUserId: number) => {
+    if (!socketRef.current) {
+      return;
+    }
+
+    socketRef.current.sendFriendRequest(opponnentUserId);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.mapShadowContainer}>
@@ -240,16 +403,14 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
               {region ? (
                 <>
                   <StyledText bold style={styles.nearbyUserList}>
-                    {/* 근처 사용자 수:{' '}
-                    {nearbyUserList && nearbyUserList.length
-                      ? nearbyUserList.length
-                      : 0}{' '}
-                    명 */}
-                    팔콘으로부터의 거리:{' '}
+                    근처 사용자 수:{' '}
+                    {nearbyUsers && nearbyUsers.length ? nearbyUsers.length : 0}{' '}
+                    명
+                    {/* 팔콘으로부터의 거리:{' '}
                     {nearbyUsers && nearbyUsers.length
                       ? nearbyUsers[0].distance.toFixed(2)
                       : 0}
-                    {'m'}
+                    {'m'} */}
                   </StyledText>
                   <MapView
                     ref={mapRef}
@@ -286,6 +447,8 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
             setIsNfcTagged(false);
           }}
           bluetoothId={opponentUsername}
+          opponentUserId={opponentUserId}
+          onAccept={onAccept}
         />
       )}
     </SafeAreaView>

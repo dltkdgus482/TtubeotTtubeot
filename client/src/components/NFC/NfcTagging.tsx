@@ -9,6 +9,8 @@ interface NfcTaggingProps {
   visible: boolean;
   onClose: () => void;
   bluetoothId: string;
+  onAccept: (opponentUserId: number) => void;
+  opponentUserId: number;
 }
 
 const ProfileImageContainer = styled(View)`
@@ -31,6 +33,8 @@ const NfcTagging: React.FC<NfcTaggingProps> = ({
   visible,
   onClose,
   bluetoothId,
+  onAccept,
+  opponentUserId,
 }) => {
   return (
     <Modal
@@ -58,7 +62,11 @@ const NfcTagging: React.FC<NfcTaggingProps> = ({
             </StyledText>
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity onPress={onClose}>
+            <TouchableOpacity
+              onPress={() => {
+                onAccept(opponentUserId);
+                onClose();
+              }}>
               <ButtonFlat
                 content="수락"
                 color="#3E4A3D"
