@@ -1,10 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Image,
   ImageBackground,
   TouchableOpacity,
   Pressable,
+  Animated,
 } from 'react-native';
 import styles from './HomeScreen.styles';
 import TtubeotProfile from '../../components/TtubeotProfile';
@@ -21,6 +22,8 @@ import BLE from '../../components/BLE/BLEModal.tsx';
 import BLEModal from '../../components/BLE/BLEModal.tsx';
 import StyledTextInput from '../../styles/StyledTextInput.ts';
 import ButtonFlat from '../../components/Button/ButtonFlat.tsx';
+import { useUser } from '../../store/user.ts';
+import { TtubeotData } from '../../types/ttubeotData.ts';
 
 const background = require('../../assets/images/HomeBackground.jpg');
 const ShopIcon = require('../../assets/icons/ShopIcon.png');
@@ -30,6 +33,7 @@ const FriendIcon = require('../../assets/icons/FriendIcon.png');
 const MapIcon = require('../../assets/icons/MapIcon.png');
 
 const HomeScreen = () => {
+  const { ttubeotId } = useUser.getState();
   const [modalVisible, setModalVisible] = useState(false);
   const [graduationAlbumModalVisible, setGraduationAlbumModalVisible] =
     useState(false);
@@ -37,6 +41,8 @@ const HomeScreen = () => {
   const [friendsModalVisible, setFriendsModalVisible] = useState(false);
   const navigation = useNavigation();
   const [BLEModalVisible, setBLEModalVisible] = useState(false);
+
+  const [ttubeotData, setTtubeotData] = useState<TtubeotData>(null);
 
   const webViewRef = useRef(null);
   const [inputValue, setInputValue] = useState('1');
@@ -81,9 +87,13 @@ const HomeScreen = () => {
     setBLEModalVisible(false);
   };
 
-  const sendId = () => {
-    const id = parseInt(inputValue, 10);
-    if (webViewRef.current && id > 0 && id < 46) {
+  useEffect(() => {
+    sendId(ttubeotId);
+    console.log(ttubeotId);
+  }, [ttubeotId]);
+
+  const sendId = (id: number) => {
+    if (webViewRef.current && id > 0 && id <= 46) {
       webViewRef.current.postMessage(JSON.stringify({ type: 'changeId', id }));
     }
   };
@@ -140,8 +150,12 @@ const HomeScreen = () => {
         </View>
       )}
       <View style={{ position: 'absolute', top: 200, left: '50%' }}>
-        <StyledTextInput value={inputValue} onChangeText={setInputValue} />
-        <TouchableOpacity onPress={sendId}>
+        <StyledTextInput
+          value={inputValue}
+          onChangeText={setInputValue}
+          keyboardType="numeric"
+        />
+        <TouchableOpacity onPress={() => sendId(inputValue)}>
           <ButtonFlat content="변경" />
         </TouchableOpacity>
       </View>

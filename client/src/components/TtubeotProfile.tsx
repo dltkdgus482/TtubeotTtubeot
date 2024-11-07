@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { Image, View } from 'react-native';
 import Icon from './Icon';
 import StyledText from '../styles/StyledText';
+import { useUser } from '../store/user';
+import { getTtubeotDetail } from '../utils/apis/users/userTtubeot';
+import { EmptyProfile, profileColor } from './ProfileImageUrl';
+import { TtubeotData } from '../types/ttubeotData';
 
 const Profile = styled(View)`
   position: relative;
@@ -89,39 +93,66 @@ const Shadow = styled(View)`
 `;
 
 const TtubeotProfile = () => {
+  const { user, ttubeotId, setTtubeotId, accessToken, setAccessToken } =
+    useUser.getState();
+  const [loading, setIsLoading] = useState<boolean>(true);
+  const [ttubeotData, setTtubeotData] = useState<TtubeotData>(null);
+
+  useEffect(() => {
+    const fetchUserTtubeot = async () => {
+      const res = await getTtubeotDetail(
+        user.userId,
+        accessToken,
+        setAccessToken,
+      );
+
+      if (res === null) {
+        setTtubeotData(null);
+        setTtubeotId(46);
+      } else {
+        setTtubeotData(res);
+        setTtubeotId(res.ttubeot_type);
+        setIsLoading(false);
+      }
+    };
+    fetchUserTtubeot();
+  }, [user.userId]);
+
   return (
     <Profile>
-      <ShadowBox>
-        <Shadow />
-        <ProfileDetails>
-          <ProfileTop>
-            <ProfileName bold>우리마루</ProfileName>
-            <RemainDays bold>D-4</RemainDays>
-          </ProfileTop>
-          <ProfileBottom>
-            <View style={{ display: 'flex', flexDirection: 'row', gap: 4 }}>
-              <StyledText bold style={{ color: 'white' }}>
-                함께한 거리
-              </StyledText>
-              <View
-                style={{
-                  backgroundColor: '#605C50',
-                  opacity: 0.5,
-                  padding: 3,
-                  borderRadius: 5,
-                }}>
-                <Icon type="FontAwesome5" name="paw" size={12} color="#000" />
+      {ttubeotData && (
+        <ShadowBox>
+          <Shadow />
+          <ProfileDetails>
+            <ProfileTop>
+              <ProfileName bold>{ttubeotData?.ttubeot_name}</ProfileName>
+              <RemainDays bold>D-4</RemainDays>
+            </ProfileTop>
+            <ProfileBottom>
+              <View style={{ display: 'flex', flexDirection: 'row', gap: 4 }}>
+                <StyledText bold style={{ color: 'white' }}>
+                  함께한 거리
+                </StyledText>
+                <View
+                  style={{
+                    backgroundColor: '#605C50',
+                    opacity: 0.5,
+                    padding: 3,
+                    borderRadius: 5,
+                  }}>
+                  <Icon type="FontAwesome5" name="paw" size={12} color="#000" />
+                </View>
               </View>
-            </View>
-            <StyledText color="white" bold>
-              55,000 걸음
-            </StyledText>
-          </ProfileBottom>
-        </ProfileDetails>
-        <ProfileImageContainer>
-          <ProfileImage source={require('../assets/ttubeot/mockTtu.png')} />
-        </ProfileImageContainer>
-      </ShadowBox>
+              <StyledText color="white" bold>
+                {ttubeotData?.ttubeot_score} 걸음
+              </StyledText>
+            </ProfileBottom>
+          </ProfileDetails>
+          <ProfileImageContainer>
+            <ProfileImage source={ttubeotId > 0 && profileColor[ttubeotId]} />
+          </ProfileImageContainer>
+        </ShadowBox>
+      )}
     </Profile>
   );
 };
