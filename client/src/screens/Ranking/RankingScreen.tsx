@@ -6,6 +6,7 @@ import RankingScreenButtonContainer from './RankingScreenButtonContainer';
 import { dummyRankingList } from './dummyData';
 import { getRankingInfo } from '../../utils/apis/Ranking/getRankingInfo';
 import { useUser } from '../../store/user';
+// import { useIsFocused } from '@react-navigation/native';
 
 const IntroTtubeotRabbit = require('../../assets/ttubeot/IntroTtubeotRabbit.png');
 const gold = require('../../assets/medals/gold.png');
@@ -22,7 +23,6 @@ interface RankingProps {
 
 const RankingScreen = () => {
   const [selected, setSelected] = useState('뚜벗 랭킹');
-  const { accessToken, setAccessToken } = useUser.getState();
   const [rankingList, setRankingList] =
     useState<RankingProps[]>(dummyRankingList);
 
@@ -30,8 +30,8 @@ const RankingScreen = () => {
     setRankingList(dummyRankingList);
 
     const fetchRankingInfo = async () => {
-      const res = await getRankingInfo(accessToken, setAccessToken);
-      // setRankingList(res);
+      const res = await getRankingInfo();
+      setRankingList(res);
       console.log('rankingInfo', res);
     };
 
