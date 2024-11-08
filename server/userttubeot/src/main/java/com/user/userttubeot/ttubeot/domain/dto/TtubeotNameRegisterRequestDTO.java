@@ -1,11 +1,17 @@
 package com.user.userttubeot.ttubeot.domain.dto;
 
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
 public class TtubeotNameRegisterRequestDTO {
 
+    @JsonProperty("userTtubeotOwnershipId")
     private Long userTtubeotOwnershipId;
-    private String userTtubeotOwnershipName; // 등록할 뚜벗의 이름
+
+    @JsonProperty("userTtubeotOwnershipName")
+    private String userTtubeotOwnershipName;
+
 
 }
