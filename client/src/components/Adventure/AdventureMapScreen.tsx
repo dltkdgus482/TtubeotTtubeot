@@ -1,12 +1,15 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from 'react';
 import {
   View,
   PermissionsAndroid,
   Alert,
   ActivityIndicator,
-  Modal,
-  Text,
-  Button,
 } from 'react-native';
 import {
   decimalToAscii,
@@ -62,13 +65,11 @@ interface UserProps {
 }
 
 const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
-  const { accessToken, setAccessToken } = useUser.getState();
   const [location, setLocation] = useState<GeoCoordinates | null>(null);
   const [region, setRegion] = useState<Region | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const mapRef = useRef<MapView>(null);
-  const watchId = useRef<number | null>(null);
   const intervalId = useRef<NodeJS.Timeout | null>(null); // Interval ID 추가
   const socketRef = useRef<AdventureManager | null>(null); // AdventureManager 인스턴스 관리
   const [isConnected, setIsConnected] = useState(true); // 소켓 연결 상태 추적
@@ -80,10 +81,12 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   const [opponentUserId, setOpponentUserId] = useState<number>(-1);
 
   // BLE 모드 관련 상태 추가
-  const [isAdvertising, setIsAdvertising] = useState<boolean>(false);
-  const [isScanning, setIsScanning] = useState<boolean>(false);
   const [devices, setDevices] = useState<Peripheral[]>([]);
   const devicesRef = useRef<Peripheral[]>([]);
+
+  // 렌더링과 관련 없는 상태들은 useRef로 관리
+  const isScanning = useRef<boolean>(false);
+  const isAdvertising = useRef<boolean>(false);
 
   // BLE 관련 권한 요청
   useEffect(() => {
@@ -107,10 +110,10 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
 
   // BLE 관련 함수 추가
   const startScanning = (): void => {
-    if (isScanning === true) return;
+    if (isScanning.current === true) return;
 
-    setIsScanning(true);
-    BleManager.scan([], 5, true, {
+    isScanning.current = true;
+    BleManager.scan([], 300, true, {
       matchMode: BleScanMatchMode.Sticky,
       scanMode: BleScanMode.LowLatency,
       callbackType: BleScanCallbackType.AllMatches,
@@ -120,16 +123,16 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       })
       .catch(error => {
         console.log('startScanning error:', error);
-        setIsScanning(false);
+        isScanning.current = false;
       });
   };
 
   const stopScanning = async (): Promise<void> => {
-    if (isScanning === false) return;
+    if (isScanning.current === false) return;
 
     try {
       await BleManager.stopScan();
-      setIsScanning(false);
+      isScanning.current = false;
       console.log('stopScanning');
     } catch (error) {
       console.log('stopScanning error:', error);
@@ -137,9 +140,9 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   };
 
   const startAdvertising = (): void => {
-    if (isAdvertising === true) return;
+    if (isAdvertising.current === true) return;
 
-    setIsAdvertising(true);
+    isAdvertising.current = true;
     const { user } = useUser.getState();
     const userId = user.userId;
     const message = decimalToAscii(userId);
@@ -156,11 +159,11 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   };
 
   const stopAdvertising = async (): Promise<void> => {
-    if (isAdvertising === false) return;
+    if (isAdvertising.current === false) return;
 
     try {
       await BLEAdvertiser.stopBroadcast();
-      setIsAdvertising(false);
+      isAdvertising.current = false;
       console.log('stopAdvertising');
     } catch (error) {
       console.log('stopAdvertising error:', error);
@@ -223,7 +226,12 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
         console.log('addAdventureUserListener', data);
 
         // 근처 사용자 목록 수신 시 상태 업데이트
-        setNearbyUsers(data.users);
+        setNearbyUsers(prevUsers => {
+          if (JSON.stringify(prevUsers) !== JSON.stringify(data.users)) {
+            return data.users;
+          }
+          return prevUsers;
+        });
       });
 
       socketRef.current.addAdventureResultListener(data => {
@@ -266,21 +274,21 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
 
     // 30m 이내 사용자 있을 경우 스캔, 광고 시작
     if (nearbyUsers.length === 0) {
-      if (isScanning === true) {
+      if (isScanning.current === true) {
         stopScanning();
       }
 
-      if (isAdvertising === true) {
+      if (isAdvertising.current === true) {
         stopAdvertising();
       }
       return;
     }
 
-    if (isScanning === false) {
+    if (isScanning.current === false) {
       startScanning();
     }
 
-    if (isAdvertising === false) {
+    if (isAdvertising.current === false) {
       startAdvertising();
     }
   }, [nearbyUsers]);
