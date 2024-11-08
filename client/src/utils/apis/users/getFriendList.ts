@@ -29,3 +29,19 @@ export const getFriendList = async (
     return [];
   }
 };
+
+export const removeFriend = async (
+  userId: number,
+  friendId: number,
+  accessToken: string,
+  setAccessToken: (accessToken: string) => void,
+): Promise<boolean> => {
+  try {
+    const authClient = authRequest(accessToken, setAccessToken);
+    const res = await authClient.delete(`/user/friend/${userId}/${friendId}`);
+    return true;
+  } catch (error) {
+    console.log('removeFriend Error', error);
+    return false;
+  }
+};

@@ -6,6 +6,7 @@ import StyledText from '../../styles/StyledText';
 import ButtonFlat from '../Button/ButtonFlat';
 import { getFriendList } from '../../utils/apis/users/getFriendList';
 import { useUser } from '../../store/user';
+import { removeFriend } from '../../utils/apis/users/getFriendList';
 
 interface FriendsModalProps {
   modalVisible: boolean;
@@ -39,7 +40,7 @@ const FriendsModal: React.FC<FriendsModalProps> = ({
   modalVisible,
   closeFriendsModal,
 }) => {
-  const { accessToken, setAccessToken } = useUser.getState();
+  const { accessToken, setAccessToken, user } = useUser.getState();
   const [friends, setFriends] = useState<any>([]);
 
   useEffect(() => {
@@ -48,7 +49,6 @@ const FriendsModal: React.FC<FriendsModalProps> = ({
     const fetchFriends = async (): Promise<void> => {
       const res = await getFriendList(accessToken, setAccessToken);
       setFriends(res);
-      console.log(res);
     };
 
     fetchFriends();
@@ -105,7 +105,22 @@ const FriendsModal: React.FC<FriendsModalProps> = ({
                       </StyledText>
                     </View>
                   </View>
-                  <TouchableOpacity style={styles.sendCoin}>
+                  <TouchableOpacity
+                    style={styles.sendCoin}
+                    onPress={async () => {
+                      const res = await removeFriend(
+                        user.userId,
+                        friend.user_id,
+                        accessToken,
+                        setAccessToken,
+                      );
+
+                      if (res === true) {
+                        setFriends(prevFriends =>
+                          prevFriends.filter(f => f.user_id !== friend.user_id),
+                        );
+                      }
+                    }}>
                     <ButtonFlat
                       content=""
                       width={50}

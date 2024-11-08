@@ -32,7 +32,7 @@ const RankingScreen = () => {
     const fetchRankingInfo = async () => {
       const res = await getRankingInfo(accessToken, setAccessToken);
       // setRankingList(res);
-      console.log(res);
+      console.log('rankingInfo', res);
     };
 
     fetchRankingInfo();
