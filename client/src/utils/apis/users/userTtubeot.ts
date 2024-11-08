@@ -30,7 +30,7 @@ export const getUserTtubeotId = async (
 };
 
 export const getTtubeotDetail = async (
-  userId: string,
+  userId: number,
   accessToken: string,
   setAccessToken: (accesstoken: string) => void,
 ): Promise<GetUserTtubeotDetailProps> => {
