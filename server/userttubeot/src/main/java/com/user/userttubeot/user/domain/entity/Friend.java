@@ -3,6 +3,9 @@ package com.user.userttubeot.user.domain.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -24,6 +27,16 @@ public class Friend {
     @EmbeddedId
     private FriendId id;
 
+    @ManyToOne
+    @MapsId("userId") // 복합 키의 userId에 매핑
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
+
+    @ManyToOne
+    @MapsId("friendId") // 복합 키의 friendId에 매핑
+    @JoinColumn(name = "friend_id", insertable = false, updatable = false)
+    private User friend;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -33,7 +46,6 @@ public class Friend {
     @Column(name = "last_send")
     private LocalDateTime lastSend;
 
-    // 엔티티 생성 전에 실행되는 메서드로, 생성 시 기본값 설정
     @PrePersist
     public void prePersist() {
         this.createdAt = this.createdAt == null ? LocalDateTime.now() : this.createdAt;

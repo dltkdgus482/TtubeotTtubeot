@@ -69,6 +69,7 @@ public class TtubeotController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 ID에 해당하는 뚜벗 소유 정보가 없습니다.");
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("뚜벗 이름 등록 중 오류가 발생했습니다.");
         }

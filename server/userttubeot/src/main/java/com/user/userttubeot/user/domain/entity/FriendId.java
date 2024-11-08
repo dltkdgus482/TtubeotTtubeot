@@ -22,6 +22,6 @@ public class FriendId implements Serializable {
     private Integer userId;
 
     @Column(name = "friend_id", nullable = false)
-    private Integer FriendId;
+    private Integer friendId;
 }
 

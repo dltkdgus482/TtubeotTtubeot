@@ -39,7 +39,9 @@ public class JWTUtil {
     }
 
     public String createAccessToken(Integer userId, String userPhone) {
-        long expiredMs = 1000 * 60 * 10; // 10분
+//        long expiredMs = 1000 * 60 * 10; // 10분 - 배포 환경
+        long expiredMs = 1000L * 60 * 60 * 24; // 1일 - 테스트 환경
+
         return Jwts.builder()
             .claim("userId", userId)
             .claim("userPhone", userPhone)
@@ -50,7 +52,7 @@ public class JWTUtil {
     }
 
     public String createRefreshToken(Integer userId, String userPhone) {
-        long expiredMs = 1000 * 60 * 60 * 24; // 1일
+        long expiredMs = 1000L * 60 * 60 * 24 * 30; // 1달
         return Jwts.builder()
             .claim("userId", userId)
             .claim("userPhone", userPhone)

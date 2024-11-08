@@ -2,6 +2,7 @@ package com.user.userttubeot.user.domain.repository;
 
 import com.user.userttubeot.user.domain.entity.Friend;
 import com.user.userttubeot.user.domain.entity.FriendId;
+import com.user.userttubeot.user.domain.entity.User;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,6 +15,8 @@ public interface FriendRepository extends JpaRepository<Friend, FriendId> {
 
     // FriendId의 userId가 특정 ID와 일치하는 모든 Friend 엔티티를 반환
     List<Friend> findByIdUserId(Integer userId);
+
+    void deleteAllByUserOrFriend(User user, User friend);
 
 
 }
