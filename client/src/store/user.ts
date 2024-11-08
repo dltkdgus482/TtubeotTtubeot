@@ -3,7 +3,7 @@ import { persist, PersistStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface User {
-  userId: string;
+  userId: number;
   userName: string;
   phoneNumber: string;
   userLocationAgreement: number; // 0 - 동의 안함, 1 - 동의
@@ -44,7 +44,7 @@ export const useUser = create<UserState>()(
   persist(
     set => ({
       user: {
-        userId: '',
+        userId: -1,
         userName: '',
         phoneNumber: '',
         userLocationAgreement: 0,
@@ -58,7 +58,13 @@ export const useUser = create<UserState>()(
       isLoggedIn: false,
       accessToken: null,
 
-      setUser: (user: User) => set(() => ({ user })),
+      setUser: (updatedProperties: Partial<User>) =>
+        set(state => ({
+          user: {
+            ...state.user,
+            ...updatedProperties,
+          },
+        })),
       setIsLoggedIn: (status: boolean) => set(() => ({ isLoggedIn: status })),
       setAccessToken: (token: string | null) =>
         set(() => ({ accessToken: token })),

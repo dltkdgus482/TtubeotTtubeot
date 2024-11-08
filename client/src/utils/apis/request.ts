@@ -32,7 +32,6 @@ export const setupInterceptors = (
           try {
             const newToken = await getNewToken();
             setAccessToken(newToken);
-            console.log('newToken', newToken);
             config.headers.Authorization = `Bearer ${newToken}`;
           } catch (error) {
             console.error('토큰 갱신 중 오류 발생:', error);
@@ -41,10 +40,6 @@ export const setupInterceptors = (
           }
         } else {
           config.headers.Authorization = `Bearer ${accessToken}`;
-          console.log(
-            'config.headers.Authorization',
-            config.headers.Authorization,
-          );
         }
       } catch (error) {
         console.error('토큰 디코딩 중 오류 발생:', error);
@@ -90,7 +85,6 @@ export const authRequest = (accessToken, setAccessToken) => {
   const { clearUser } = useUser.getState();
 
   // accessToken 유효성 검사
-  console.log('access token: ' + accessToken);
   if (!accessToken || typeof accessToken !== 'string') {
     console.warn('유효하지 않은 accessToken입니다.');
     clearUser();

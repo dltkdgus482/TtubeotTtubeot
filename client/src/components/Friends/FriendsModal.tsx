@@ -1,14 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Modal, Image, TouchableOpacity } from 'react-native';
 import styles from './FriendsModal.styles';
 import Icon from 'react-native-vector-icons/AntDesign';
 import StyledText from '../../styles/StyledText';
 import ButtonFlat from '../Button/ButtonFlat';
-import ButtonDefault from '../Button/ButtonDefault';
+import { getFriendList } from '../../utils/apis/users/getFriendList';
+import { useUser } from '../../store/user';
+import { removeFriend } from '../../utils/apis/users/getFriendList';
 
 interface FriendsModalProps {
   modalVisible: boolean;
   closeFriendsModal: () => void;
+}
+
+interface TtubeotProps {
+  ttubeot_type: number;
+  ttubeot_image: any;
+  create_at: string;
+  ttubeot_score: number;
+  ttubeot_name: string;
+}
+
+interface FriendProps {
+  user_id: number;
+  username: string;
+  user_walk: number | null;
+  user_ttubeot: TtubeotProps | null;
 }
 
 const Backgound = require('../../assets/images/CharacterShopBackground.png');
@@ -23,6 +40,20 @@ const FriendsModal: React.FC<FriendsModalProps> = ({
   modalVisible,
   closeFriendsModal,
 }) => {
+  const { accessToken, setAccessToken, user } = useUser.getState();
+  const [friends, setFriends] = useState<any>([]);
+
+  useEffect(() => {
+    if (modalVisible === false) return;
+
+    const fetchFriends = async (): Promise<void> => {
+      const res = await getFriendList(accessToken, setAccessToken);
+      setFriends(res);
+    };
+
+    fetchFriends();
+  }, [modalVisible]);
+
   return (
     <Modal
       animationType="slide"
@@ -48,60 +79,59 @@ const FriendsModal: React.FC<FriendsModalProps> = ({
             />
           </View>
           <View style={styles.friendsContainer}>
-            <View style={styles.friends}>
-              <View style={styles.friendImageContainer}>
-                <Image source={mockTtu} style={styles.friendImage} />
-              </View>
-              <View style={styles.friendContentsContainer}>
-                <StyledText bold style={styles.friendNickname}>
-                  1번친구
-                </StyledText>
-                <View style={styles.footPrintContainer}>
-                  <View style={styles.footPrintIconContainer}>
-                    <Image source={footprint} style={styles.footPrintIcon} />
+            {friends.map((friend, index) => {
+              return (
+                <View style={styles.friends} key={index}>
+                  <View style={styles.friendImageContainer}>
+                    <Image source={mockTtu} style={styles.friendImage} />
                   </View>
-                  <StyledText style={styles.footPrintText}>
-                    오늘 총 88,888 걸음
-                  </StyledText>
-                </View>
-              </View>
-              <TouchableOpacity style={styles.sendCoin}>
-                <ButtonFlat
-                  content=""
-                  width={50}
-                  height={50}
-                  borderRadius={50}
-                />
-                <Image source={sendCoin} style={styles.sendCoinIcon} />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.friends}>
-              <View style={styles.friendImageContainer}>
-                <Image source={mockTtu} style={styles.friendImage} />
-              </View>
-              <View style={styles.friendContentsContainer}>
-                <StyledText bold style={styles.friendNickname}>
-                  2번친구
-                </StyledText>
-                <View style={styles.footPrintContainer}>
-                  <View style={styles.footPrintIconContainer}>
-                    <Image source={footprint} style={styles.footPrintIcon} />
+                  <View style={styles.friendContentsContainer}>
+                    <StyledText bold style={styles.friendNickname}>
+                      {friend.username}
+                    </StyledText>
+                    <View style={styles.footPrintContainer}>
+                      <View style={styles.footPrintIconContainer}>
+                        <Image
+                          source={footprint}
+                          style={styles.footPrintIcon}
+                        />
+                      </View>
+                      <StyledText style={styles.footPrintText}>
+                        오늘 총{' '}
+                        {friend.user_walk !== null
+                          ? friend.user_walk.toLocaleString()
+                          : 0}
+                        걸음
+                      </StyledText>
+                    </View>
                   </View>
-                  <StyledText style={styles.footPrintText}>
-                    오늘 총 320 걸음
-                  </StyledText>
+                  <TouchableOpacity
+                    style={styles.sendCoin}
+                    onPress={async () => {
+                      const res = await removeFriend(
+                        user.userId,
+                        friend.user_id,
+                        accessToken,
+                        setAccessToken,
+                      );
+
+                      if (res === true) {
+                        setFriends(prevFriends =>
+                          prevFriends.filter(f => f.user_id !== friend.user_id),
+                        );
+                      }
+                    }}>
+                    <ButtonFlat
+                      content=""
+                      width={50}
+                      height={50}
+                      borderRadius={50}
+                    />
+                    <Image source={sendCoin} style={styles.sendCoinIcon} />
+                  </TouchableOpacity>
                 </View>
-              </View>
-              <TouchableOpacity style={styles.sendCoin}>
-                <ButtonFlat
-                  content=""
-                  width={50}
-                  height={50}
-                  borderRadius={50}
-                />
-                <Image source={sendCoin} style={styles.sendCoinIcon} />
-              </TouchableOpacity>
-            </View>
+              );
+            })}
           </View>
         </View>
       </View>

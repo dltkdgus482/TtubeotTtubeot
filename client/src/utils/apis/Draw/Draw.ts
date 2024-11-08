@@ -15,16 +15,18 @@ export const drawTtubeot = async (
   accessToken: string,
   setAccessToken: (accessToken: string) => void,
   type: number,
-  ttubeotId: number | null,
-  grade: number | null,
+  ttubeotId?: number | null,
+  grade?: number | null,
 ) => {
   try {
     const authClient = authRequest(accessToken, setAccessToken);
     const data = {
-      type,
-      ttubeotId,
-      grade,
+      type: 1,
+      // type,
+      // ttubeotId,
+      // grade,
     };
+    console.log(data);
     const res = await authClient.post('/user/auth/ttubeot/draw', data);
 
     console.log(res.data);
@@ -39,6 +41,12 @@ export const confirmTtubeotName = async (
   userTtubeotOwnershipId: number,
   userTtubeotOwnershipName: string,
 ) => {
+  console.log(
+    'confirmTtubeotName',
+    userTtubeotOwnershipId,
+    userTtubeotOwnershipName,
+  );
+
   try {
     const data = {
       userTtubeotOwnershipId,
