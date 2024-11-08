@@ -20,7 +20,7 @@ const title = require('../../assets/images/TtubeotTitle.png');
 const withTtubeot = require('../../assets/images/WithTtubeot.png');
 
 const LoginScreen = () => {
-  const user = useUser((state) => state.user); // 현재 user 상태 가져오기
+  const user = useUser(state => state.user); // 현재 user 상태 가져오기
   const { setAccessToken, setIsLoggedIn, setUser } = useUser.getState();
   const [phone, setPhone] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
@@ -77,7 +77,6 @@ const LoginScreen = () => {
       Alert.alert(error.message);
     }
   };
-
 
   return (
     <View style={defaultStyles.container}>

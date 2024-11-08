@@ -22,6 +22,7 @@ import GetTreasureModal from '../../components/ARComponents/GetTreasureModal';
 import StyledTextInput from '../../styles/StyledTextInput';
 import ButtonFlat from '../../components/Button/ButtonFlat';
 import WebView from 'react-native-webview';
+import { useUser } from '../../store/user';
 
 const background = require('../../assets/images/AdventureBackground.jpg');
 const CameraIcon = require('../../assets/icons/CameraIcon.png');
@@ -37,6 +38,7 @@ const isRunningOnEmulator = () => {
 };
 
 const AdventureScreen = () => {
+  const { ttubeotId } = useUser.getState();
   const [adventureStart, setAdventureStart] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [missionVisible, setMissionVisible] = useState<boolean>(false);
@@ -145,12 +147,16 @@ const AdventureScreen = () => {
     CameraModal = require('../../components/ARComponents/CameraModal').default;
   }
 
-  const sendId = () => {
-    const id = parseInt(inputValue, 10);
-    if (webViewRef.current && id > 0 && id < 46) {
+  const sendId = (id: number) => {
+    if (webViewRef.current && id > 0 && id <= 46) {
       webViewRef.current.postMessage(JSON.stringify({ type: 'changeId', id }));
     }
   };
+
+  useEffect(() => {
+    sendId(ttubeotId);
+    console.log(ttubeotId);
+  }, [ttubeotId]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -186,8 +192,12 @@ const AdventureScreen = () => {
       </View>
       <GPSAlertModal modalVisible={modalVisible} closeModal={closeModal} />
       <View style={{ position: 'absolute', top: 200, left: '50%' }}>
-        <StyledTextInput value={inputValue} onChangeText={setInputValue} />
-        <TouchableOpacity onPress={sendId}>
+        <StyledTextInput
+          value={inputValue}
+          onChangeText={setInputValue}
+          keyboardType="numeric"
+        />
+        <TouchableOpacity onPress={() => sendId(inputValue)}>
           <ButtonFlat content="변경" />
         </TouchableOpacity>
       </View>

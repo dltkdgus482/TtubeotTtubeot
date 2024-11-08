@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+// @ts-ignore
 import { SERVER_URL } from '@env';
 import { useUser } from '../../store/user';
 
@@ -22,7 +23,7 @@ export const setupInterceptors = (
 ) => {
   const { clearUser } = useUser.getState();
 
-  axiosInstance.interceptors.request.use(async (config) => {
+  axiosInstance.interceptors.request.use(async config => {
     if (accessToken && typeof accessToken === 'string') {
       try {
         const { exp } = jwtDecode(accessToken);
@@ -40,7 +41,10 @@ export const setupInterceptors = (
           }
         } else {
           config.headers.Authorization = `Bearer ${accessToken}`;
-          console.log('config.headers.Authorization', config.headers.Authorization);
+          console.log(
+            'config.headers.Authorization',
+            config.headers.Authorization,
+          );
         }
       } catch (error) {
         console.error('토큰 디코딩 중 오류 발생:', error);
@@ -69,7 +73,7 @@ export const setupInterceptors = (
 const getNewToken = async () => {
   try {
     const res = await defaultRequest.post('/user/reissue');
-    // console.log('res', res);
+    console.log('res', res);
     const authorizationHeader = res.headers.authorization;
     const accessToken = authorizationHeader
       ? authorizationHeader.replace(/^Bearer\s+/i, '')
@@ -85,9 +89,9 @@ const getNewToken = async () => {
 export const authRequest = (accessToken, setAccessToken) => {
   const { clearUser } = useUser.getState();
 
-   // accessToken 유효성 검사
-   console.log('access token: ' + accessToken);
-   if (!accessToken || typeof accessToken !== 'string') {
+  // accessToken 유효성 검사
+  console.log('access token: ' + accessToken);
+  if (!accessToken || typeof accessToken !== 'string') {
     console.warn('유효하지 않은 accessToken입니다.');
     clearUser();
     return null;
