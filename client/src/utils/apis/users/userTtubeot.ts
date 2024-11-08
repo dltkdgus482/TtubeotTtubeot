@@ -22,7 +22,6 @@ export const getUserTtubeotId = async (
   try {
     const authClient = authRequest(accessToken, setAccessToken);
     const res = await authClient.get(`/user/ttubeot/adventure/${id}/id`);
-    console.log(res.data);
     return res.data;
   } catch (err) {
     console.error(err);
@@ -31,7 +30,7 @@ export const getUserTtubeotId = async (
 };
 
 export const getTtubeotDetail = async (
-  userId: string,
+  userId: number,
   accessToken: string,
   setAccessToken: (accesstoken: string) => void,
 ): Promise<GetUserTtubeotDetailProps> => {
@@ -40,7 +39,6 @@ export const getTtubeotDetail = async (
     const res = await authClient.get(
       `/user/ttubeot/adventure/${userId}/details`,
     );
-    console.log(res.data);
     return res.data;
   } catch (err) {
     return null;

@@ -120,7 +120,7 @@ const TtubeotProfile = () => {
 
   return (
     <Profile>
-      {ttubeotData && (
+      {ttubeotData && ttubeotId && (
         <ShadowBox>
           <Shadow />
           <ProfileDetails>
@@ -149,7 +149,7 @@ const TtubeotProfile = () => {
             </ProfileBottom>
           </ProfileDetails>
           <ProfileImageContainer>
-            <ProfileImage source={ttubeotId > 0 && profileColor[ttubeotId]} />
+            {!loading && <ProfileImage source={profileColor[ttubeotId]} />}
           </ProfileImageContainer>
         </ShadowBox>
       )}

@@ -118,27 +118,28 @@ const ProfileScreen = () => {
     <SafeAreaView style={styles.container}>
       <ImageBackground source={background} style={styles.backgroundContainer} />
       <View style={styles.profileContainer}>
-        {ttubeotId > 0 ? (
-          <View style={styles.profileImageContainer}>
-            <Image
-              style={styles.profileImage}
-              source={profileColor[ttubeotId]}
-            />
-          </View>
-        ) : (
-          <View style={styles.profileNotFoundBackground}>
-            <StyledText bold color="white" style={styles.notFound}>
-              현재 보유 중인
-            </StyledText>
-            <StyledText bold color="white" style={styles.notFound}>
-              뚜벗이 없어요
-            </StyledText>
-            <Image
-              style={styles.profileNotFound}
-              source={EmptyProfile[notFoundTtubeotId]}
-            />
-          </View>
-        )}
+        {ttubeotId &&
+          (ttubeotId === 46 ? (
+            <View style={styles.profileNotFoundBackground}>
+              <StyledText bold color="white" style={styles.notFound}>
+                현재 보유 중인
+              </StyledText>
+              <StyledText bold color="white" style={styles.notFound}>
+                뚜벗이 없어요
+              </StyledText>
+              <Image
+                style={styles.profileNotFound}
+                source={EmptyProfile[notFoundTtubeotId]}
+              />
+            </View>
+          ) : (
+            <View style={styles.profileImageContainer}>
+              <Image
+                style={styles.profileImage}
+                source={profileColor[ttubeotId]}
+              />
+            </View>
+          ))}
         <StyledText bold style={styles.nickName}>
           {user.userName} 님
         </StyledText>

@@ -1,6 +1,7 @@
 import { defaultRequest, authRequest } from '../request';
 import { Alert } from 'react-native';
 import { SERVER_URL } from '@env';
+import { useUser } from '../../../store/user';
 
 // [POST] '/user/login'
 // 로그인

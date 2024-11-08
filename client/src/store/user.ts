@@ -54,7 +54,7 @@ export const useUser = create<UserState>()(
         coin: 0,
         userParent: 0,
       },
-      ttubeotId: 0,
+      ttubeotId: 46,
       isLoggedIn: false,
       accessToken: null,
 
@@ -75,7 +75,7 @@ export const useUser = create<UserState>()(
       clearUser: () =>
         set(() => ({
           user: {
-            userId: '',
+            userId: -1,
             userName: '',
             phoneNumber: '',
             userLocationAgreement: 0,
@@ -85,7 +85,7 @@ export const useUser = create<UserState>()(
             coin: 0,
             userParent: 0,
           },
-          ttubeotId: 0,
+          ttubeotId: 46,
           isLoggedIn: false,
           accessToken: null,
         })),
