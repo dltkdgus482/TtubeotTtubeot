@@ -1,6 +1,7 @@
 import { defaultRequest, authRequest } from '../request';
 import { Alert } from 'react-native';
 import { SERVER_URL } from '@env';
+import { useUser } from '../../../store/user';
 
 // [POST] '/user/login'
 // 로그인
@@ -98,7 +99,7 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
 // {
 // 	"message": "사용자 검증에 실패했습니다."
 // }
-export const logoutApi = async (accessToken, setAccessToken, setIsLoggedIn)=> {
+export const logoutApi = async (accessToken, setAccessToken, setIsLoggedIn) => {
   // 인증된 요청 클라이언트 생성
   const authClient = authRequest(accessToken, setAccessToken);
   // console.log('토큰', accessToken)
@@ -191,7 +192,7 @@ export const modifyUserInfoApi = async (
     user_goal?: number;
     user_parent?: number;
     password?: string;
-  }
+  },
 ) => {
   try {
     const authClient = authRequest(accessToken, setAccessToken);
@@ -222,7 +223,9 @@ export const modifyUserInfoApi = async (
           Alert.alert('잘못된 API 메소드입니다.');
           break;
         default:
-          Alert.alert('유저 정보 수정 중 오류가 발생했습니다. 다시 시도해주세요.');
+          Alert.alert(
+            '유저 정보 수정 중 오류가 발생했습니다. 다시 시도해주세요.',
+          );
       }
     } else {
       Alert.alert('유저 정보 수정 중 오류가 발생했습니다. 다시 시도해주세요.');

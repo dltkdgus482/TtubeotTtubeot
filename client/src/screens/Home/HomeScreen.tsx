@@ -23,7 +23,7 @@ import BLEModal from '../../components/BLE/BLEModal.tsx';
 import StyledTextInput from '../../styles/StyledTextInput.ts';
 import ButtonFlat from '../../components/Button/ButtonFlat.tsx';
 import { useUser } from '../../store/user.ts';
-import { TtubeotData } from '../../types/ttubeotData.ts';
+import { getTtubeotDetail } from '../../utils/apis/users/userTtubeot.ts';
 
 const background = require('../../assets/images/HomeBackground.jpg');
 const ShopIcon = require('../../assets/icons/ShopIcon.png');
@@ -33,7 +33,8 @@ const FriendIcon = require('../../assets/icons/FriendIcon.png');
 const MapIcon = require('../../assets/icons/MapIcon.png');
 
 const HomeScreen = () => {
-  const { ttubeotId } = useUser.getState();
+  const { ttubeotId, setTtubeotId, user, accessToken, setAccessToken } =
+    useUser.getState();
   const [modalVisible, setModalVisible] = useState(false);
   const [graduationAlbumModalVisible, setGraduationAlbumModalVisible] =
     useState(false);
@@ -42,10 +43,8 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const [BLEModalVisible, setBLEModalVisible] = useState(false);
 
-  const [ttubeotData, setTtubeotData] = useState<TtubeotData>(null);
-
   const webViewRef = useRef(null);
-  const [inputValue, setInputValue] = useState('1');
+  const [inputValue, setInputValue] = useState<any>(46);
 
   const openShopModal = () => {
     setModalVisible(true);
@@ -88,8 +87,25 @@ const HomeScreen = () => {
   };
 
   useEffect(() => {
+    if (user) {
+      const fetchUserTtubeot = async () => {
+        const res = await getTtubeotDetail(
+          user.userId,
+          accessToken,
+          setAccessToken,
+        );
+        if (res === null) {
+          setTtubeotId(46);
+        } else {
+          setTtubeotId(res.ttubeot_type);
+        }
+      };
+      fetchUserTtubeot();
+    }
+  }, [user]);
+
+  useEffect(() => {
     sendId(ttubeotId);
-    console.log(ttubeotId);
   }, [ttubeotId]);
 
   const sendId = (id: number) => {

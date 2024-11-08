@@ -54,7 +54,7 @@ export const useUser = create<UserState>()(
         coin: 0,
         userParent: 0,
       },
-      ttubeotId: 0,
+      ttubeotId: 46,
       isLoggedIn: false,
       accessToken: null,
 
@@ -85,7 +85,7 @@ export const useUser = create<UserState>()(
             coin: 0,
             userParent: 0,
           },
-          ttubeotId: 0,
+          ttubeotId: 46,
           isLoggedIn: false,
           accessToken: null,
         })),
