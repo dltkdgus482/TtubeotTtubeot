@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class FriendRequestDto {
 
-    @JsonProperty("user_id")
+    @JsonProperty("userId")
     private Integer userId;
-    @JsonProperty("friend_id")
+    @JsonProperty("friendId")
     private Integer friendId;
 
 }
