@@ -75,7 +75,7 @@ export const useUser = create<UserState>()(
       clearUser: () =>
         set(() => ({
           user: {
-            userId: '',
+            userId: -1,
             userName: '',
             phoneNumber: '',
             userLocationAgreement: 0,

@@ -9,6 +9,7 @@ import {
   NativeModules,
   PermissionsAndroid,
 } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import { useCameraPermission } from 'react-native-vision-camera';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from './AdventureScreen.styles';
@@ -44,6 +45,7 @@ const isRunningOnEmulator = () => {
 };
 
 const AdventureScreen = () => {
+  const isFocused = useIsFocused();
   const { ttubeotId } = useUser.getState();
   const [adventureStart, setAdventureStart] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -254,33 +256,34 @@ const AdventureScreen = () => {
           <ButtonFlat content="변경" />
         </TouchableOpacity>
       </View>
-
-      <View style={styles.ttubeotWebviewContainer}>
-        <WebView
-          ref={webViewRef}
-          originWhitelist={['*']}
-          source={{ uri: 'file:///android_asset/renderRunModel.html' }}
-          style={styles.ttubeotWebview}
-          allowFileAccess={true}
-          allowFileAccessFromFileURLs={true}
-          allowUniversalAccessFromFileURLs={true}
-          onLoadStart={syntheticEvent => {
-            const { nativeEvent } = syntheticEvent;
-            console.log('WebView Start: ', nativeEvent);
-          }}
-          onError={syntheticEvent => {
-            const { nativeEvent } = syntheticEvent;
-            console.error('WebView onError: ', nativeEvent);
-          }}
-          onHttpError={syntheticEvent => {
-            const { nativeEvent } = syntheticEvent;
-            console.error('WebView onHttpError: ', nativeEvent);
-          }}
-          onMessage={event => {
-            console.log('Message from WebView:', event.nativeEvent.data);
-          }}
-        />
-      </View>
+      {isFocused && (
+        <View style={styles.ttubeotWebviewContainer}>
+          <WebView
+            ref={webViewRef}
+            originWhitelist={['*']}
+            source={{ uri: 'file:///android_asset/renderRunModel.html' }}
+            style={styles.ttubeotWebview}
+            allowFileAccess={true}
+            allowFileAccessFromFileURLs={true}
+            allowUniversalAccessFromFileURLs={true}
+            onLoadStart={syntheticEvent => {
+              const { nativeEvent } = syntheticEvent;
+              console.log('WebView Start: ', nativeEvent);
+            }}
+            onError={syntheticEvent => {
+              const { nativeEvent } = syntheticEvent;
+              console.error('WebView onError: ', nativeEvent);
+            }}
+            onHttpError={syntheticEvent => {
+              const { nativeEvent } = syntheticEvent;
+              console.error('WebView onHttpError: ', nativeEvent);
+            }}
+            onMessage={event => {
+              console.log('Message from WebView:', event.nativeEvent.data);
+            }}
+          />
+        </View>
+      )}
 
       {isCameraModalEnabled &&
         CameraModal &&
