@@ -1,5 +1,7 @@
 package com.user.userttubeot.ttubeot.domain.dto;
 
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -11,5 +13,6 @@ public class TtubeotNameRegisterRequestDTO {
 
     @JsonProperty("userTtubeotOwnershipName")
     private String userTtubeotOwnershipName;
+
 
 }

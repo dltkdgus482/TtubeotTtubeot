@@ -35,12 +35,14 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TtubeotServiceImpl implements TtubeotService {
 
     private final TtubeotLogRepository ttubeotLogRepository;
@@ -119,6 +121,10 @@ public class TtubeotServiceImpl implements TtubeotService {
 
     @Override
     public void registerTtubeotName(TtubeotNameRegisterRequestDTO ttubeotNameRegisterRequestDTO) {
+        log.info("registerTtubeotName 호출됨. 요청 데이터: userTtubeotOwnershipId={}, userTtubeotOwnershipName={}",
+            ttubeotNameRegisterRequestDTO.getUserTtubeotOwnershipId(),
+            ttubeotNameRegisterRequestDTO.getUserTtubeotOwnershipName());
+
         Optional<UserTtuBeotOwnership> ownershipOpt = userTtubeotOwnershipRepository.findById(
             ttubeotNameRegisterRequestDTO.getUserTtubeotOwnershipId());
 
