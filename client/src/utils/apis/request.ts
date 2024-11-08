@@ -65,7 +65,9 @@ export const setupInterceptors = (
 };
 
 // 새로운 토큰 가져오는 함수
-const getNewToken = async () => {
+export const getNewToken = async () => {
+  const { clearUser } = useUser.getState();
+
   try {
     const res = await defaultRequest.post('/user/reissue');
     console.log('res', res);
@@ -76,6 +78,7 @@ const getNewToken = async () => {
     return accessToken;
   } catch (error) {
     console.error('토큰 갱신 중 오류 발생:', error);
+    clearUser();
     throw error;
   }
 };
