@@ -4,5 +4,6 @@ public class TtubeotNotFoundException extends BusinessException {
 
     public TtubeotNotFoundException(String message) {
         super(message);
+
     }
 }
