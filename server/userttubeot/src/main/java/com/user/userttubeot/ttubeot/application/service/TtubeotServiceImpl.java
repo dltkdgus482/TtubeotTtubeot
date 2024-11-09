@@ -1,5 +1,6 @@
 package com.user.userttubeot.ttubeot.application.service;
 
+import com.user.userttubeot.ttubeot.domain.dto.RecentBreakupTtubeotResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogListResponseDTO;
@@ -363,6 +364,28 @@ public class TtubeotServiceImpl implements TtubeotService {
             .collect(Collectors.toList());
 
         return new UserTtubeotMissionListResponseDTO(missionDTOs);
+    }
+
+    @Override
+    public RecentBreakupTtubeotResponseDTO getRecentBreakUpTtubeot(int userId) {
+        // 가장 최근에 헤어진 뚜벗 조회
+        Optional<UserTtuBeotOwnership> recentBreakup = userTtubeotOwnershipRepository
+            .findFirstByUser_UserIdAndBreakUpIsNotNullOrderByBreakUpDesc(userId);
+
+        // 뚜벗이 없다면 null 반환 대신 메시지 설정
+        if (recentBreakup.isEmpty()) {
+            return null; // 컨트롤러에서 "없다" 처리
+        }
+
+        // DTO로 변환
+        UserTtuBeotOwnership ownership = recentBreakup.get();
+        RecentBreakupTtubeotResponseDTO dto = new RecentBreakupTtubeotResponseDTO();
+        dto.setTtubeotId(ownership.getTtubeot().getTtubeotId());
+        dto.setBreakUp(ownership.getBreakUp());
+        dto.setUserTtubeotOwnershipId(ownership.getUserTtubeotOwnershipId());
+        dto.setGraduationStatus(ownership.getTtubeotStatus());
+
+        return dto;
     }
 
     // TtubeotDrawResponseDTO 생성 메서드

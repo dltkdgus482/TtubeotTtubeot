@@ -4,6 +4,7 @@ import com.user.userttubeot.ttubeot.application.service.AlertServiceImpl;
 import com.user.userttubeot.ttubeot.application.service.TtubeotService;
 import com.user.userttubeot.ttubeot.application.service.TtubeotServiceImpl;
 import com.user.userttubeot.ttubeot.domain.dto.FcmTokenRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.RecentBreakupTtubeotResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogListResponseDTO;
@@ -115,9 +116,21 @@ public class TtubeotController {
         return ResponseEntity.ok(userTtubeotMissionList);
     }
 
+    // 최근 헤어진 뚜벗 정보 조회
+    @GetMapping("/auth/ttubeot/recent-breakup")
+    public ResponseEntity<?> getTtubeotRecentBreakup(@RequestAttribute("userId") Integer userId) {
+        RecentBreakupTtubeotResponseDTO response = ttubeotService.getRecentBreakUpTtubeot(userId);
+        // 최근에 헤어진 뚜벗이 없을 경우
+        if (response == null) {
+            return ResponseEntity.ok().body("최근에 헤어진 뚜벗이 없습니다.");
+        }
+
+        return ResponseEntity.ok(response);
+    }
+
     /*
-    * api for firebase
-    * */
+     * api for firebase
+     * */
     // fcm token 등록
     @PostMapping("/admin/update-fcm-token")
     public ResponseEntity<?> updateFcmToken(@RequestBody FcmTokenRequestDTO fcmTokenRequestDTO) {
