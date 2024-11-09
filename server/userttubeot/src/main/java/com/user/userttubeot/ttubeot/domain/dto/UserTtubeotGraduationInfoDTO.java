@@ -11,6 +11,7 @@ public class UserTtubeotGraduationInfoDTO {
     private LocalDateTime breakUp; // 헤어진 일시
     private LocalDateTime createdAt; // 생성일시
     private int ttubeotId; // 뚜벗의 아이디
-    private String ttubeotImage; // 뚜벗 이미지 url
+    private int ttubeotStatus; // 뚜벗의 상태정보
+    private int adventureCount; // 함께한 모험 횟수
 
 }
