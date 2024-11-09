@@ -76,7 +76,7 @@ public class TtubeotController {
     }
 
     // 졸업사진 정보 조회
-    @GetMapping("/auth/ttubeot/album")
+    @GetMapping("/auth/ttubeot/graduation-info")
     public ResponseEntity<?> getTtubeotAlbum(@RequestAttribute("userId") Integer userId) {
         UserTtubeotGraduationInfoListDTO graduationInfoList = ttubeotService.getUserTtubeotGraduationInfoList(
             userId);

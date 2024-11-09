@@ -26,4 +26,6 @@ public interface UserTtubeotOwnershipRepository extends JpaRepository<UserTtuBeo
     // 사용자가 함께 했던 모든 뚜벗 리스트 조회
     List<UserTtuBeotOwnership> findByUser_UserId(Integer userId);
 
+    // 사용자가 함께했던 뚜벗들 리스트 조회
+    List<UserTtuBeotOwnership> findAllByUser_UserId(int userId);
 }

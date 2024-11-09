@@ -121,7 +121,8 @@ public class TtubeotServiceImpl implements TtubeotService {
 
     @Override
     public void registerTtubeotName(TtubeotNameRegisterRequestDTO ttubeotNameRegisterRequestDTO) {
-        log.info("registerTtubeotName 호출됨. 요청 데이터: userTtubeotOwnershipId={}, userTtubeotOwnershipName={}",
+        log.info(
+            "registerTtubeotName 호출됨. 요청 데이터: userTtubeotOwnershipId={}, userTtubeotOwnershipName={}",
             ttubeotNameRegisterRequestDTO.getUserTtubeotOwnershipId(),
             ttubeotNameRegisterRequestDTO.getUserTtubeotOwnershipName());
 
@@ -145,11 +146,11 @@ public class TtubeotServiceImpl implements TtubeotService {
 
     @Override
     public UserTtubeotGraduationInfoListDTO getUserTtubeotGraduationInfoList(int userId) {
-        int graduationStatus = 1;
-        // userId와 졸업 상태를 기준으로 소유 뚜벗 목록을 조회
+        // userId가 소유했던 뚜벗 목록을 조회
         List<UserTtuBeotOwnership> graduatedTtubeots =
-            userTtubeotOwnershipRepository.findAllByUser_UserIdAndTtubeotStatus(userId,
-                graduationStatus);
+            userTtubeotOwnershipRepository.findAllByUser_UserId(userId);
+
+        // 로그 테이블 접근하여 함께한 모험 횟수를 조회 (type = 3)
 
         // 조회된 entity 목록을 dto로 변환
         List<UserTtubeotGraduationInfoDTO> graduationInfoListDTO = graduatedTtubeots.stream()
@@ -160,13 +161,19 @@ public class TtubeotServiceImpl implements TtubeotService {
                 dto.setBreakUp(ownership.getBreakUp());
                 dto.setCreatedAt(ownership.getCreatedAt());
                 dto.setTtubeotId(ownership.getTtubeot().getTtubeotId());
+                dto.setTtubeotStatus(ownership.getTtubeotStatus());
+
+                // 로그테이블에서 모험 횟수 조회
+                int adventureCount = ttubeotLogRepository.countLogsByOwnershipIdAndLogType(
+                    ownership.getUserTtubeotOwnershipId());
+                dto.setAdventureCount(adventureCount); // test위함
                 return dto;
             })
             .collect(Collectors.toList());
 
         // DTO리스트를 UserTtubeotInfoListDTO에 담아서
         UserTtubeotGraduationInfoListDTO response = new UserTtubeotGraduationInfoListDTO();
-        response.setTtubeotGraduationInfoDTOList(graduationInfoListDTO);
+        response.setTtubeotGraduationInfoDtoList(graduationInfoListDTO);
 
         // 정상 졸업한 뚜벗들의 정보를 리스트에 담아 return
         return response;

@@ -12,6 +12,6 @@ public class UserTtubeotGraduationInfoDTO {
     private LocalDateTime createdAt; // 생성일시
     private int ttubeotId; // 뚜벗의 아이디
     private int ttubeotStatus; // 뚜벗의 상태정보
-    private int adventureCount; // 함께한 모험 횟수
+    private int adventureCount; // 함께한 모험 횟수 -> 로그데이터 접근
 
 }
