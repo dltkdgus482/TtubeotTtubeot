@@ -48,12 +48,9 @@ class ImageGenService {
         point.lat,
         point.lng
       );
-      let prompt = await this.aiService.generatePromptFromImageAnalysis(
+      let generatedImageUrl = await this.aiService.generateImageBasedOnPrompt(
         imageUrl,
         1
-      );
-      let generatedImageUrl = await this.aiService.generateImageFromPrompt(
-        prompt || ""
       );
       imageUrls.push(generatedImageUrl);
     }
