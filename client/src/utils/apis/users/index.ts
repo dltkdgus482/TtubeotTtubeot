@@ -1,5 +1,7 @@
 import { defaultRequest, authRequest } from '../request';
 import { Alert } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
+import {SERVER_URL} from '@env'
 
 // [POST] '/user/login'
 // 로그인
@@ -19,6 +21,7 @@ import { Alert } from 'react-native';
 // 	"userId": 1
 // }
 export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
+  console.log(SERVER_URL)
   if (!formData.id || !formData.password) {
     Alert.alert('아이디와 비밀번호를 입력해주세요.');
     return false;
@@ -30,6 +33,7 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
     });
 
     if (loginRes.status === 200) {
+      const userId = loginRes.data.userId;
       const authorizationHeader = loginRes.headers.authorization;
       const accessToken = authorizationHeader
         ? authorizationHeader.replace(/^Bearer\s+/i, '')
@@ -39,6 +43,16 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
         setAccessToken(accessToken); // 유저 액세스 토큰 저장
         setIsLoggedIn(true); // 로그인 상태 설정
         // Alert.alert('로그인에 성공했습니다.'); // todo: 나중에 지워도 될 듯
+
+        // fcm토큰 발급 후 백엔드로 post요청
+        const fcmToken = await messaging().getToken();
+        console.log('[+] FCM Token: ', fcmToken);
+
+        // send FCM
+        await defaultRequest.post(
+          '/user/admin/update-fcm-token',
+          {userId, fcmToken},
+        );
         return loginRes.data.userId; // 로그인된 사용자 ID 반환
       } else {
         Alert.alert('토큰이 존재하지 않습니다.');
@@ -97,40 +111,41 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
 // }
 export const logoutApi = async (accessToken, setAccessToken, setIsLoggedIn) => {
   // 인증된 요청 클라이언트 생성
-  const authClient = authRequest(accessToken, setAccessToken);
-  // console.log('토큰', accessToken)
-  if (!authClient) {
-    throw new Error('유효하지 않은 액세스 토큰입니다.');
-  }
+  setIsLoggedIn(false);
+  setAccessToken(null);
+  // const authClient = authRequest(accessToken, setAccessToken);
+  // // console.log('토큰', accessToken)
+  // if (!authClient) {
+  //   throw new Error('유효하지 않은 액세스 토큰입니다.');
+  // }
 
-  try {
-    const response = await authClient.post('/user/logout');
+  // try {
+  //   const response = await authClient.post('/user/logout');
 
-    if (response.status === 200) {
-      setIsLoggedIn(false); // 로그아웃 상태 설정
-    } else {
-      throw new Error('로그아웃에 실패했습니다. 다시 시도해주세요.');
-    }
-    // setIsLoggedIn(false);
-    // setAccessToken(null);
-  } catch (error) {
-    if (error.response) {
-      switch (error.response.status) {
-        case 400:
-          throw new Error('잘못된 요청 방식입니다.');
-        case 401:
-          throw new Error('잘못된 인증 정보입니다.');
-        case 405:
-          throw new Error('잘못된 API 메소드입니다.');
-        default:
-          throw new Error(
-            '로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.',
-          );
-      }
-    } else {
-      throw new Error('로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.');
-    }
-  }
+  //   if (response.status === 200) {
+  //     setIsLoggedIn(false); // 로그아웃 상태 설정
+  //   } else {
+  //     throw new Error('로그아웃에 실패했습니다. 다시 시도해주세요.');
+  //   }
+
+  // } catch (error) {
+  //   if (error.response) {
+  //     switch (error.response.status) {
+  //       case 400:
+  //         throw new Error('잘못된 요청 방식입니다.');
+  //       case 401:
+  //         throw new Error('잘못된 인증 정보입니다.');
+  //       case 405:
+  //         throw new Error('잘못된 API 메소드입니다.');
+  //       default:
+  //         throw new Error(
+  //           '로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.',
+  //         );
+  //     }
+  //   } else {
+  //     throw new Error('로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.');
+  //   }
+  // }
 };
 
 // 유저 정보 수정
