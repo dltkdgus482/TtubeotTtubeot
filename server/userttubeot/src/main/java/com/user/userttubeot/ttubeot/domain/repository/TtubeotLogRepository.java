@@ -4,6 +4,8 @@ import com.user.userttubeot.ttubeot.domain.model.TtubeotLog;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -14,4 +16,8 @@ public interface TtubeotLogRepository extends JpaRepository<TtubeotLog, Long> {
 
     // 유저의 ID와 날짜 범위 사이의 로그 조회
     List<TtubeotLog> findByUserTtuBeotOwnership_User_UserIdAndCreatedAtBetween(Integer userId, LocalDateTime start, LocalDateTime end);
+
+    // 특정 userTtubeotOwnershipId와 LogType이 3인 로그의 갯수를 반환
+    @Query("SELECT COUNT(t) FROM TtubeotLog t WHERE t.userTtuBeotOwnership.userTtubeotOwnershipId = :ownershipId AND t.ttubeotLogType = 3")
+    int countLogsByOwnershipIdAndLogType(@Param("ownershipId") Long ownershipId);
 }

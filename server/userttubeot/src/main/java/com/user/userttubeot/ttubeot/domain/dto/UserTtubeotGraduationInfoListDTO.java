@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 public class UserTtubeotGraduationInfoListDTO {
 
-    private List<UserTtubeotGraduationInfoDTO> ttubeotGraduationInfoDTOList;
+    private List<UserTtubeotGraduationInfoDTO> ttubeotGraduationInfoDtoList;
 }
