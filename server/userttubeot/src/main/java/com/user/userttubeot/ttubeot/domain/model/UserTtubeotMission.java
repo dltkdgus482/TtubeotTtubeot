@@ -70,5 +70,16 @@ public class UserTtubeotMission {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+    
+    // 행동 수 누적 메서드
+    public void accumulateActionCount(int steps) {
+        this.userTtubeotMissionActionCount += steps;
+    }
+    
+    // 미션 완료 처리 메서드
+    public void completeMission() {
+        this.missionStatus = MissionStatus.COMPLETED;
+        this.userTtubeotMissionActionCount = mission.getMissionTargetCount(); // 최대치로 설정
+    }
 
 }

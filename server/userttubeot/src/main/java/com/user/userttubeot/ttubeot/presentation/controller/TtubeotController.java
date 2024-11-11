@@ -4,6 +4,9 @@ import com.user.userttubeot.ttubeot.application.service.AlertServiceImpl;
 import com.user.userttubeot.ttubeot.application.service.TtubeotService;
 import com.user.userttubeot.ttubeot.application.service.TtubeotServiceImpl;
 import com.user.userttubeot.ttubeot.domain.dto.FcmTokenRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.MissionRenewalRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.MissionRewardRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.MissionRewardResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.RecentBreakupTtubeotResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
@@ -16,9 +19,11 @@ import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistToDbDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistToDbDTO;
+import com.user.userttubeot.ttubeot.global.exception.TtubeotNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -126,6 +131,19 @@ public class TtubeotController {
         }
 
         return ResponseEntity.ok(response);
+    }
+
+    // 미션 진행 중 뚜벗 재화 반영 요청
+    @PostMapping("/auth/ttubeot/adventure/result")
+    public ResponseEntity<?> requestTtubeotAdventureResult(
+        @RequestAttribute("userId") Integer userId, MissionRewardRequestDTO missionRewardRequest) {
+
+        // Service 호출
+        MissionRewardResponseDTO responseDTO = ttubeotService.requestCoin(userId,
+            missionRewardRequest);
+
+        // 성공 응답 반환
+        return ResponseEntity.ok(responseDTO);
     }
 
     /*
