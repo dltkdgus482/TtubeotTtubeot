@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-// @ts-ignore
 import { SERVER_URL } from '@env';
 import { useUser } from '../../store/user';
 
@@ -32,6 +31,7 @@ export const setupInterceptors = (
           try {
             const newToken = await getNewToken();
             setAccessToken(newToken);
+            console.log('newToken', newToken);
             config.headers.Authorization = `Bearer ${newToken}`;
           } catch (error) {
             console.error('토큰 갱신 중 오류 발생:', error);
@@ -88,6 +88,7 @@ export const authRequest = (accessToken, setAccessToken) => {
   const { clearUser } = useUser.getState();
 
   // accessToken 유효성 검사
+  console.log('access token: ' + accessToken);
   if (!accessToken || typeof accessToken !== 'string') {
     console.warn('유효하지 않은 accessToken입니다.');
     clearUser();
