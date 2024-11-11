@@ -322,7 +322,6 @@ public class TtubeotServiceImpl implements TtubeotService {
         // 3. 미션과 미션 진행 정보도 포함하여 DTO로 변환
         List<UserTtubeotMissionResponseDTO> missionDTOs = dailyMissions.stream()
             .map(mission -> {
-                Mission missionInfo = mission.getMission();  // 미션 정보 가져오기
                 return new UserTtubeotMissionResponseDTO(
                     mission.getMissionStatus().name(),
                     mission.getMission().getMissionTheme(),
@@ -330,7 +329,7 @@ public class TtubeotServiceImpl implements TtubeotService {
                     mission.getMission().getMissionTargetCount(),
                     mission.getMission().getMissionName(),
                     mission.getMission().getMissionExplanation(),
-                    missionInfo.getMissionTargetCount()   // 미션 목표 수량
+                    mission.getUserTtubeotMissionActionCount()
                 );
             })
             .collect(Collectors.toList());
@@ -364,7 +363,7 @@ public class TtubeotServiceImpl implements TtubeotService {
                     mission.getMission().getMissionTargetCount(),
                     mission.getMission().getMissionName(),
                     mission.getMission().getMissionExplanation(),
-                    missionInfo.getMissionTargetCount()   // 미션 목표 수량
+                    mission.getUserTtubeotMissionActionCount()  // 미션 목표 수량
                 );
             })
             .collect(Collectors.toList());
