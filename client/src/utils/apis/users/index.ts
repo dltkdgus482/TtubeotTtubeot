@@ -121,41 +121,40 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
 // }
 export const logoutApi = async (accessToken, setAccessToken, setIsLoggedIn) => {
   // 인증된 요청 클라이언트 생성
-  setIsLoggedIn(false);
-  setAccessToken(null);
-  // const authClient = authRequest(accessToken, setAccessToken);
-  // // console.log('토큰', accessToken)
-  // if (!authClient) {
-  //   throw new Error('유효하지 않은 액세스 토큰입니다.');
-  // }
+  const authClient = authRequest(accessToken, setAccessToken);
+  // console.log('토큰', accessToken)
+  if (!authClient) {
+    throw new Error('유효하지 않은 액세스 토큰입니다.');
+  }
 
-  // try {
-  //   const response = await authClient.post('/user/logout');
+  try {
+    const response = await authClient.post('/user/logout');
 
-  //   if (response.status === 200) {
-  //     setIsLoggedIn(false); // 로그아웃 상태 설정
-  //   } else {
-  //     throw new Error('로그아웃에 실패했습니다. 다시 시도해주세요.');
-  //   }
-
-  // } catch (error) {
-  //   if (error.response) {
-  //     switch (error.response.status) {
-  //       case 400:
-  //         throw new Error('잘못된 요청 방식입니다.');
-  //       case 401:
-  //         throw new Error('잘못된 인증 정보입니다.');
-  //       case 405:
-  //         throw new Error('잘못된 API 메소드입니다.');
-  //       default:
-  //         throw new Error(
-  //           '로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.',
-  //         );
-  //     }
-  //   } else {
-  //     throw new Error('로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.');
-  //   }
-  // }
+    if (response.status === 200) {
+      setIsLoggedIn(false); // 로그아웃 상태 설정
+    } else {
+      throw new Error('로그아웃에 실패했습니다. 다시 시도해주세요.');
+    }
+    setIsLoggedIn(false);
+    setAccessToken(null);
+  } catch (error) {
+    if (error.response) {
+      switch (error.response.status) {
+        case 400:
+          throw new Error('잘못된 요청 방식입니다.');
+        case 401:
+          throw new Error('잘못된 인증 정보입니다.');
+        case 405:
+          throw new Error('잘못된 API 메소드입니다.');
+        default:
+          throw new Error(
+            '로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.',
+          );
+      }
+    } else {
+      throw new Error('로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+  }
 };
 
 // 유저 정보 수정
@@ -213,7 +212,7 @@ export const modifyUserInfoApi = async (
     user_goal?: number;
     user_parent?: number;
     password?: string;
-  }
+  },
 ) => {
   try {
     const authClient = authRequest(accessToken, setAccessToken);
@@ -244,7 +243,9 @@ export const modifyUserInfoApi = async (
           Alert.alert('잘못된 API 메소드입니다.');
           break;
         default:
-          Alert.alert('유저 정보 수정 중 오류가 발생했습니다. 다시 시도해주세요.');
+          Alert.alert(
+            '유저 정보 수정 중 오류가 발생했습니다. 다시 시도해주세요.',
+          );
       }
     } else {
       Alert.alert('유저 정보 수정 중 오류가 발생했습니다. 다시 시도해주세요.');
