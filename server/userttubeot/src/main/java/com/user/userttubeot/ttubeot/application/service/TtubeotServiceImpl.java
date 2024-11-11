@@ -91,6 +91,7 @@ public class TtubeotServiceImpl implements TtubeotService {
 
         // DTO로 변환하여 반환
         return UserTtubeotInfoResponseDTO.builder()
+            .ttubeotId(userTtuBeotOwnership.getTtubeot().getTtubeotId())
             .ttubeotType(userTtuBeotOwnership.getTtubeot().getTtubeotType())
             .ttubeotName(userTtuBeotOwnership.getTtubeotName())
             .ttubeotScore(userTtuBeotOwnership.getTtubeotScore())
@@ -130,6 +131,9 @@ public class TtubeotServiceImpl implements TtubeotService {
         Optional<UserTtuBeotOwnership> ownershipOpt = userTtubeotOwnershipRepository.findById(
             ttubeotNameRegisterRequestDTO.getUserTtubeotOwnershipId());
 
+        log.info("DTO에서 전달된 userTtubeotOwnershipId: {}",
+            ttubeotNameRegisterRequestDTO.getUserTtubeotOwnershipId());
+
         if (ownershipOpt.isPresent()) {
             UserTtuBeotOwnership ownership = ownershipOpt.get();
 
@@ -167,7 +171,7 @@ public class TtubeotServiceImpl implements TtubeotService {
                 // 로그테이블에서 모험 횟수 조회
                 int adventureCount = ttubeotLogRepository.countLogsByOwnershipIdAndLogType(
                     ownership.getUserTtubeotOwnershipId());
-                dto.setAdventureCount(adventureCount); // test위함
+                dto.setAdventureCount(adventureCount);
                 return dto;
             })
             .collect(Collectors.toList());

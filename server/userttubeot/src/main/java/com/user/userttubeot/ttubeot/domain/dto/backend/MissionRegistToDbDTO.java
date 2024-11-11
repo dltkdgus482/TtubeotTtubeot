@@ -10,4 +10,5 @@ public class MissionRegistToDbDTO {
     private Integer missionTargetCount; // 미션 달성 목표량
     private Integer missionTheme; // 상호작용 - 0, 모험 - 1, 사회성 - 2
     private Integer missionType; //  일간 - 0, 주간 - 1
+    private Integer missionReward; // 미션 보상
 }
