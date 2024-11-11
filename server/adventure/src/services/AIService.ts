@@ -17,14 +17,60 @@ class AIService {
     this.openai = new OpenAI({ apiKey: openaiApiKey });
   }
 
+  animalPerspectives = [
+    { id: 1, name: "Dog" },
+    { id: 2, name: "Cat" },
+    { id: 3, name: "Chick" },
+    { id: 4, name: "Duck" },
+    { id: 5, name: "Hen" },
+    { id: 6, name: "Rooster" },
+    { id: 7, name: "Dove" },
+    { id: 8, name: "Pigeon" },
+    { id: 9, name: "Parrot" },
+    { id: 10, name: "Crow" },
+    { id: 11, name: "Hornbill" },
+    { id: 12, name: "SnowOwl" },
+    { id: 13, name: "Owl" },
+    { id: 14, name: "Penguin" },
+    { id: 15, name: "Mouse" },
+    { id: 16, name: "SnowWeasel" },
+    { id: 17, name: "Rabbit" },
+    { id: 18, name: "Tortoise" },
+    { id: 19, name: "ArcticFox" },
+    { id: 20, name: "Snake" },
+    { id: 21, name: "GoldFish" },
+    { id: 22, name: "Eagle" },
+    { id: 23, name: "Flamingo" },
+    { id: 24, name: "Ostrich" },
+    { id: 25, name: "Fox" },
+    { id: 26, name: "Hyena" },
+    { id: 27, name: "Cheetah" },
+    { id: 28, name: "Wolf" },
+    { id: 29, name: "Racoon" },
+    { id: 30, name: "Pig" },
+    { id: 31, name: "Hog" },
+    { id: 32, name: "Sheep" },
+    { id: 33, name: "Gazelle" },
+    { id: 34, name: "Reindeer" },
+    { id: 35, name: "Donkey" },
+    { id: 36, name: "Zebra" },
+    { id: 37, name: "Seal" },
+    { id: 38, name: "Walrus" },
+    { id: 39, name: "Cow" },
+    { id: 40, name: "Buffalo" },
+    { id: 41, name: "Ox" },
+    { id: 42, name: "Rhino" },
+    { id: 43, name: "Hippo" },
+    { id: 44, name: "Polarbear" },
+    { id: 45, name: "Elephant" },
+  ];
+
+  // getAnimalPerspective 함수 내에서 animalPerspectives 객체 배열을 참조하여 값을 반환하도록 구현
   private getAnimalPerspective(ttubeotId: number): string {
-    const perspectives: { [key: number]: string } = {
-      1: "seal",
-      2: "dog",
-      3: "fox",
-      4: "rabbit",
-    };
-    return perspectives[ttubeotId] || "animal";
+    const animal = this.animalPerspectives.find(
+      (item) => item.id === ttubeotId
+    );
+    return animal ? animal.name : "animal";
   }
 
   public async image2image(init_image_url: string): Promise<string> {
@@ -127,10 +173,44 @@ class AIService {
     ttubeotId: number
   ): Promise<string> {
     const animalPerspective = this.getAnimalPerspective(ttubeotId);
-    const perspectiveHeight = ["seal", "dog", "fox", "rabbit"].includes(
-      animalPerspective
-    )
+    const lowHeightAnimals = [
+      "seal",
+      "dog",
+      "fox",
+      "rabbit",
+      "cat",
+      "chick",
+      "duck",
+      "hen",
+      "mouse",
+      "snowweasel",
+      "tortoise",
+      "arcticfox",
+      "snake",
+      "goldfish",
+    ];
+
+    const mediumHeightAnimals = [
+      "eagle",
+      "flamingo",
+      "ostrich",
+      "hyena",
+      "cheetah",
+      "wolf",
+      "racoon",
+      "pig",
+      "hog",
+      "sheep",
+      "gazelle",
+      "reindeer",
+      "donkey",
+      "zebra",
+    ];
+
+    const perspectiveHeight = lowHeightAnimals.includes(animalPerspective)
       ? "low"
+      : mediumHeightAnimals.includes(animalPerspective)
+      ? "medium"
       : "high";
 
     const analyzedImage = await this.analyzeImage(imageUrl);
