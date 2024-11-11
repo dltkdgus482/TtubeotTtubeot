@@ -77,9 +77,14 @@ public class UserTtubeotMission {
     }
     
     // 미션 완료 처리 메서드
-    public void completeMission() {
+    public void completeMission(LocalDateTime breakUp) {
         this.missionStatus = MissionStatus.COMPLETED;
         this.userTtubeotMissionActionCount = mission.getMissionTargetCount(); // 최대치로 설정
+        this.breakUp = breakUp;
+    }
+
+    public void updateUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
 }

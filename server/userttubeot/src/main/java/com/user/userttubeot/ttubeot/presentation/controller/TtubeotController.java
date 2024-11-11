@@ -136,7 +136,8 @@ public class TtubeotController {
     // 미션 진행 중 뚜벗 재화 반영 요청
     @PostMapping("/auth/ttubeot/adventure/result")
     public ResponseEntity<?> requestTtubeotAdventureResult(
-        @RequestAttribute("userId") Integer userId, MissionRewardRequestDTO missionRewardRequest) {
+        @RequestAttribute("userId") Integer userId,
+        @RequestBody MissionRewardRequestDTO missionRewardRequest) {
 
         // Service 호출
         MissionRewardResponseDTO responseDTO = ttubeotService.requestCoin(userId,
