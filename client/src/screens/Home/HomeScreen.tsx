@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useCallback, useRef, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
   Image,
@@ -48,7 +49,7 @@ const HomeScreen = () => {
   const { accessToken, setAccessToken } = useUser.getState();
 
   const webViewRef = useRef(null);
-  const [inputValue, setInputValue] = useState<any>(46);
+  // const [inputValue, setInputValue] = useState<any>(46);
 
   const openShopModal = () => {
     setModalVisible(true);
@@ -90,27 +91,26 @@ const HomeScreen = () => {
     setBLEModalVisible(false);
   };
 
-  useEffect(() => {
-    if (user) {
-      const fetchUserTtubeot = async () => {
-        const res = await getTtubeotDetail(
-          user.userId,
-          accessToken,
-          setAccessToken,
-        );
-        if (res === null) {
-          setTtubeotId(46);
-        } else {
-          setTtubeotId(res.ttubeot_type);
-        }
-      };
-      fetchUserTtubeot();
+  const fetchUserTtubeot = async () => {
+    const res = await getTtubeotDetail(
+      user.userId,
+      accessToken,
+      setAccessToken,
+    );
+    if (res === null) {
+      setTtubeotId(46);
+    } else {
+      setTtubeotId(res.ttubeotType);
     }
-  }, [user]);
-
-  useEffect(() => {
     sendId(ttubeotId);
-  }, [ttubeotId]);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserTtubeot();
+      sendId(ttubeotId);
+    }, [user, ttubeotId]),
+  );
 
   const sendId = (id: number) => {
     if (webViewRef.current && id > 0 && id <= 46) {
@@ -214,16 +214,6 @@ const HomeScreen = () => {
           </TouchableOpacity>
         </View>
       )}
-      <View style={{ position: 'absolute', top: 200, left: '50%' }}>
-        <StyledTextInput
-          value={inputValue}
-          onChangeText={setInputValue}
-          keyboardType="numeric"
-        />
-        <TouchableOpacity onPress={() => sendId(inputValue)}>
-          <ButtonFlat content="변경" />
-        </TouchableOpacity>
-      </View>
 
       {/* 프로필 컨테이너 */}
       <View style={styles.profileContainer}>

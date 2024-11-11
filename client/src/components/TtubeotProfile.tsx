@@ -111,7 +111,7 @@ const TtubeotProfile = () => {
         setTtubeotId(46);
       } else {
         setTtubeotData(res);
-        setTtubeotId(res.ttubeot_type);
+        setTtubeotId(res.ttubeotType);
         setIsLoading(false);
       }
     };
@@ -125,7 +125,7 @@ const TtubeotProfile = () => {
           <Shadow />
           <ProfileDetails>
             <ProfileTop>
-              <ProfileName bold>{ttubeotData?.ttubeot_name}</ProfileName>
+              <ProfileName bold>{ttubeotData?.ttubeotName}</ProfileName>
               <RemainDays bold>D-4</RemainDays>
             </ProfileTop>
             <ProfileBottom>
@@ -144,7 +144,7 @@ const TtubeotProfile = () => {
                 </View>
               </View>
               <StyledText color="white" bold>
-                {ttubeotData?.ttubeot_score} 걸음
+                {ttubeotData?.ttubeotScore} 걸음
               </StyledText>
             </ProfileBottom>
           </ProfileDetails>

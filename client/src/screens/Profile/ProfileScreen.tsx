@@ -67,11 +67,11 @@ const ProfileScreen = () => {
     setIsGPSOn(!isGPSOn); // 로컬 상태 업데이트
 
     try {
-      const success = await modifyUserInfoApi(accessToken, setAccessToken, {
+      const response = await modifyUserInfoApi(accessToken, setAccessToken, {
         user_location_agreement: newLocationAgreement,
       });
 
-      if (success) {
+      if (response) {
         setUser({ ...user, userLocationAgreement: newLocationAgreement });
       }
     } catch (error) {
