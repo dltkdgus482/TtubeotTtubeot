@@ -127,7 +127,7 @@ public class TtubeotController {
         RecentBreakupTtubeotResponseDTO response = ttubeotService.getRecentBreakUpTtubeot(userId);
         // 최근에 헤어진 뚜벗이 없을 경우
         if (response == null) {
-            return ResponseEntity.ok().body("최근에 헤어진 뚜벗이 없습니다.");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
 
         return ResponseEntity.ok(response);
