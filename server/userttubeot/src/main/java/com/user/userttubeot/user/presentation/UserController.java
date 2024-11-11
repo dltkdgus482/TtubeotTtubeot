@@ -158,16 +158,15 @@ public class UserController {
     }
 
     @PatchMapping("/change-password")
-    public ResponseEntity<?> changePassword(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ResponseEntity<?> changePassword(
         @RequestBody @Valid UserChangePasswordRequestDto dto) {
 
-        Integer userId = userDetails.getUserId();
         String userPhone = dto.getPhone();
         String newPassword = dto.getPassword();
 
         log.info("비밀번호 변경 요청 - 사용자 전화번호: {}", userPhone);
         try {
-            userService.changePassword(userId, userPhone, newPassword);
+            userService.changePassword(userPhone, newPassword);
             log.info("비밀번호 변경 성공 - 사용자 전화번호: {}", userPhone);
             return ResponseEntity.ok(new ResponseMessage("비밀번호가 성공적으로 변경되었습니다."));
         } catch (UserNotFoundException e) {
