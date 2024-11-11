@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -28,7 +28,7 @@ const theme = {
 };
 
 function App(): React.JSX.Element {
-  const {isLoggedIn} = useUser();
+  const { isLoggedIn } = useUser();
   console.log(isLoggedIn);
   return (
     <ThemeProvider theme={theme}>
@@ -45,9 +45,21 @@ function App(): React.JSX.Element {
         ) : (
           <NavigationContainer>
             <Stack.Navigator>
-              <Stack.Screen name="IntroScreen" component={IntroScreen} options={{ headerShown: false }}/>
-              <Stack.Screen name="SignUpScreen" component={SignUpScreen} options={{ headerShown: false }}/>
-              <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }}/>
+              <Stack.Screen
+                name="IntroScreen"
+                component={IntroScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="SignUpScreen"
+                component={SignUpScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="LoginScreen"
+                component={LoginScreen}
+                options={{ headerShown: false }}
+              />
             </Stack.Navigator>
           </NavigationContainer>
         )}

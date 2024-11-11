@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Image, ScrollView } from 'react-native';
 import styles from './RankingScreen.styles';
 import StyledText from '../../styles/StyledText';
 import RankingScreenButtonContainer from './RankingScreenButtonContainer';
 import { dummyRankingList } from './dummyData';
 import { getRankingInfo } from '../../utils/apis/Ranking/getRankingInfo';
-import { useUser } from '../../store/user';
 
 const IntroTtubeotRabbit = require('../../assets/ttubeot/IntroTtubeotRabbit.png');
 const gold = require('../../assets/medals/gold.png');
@@ -22,7 +21,6 @@ interface RankingProps {
 
 const RankingScreen = () => {
   const [selected, setSelected] = useState('뚜벗 랭킹');
-  const { accessToken, setAccessToken } = useUser.getState();
   const [rankingList, setRankingList] =
     useState<RankingProps[]>(dummyRankingList);
 
@@ -30,7 +28,7 @@ const RankingScreen = () => {
     setRankingList(dummyRankingList);
 
     const fetchRankingInfo = async () => {
-      const res = await getRankingInfo(accessToken, setAccessToken);
+      const res = await getRankingInfo();
       // setRankingList(res);
       console.log('rankingInfo', res);
     };

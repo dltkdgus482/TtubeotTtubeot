@@ -7,12 +7,8 @@ interface RankingProps {
   ttubeot_id: number;
 }
 
-export const getRankingInfo = async (
-  accessToken: string,
-  setAccessToken: (accessToken: string) => void,
-): Promise<RankingProps[]> => {
+export const getRankingInfo = async (): Promise<RankingProps[]> => {
   try {
-    // const authClient = authRequest(accessToken, setAccessToken);
     const res = await defaultRequest.get('/user/ranking');
     return res.data;
   } catch (error) {

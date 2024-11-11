@@ -88,6 +88,23 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   const isScanning = useRef<boolean>(false);
   const isAdvertising = useRef<boolean>(false);
 
+  const debounce = (func, wait) => {
+    let timeout;
+    return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        func(...args);
+      }, wait);
+    };
+  };
+
+  const debouncedSetDevices = useCallback(
+    debounce(newDevices => {
+      setDevices(newDevices);
+    }, 500),
+    [],
+  );
+
   // BLE 관련 권한 요청
   useEffect(() => {
     BleManager.start({ showAlert: false }).then(() => {
@@ -113,7 +130,7 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     if (isScanning.current === true) return;
 
     isScanning.current = true;
-    BleManager.scan([], 300, true, {
+    BleManager.scan([], 10000, true, {
       matchMode: BleScanMatchMode.Sticky,
       scanMode: BleScanMode.LowLatency,
       callbackType: BleScanCallbackType.AllMatches,
@@ -149,7 +166,10 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     const messageBytes = stringToByteArray(message);
 
     BLEAdvertiser.setCompanyId(0x004c);
-    BLEAdvertiser.broadcast(SERVICE_UUID, messageBytes, {})
+    BLEAdvertiser.broadcast(SERVICE_UUID, messageBytes, {
+      txPowerLevel: 1,
+      connectable: false,
+    })
       .then(() => {
         console.log('startAdvertising');
       })
@@ -176,10 +196,10 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     if (peripheral.advertising.serviceUUIDs?.includes(SERVICE_UUID)) {
       console.log('주변 사용자 감지', peripheral);
 
-      setDevices(prevDevices => {
+      debouncedSetDevices(prevDevices => {
         const exists = prevDevices.some(device => device.id === peripheral.id);
 
-        if (exists === false) {
+        if (!exists) {
           const updatedDevices = [...prevDevices, peripheral];
           devicesRef.current = updatedDevices;
           return updatedDevices;
@@ -223,6 +243,8 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       socketRef.current = AdventureManager.getInstance();
 
       socketRef.current.addAdventureUserListener(data => {
+        console.log('addAdventureUserLstener:', data);
+
         setNearbyUsers(prevUsers => {
           const isDifferent = data.users.some(
             (newUser, index) =>
@@ -236,6 +258,10 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
         console.log('addAdventureResultListener:', data);
 
         // 모험 결과 수신 시 모달 띄우기
+      });
+
+      socketRef.current.addAdventureParkListener(data => {
+        console.log('addAdventureParkListener:', data.parks);
       });
 
       socketRef.current.addAdventureRequestListener(data => {
@@ -254,13 +280,6 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
         setIsNfcTagged(false);
       });
     }
-
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.removeAllListeners();
-        AdventureManager.destory();
-      }
-    };
   }, []);
 
   const fetchUsername = async (userId: number) => {
@@ -275,10 +294,11 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   useEffect(() => {
     console.log('useEffect nearbyUsers', nearbyUsers.length);
     // 30m 이내 사용자 필터링
-    setVeryNearbyUsers(nearbyUsers.filter(user => user.distance < 30));
+    const filteredUsers = nearbyUsers.filter(user => user.distance < 30);
+    setVeryNearbyUsers(filteredUsers);
 
     // 30m 이내 사용자 있을 경우 스캔, 광고 시작
-    if (nearbyUsers.length === 0 || nearbyUsers.length === 1) {
+    if (nearbyUsers.length === 0) {
       if (isScanning.current === true) {
         stopScanning();
       }
@@ -409,19 +429,8 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     );
   }, [location]);
 
-  const debounce = (func, wait) => {
-    let timeout;
-    return function (...args) {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        func(...args);
-      }, wait);
-    };
-  };
-
   const debouncedHandleRegionChange = useCallback(
     debounce(updatedRegion => {
-      console.log('here');
       setRegion(updatedRegion);
     }, 2000),
     [setRegion],

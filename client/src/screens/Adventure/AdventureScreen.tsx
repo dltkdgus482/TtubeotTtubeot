@@ -103,6 +103,7 @@ const AdventureScreen = () => {
   };
 
   const stopStepCounter = () => {
+    // 서버에 미션 갱신 요청
     RnSensorStep.stop();
     setSteps(0);
     setInitialSteps(null);
@@ -142,6 +143,7 @@ const AdventureScreen = () => {
   const closeModal = () => {
     setModalVisible(false);
     setAdventureStart(!adventureStart);
+
     // setTimeout(() => {
     //   Animated.timing(opacityAnim, {
     //     toValue: adventureStart ? 0.65 : 0.3,

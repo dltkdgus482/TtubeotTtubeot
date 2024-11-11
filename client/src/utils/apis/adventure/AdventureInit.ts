@@ -43,7 +43,7 @@ const useAdventureSocket = () => {
       // AdventureManager 초기화 및 소켓 인스턴스 전달
       AdventureManager.initialize(socketRef.current!);
     });
-  }, [accessToken, setAccessToken]);
+  }, [accessToken]);
 
   const disconnectSocket = useCallback(() => {
     if (socketRef.current) {
@@ -54,8 +54,9 @@ const useAdventureSocket = () => {
 
         socketRef.current?.disconnect();
         console.log('소켓 연결이 종료되었습니다.');
-        socketRef.current = null;
         AdventureManager.destory();
+        socketRef.current.removeAllListeners();
+        socketRef.current = null;
       });
     }
   }, []);

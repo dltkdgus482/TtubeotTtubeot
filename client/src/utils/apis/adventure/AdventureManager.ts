@@ -95,7 +95,7 @@ class AdventureManager {
   // 위치 정보 전송 메서드
   public sendPosition(data: PositionData) {
     this.socket.emit('adventure_info', data);
-    // console.log('adventure_info event를 전송합니다. ', data);
+    console.log('adventure_info event를 전송합니다. ', data);
   }
 
   // 모험 종료 알림 전송 메서드

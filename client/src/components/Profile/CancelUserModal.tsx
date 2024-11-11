@@ -50,15 +50,12 @@ const CancelUserModal = ({
             </StyledText>
             <View style={styles.modalButtonContainer}>
               <Pressable style={styles.cancelButton}>
-                <StyledText bold color="#7C7C7C" onPress={closeModal}>취소</StyledText>
+                <StyledText bold color="#7C7C7C" onPress={closeModal}>
+                  취소
+                </StyledText>
               </Pressable>
               <Pressable style={styles.confirmButton}>
-                <StyledText
-                  color="white"
-                  bold
-                  onPress={() => {
-                    handleCancelUser;
-                  }}>
+                <StyledText color="white" bold onPress={handleCancelUser}>
                   탈퇴
                 </StyledText>
               </Pressable>

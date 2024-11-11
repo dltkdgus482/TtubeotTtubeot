@@ -12,7 +12,7 @@ interface WeeklyMissionProps {
 export const getDailyMissionList = async (
   accessToken: string,
   setAccessToken: (accessToken: string) => void,
-): Promise<DailyMissionProps[]> => {
+) => {
   try {
     const authClient = authRequest(accessToken, setAccessToken);
     const res = await authClient.get('/user/auth/ttubeot/daily');
@@ -33,7 +33,7 @@ export const getDailyMissionList = async (
 export const getWeeklyMissionList = async (
   accessToken: string,
   setAccessToken: (accessToken: string) => void,
-): Promise<WeeklyMissionProps[]> => {
+) => {
   try {
     const authClient = authRequest(accessToken, setAccessToken);
     const res = await authClient.get('/user/auth/ttubeot/weekly');

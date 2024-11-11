@@ -18,8 +18,6 @@ type IconType =
   | 'Octicons'
   | undefined;
 
-import { useEffect, useState } from 'react';
-
 const BottomTabNavigator = () => {
   return (
     <Tab.Navigator
