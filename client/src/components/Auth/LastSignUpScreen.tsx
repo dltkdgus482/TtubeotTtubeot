@@ -61,17 +61,20 @@ const LastSignUpScreen: React.FC<LastSignUpScreenProps> = ({ onBack }) => {
       user_location_agreement: user.userLocationAgreement,
       user_type: user.userType,
     };
-
-    const response = await signUpApi(formData);
-    if (response) {
-      setUser({
-        ...user,
-        userName: userNameInput,
-      });
-      Alert.alert('회원가입이 완료되었습니다.');
-      console.log('회원가입 완료', user);
-      // 회원가입 성공 시 인트로 스크린으로 이동
-      navigation.navigate('IntroScreen');
+    try {
+      const response = await signUpApi(formData);
+      if (response) {
+        setUser({
+          ...user,
+          userName: userNameInput,
+        });
+        Alert.alert('회원가입이 완료되었습니다.');
+        console.log('회원가입 완료', user);
+        // 회원가입 성공 시 인트로 스크린으로 이동
+        navigation.navigate('IntroScreen');
+      }
+    } catch (error) {
+      Alert.alert('회원 가입 중 오류가 발생했습니다.', error.message);
     }
   };
 

@@ -46,7 +46,6 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const [BLEModalVisible, setBLEModalVisible] = useState(false);
   const [characterList, setCharacterList] = useState([]);
-  const { accessToken, setAccessToken } = useUser.getState();
 
   const webViewRef = useRef(null);
   // const [inputValue, setInputValue] = useState<any>(46);
