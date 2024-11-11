@@ -1,25 +1,10 @@
-import { defaultRequest, authRequest } from '../request';
+import { defaultRequest } from '../request';
 import { Alert } from 'react-native';
 
-// 비밀번호 재설정 api
-// request header
-// {
-// 	"Authorization": Bearer `{accessToken}`,
-// }
-// request body
-// {
-// 	"phone": "01012341234",
-// 	"password": "얄리얄리얄량셩",
-// }
-export const changePasswordApi = async (phone, password, accessToken, setAccessToken) => {
+// 비밀번호 재설정
+export const changePasswordApi = async (phone: string, password: string) => {
   try {
-    const authClient = authRequest(accessToken, setAccessToken);
-    if (!authClient) {
-      Alert.alert('유효하지 않은 accessToken입니다.');
-      return false;
-    }
-
-    const response = await authClient.patch('/user/change-password', {
+    const response = await defaultRequest.patch('/user/change-password', {
       phone,
       password,
     });
@@ -37,5 +22,3 @@ export const changePasswordApi = async (phone, password, accessToken, setAccessT
     return false;
   }
 };
-
-

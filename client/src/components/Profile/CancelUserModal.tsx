@@ -18,9 +18,9 @@ const CancelUserModal = ({
 
   const handleCancelUser = async () => {
     // 회원 탈퇴 API 호출
-    const success = await deleteUserApi(accessToken, setAccessToken);
+    const response = await deleteUserApi(accessToken, setAccessToken);
 
-    if (success) {
+    if (response) {
       // 탈퇴 성공 시 로그아웃 처리 및 모달 닫기
       clearUser();
       closeModal();
@@ -50,7 +50,9 @@ const CancelUserModal = ({
             </StyledText>
             <View style={styles.modalButtonContainer}>
               <Pressable style={styles.cancelButton}>
-                <StyledText bold color="#7C7C7C" onPress={closeModal}>취소</StyledText>
+                <StyledText bold color="#7C7C7C" onPress={closeModal}>
+                  취소
+                </StyledText>
               </Pressable>
               <Pressable style={styles.confirmButton}>
                 <StyledText

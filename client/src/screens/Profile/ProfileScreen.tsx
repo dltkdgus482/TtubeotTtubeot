@@ -94,7 +94,7 @@ const ProfileScreen = () => {
 
   const handleLogout = async () => {
     try {
-      await logoutApi(accessToken, setAccessToken, setIsLoggedIn);
+      await logoutApi(user.phoneNumber);
       clearUser(); // 로그아웃 후 사용자 상태 초기화
       Alert.alert('로그아웃 되었습니다.');
     } catch (error) {

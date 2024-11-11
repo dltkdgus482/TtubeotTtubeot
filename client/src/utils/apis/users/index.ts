@@ -1,25 +1,9 @@
 import { defaultRequest, authRequest } from '../request';
 import { Alert } from 'react-native';
-import { SERVER_URL } from '@env';
 import { useUser } from '../../../store/user';
 
 // [POST] '/user/login'
 // 로그인
-// request body
-// {
-// 	"user_phone" : String,
-// 	"password" : String,
-// }
-
-// response
-// - Header (StatusCode가 200인 경우에만)
-// Authorization: `Bearer: ${access_token}`
-// Set-Cookie: `refresh token: ${refresh_token}`
-// - body
-// {
-// 	"message": "",
-// 	"userId": 1
-// }
 export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
   // console.log(SERVER_URL);
   if (!formData.id || !formData.password) {
@@ -42,7 +26,6 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
       if (accessToken) {
         setAccessToken(accessToken); // 유저 액세스 토큰 저장
         setIsLoggedIn(true); // 로그인 상태 설정
-        // Alert.alert('로그인에 성공했습니다.'); // todo: 나중에 지워도 될 듯
         return loginRes.data.userId; // 로그인된 사용자 ID 반환
       } else {
         Alert.alert('토큰이 존재하지 않습니다.');
@@ -79,44 +62,18 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
   }
 };
 
+// [POST] '/user/logout'
 // 로그아웃
-// 요청 Header
-// {
-// 	"Authorization": Bearer `{accessToken}`,
-// }
-// response
-// Status Code
-// 200	정상처리
-// 400	잘못된 요청 방식
-// 401	잘못된 인증 정보
-// 405	잘못된 API Method
-// response
-// 성공
-// {
-// 	"message": ""
-// }
-// 실패
-// {
-// 	"message": "사용자 검증에 실패했습니다."
-// }
-export const logoutApi = async (accessToken, setAccessToken, setIsLoggedIn) => {
-  // 인증된 요청 클라이언트 생성
-  const authClient = authRequest(accessToken, setAccessToken);
-  // console.log('토큰', accessToken)
-  if (!authClient) {
-    throw new Error('유효하지 않은 액세스 토큰입니다.');
-  }
-
+export const logoutApi = async (userPhone: string) => {
   try {
-    const response = await authClient.post('/user/logout');
-
+    const response = await defaultRequest.post('/user/logout', {
+      userPhone: userPhone,
+    });
     if (response.status === 200) {
-      setIsLoggedIn(false); // 로그아웃 상태 설정
+      return true;
     } else {
       throw new Error('로그아웃에 실패했습니다. 다시 시도해주세요.');
     }
-    setIsLoggedIn(false);
-    setAccessToken(null);
   } catch (error) {
     if (error.response) {
       switch (error.response.status) {
@@ -137,53 +94,8 @@ export const logoutApi = async (accessToken, setAccessToken, setIsLoggedIn) => {
   }
 };
 
+// [patch] '/user/me'
 // 유저 정보 수정
-// 요청 header
-// {
-// 	"Authorization": Bearer `{accessToken}`,
-// }
-// 요청 body
-// {
-// 	"user_location_agreement": ${위치정보제공동의 / tinyint},
-// 	"user_parent": ${부모 유저 id / int}
-// }
-// 위 정보들은 다 있을 필요 없음(비번만 바꿀거면 비번만 담아서,,)
-// - 유저 정보 리스트
-// {
-// 	"user_location_agreement": 1,
-// 	"user_goal": 10000,
-// 	"user_parent": 123,
-// }
-// Status Code
-// 200	정상처리
-// 400	잘못된 요청 방식
-// 401	잘못된 인증 정보
-// 405	잘못된 API Method
-// response body
-// {
-// 	"message": ""
-// }
-
-// {
-// 	"message": "사용자 검증에 실패했습니다."
-// }
-// export const modifyUserInfo = async (accessToken, setAccessToken) => {
-//   try {
-//     const authClient = authRequest(accessToken, setAccessToken);
-//     if (!authClient) {
-//       Alert.alert('유효하지 않은 accessToken입니다.');
-//       return false;
-//     }
-
-//     const response = await authClient.patch('/user/me', {
-//       // todo: 추가
-//     });
-//   } catch (error) {
-
-//   }
-// };
-
-// 유저 정보 수정 API
 export const modifyUserInfoApi = async (
   accessToken: string,
   setAccessToken: (newToken: string) => void,
@@ -234,20 +146,7 @@ export const modifyUserInfoApi = async (
   }
 };
 
-// Header
-// {
-// 	"Authorization": Bearer `{accessToken}`,
-// }
-
-// response
-// {
-// 	"user_name": "asdfasdsfa",
-// 	"user_phone": "01084964116",
-// 	"user_location_agreement": 1,
-// 	"user_goal": 10000,
-// 	"user_coin": 100,
-// 	"user_parent": 123,
-// }
+// [get] '/user/profile'
 // 프로필 정보 조회
 export const getInfoApi = async (accessToken, setAccessToken) => {
   const authClient = authRequest(accessToken, setAccessToken);
@@ -262,25 +161,8 @@ export const getInfoApi = async (accessToken, setAccessToken) => {
   }
 };
 
+// [delete] '/user/me'
 // 회원 탈퇴
-// 요청 Header
-// {
-// 	"Authorization": Bearer `{accessToken}`,
-// }
-// 응답 Status Code
-// 200	정상처리
-// 400	잘못된 요청 방식
-// 401	잘못된 인증 정보
-// 405	잘못된 API Method
-// response body
-// 성공 시
-// {
-// 	"message": ""
-// }
-// 실패 시
-// {
-// 	"message": "사용자 검증에 실패했습니다."
-// }
 export const deleteUserApi = async (accessToken, setAccessToken) => {
   const authClient = authRequest(accessToken, setAccessToken);
 
