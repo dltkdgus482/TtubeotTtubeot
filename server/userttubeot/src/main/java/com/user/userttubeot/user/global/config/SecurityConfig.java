@@ -80,7 +80,7 @@ public class SecurityConfig {
             .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
 
         http
-            .addFilterBefore(new CustomLogoutFilter(jwtUtil, redisService, cookieUtil),
+            .addFilterBefore(new CustomLogoutFilter(redisService, cookieUtil),
                 LogoutFilter.class);
 
         http
