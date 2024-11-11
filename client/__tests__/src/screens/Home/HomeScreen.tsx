@@ -12,7 +12,7 @@ import {
 import styles from './HomeScreen.styles';
 import TtubeotProfile from '../../components/TtubeotProfile';
 import CharacterShopModal from '../../components/CharacterShop/CharacterShopModal';
-import GraduationAlbumModal from '../../components/GraduationAlbum/GraduationAlbumModal';
+import AlbumModal from '../../components/Album/AlbumModal';
 import MissionModal from '../../components/Mission/MissionModal.tsx';
 import WebView from 'react-native-webview';
 
@@ -23,8 +23,7 @@ const AlbumIcon = require('../../assets/icons/AlbumIcon.png');
 
 const HomeScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [graduationAlbumModalVisible, setGraduationAlbumModalVisible] =
-    useState(false);
+  const [albumModalVisible, setAlbumModalVisible] = useState(false);
   const [missionModalVisible, setMissionModalVisible] = useState(false);
 
   const openShopModal = () => {
@@ -36,11 +35,11 @@ const HomeScreen = () => {
   };
 
   const openAlbumModal = () => {
-    setGraduationAlbumModalVisible(true);
+    setAlbumModalVisible(true);
   };
 
   const closeAlbumModal = () => {
-    setGraduationAlbumModalVisible(false);
+    setAlbumModalVisible(false);
   };
 
   const openMissionModal = () => {
@@ -111,8 +110,8 @@ const HomeScreen = () => {
         closeMissionModal={closeMissionModal}
       />
 
-      <GraduationAlbumModal
-        modalVisible={graduationAlbumModalVisible}
+      <AlbumModal
+        modalVisible={albumModalVisible}
         closeAlbumModal={closeAlbumModal}
       />
       {/* WebView로 3D 모델 표시 */}
