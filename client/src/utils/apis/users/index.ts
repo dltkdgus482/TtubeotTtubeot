@@ -22,17 +22,25 @@ import {SERVER_URL} from '@env'
 // }
 export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
   console.log(SERVER_URL)
+  // 요청 전 폼 데이터 확인
+  console.log('[+] Sending login request with data:', formData);
   if (!formData.id || !formData.password) {
     Alert.alert('아이디와 비밀번호를 입력해주세요.');
     return false;
   }
   try {
+    console.log('[POST Request to]:', `${SERVER_URL}/user/login`);
     const loginRes = await defaultRequest.post('/user/login', {
       user_phone: formData.id,
       password: formData.password,
     });
 
+    // 응답 성공 로그
+    console.log('[Response Status]:', loginRes.status);
+    console.log('[Response Headers]:', loginRes.headers);
+    console.log('[Response Data]:', loginRes.data);
     if (loginRes.status === 200) {
+      
       const userId = loginRes.data.userId;
       const authorizationHeader = loginRes.headers.authorization;
       const accessToken = authorizationHeader
@@ -44,15 +52,17 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
         setIsLoggedIn(true); // 로그인 상태 설정
         // Alert.alert('로그인에 성공했습니다.'); // todo: 나중에 지워도 될 듯
 
-        // fcm토큰 발급 후 백엔드로 post요청
+        //fcm토큰 발급 후 백엔드로 post요청
         const fcmToken = await messaging().getToken();
         console.log('[+] FCM Token: ', fcmToken);
 
         // send FCM
-        await defaultRequest.post(
+        const response = await defaultRequest.post(
           '/user/admin/update-fcm-token',
           {userId, fcmToken},
         );
+
+        console.log('[+] FCM Token 전송 성공:', response.data);
         return loginRes.data.userId; // 로그인된 사용자 ID 반환
       } else {
         Alert.alert('토큰이 존재하지 않습니다.');
@@ -84,7 +94,7 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
     } else {
       Alert.alert('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
-    console.error('로그인 요청 중 오류 발생:', error);
+    console.error('로그인 요청 중 오류 발생:', error.message);
     return false;
   }
 };
