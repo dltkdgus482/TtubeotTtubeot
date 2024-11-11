@@ -44,6 +44,9 @@ public class Mission {
     @Column(name = "mission_theme", nullable = false)
     private Integer missionTheme; // 상호작용 - 0, 모험 - 1, 사회성 - 2
 
+    @Column(name = "mission_reward", nullable = false)
+    private Integer missionReward;
+
     @OneToMany(mappedBy = "mission", fetch = FetchType.LAZY)
     private List<UserTtubeotMission> userTtubeotMissions = new ArrayList<>();
 
@@ -55,6 +58,7 @@ public class Mission {
             .missionTargetCount(dto.getMissionTargetCount())
             .missionType(dto.getMissionType())
             .missionTheme(dto.getMissionTheme())
+            .missionReward(dto.getMissionReward())
             .build();
     }
 }

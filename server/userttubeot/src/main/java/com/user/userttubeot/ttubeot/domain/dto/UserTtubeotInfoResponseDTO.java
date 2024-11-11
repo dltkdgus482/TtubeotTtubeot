@@ -8,6 +8,7 @@ import lombok.Data;
 @Builder
 public class UserTtubeotInfoResponseDTO {
 
+    private Integer ttubeotId;
     private Integer ttubeotType;
     private String ttubeotImage;
     private String ttubeotName;
