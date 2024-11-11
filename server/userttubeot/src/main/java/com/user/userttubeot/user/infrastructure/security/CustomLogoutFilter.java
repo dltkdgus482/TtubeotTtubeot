@@ -37,16 +37,16 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
 
-        // 요청 바디에서 userphone 값을 추출
-        String userphone = extractUserphoneFromRequest(request);
-        if (userphone == null || userphone.isEmpty()) {
-            log.warn("로그아웃 실패 - userphone이 없습니다.");
+        // 요청 바디에서 userPhone 값을 추출
+        String userPhone = extractUserPhoneFromRequest(request);
+        if (userPhone == null || userPhone.isEmpty()) {
+            log.warn("로그아웃 실패 userPhone 이 없습니다.");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         // 리프레시 토큰을 Redis에서 삭제
-        performLogout(response, userphone);
+        performLogout(response, userPhone);
         log.info("로그아웃 성공 - 리프레시 토큰 제거 완료");
     }
 
@@ -55,9 +55,9 @@ public class CustomLogoutFilter extends GenericFilterBean {
     }
 
     /**
-     * 요청 바디에서 userphone을 추출하는 메서드
+     * 요청 바디에서 userPhone 을 추출하는 메서드
      */
-    private String extractUserphoneFromRequest(HttpServletRequest request) {
+    private String extractUserPhoneFromRequest(HttpServletRequest request) {
         try {
             StringBuilder stringBuilder = new StringBuilder();
             BufferedReader reader = request.getReader();
@@ -71,29 +71,30 @@ public class CustomLogoutFilter extends GenericFilterBean {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.readTree(body);
 
-            // userphone 필드가 있는지 확인
-            JsonNode userphoneNode = jsonNode.get("userphone");
-            if (userphoneNode != null) {
-                return userphoneNode.asText();
+            // userPhone 필드가 있는지 확인
+            JsonNode userPhoneNode = jsonNode.get("userPhone");
+            if (userPhoneNode != null) {
+                return userPhoneNode.asText();
             } else {
-                log.warn("userphone 필드가 요청 바디에 없습니다.");
+                log.warn("userPhone 필드가 요청 바디에 없습니다.");
                 return null;
             }
         } catch (IOException e) {
-            log.error("요청 바디에서 userphone을 추출하는 중 오류 발생", e);
+            log.error("요청 바디에서 userPhone 을 추출하는 중 오류 발생", e);
             return null;
         }
     }
 
 
     private void performLogout(HttpServletResponse response, String userPhone) {
-        // Redis에서 userphone을 키로 사용하여 리프레시 토큰을 삭제
+        // Redis에서 userPhone 을 키로 사용하여 리프레시 토큰을 삭제
         String redisKey = "refresh_" + userPhone;
         if (redisService.getValue(redisKey) != null) {
             redisService.deleteValue(redisKey);
-            log.info("Redis에서 리프레시 토큰 삭제 완료 - userphone: {}", userPhone);
+            log.info("Redis에서 리프레시 토큰 삭제 완료 - userPhone: {}", userPhone);
         } else {
-            log.warn("로그아웃 요청 - Redis에 저장된 리프레시 토큰이 없습니다. 이미 로그아웃된 상태이거나 토큰이 만료되었습니다. userphone: {}", userPhone);
+            log.warn("로그아웃 요청 - Redis에 저장된 리프레시 토큰이 없습니다. 이미 로그아웃된 상태이거나 토큰이 만료되었습니다. userPhone"
+                + ": {}", userPhone);
             // 이미 로그아웃된 상태로 간주하여 성공 응답을 반환
         }
 
