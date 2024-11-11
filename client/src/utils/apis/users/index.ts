@@ -1,11 +1,11 @@
 import { defaultRequest, authRequest } from '../request';
 import { Alert } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
 import { useUser } from '../../../store/user';
 
 // [POST] '/user/login'
 // 로그인
 export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
-  // console.log(SERVER_URL);
   if (!formData.id || !formData.password) {
     Alert.alert('아이디와 비밀번호를 입력해주세요.');
     return false;
@@ -17,7 +17,13 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
       password: formData.password,
     });
 
+    // 응답 성공 로그
+    console.log('[Response Status]:', loginRes.status);
+    console.log('[Response Headers]:', loginRes.headers);
+    console.log('[Response Data]:', loginRes.data);
     if (loginRes.status === 200) {
+      
+      const userId = loginRes.data.userId;
       const authorizationHeader = loginRes.headers.authorization;
       const accessToken = authorizationHeader
         ? authorizationHeader.replace(/^Bearer\s+/i, '')
@@ -26,6 +32,18 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
       if (accessToken) {
         setAccessToken(accessToken); // 유저 액세스 토큰 저장
         setIsLoggedIn(true); // 로그인 상태 설정
+
+        //fcm토큰 발급 후 백엔드로 post요청
+        const fcmToken = await messaging().getToken();
+        console.log('[+] FCM Token: ', fcmToken);
+
+        // send FCM
+        const response = await defaultRequest.post(
+          '/user/admin/update-fcm-token',
+          {userId, fcmToken},
+        );
+
+        console.log('[+] FCM Token 전송 성공:', response.data);
         return loginRes.data.userId; // 로그인된 사용자 ID 반환
       } else {
         Alert.alert('토큰이 존재하지 않습니다.');
@@ -57,7 +75,7 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
     } else {
       Alert.alert('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
-    console.error('로그인 요청 중 오류 발생:', error);
+    console.error('로그인 요청 중 오류 발생:', error.message);
     return false;
   }
 };
