@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { View, ImageBackground, Image, TouchableOpacity, Alert } from 'react-native';
+import {
+  View,
+  ImageBackground,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import defaultStyles from '../Auth/SignUpScreen.styles';
 import styles from './SetNewPasswordScreen.styles';
 import StyledTextInput from '../../styles/StyledTextInput';
@@ -7,7 +13,7 @@ import StyledText from '../../styles/StyledText';
 import ButtonFlat from '../../components/Button/ButtonFlat';
 import { validatePassword } from '../../utils/apis/users/signup';
 import { changePasswordApi } from '../../utils/apis/users/password';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useUser } from '../../store/user';
 
 const background = require('../../assets/images/IntroBackground.png');
@@ -16,14 +22,25 @@ const withTtubeot = require('../../assets/images/WithTtubeot.png');
 
 const SetNewPasswordScreen = () => {
   const navigation = useNavigation();
-  const user = useUser((state) => state.user);
+
+  // Route 타입 지정
+  type StackParamList = {
+    FindPasswordScreen: undefined;
+    SetNewPasswordScreen: { phone: string };
+  };
+
   const { setAccessToken, accessToken } = useUser.getState();
   const [password, setPasswordInput] = useState('');
   const [passwordCheck, setPasswordCheck] = useState('');
+  const { isLoggedIn } = useUser();
+  const route = useRoute<RouteProp<StackParamList, 'SetNewPasswordScreen'>>();
+  const { phone = '' } = route.params || {}; // 전달된 phone 값 가져오기
 
   const handleSetNewPassword = async () => {
     if (!validatePassword(password)) {
-      Alert.alert('비밀번호는 영문자와 숫자를 포함한 6자 이상 15자 이하로 입력해야 합니다.');
+      Alert.alert(
+        '비밀번호는 영문자와 숫자를 포함한 6자 이상 15자 이하로 입력해야 합니다.',
+      );
       return;
     }
     if (password !== passwordCheck) {
@@ -32,12 +49,18 @@ const SetNewPasswordScreen = () => {
     }
     try {
       // 비밀번호 변경 API 호출
-      const success = await changePasswordApi(user.phoneNumber, password, accessToken, setAccessToken);
-      if (success) {
+      const response = await changePasswordApi(phone, password);
+      // console.log('폰번호다이:', phone);
+      // console.log('새비밀번호다이:', password);
+      if (response) {
         Alert.alert('비밀번호가 성공적으로 변경되었습니다.');
-        navigation.navigate('ProfileScreen'); // ProfileScreen으로 이동
+        if (isLoggedIn) {
+          navigation.navigate('ProfileScreen'); // ProfileScreen으로 이동
+        } else {
+          navigation.navigate('LoginScreen'); // LoginScreen으로 이동
+        }
       } else {
-        console.log(success);
+        console.log(response);
       }
     } catch (error) {
       console.error('비밀번호 변경 실패:', error);
@@ -47,7 +70,10 @@ const SetNewPasswordScreen = () => {
 
   return (
     <View style={defaultStyles.container}>
-      <ImageBackground source={background} style={defaultStyles.backgroundImage} />
+      <ImageBackground
+        source={background}
+        style={defaultStyles.backgroundImage}
+      />
       <View style={defaultStyles.titleContainer}>
         <Image source={title} style={defaultStyles.title} />
       </View>
@@ -56,27 +82,33 @@ const SetNewPasswordScreen = () => {
       </View>
       <View style={styles.formContainer}>
         <StyledTextInput
-            style={defaultStyles.input}
-            placeholder="새 비밀번호를 입력해주세요"
-            placeholderTextColor="#C7C7CD"
-            secureTextEntry
-            value={password}
-            onChangeText={setPasswordInput}
-          />
-          <StyledText style={styles.passwordHint}>영문, 숫자를 포함한 6 ~ 15자 조합으로 입력해 주세요.</StyledText>
-          <StyledTextInput
-            style={defaultStyles.input}
-            placeholder="새 비밀번호를 한번 더 입력해주세요"
-            placeholderTextColor="#C7C7CD"
-            secureTextEntry
-            value={passwordCheck}
-            onChangeText={setPasswordCheck}
-          />
+          style={defaultStyles.input}
+          placeholder="새 비밀번호를 입력해주세요"
+          placeholderTextColor="#C7C7CD"
+          secureTextEntry
+          value={password}
+          onChangeText={setPasswordInput}
+        />
+        <StyledText style={styles.passwordHint}>
+          영문, 숫자를 포함한 6 ~ 15자 조합으로 입력해 주세요.
+        </StyledText>
+        <StyledTextInput
+          style={defaultStyles.input}
+          placeholder="새 비밀번호를 한번 더 입력해주세요"
+          placeholderTextColor="#C7C7CD"
+          secureTextEntry
+          value={passwordCheck}
+          onChangeText={setPasswordCheck}
+        />
         <TouchableOpacity
           style={styles.nextButton}
-          onPress={handleSetNewPassword}
-        >
-          <ButtonFlat content="비밀번호 변경하기" color="#FDFBF4" width={170} height={50} />
+          onPress={handleSetNewPassword}>
+          <ButtonFlat
+            content="비밀번호 변경하기"
+            color="#FDFBF4"
+            width={170}
+            height={50}
+          />
         </TouchableOpacity>
       </View>
     </View>

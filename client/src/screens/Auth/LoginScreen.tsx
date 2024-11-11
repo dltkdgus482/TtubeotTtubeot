@@ -10,6 +10,7 @@ import {
 import defaultStyles from './SignUpScreen.styles';
 import styles from './LoginScreen.styles';
 import StyledTextInput from '../../styles/StyledTextInput';
+import StyledText from '../../styles/StyledText';
 import ButtonFlat from '../../components/Button/ButtonFlat';
 import { loginApi, getInfoApi } from '../../utils/apis/users';
 import { useNavigation } from '@react-navigation/native';
@@ -25,6 +26,10 @@ const LoginScreen = () => {
   const [phone, setPhone] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const navigation = useNavigation();
+
+  const handleFindPassword = async () => {
+    navigation.navigate('FindPasswordScreen');
+  };
 
   const handleLogin = async () => {
     if (!phone || !passwordInput) {
@@ -57,14 +62,14 @@ const LoginScreen = () => {
         // 프로필 정보로 사용자 상태 업데이트
         setUser({
           userId: userId,
-          userName: userInfo.user_name,
-          phoneNumber: userInfo.user_phone,
-          userLocationAgreement: userInfo.user_location_agreement ? 1 : 0,
+          userName: userInfo.userName,
+          phoneNumber: userInfo.userPhone,
+          userLocationAgreement: userInfo.userLocationAgreement ? 1 : 0,
           userPushNotificationAgreement: user.userPushNotificationAgreement, // 상태에 저장되어 있던 값 그대로
           userType: 0, // 기본값 (자녀/부모 등 사용자 유형)
-          goal: userInfo.user_goal,
-          coin: userInfo.user_coin,
-          userParent: userInfo.user_parent,
+          goal: userInfo.userGoal,
+          coin: userInfo.userCoin,
+          userParent: userInfo.userParent,
         });
 
         // 상태 변경 후 확인
@@ -111,7 +116,6 @@ const LoginScreen = () => {
           style={styles.loginButton}
           onPress={() => {
             handleLogin();
-            // setIsLoggedIn(true);
           }}>
           <ButtonFlat
             content="로그인"
@@ -119,6 +123,11 @@ const LoginScreen = () => {
             width={120}
             height={50}
           />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleFindPassword}>
+          <StyledText bold style={styles.findPasswordText}>
+            {'>'} 비밀번호 찾기
+          </StyledText>
         </TouchableOpacity>
       </View>
     </View>
