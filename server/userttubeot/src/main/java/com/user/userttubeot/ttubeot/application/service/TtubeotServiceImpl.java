@@ -30,6 +30,7 @@ import com.user.userttubeot.ttubeot.domain.repository.UserTtubeotOwnershipReposi
 import com.user.userttubeot.ttubeot.global.exception.TtubeotNotFoundException;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
