@@ -24,3 +24,25 @@ export const requestPermissions = async () => {
     ]);
   }
 };
+
+export const decimalToAscii = (decimal: number): string => {
+  let asciiString: string = '';
+
+  while (decimal > 0) {
+    const remainder = decimal % 128;
+    asciiString = String.fromCharCode(remainder) + asciiString;
+    decimal = Math.floor(decimal / 128);
+  }
+
+  return asciiString;
+};
+
+export const asciiToDecimal = (asciiString: string): number => {
+  let decimal: number = 0;
+
+  for (let i = 0; i < asciiString.length; i++) {
+    decimal = decimal * 128 + asciiString.charCodeAt(i);
+  }
+
+  return decimal;
+};

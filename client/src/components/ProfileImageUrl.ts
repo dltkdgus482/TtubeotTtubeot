@@ -93,3 +93,11 @@ export const profileBlack: { [key: number]: any } = {
   44: require('../assets/profile/black/44.png'),
   45: require('../assets/profile/black/45.png'),
 };
+
+export const EmptyProfile: { [key: number]: any } = {
+  1: require('../assets/profile/notFound/1.png'),
+  2: require('../assets/profile/notFound/2.png'),
+  3: require('../assets/profile/notFound/3.png'),
+  4: require('../assets/profile/notFound/4.png'),
+  5: require('../assets/profile/notFound/5.png'),
+};

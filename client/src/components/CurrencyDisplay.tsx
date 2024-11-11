@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Image } from 'react-native';
 import styled from 'styled-components';
 import StyledText from '../styles/StyledText';
+import { useUser } from '../store/user';
 
 const coinIcon = require('../assets/icons/coinIcon.png');
 
@@ -54,13 +55,14 @@ const CurrencyContainer = styled(View)`
 `;
 
 const CurrencyDisplay = () => {
+  const { user } = useUser.getState();
   return (
     <CurrencyDisplayContainer>
       <CurrencyShadow />
       <CurrencyBackground />
       <CurrencyContainer>
         <StyledText bold style={{ fontSize: 16 }}>
-          99,999
+          {user.coin}
         </StyledText>
       </CurrencyContainer>
       <IconContainer>

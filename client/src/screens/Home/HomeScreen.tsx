@@ -5,7 +5,9 @@ import {
   ImageBackground,
   TouchableOpacity,
   Pressable,
+  Animated,
 } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import styles from './HomeScreen.styles';
 import TtubeotProfile from '../../components/TtubeotProfile';
 import CurrencyDisplay from '../../components/CurrencyDisplay.tsx';
@@ -23,6 +25,7 @@ import StyledTextInput from '../../styles/StyledTextInput.ts';
 import ButtonFlat from '../../components/Button/ButtonFlat.tsx';
 import { getAlbumInfoApi } from '../../utils/apis/Album/getAlbumInfo.ts';
 import { useUser } from '../../store/user.ts';
+import { getTtubeotDetail } from '../../utils/apis/users/userTtubeot.ts';
 
 const background = require('../../assets/images/HomeBackground.jpg');
 const ShopIcon = require('../../assets/icons/ShopIcon.png');
@@ -32,6 +35,9 @@ const FriendIcon = require('../../assets/icons/FriendIcon.png');
 const MapIcon = require('../../assets/icons/MapIcon.png');
 
 const HomeScreen = () => {
+  const isFocused = useIsFocused();
+  const { ttubeotId, setTtubeotId, user, accessToken, setAccessToken } =
+    useUser.getState();
   const [modalVisible, setModalVisible] = useState(false);
   const [albumModalVisible, setAlbumModalVisible] = useState(false);
   const [missionModalVisible, setMissionModalVisible] = useState(false);
@@ -42,7 +48,7 @@ const HomeScreen = () => {
   const { accessToken, setAccessToken } = useUser.getState();
 
   const webViewRef = useRef(null);
-  const [inputValue, setInputValue] = useState('1');
+  const [inputValue, setInputValue] = useState<any>(46);
 
   const openShopModal = () => {
     setModalVisible(true);
@@ -84,9 +90,30 @@ const HomeScreen = () => {
     setBLEModalVisible(false);
   };
 
-  const sendId = () => {
-    const id = parseInt(inputValue, 10);
-    if (webViewRef.current && id > 0 && id < 46) {
+  useEffect(() => {
+    if (user) {
+      const fetchUserTtubeot = async () => {
+        const res = await getTtubeotDetail(
+          user.userId,
+          accessToken,
+          setAccessToken,
+        );
+        if (res === null) {
+          setTtubeotId(46);
+        } else {
+          setTtubeotId(res.ttubeot_type);
+        }
+      };
+      fetchUserTtubeot();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    sendId(ttubeotId);
+  }, [ttubeotId]);
+
+  const sendId = (id: number) => {
+    if (webViewRef.current && id > 0 && id <= 46) {
       webViewRef.current.postMessage(JSON.stringify({ type: 'changeId', id }));
     }
   };
@@ -138,32 +165,34 @@ const HomeScreen = () => {
     <SafeAreaView style={styles.container}>
       {/* 배경 이미지 */}
       <Image source={background} style={styles.backgroundImage} />
-      <View style={styles.ttubeotWebviewContainer}>
-        <WebView
-          ref={webViewRef}
-          originWhitelist={['*']}
-          source={{ uri: 'file:///android_asset/renderModel.html' }}
-          style={styles.ttubeotWebview}
-          allowFileAccess={true}
-          allowFileAccessFromFileURLs={true}
-          allowUniversalAccessFromFileURLs={true}
-          onLoadStart={syntheticEvent => {
-            const { nativeEvent } = syntheticEvent;
-            console.log('WebView Start: ', nativeEvent);
-          }}
-          onError={syntheticEvent => {
-            const { nativeEvent } = syntheticEvent;
-            console.error('WebView onError: ', nativeEvent);
-          }}
-          onHttpError={syntheticEvent => {
-            const { nativeEvent } = syntheticEvent;
-            console.error('WebView onHttpError: ', nativeEvent);
-          }}
-          onMessage={event => {
-            console.log('Message from WebView:', event.nativeEvent.data);
-          }}
-        />
-      </View>
+      {isFocused && (
+        <View style={styles.ttubeotWebviewContainer}>
+          <WebView
+            ref={webViewRef}
+            originWhitelist={['*']}
+            source={{ uri: 'file:///android_asset/renderModel.html' }}
+            style={styles.ttubeotWebview}
+            allowFileAccess={true}
+            allowFileAccessFromFileURLs={true}
+            allowUniversalAccessFromFileURLs={true}
+            onLoadStart={syntheticEvent => {
+              const { nativeEvent } = syntheticEvent;
+              console.log('WebView Start: ', nativeEvent);
+            }}
+            onError={syntheticEvent => {
+              const { nativeEvent } = syntheticEvent;
+              console.error('WebView onError: ', nativeEvent);
+            }}
+            onHttpError={syntheticEvent => {
+              const { nativeEvent } = syntheticEvent;
+              console.error('WebView onHttpError: ', nativeEvent);
+            }}
+            onMessage={event => {
+              console.log('Message from WebView:', event.nativeEvent.data);
+            }}
+          />
+        </View>
+      )}
 
       {/* 버튼 컨테이너 */}
       {!modalVisible && !missionModalVisible && !albumModalVisible && (
@@ -186,8 +215,12 @@ const HomeScreen = () => {
         </View>
       )}
       <View style={{ position: 'absolute', top: 200, left: '50%' }}>
-        <StyledTextInput value={inputValue} onChangeText={setInputValue} />
-        <TouchableOpacity onPress={sendId}>
+        <StyledTextInput
+          value={inputValue}
+          onChangeText={setInputValue}
+          keyboardType="numeric"
+        />
+        <TouchableOpacity onPress={() => sendId(inputValue)}>
           <ButtonFlat content="변경" />
         </TouchableOpacity>
       </View>

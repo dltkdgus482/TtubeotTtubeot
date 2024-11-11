@@ -38,16 +38,19 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
 
     const fetchDailyMissionlist = async () => {
       const res = await getDailyMissionList(accessToken, setAccessToken);
-      console.log(res);
     };
 
     const fetchWeeklyMissionlist = async () => {
       const res = await getWeeklyMissionList(accessToken, setAccessToken);
-      console.log(res);
     };
 
-    if (selectedMenu === '일일 미션') fetchDailyMissionlist();
-    if (selectedMenu === '주간 미션') fetchWeeklyMissionlist();
+    if (selectedMenu === '일일 미션') {
+      fetchDailyMissionlist();
+    }
+
+    if (selectedMenu === '주간 미션') {
+      fetchWeeklyMissionlist();
+    }
   }, [missionModalVisible, selectedMenu]);
 
   return (

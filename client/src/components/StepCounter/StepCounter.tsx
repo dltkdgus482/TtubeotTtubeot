@@ -6,7 +6,6 @@ import {
   Text,
   View,
   PermissionsAndroid,
-  Platform,
 } from 'react-native';
 
 const { RnSensorStep } = NativeModules;
@@ -14,7 +13,24 @@ const stepCounterEmitter = new NativeEventEmitter(RnSensorStep);
 
 const StepCounter = () => {
   const [steps, setSteps] = useState<number>(0);
-  const [initialSteps, setInitialSteps] = useState<number>(0);
+  const [initialSteps, setInitialSteps] = useState<number | null>(null);
+
+  useEffect(() => {
+    const stepListener = stepCounterEmitter.addListener(
+      'StepCounter',
+      event => {
+        if (initialSteps === null) {
+          setInitialSteps(event.steps);
+        } else {
+          setSteps(event.steps - initialSteps);
+        }
+      },
+    );
+
+    return () => {
+      stepListener.remove();
+    };
+  }, [initialSteps]);
 
   const startStepCounter = async () => {
     const granted = await PermissionsAndroid.request(
@@ -25,21 +41,15 @@ const StepCounter = () => {
       return;
     }
 
+    setSteps(0);
+    setInitialSteps(null);
     RnSensorStep.start(500, 'COUNTER');
-    stepCounterEmitter.addListener('StepCounter', event => {
-      if (initialSteps === 0) {
-        setInitialSteps(event.steps);
-      } else {
-        setSteps(event.steps - initialSteps);
-      }
-    });
   };
 
   const stopStepCounter = () => {
     RnSensorStep.stop();
-    stepCounterEmitter.removeAllListeners('StepCounter');
     setSteps(0);
-    setInitialSteps(0);
+    setInitialSteps(null);
   };
 
   return (

@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
   backgroundContainer: {
     width: '100%',
     height: '100%',
-    opacity: 0.5,
+    opacity: 0.4,
   },
   profileContainer: {
     position: 'absolute',
@@ -22,13 +22,48 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 200,
   },
-  profileImage: {
+  profileImageContainer: {
     width: 200,
     height: 200,
-    borderRadius: 200,
+    borderRadius: 1000,
+    position: 'relative',
+    backgroundColor: '#DFF3F8',
+    alignItems: 'center',
+    textAlign: 'center',
+    elevation: 10,
+  },
+  profileImage: {
+    position: 'absolute',
+    resizeMode: 'contain',
+    width: 200,
+    height: 200,
+    borderRadius: 1000,
+  },
+  profileNotFoundBackground: {
+    width: 200,
+    height: 200,
+    paddingTop: 30,
+    borderRadius: 1000,
+    position: 'relative',
+    backgroundColor: '#3F593D',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+  notFound: {
+    fontSize: 16,
+  },
+  profileNotFound: {
+    position: 'absolute',
+    width: 100,
+    height: 100,
+    resizeMode: 'contain',
+    bottom: 20,
+    left: '50%',
+    transform: [{ translateX: -50 }],
   },
   nickName: {
-    fontSize: 20,
+    fontSize: 24,
     marginTop: 10,
   },
   settingsContainer: {

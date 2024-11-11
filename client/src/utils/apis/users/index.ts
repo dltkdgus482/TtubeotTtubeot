@@ -1,5 +1,7 @@
 import { defaultRequest, authRequest } from '../request';
 import { Alert } from 'react-native';
+import { SERVER_URL } from '@env';
+import { useUser } from '../../../store/user';
 
 // [POST] '/user/login'
 // 로그인
@@ -19,10 +21,12 @@ import { Alert } from 'react-native';
 // 	"userId": 1
 // }
 export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
+  // console.log(SERVER_URL);
   if (!formData.id || !formData.password) {
     Alert.alert('아이디와 비밀번호를 입력해주세요.');
     return false;
   }
+
   try {
     const loginRes = await defaultRequest.post('/user/login', {
       user_phone: formData.id,
@@ -111,8 +115,8 @@ export const logoutApi = async (accessToken, setAccessToken, setIsLoggedIn) => {
     } else {
       throw new Error('로그아웃에 실패했습니다. 다시 시도해주세요.');
     }
-    // setIsLoggedIn(false);
-    // setAccessToken(null);
+    setIsLoggedIn(false);
+    setAccessToken(null);
   } catch (error) {
     if (error.response) {
       switch (error.response.status) {
@@ -188,7 +192,7 @@ export const modifyUserInfoApi = async (
     user_goal?: number;
     user_parent?: number;
     password?: string;
-  }
+  },
 ) => {
   try {
     const authClient = authRequest(accessToken, setAccessToken);
@@ -219,7 +223,9 @@ export const modifyUserInfoApi = async (
           Alert.alert('잘못된 API 메소드입니다.');
           break;
         default:
-          Alert.alert('유저 정보 수정 중 오류가 발생했습니다. 다시 시도해주세요.');
+          Alert.alert(
+            '유저 정보 수정 중 오류가 발생했습니다. 다시 시도해주세요.',
+          );
       }
     } else {
       Alert.alert('유저 정보 수정 중 오류가 발생했습니다. 다시 시도해주세요.');
