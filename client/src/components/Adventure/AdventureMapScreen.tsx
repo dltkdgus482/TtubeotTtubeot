@@ -190,8 +190,8 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   };
 
   useEffect(() => {
-    if (devicesRef.current.length === 0) return;
     console.log('useEffect devices');
+    if (devicesRef.current.length === 0) return;
 
     const sortedDevices = [...devicesRef.current].sort(
       (a, b) => (b.rssi || -Infinity) - (a.rssi || -Infinity),
@@ -223,14 +223,12 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       socketRef.current = AdventureManager.getInstance();
 
       socketRef.current.addAdventureUserListener(data => {
-        console.log('addAdventureUserListener', data);
-
-        // 근처 사용자 목록 수신 시 상태 업데이트
         setNearbyUsers(prevUsers => {
-          if (JSON.stringify(prevUsers) !== JSON.stringify(data.users)) {
-            return data.users;
-          }
-          return prevUsers;
+          const isDifferent = data.users.some(
+            (newUser, index) =>
+              !prevUsers[index] || prevUsers[index].user_id !== newUser.user_id,
+          );
+          return isDifferent ? data.users : prevUsers;
         });
       });
 
@@ -256,6 +254,13 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
         setIsNfcTagged(false);
       });
     }
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.removeAllListeners();
+        AdventureManager.destory();
+      }
+    };
   }, []);
 
   const fetchUsername = async (userId: number) => {
@@ -273,7 +278,7 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     setVeryNearbyUsers(nearbyUsers.filter(user => user.distance < 30));
 
     // 30m 이내 사용자 있을 경우 스캔, 광고 시작
-    if (nearbyUsers.length === 0) {
+    if (nearbyUsers.length === 0 || nearbyUsers.length === 1) {
       if (isScanning.current === true) {
         stopScanning();
       }
@@ -386,6 +391,42 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     socketRef.current.sendFriendRequest(opponnentUserId);
   };
 
+  const markers = useMemo(() => {
+    return (
+      <View>
+        {location && (
+          <Marker
+            coordinate={{
+              latitude: location.latitude,
+              longitude: location.longitude,
+            }}
+            title="현재위치"
+            icon={require('../../assets/ttubeot/mockTtu.png')}
+            tracksViewChanges={false}
+          />
+        )}
+      </View>
+    );
+  }, [location]);
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        func(...args);
+      }, wait);
+    };
+  };
+
+  const debouncedHandleRegionChange = useCallback(
+    debounce(updatedRegion => {
+      console.log('here');
+      setRegion(updatedRegion);
+    }, 2000),
+    [setRegion],
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.mapShadowContainer}>
@@ -421,24 +462,14 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
                     {'m'} */}
                   </StyledText>
                   <MapView
+                    key={nearbyUsers.length}
                     ref={mapRef}
                     provider={PROVIDER_GOOGLE}
                     region={region}
                     customMapStyle={mapStyle}
                     style={styles.map}
-                    onRegionChangeComplete={updatedRegion => {
-                      setRegion(updatedRegion);
-                    }}>
-                    {location && (
-                      <Marker
-                        coordinate={{
-                          latitude: location.latitude,
-                          longitude: location.longitude,
-                        }}
-                        title="현재위치"
-                        icon={require('../../assets/ttubeot/mockTtu.png')}
-                      />
-                    )}
+                    onRegionChangeComplete={debouncedHandleRegionChange}>
+                    {markers}
                   </MapView>
                 </>
               ) : (

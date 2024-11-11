@@ -34,6 +34,8 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
   const authClient = authRequest(accessToken, setAccessToken);
 
   useEffect(() => {
+    console.log('useEffect missionModalVisible, selectedMenu');
+
     if (missionModalVisible === false) return;
 
     const fetchDailyMissionlist = async () => {

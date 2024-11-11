@@ -23,7 +23,7 @@ import MissionModal from '../../components/Mission/MissionModal';
 import useTreasureStore from '../../store/treasure';
 import GetTreasureModal from '../../components/ARComponents/GetTreasureModal';
 
-const { RnSensorStep } = NativeModules;
+const { RnSensorStep, SystemUsage } = NativeModules;
 const stepCounterEmitter = new NativeEventEmitter(RnSensorStep);
 
 const background = require('../../assets/images/AdventureBackground.jpg');
@@ -40,12 +40,22 @@ const isRunningOnEmulator = () => {
 };
 
 const AdventureScreen = () => {
+  // setInterval(() => {
+  //   SystemUsage.getSystemUsage()
+  //     .then(data => {
+  //       console.log('System Usage:', data);
+  //     })
+  //     .catch(error => {
+  //       console.log('System Usage Error', error);
+  //     });
+  // }, 2000);
+
   const [adventureStart, setAdventureStart] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [missionVisible, setMissionVisible] = useState<boolean>(false);
   const [isCameraModalEnabled, setIsCameraModalEnabled] =
     useState<boolean>(false);
-  const opacityAnim = useRef(new Animated.Value(0.65)).current;
+  // const opacityAnim = useRef(new Animated.Value(0.65)).current;
   const { connectSocket, disconnectSocket } = useAdventureSocket();
 
   const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
@@ -125,27 +135,27 @@ const AdventureScreen = () => {
 
   const openModal = () => {
     setModalVisible(true);
+    connectSocket();
+    startStepCounter();
   };
 
   const closeModal = () => {
     setModalVisible(false);
     setAdventureStart(!adventureStart);
-    setTimeout(() => {
-      Animated.timing(opacityAnim, {
-        toValue: adventureStart ? 0.65 : 0.3,
-        duration: 500,
-        useNativeDriver: true,
-      }).start();
-    }, 100);
+    // setTimeout(() => {
+    //   Animated.timing(opacityAnim, {
+    //     toValue: adventureStart ? 0.65 : 0.3,
+    //     duration: 500,
+    //     useNativeDriver: true,
+    //   }).start();
+    // }, 100);
   };
 
   const handleStartAdventure = () => {
-    console.log('여기', adventureStart);
-
     if (!adventureStart) {
-      connectSocket();
+      // connectSocket();
       openModal();
-      startStepCounter();
+      // startStepCounter();
     } else {
       disconnectSocket();
       closeModal();
@@ -194,10 +204,15 @@ const AdventureScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Animated.Image
+      <Image
+        source={background}
+        style={styles.backgroundImage}
+        resizeMethod="resize"
+      />
+      {/* <Animated.Image
         source={background}
         style={[styles.backgroundImage, { opacity: opacityAnim }]}
-      />
+      /> */}
       <View style={styles.profileContainer}>
         <TtubeotProfile />
       </View>
@@ -206,18 +221,26 @@ const AdventureScreen = () => {
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={handlePressArButton}>
-          <Image source={CameraIcon} style={styles.cameraIcon} />
+          <Image
+            source={CameraIcon}
+            style={styles.cameraIcon}
+            resizeMethod="resize"
+          />
         </TouchableOpacity>
         <TouchableOpacity onPress={handlePressMissionModal}>
-          <Image source={MissionIcon} style={styles.missionIcon} />
+          <Image
+            source={MissionIcon}
+            style={styles.missionIcon}
+            resizeMethod="resize"
+          />
         </TouchableOpacity>
       </View>
       <View style={styles.content}>{renderPage()}</View>
       <View style={styles.startButtonContainer}>
         <TouchableOpacity onPress={handleStartAdventure}>
           <ButtonDefault
-            content={steps.toString()}
-            // content={adventureStart ? 'STOP' : 'START'}
+            // content={steps.toString()}
+            content={adventureStart ? 'STOP' : 'START'}
             iconSource={MapIcon}
             height={60}
             width={140}

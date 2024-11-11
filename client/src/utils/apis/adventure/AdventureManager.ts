@@ -103,6 +103,13 @@ class AdventureManager {
     this.socket.emit('adventure_end');
     console.log('adventure_end event 전송');
   }
+
+  public removeAllListeners() {
+    if (this.socket) {
+      this.socket.removeAllListeners();
+      console.log('모든 소켓 이벤트 리스너를 제거했습니다.');
+    }
+  }
 }
 
 export default AdventureManager;
