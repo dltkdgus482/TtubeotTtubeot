@@ -209,12 +209,11 @@ public class UserService {
     /**
      * 비밀번호 변경 처리
      *
-     * @param userId      사용자 ID
      * @param userPhone   사용자 전화번호
      * @param newPassword 새 비밀번호
      */
-    public void changePassword(Integer userId, String userPhone, String newPassword) {
-        log.info("비밀번호 변경 요청 - 사용자 ID: {}, 전화번호: {}", userId, userPhone);
+    public void changePassword(String userPhone, String newPassword) {
+        log.info("비밀번호 변경 요청 - 전화번호: {}", userPhone);
 
         validatePassword(newPassword);
 
@@ -225,8 +224,7 @@ public class UserService {
 
         smsVerificationService.deleteVerificationCode(userPhone);
 
-        User user = userRepository.findById(userId)
-            .filter(u -> u.getUserPhone().equals(userPhone))
+        User user = userRepository.findByUserPhone(userPhone)
             .orElseThrow(() -> new IllegalArgumentException("전화번호가 일치하지 않습니다."));
 
         String salt = user.getUserPasswordSalt();

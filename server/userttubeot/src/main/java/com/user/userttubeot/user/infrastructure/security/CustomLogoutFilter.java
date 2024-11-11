@@ -1,7 +1,8 @@
 package com.user.userttubeot.user.infrastructure.security;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.user.userttubeot.user.application.RedisService;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -9,6 +10,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +20,6 @@ import org.springframework.web.filter.GenericFilterBean;
 @RequiredArgsConstructor
 public class CustomLogoutFilter extends GenericFilterBean {
 
-    private final JWTUtil jwtUtil;
     private final RedisService redisService;
     private final CookieUtil cookieUtil;
 
@@ -36,18 +37,16 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
 
-        String refresh = cookieUtil.extractRefreshToken(request);
-        if (refresh == null) {
-            log.warn("로그아웃 실패 - 리프레시 토큰이 없습니다.");
+        // 요청 바디에서 userPhone 값을 추출
+        String userPhone = extractUserPhoneFromRequest(request);
+        if (userPhone == null || userPhone.isEmpty()) {
+            log.warn("로그아웃 실패 userPhone 이 없습니다.");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        if (!validateRefreshToken(refresh, response)) {
-            return;
-        }
-
-        performLogout(response, refresh);
+        // 리프레시 토큰을 Redis에서 삭제
+        performLogout(response, userPhone);
         log.info("로그아웃 성공 - 리프레시 토큰 제거 완료");
     }
 
@@ -55,30 +54,57 @@ public class CustomLogoutFilter extends GenericFilterBean {
         return "/user/logout".equals(request.getRequestURI()) && "POST".equals(request.getMethod());
     }
 
-    private boolean validateRefreshToken(String refresh, HttpServletResponse response) {
+    /**
+     * 요청 바디에서 userPhone 을 추출하는 메서드
+     */
+    private String extractUserPhoneFromRequest(HttpServletRequest request) {
         try {
-            jwtUtil.isExpired(refresh);
-        } catch (ExpiredJwtException e) {
-            log.warn("로그아웃 실패 - 만료된 리프레시 토큰");
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return false;
-        }
+            StringBuilder stringBuilder = new StringBuilder();
+            BufferedReader reader = request.getReader();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+            String body = stringBuilder.toString();
 
-        String key = "refresh_" + jwtUtil.getUserPhone(refresh);
-        if (!refresh.equals(redisService.getValue(key))) {
-            log.warn("로그아웃 실패 - DB에 저장된 리프레시 토큰과 일치하지 않음");
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return false;
+            // JSON 파싱 (예: Jackson 라이브러리 사용)
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree(body);
+
+            // userPhone 필드가 있는지 확인
+            JsonNode userPhoneNode = jsonNode.get("userPhone");
+            if (userPhoneNode != null) {
+                return userPhoneNode.asText();
+            } else {
+                log.warn("userPhone 필드가 요청 바디에 없습니다.");
+                return null;
+            }
+        } catch (IOException e) {
+            log.error("요청 바디에서 userPhone 을 추출하는 중 오류 발생", e);
+            return null;
         }
-        return true;
     }
 
-    private void performLogout(HttpServletResponse response, String refresh) {
-        redisService.deleteValue("refresh_" + jwtUtil.getUserPhone(refresh));
+
+    private void performLogout(HttpServletResponse response, String userPhone) {
+        // Redis에서 userPhone 을 키로 사용하여 리프레시 토큰을 삭제
+        String redisKey = "refresh_" + userPhone;
+        if (redisService.getValue(redisKey) != null) {
+            redisService.deleteValue(redisKey);
+            log.info("Redis에서 리프레시 토큰 삭제 완료 - userPhone: {}", userPhone);
+        } else {
+            log.warn("로그아웃 요청 - Redis에 저장된 리프레시 토큰이 없습니다. 이미 로그아웃된 상태이거나 토큰이 만료되었습니다. userPhone"
+                + ": {}", userPhone);
+            // 이미 로그아웃된 상태로 간주하여 성공 응답을 반환
+        }
+
+        // 쿠키에서 리프레시 토큰 제거
         Cookie cookie = new Cookie("refresh", null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
         response.addCookie(cookie);
+
+        // 로그아웃 성공 상태 코드 설정
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
