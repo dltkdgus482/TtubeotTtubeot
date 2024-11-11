@@ -14,5 +14,8 @@ public interface UserTtubeotMissionRepository extends JpaRepository<UserTtubeotM
     List<UserTtubeotMission> findByUserTtuBeotOwnershipAndMission_MissionTypeAndMissionStatus(
         UserTtuBeotOwnership userTtuBeotOwnership, Integer missionType, MissionStatus missionStatus);
 
+    // 특정 뚜벗이 진행 중인 모험 미션 조회 (MissionTheme, MissionType 및 MissionStatus 조건 포함)
+    List<UserTtubeotMission> findByUserTtuBeotOwnershipAndMission_MissionThemeAndMission_MissionTypeAndMissionStatus(
+        UserTtuBeotOwnership userTtuBeotOwnership, Integer missionTheme, Integer missionType, MissionStatus missionStatus);
 
 }

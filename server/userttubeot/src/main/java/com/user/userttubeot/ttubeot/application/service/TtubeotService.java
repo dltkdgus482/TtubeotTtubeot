@@ -1,5 +1,7 @@
 package com.user.userttubeot.ttubeot.application.service;
 
+import com.user.userttubeot.ttubeot.domain.dto.MissionRewardRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.MissionRewardResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.RecentBreakupTtubeotResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
@@ -57,7 +59,8 @@ public interface TtubeotService {
     // 유저 뚜벗의 주간미션 정보를 조회
     UserTtubeotMissionListResponseDTO getUserWeeklyMissionList(int userId);
 
-    // 미션 갱신 후 보상 지급 -> 걸음수만 일단 request로 받아오기
+    // 미션 갱신 후 보상 지급
+    MissionRewardResponseDTO requestCoin(int userId, MissionRewardRequestDTO missionRewardRequestDTO);
 
     // 가장 최근에 헤어진 뚜벗 조회
     RecentBreakupTtubeotResponseDTO getRecentBreakUpTtubeot(int userId);

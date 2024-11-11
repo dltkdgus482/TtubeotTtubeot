@@ -51,8 +51,6 @@ public class MissionSchedulerService {
         assignMissionsToActiveTtubeots(dailyMissions, "일일 미션이 새로 할당되었습니다.");
     }
 
-
-
     // 매주 일요일 자정에 주간 미션 초기화
     @Scheduled(cron = "0 0 0 * * SUN")
     public void assignWeeklyMissions() {
