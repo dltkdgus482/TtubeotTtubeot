@@ -3,7 +3,7 @@ import AIService from "./AIService";
 import AdventureLogModel from "../models/AdventureLogModel";
 import ImageMysqlRepository from "../repositories/AdventureImageMysqlRepository";
 import FTPUpload from "../utils/FTPUpload";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -17,7 +17,7 @@ class ImageGenService {
     this.roadViewService = new RoadViewService();
     this.aiService = new AIService();
     this.imageMysqlRepository = new ImageMysqlRepository();
-    this.cdnUrl = process.env.CDN_URL || '';
+    this.cdnUrl = process.env.CDN_URL || "";
   }
 
   public async generateImage(adventureLog: AdventureLogModel): Promise<void> {
@@ -25,11 +25,16 @@ class ImageGenService {
     let roadViewPoints = [];
 
     for (let i = 0; i < 4; i++) {
-      let start = Math.floor(i * gpsLog.length / 4);
-      let end = Math.floor((i + 1) * gpsLog.length / 4);
+      let start = Math.floor((i * gpsLog.length) / 4);
+      let end = Math.floor(((i + 1) * gpsLog.length) / 4);
 
       while (start < end) {
-        if (await this.roadViewService.checkStreetViewAvailability(gpsLog[start].lat, gpsLog[start].lng)) {
+        if (
+          await this.roadViewService.checkStreetViewAvailability(
+            gpsLog[start].lat,
+            gpsLog[start].lng
+          )
+        ) {
           roadViewPoints.push(gpsLog[start]);
           break;
         }
@@ -39,8 +44,14 @@ class ImageGenService {
 
     let imageUrls = [];
     for (let point of roadViewPoints) {
-      let imageUrl = this.roadViewService.getStreetViewLink(point.lat, point.lng);
-      let generatedImageUrl = await this.aiService.image2image(imageUrl);
+      let imageUrl = this.roadViewService.getStreetViewLink(
+        point.lat,
+        point.lng
+      );
+      let generatedImageUrl = await this.aiService.generateImageBasedOnPrompt(
+        imageUrl,
+        1
+      );
       imageUrls.push(generatedImageUrl);
     }
 
@@ -56,7 +67,10 @@ class ImageGenService {
       let filename = await ftpInstance.uploadImage(imageBuffer);
       fileLinks.push(this.cdnUrl + filename);
     }
-    await this.imageMysqlRepository.saveImageUrls(adventureLog.adventureLogId, fileLinks);
+    await this.imageMysqlRepository.saveImageUrls(
+      adventureLog.adventureLogId,
+      fileLinks
+    );
   }
 }
 
