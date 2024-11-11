@@ -6,7 +6,11 @@ import StyledText from '../../styles/StyledText';
 import StyledTextInput from '../../styles/StyledTextInput';
 import ButtonFlat from '../../components/Button/ButtonFlat';
 import { useUser } from '../../store/user';
-import { signUpApi, userNameValidateApi, validatePassword } from '../../utils/apis/users/signup';
+import {
+  signUpApi,
+  userNameValidateApi,
+  validatePassword,
+} from '../../utils/apis/users/signup';
 import { useNavigation } from '@react-navigation/native';
 
 interface LastSignUpScreenProps {
@@ -15,8 +19,8 @@ interface LastSignUpScreenProps {
 
 const LastSignUpScreen: React.FC<LastSignUpScreenProps> = ({ onBack }) => {
   const navigation = useNavigation();
-  const user = useUser((state) => state.user); // 현재 user 상태 가져오기
-  const setUser = useUser((state) => state.setUser); // 전체 user 객체를 설정하는 함수
+  const user = useUser(state => state.user); // 현재 user 상태 가져오기
+  const setUser = useUser(state => state.setUser); // 전체 user 객체를 설정하는 함수
 
   const [userNameInput, setUserNameInput] = useState(user.userName || '');
   const [password, setPasswordInput] = useState('');
@@ -40,7 +44,9 @@ const LastSignUpScreen: React.FC<LastSignUpScreenProps> = ({ onBack }) => {
       return;
     }
     if (!validatePassword(password)) {
-      Alert.alert('비밀번호는 영문자와 숫자를 포함한 6자 이상 15자 이하로 입력해야 합니다.');
+      Alert.alert(
+        '비밀번호는 영문자와 숫자를 포함한 6자 이상 15자 이하로 입력해야 합니다.',
+      );
       return;
     }
     if (password !== passwordCheck) {
@@ -55,17 +61,20 @@ const LastSignUpScreen: React.FC<LastSignUpScreenProps> = ({ onBack }) => {
       user_location_agreement: user.userLocationAgreement,
       user_type: user.userType,
     };
-
-    const success = await signUpApi(formData);
-    if (success) {
-      setUser({
-        ...user,
-        userName: userNameInput,
-      });
-      Alert.alert('회원가입이 완료되었습니다.');
-      console.log('회원가입 완료', user);
-      // 회원가입 성공 시 인트로 스크린으로 이동
-      navigation.navigate('IntroScreen');
+    try {
+      const response = await signUpApi(formData);
+      if (response) {
+        setUser({
+          ...user,
+          userName: userNameInput,
+        });
+        Alert.alert('회원가입이 완료되었습니다.');
+        console.log('회원가입 완료', user);
+        // 회원가입 성공 시 인트로 스크린으로 이동
+        navigation.navigate('IntroScreen');
+      }
+    } catch (error) {
+      Alert.alert('회원 가입 중 오류가 발생했습니다.', error.message);
     }
   };
 
@@ -81,20 +90,24 @@ const LastSignUpScreen: React.FC<LastSignUpScreenProps> = ({ onBack }) => {
             spellCheck={false}
             autoCorrect={false}
             value={userNameInput}
-            onChangeText={(text) => {
+            onChangeText={text => {
               setUserNameInput(text);
               setIsUserNameValid(false);
             }}
           />
           <TouchableOpacity
-            style={[styles.requestButton, isUserNameValid && defaulStyles.confirmedButton]}
+            style={[
+              styles.requestButton,
+              isUserNameValid && defaulStyles.confirmedButton,
+            ]}
             onPress={handleCheckUserName}
-            disabled={isUserNameValid}
-          >
+            disabled={isUserNameValid}>
             <StyledText
               bold
-              style={[defaulStyles.requestButtonText, isUserNameValid && defaulStyles.confirmedButtonText]}
-            >
+              style={[
+                defaulStyles.requestButtonText,
+                isUserNameValid && defaulStyles.confirmedButtonText,
+              ]}>
               {isUserNameValid ? '확인 완료' : '중복 확인'}
             </StyledText>
           </TouchableOpacity>
@@ -107,7 +120,9 @@ const LastSignUpScreen: React.FC<LastSignUpScreenProps> = ({ onBack }) => {
           value={password}
           onChangeText={setPasswordInput}
         />
-        <StyledText style={styles.passwordHint}>영문, 숫자를 포함한 6 ~ 15자 조합으로 입력해 주세요.</StyledText>
+        <StyledText style={styles.passwordHint}>
+          영문, 숫자를 포함한 6 ~ 15자 조합으로 입력해 주세요.
+        </StyledText>
         <StyledTextInput
           style={styles.input}
           placeholder="비밀번호를 한번 더 입력해주세요"
@@ -117,7 +132,12 @@ const LastSignUpScreen: React.FC<LastSignUpScreenProps> = ({ onBack }) => {
           onChangeText={setPasswordCheck}
         />
         <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
-          <ButtonFlat content="회원가입" color="#FDFBF4" width={120} height={50} />
+          <ButtonFlat
+            content="회원가입"
+            color="#FDFBF4"
+            width={120}
+            height={50}
+          />
         </TouchableOpacity>
       </View>
     </View>

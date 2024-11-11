@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -19,6 +19,8 @@ import { useUser } from './src/store/user';
 import SignUpScreen from './src/screens/Auth/SignUpScreen';
 import LoginScreen from './src/screens/Auth/LoginScreen';
 import HomeScreen from './src/screens/Home/HomeScreen';
+import FindPasswordScreen from './src/screens/Profile/FindPasswordScreen';
+import SetNewPasswordScreen from './src/screens/Profile/SetNewPasswordScreen';
 
 const Stack = createStackNavigator();
 
@@ -28,7 +30,12 @@ const theme = {
 };
 
 function App(): React.JSX.Element {
-  const {isLoggedIn} = useUser();
+  // useEffect(() => {
+  //   useUser.getState().clearUser();
+  // }, []);
+
+  const { isLoggedIn } = useUser();
+
   console.log(isLoggedIn);
   return (
     <ThemeProvider theme={theme}>
@@ -45,9 +52,31 @@ function App(): React.JSX.Element {
         ) : (
           <NavigationContainer>
             <Stack.Navigator>
-              <Stack.Screen name="IntroScreen" component={IntroScreen} options={{ headerShown: false }}/>
-              <Stack.Screen name="SignUpScreen" component={SignUpScreen} options={{ headerShown: false }}/>
-              <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }}/>
+              <Stack.Screen
+                name="IntroScreen"
+                component={IntroScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="SignUpScreen"
+                component={SignUpScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="LoginScreen"
+                component={LoginScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="FindPasswordScreen"
+                component={FindPasswordScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="SetNewPasswordScreen"
+                component={SetNewPasswordScreen}
+                options={{ headerShown: false }}
+              />
             </Stack.Navigator>
           </NavigationContainer>
         )}
