@@ -62,7 +62,8 @@ public class SecurityConfig {
                     "/user/change-password", "/user/sms-verification/request",
                     "/user/sms-verification/confirm", "/user/auth/**", "/healthz",
                     "/user/ttubeot/**", "/user/admin/**", "/user/other-profile/**",
-                    "/user/friend/tag", "/user/friend/check-friend/**","/user/friend/**","/user/ranking").permitAll()
+                    "/user/friend/tag", "/user/friend/check-friend/**","/user/friend/**","/user/ranking"
+                ,"/user/logout","/user/change-password").permitAll()
                 .anyRequest().authenticated());
 
         LoginFilter loginFilter = new LoginFilter(
