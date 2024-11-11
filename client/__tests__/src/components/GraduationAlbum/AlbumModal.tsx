@@ -1,13 +1,13 @@
 import React from 'react';
-import {View, Modal, Text, Button} from 'react-native';
-import styles from './GraduationAlbumModal.styels';
+import { View, Modal, Text, Button } from 'react-native';
+import styles from './AlbumModal.styels';
 
-interface GraduationAlbumModalProps {
+interface AlbumModalProps {
   modalVisible: boolean;
   closeAlbumModal: () => void;
 }
 
-const GraduationAlbumModal: React.FC<GraduationAlbumModalProps> = ({
+const AlbumModal: React.FC<AlbumModalProps> = ({
   modalVisible,
   closeAlbumModal,
 }) => {
@@ -28,4 +28,4 @@ const GraduationAlbumModal: React.FC<GraduationAlbumModalProps> = ({
   );
 };
 
-export default GraduationAlbumModal;
+export default AlbumModal;

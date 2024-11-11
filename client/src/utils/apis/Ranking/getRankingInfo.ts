@@ -1,4 +1,4 @@
-import { authRequest } from '../request';
+import { authRequest, defaultRequest } from '../request';
 
 interface RankingProps {
   user_id: number;
@@ -7,13 +7,10 @@ interface RankingProps {
   ttubeot_id: number;
 }
 
-export const getRankingInfo = async (
-  accessToken: string,
-  setAccessToken: (accessToken: string) => void,
-): Promise<RankingProps[]> => {
+export const getRankingInfo = async (): Promise<RankingProps[]> => {
+  console.log('여기기기기기');
   try {
-    const authClient = authRequest(accessToken, setAccessToken);
-    const res = await authClient.get('/user/ranking');
+    const res = await defaultRequest.get('/user/ranking');
     return res.data;
   } catch (error) {
     console.log(error);

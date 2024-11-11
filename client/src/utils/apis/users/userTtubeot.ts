@@ -1,16 +1,9 @@
+import { useId } from 'react';
 import { authRequest } from '../request';
+import { TtubeotData } from '../../../types/ttubeotData';
 
 interface GetUserTtubeotIdProps {
   user_ttubeot_ownership_id: number;
-}
-
-interface GetUserTtubeotDetailProps {
-  errorCode?: string;
-  message?: string;
-  ttubeot_type?: number;
-  ttubeot_name?: string;
-  ttubeot_score?: number;
-  created_at?: string;
 }
 
 export const getUserTtubeotId = async (
@@ -22,7 +15,6 @@ export const getUserTtubeotId = async (
   try {
     const authClient = authRequest(accessToken, setAccessToken);
     const res = await authClient.get(`/user/ttubeot/adventure/${id}/id`);
-    console.log(res.data);
     return res.data;
   } catch (err) {
     console.error(err);
@@ -31,18 +23,22 @@ export const getUserTtubeotId = async (
 };
 
 export const getTtubeotDetail = async (
-  userId: string,
+  userId: number,
   accessToken: string,
   setAccessToken: (accesstoken: string) => void,
-): Promise<GetUserTtubeotDetailProps> => {
+): Promise<TtubeotData> => {
+  if (!userId) {
+    return;
+  }
   try {
     const authClient = authRequest(accessToken, setAccessToken);
     const res = await authClient.get(
       `/user/ttubeot/adventure/${userId}/details`,
     );
-    console.log(res.data);
+    console.log('응답!!!!!!!!!!!', res.data);
     return res.data;
   } catch (err) {
+    console.log('에러!!!!!!!!!!!!!!!!', err);
     return null;
   }
 };

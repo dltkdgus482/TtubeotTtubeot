@@ -24,21 +24,15 @@ const CharacterShopitemList = ({ selectedMenu }) => {
   const { accessToken, setAccessToken } = useUser.getState();
 
   const buyItem = async () => {
-    const drawTtubeotRes = await drawTtubeot(
-      accessToken,
-      setAccessToken,
-      1,
-      null,
-      null,
-    );
+    const drawTtubeotRes = await drawTtubeot(accessToken, setAccessToken, 2, 1);
 
     if (drawTtubeotRes === false) {
       return;
     }
 
-    const userTtubeotOwnershipId = drawTtubeotRes.userTtubeotOwnershipId;
+    const userTtubeotOwnershipId = drawTtubeotRes.user_ttubeot_ownership_id;
     const ttubeotId = drawTtubeotRes.ttubeotId;
-    const userTtubeotOwnershipName = 'Falcon';
+    const userTtubeotOwnershipName = 'falcon';
 
     const confirmTtubeotNameRes = await confirmTtubeotName(
       userTtubeotOwnershipId,

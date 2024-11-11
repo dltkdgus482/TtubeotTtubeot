@@ -2,6 +2,7 @@ import { defaultRequest, authRequest } from '../request';
 import { Alert } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import {SERVER_URL} from '@env'
+import { useUser } from '../../../store/user';
 
 // [POST] '/user/login'
 // 로그인
@@ -21,13 +22,11 @@ import {SERVER_URL} from '@env'
 // 	"userId": 1
 // }
 export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
-  console.log(SERVER_URL)
-  // 요청 전 폼 데이터 확인
-  console.log('[+] Sending login request with data:', formData);
   if (!formData.id || !formData.password) {
     Alert.alert('아이디와 비밀번호를 입력해주세요.');
     return false;
   }
+
   try {
     console.log('[POST Request to]:', `${SERVER_URL}/user/login`);
     const loginRes = await defaultRequest.post('/user/login', {

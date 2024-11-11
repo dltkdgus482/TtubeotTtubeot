@@ -1,8 +1,9 @@
 import { useRef, useCallback } from 'react';
 import io, { Socket } from 'socket.io-client';
 import { useUser } from '../../../store/user';
-import { authRequest } from '../../apis/request';
+import { authRequest, getNewToken } from '../../apis/request';
 import AdventureManager from './AdventureManager';
+import { update } from 'three/examples/jsm/libs/tween.module.js';
 
 const SOCKET_SERVER_URL = 'https://ssafy.picel.net';
 const SOCKET_PATH = '/adventure/socket.io';
@@ -13,7 +14,7 @@ interface InitMessage {
 
 const useAdventureSocket = () => {
   const socketRef = useRef<Socket | null>(null);
-  const { accessToken, setAccessToken } = useUser();
+  const { accessToken, setAccessToken } = useUser.getState();
 
   const connectSocket = useCallback(async () => {
     if (socketRef.current !== null) {
@@ -21,22 +22,18 @@ const useAdventureSocket = () => {
       return;
     }
 
-    const authClient = authRequest(accessToken, setAccessToken);
-
-    if (!authClient) {
-      console.error('유효한 토큰이 없어 소켓을 연결할 수 없습니다.');
-      return;
-    }
-
-    const updatedToken = `Bearer ${accessToken}`;
+    const updatedToken = await getNewToken();
+    setAccessToken(updatedToken);
 
     socketRef.current = io(SOCKET_SERVER_URL, {
       path: SOCKET_PATH,
       transports: ['websocket'],
     });
 
+    console.log('토큰 최신화 로직이 실행됐습니다!');
+
     socketRef.current.on('connect', () => {
-      const initMessage: InitMessage = { token: updatedToken };
+      const initMessage: InitMessage = { token: `Bearer ${accessToken}` };
       socketRef.current?.emit('adventure_init', initMessage);
       console.log('소켓 연결 수립 및 adventure_init 이벤트 전송:', initMessage);
 
