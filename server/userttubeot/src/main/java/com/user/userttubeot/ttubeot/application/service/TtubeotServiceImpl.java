@@ -372,6 +372,7 @@ public class TtubeotServiceImpl implements TtubeotService {
     }
 
     @Override
+    @Transactional
     public MissionRewardResponseDTO requestCoin(int userId,
         MissionRewardRequestDTO missionRewardRequestDTO) {
         // 1. 유저가 소유하고있는 정상상태의 뚜벗을 조회합니다.
