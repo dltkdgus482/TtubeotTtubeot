@@ -30,6 +30,7 @@ import com.user.userttubeot.ttubeot.domain.repository.UserTtubeotOwnershipReposi
 import com.user.userttubeot.ttubeot.global.exception.TtubeotNotFoundException;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -372,6 +373,7 @@ public class TtubeotServiceImpl implements TtubeotService {
     }
 
     @Override
+    @Transactional
     public MissionRewardResponseDTO requestCoin(int userId,
         MissionRewardRequestDTO missionRewardRequestDTO) {
         // 1. 유저가 소유하고있는 정상상태의 뚜벗을 조회합니다.
@@ -381,72 +383,73 @@ public class TtubeotServiceImpl implements TtubeotService {
             throw new TtubeotNotFoundException("정상 상태의 뚜벗이 없습니다.");
         }
 
-        // 보상 코인
-        int steps = missionRewardRequestDTO.getSteps();
-        int totalRewardCoins = 0; // 총 보상 코인
-        StringBuilder completionMessage = new StringBuilder();
-
         UserTtuBeotOwnership userTtubeot = optionalUserTtubeot.get();
+        int steps = missionRewardRequestDTO.getSteps();
+        System.out.println("steps" + steps);
+        int totalStepsAdded = 0;
 
         // 2. 진행중인 일간 미션 조회
         List<UserTtubeotMission> adventureDailyMissions = userTtubeotMissionRepository.findByUserTtuBeotOwnershipAndMission_MissionThemeAndMission_MissionTypeAndMissionStatus(
             userTtubeot, 1, 0, MissionStatus.IN_PROGRESS);
+
         // 진행중인 주간 미션 조회
         List<UserTtubeotMission> adventureWeeklyMissions = userTtubeotMissionRepository.findByUserTtuBeotOwnershipAndMission_MissionThemeAndMission_MissionTypeAndMissionStatus(
             userTtubeot, 1, 1, MissionStatus.IN_PROGRESS);
 
-        // 항상 존재합니다.
-        if (!adventureDailyMissions.isEmpty()) {
-            throw new IllegalArgumentException("진행 중인 모험 미션이 없습니다.");
-        }
-
-        // 3. 일간 및 주간 미션 처리
+        // 3. 일간 미션 처리
         for (UserTtubeotMission mission : adventureDailyMissions) {
-            totalRewardCoins += processMission(mission, mission.getMission(), steps,
-                completionMessage, "일간");
+            totalStepsAdded += processMission(mission, steps, "일간");
         }
 
+        // 4. 주간 미션 처리
         for (UserTtubeotMission mission : adventureWeeklyMissions) {
-            totalRewardCoins += processMission(mission, mission.getMission(), steps,
-                completionMessage, "주간");
+            totalStepsAdded += processMission(mission, steps, "주간");
         }
 
-        // 4. 결과 반환
+        // 5. 결과 반환
         return new MissionRewardResponseDTO(
-            totalRewardCoins,
-            !completionMessage.isEmpty() ? completionMessage.toString() : "미션 진행 중입니다."
+            totalStepsAdded,
+            "걸음수가 반영되었습니다. 총 추가 걸음수: " + totalStepsAdded
         );
     }
 
-    private int processMission(UserTtubeotMission userMission, Mission mission, int steps,
-        StringBuilder messageBuilder, String missionType) {
+
+    private int processMission(UserTtubeotMission userMission, int steps, String missionType) {
         int currentActionCount = userMission.getUserTtubeotMissionActionCount();
-        int targetCount = mission.getMissionTargetCount();
-        int maxReward = mission.getMissionReward();
+        int targetCount = userMission.getMission().getMissionTargetCount();
+
+        // 로그 추가: 이전 상태
+        System.out.println("[" + missionType + "] Before Update - Mission ID: "
+            + userMission.getUserTtubeotMissionId() +
+            ", Current Action Count: " + currentActionCount);
 
         // 걸음수 누적
         userMission.accumulateActionCount(steps);
 
-        // 현재 진행률 계산
-        double progressRate = Math.min(
-            (double) userMission.getUserTtubeotMissionActionCount() / targetCount, 1.0);
-
-        // 비례 보상 계산 (진행 중에도 일부 보상 지급)
-        int reward = (int) (progressRate * maxReward);
-
         // 목표치 도달 여부 판단
-        if (progressRate >= 1.0) {
+        if (userMission.getUserTtubeotMissionActionCount() >= targetCount) {
             // 미션 완료 처리
-            userMission.completeMission();
-            messageBuilder.append(missionType).append(" 미션을 완료하셨습니다! ");
+            userMission.completeMission(LocalDateTime.now());
+            System.out.println(
+                "[" + missionType + "] Mission ID: " + userMission.getUserTtubeotMissionId() +
+                    " is completed!");
         }
 
-        // 진행 중 상태 또는 완료된 상태 저장
+        // updated_at 갱신
+        userMission.updateUpdatedAt(LocalDateTime.now());
+
+        // 상태 저장
         userTtubeotMissionRepository.save(userMission);
 
-        // 보상 반환
-        return reward;
+        // 로그 추가: 저장 후 상태
+        System.out.println("[" + missionType + "] After Update - Mission ID: "
+            + userMission.getUserTtubeotMissionId() +
+            ", Updated Action Count: " + userMission.getUserTtubeotMissionActionCount());
+
+        // 추가된 걸음수 반환
+        return steps / 2;
     }
+
 
     @Override
     public RecentBreakupTtubeotResponseDTO getRecentBreakUpTtubeot(int userId) {
