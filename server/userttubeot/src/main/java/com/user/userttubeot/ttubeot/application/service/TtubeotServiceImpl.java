@@ -396,7 +396,7 @@ public class TtubeotServiceImpl implements TtubeotService {
             userTtubeot, 1, 1, MissionStatus.IN_PROGRESS);
 
         // 항상 존재합니다.
-        if (!adventureDailyMissions.isEmpty()) {
+        if (adventureDailyMissions.isEmpty()) {
             throw new IllegalArgumentException("진행 중인 모험 미션이 없습니다.");
         }
 
