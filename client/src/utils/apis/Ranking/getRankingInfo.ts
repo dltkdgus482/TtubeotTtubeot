@@ -1,4 +1,4 @@
-import { authRequest } from '../request';
+import { authRequest, defaultRequest } from '../request';
 
 interface RankingProps {
   user_id: number;
@@ -12,8 +12,8 @@ export const getRankingInfo = async (
   setAccessToken: (accessToken: string) => void,
 ): Promise<RankingProps[]> => {
   try {
-    const authClient = authRequest(accessToken, setAccessToken);
-    const res = await authClient.get('/user/ranking');
+    // const authClient = authRequest(accessToken, setAccessToken);
+    const res = await defaultRequest.get('/user/ranking');
     return res.data;
   } catch (error) {
     console.log(error);
