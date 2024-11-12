@@ -115,9 +115,7 @@ class AIService {
           },
         ],
       });
-      log("analyzeImage: 성공", {
-        result: response.choices[0]?.message?.content,
-      });
+      log("analyzeImage: 성공");
       return response.choices[0]?.message?.content || "";
     } catch (error) {
       console.error("analyzeImage: 오류 발생", error);
@@ -153,9 +151,7 @@ class AIService {
         model: "gpt-4o",
         messages: [{ role: "user", content: messageContent }],
       });
-      log("generatePromptText: 성공", {
-        result: response.choices[0]?.message?.content,
-      });
+      log("generatePromptText: 성공");
       return (
         response.choices[0]?.message?.content || "Prompt generation failed."
       );
@@ -216,12 +212,12 @@ class AIService {
       perspectiveHeight,
       animalPerspective
     );
-    log("generatePromptFromImage: 종료", { prompt });
+    log("generatePromptFromImage: 종료");
     return prompt;
   }
 
   public async generateImageFromPrompt(prompt: string): Promise<string> {
-    log("generateImageFromPrompt: 시작", { prompt });
+    log("generateImageFromPrompt: 시작");
     try {
       const response = await this.client.generate("sdxl-base", {
         enhance: false,
