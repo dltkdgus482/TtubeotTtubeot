@@ -22,59 +22,57 @@ class ImageGenService {
 
   public async generateImage(adventureLog: AdventureLogModel): Promise<void> {
     const gpsLog = adventureLog.gpsLog;
-    let roadViewPoints = [];
+    let selectedPoint = null;
 
-    for (let i = 0; i < 4; i++) {
-      let start = Math.floor((i * gpsLog.length) / 4);
-      let end = Math.floor(((i + 1) * gpsLog.length) / 4);
-
-      while (start < end) {
-        if (
-          await this.roadViewService.checkStreetViewAvailability(
-            gpsLog[start].lat,
-            gpsLog[start].lng
-          )
-        ) {
-          roadViewPoints.push(gpsLog[start]);
-          break;
-        }
-        start++;
+    // 첫 번째 유효한 RoadView 좌표만 찾기
+    for (let i = 0; i < gpsLog.length; i++) {
+      if (
+        await this.roadViewService.checkStreetViewAvailability(
+          gpsLog[i].lat,
+          gpsLog[i].lng
+        )
+      ) {
+        selectedPoint = gpsLog[i];
+        break; // 첫 번째 유효한 좌표를 찾았으므로 반복문 종료
       }
     }
 
-    let imageUrls = [];
-    for (let point of roadViewPoints) {
-      let imageUrl = this.roadViewService.getStreetViewLink(
-        point.lat,
-        point.lng
-      );
-      console.log("ImageUrl: " + imageUrl);
-
-      let generatedImageUrl = await this.aiService.generateImageBasedOnPrompt(
-        imageUrl,
-        1
-      );
-      console.log("GeneratedImageUrl: " + generatedImageUrl);
-
-      imageUrls.push(generatedImageUrl);
+    if (!selectedPoint) {
+      console.log("No valid RoadView point found.");
+      return; // 유효한 좌표가 없는 경우 함수 종료
     }
 
-    let fileLinks = [];
-    for (let imageUrl of imageUrls) {
-      const response = await fetch(imageUrl);
-      const imageBlob = await response.blob();
-      const buffer = await imageBlob.arrayBuffer();
-      const imageBuffer = Buffer.from(buffer);
+    console.log("Selected RoadView Point: ", selectedPoint);
 
-      let ftpInstance = FTPUpload.getInstance();
-
-      let filename = await ftpInstance.uploadImage(imageBuffer);
-      fileLinks.push(this.cdnUrl + filename);
-    }
-    await this.imageMysqlRepository.saveImageUrls(
-      adventureLog.adventureLogId,
-      fileLinks
+    // 이미지 URL 생성
+    const imageUrl = this.roadViewService.getStreetViewLink(
+      selectedPoint.lat,
+      selectedPoint.lng
     );
+    console.log("ImageUrl: ", imageUrl);
+
+    // AI 서비스로 이미지 생성
+    const generatedImageUrl = await this.aiService.generateImageBasedOnPrompt(
+      imageUrl,
+      1
+    );
+    console.log("GeneratedImageUrl: ", generatedImageUrl);
+
+    // FTP에 업로드 및 URL 저장
+    const response = await fetch(generatedImageUrl);
+    const imageBlob = await response.blob();
+    const buffer = await imageBlob.arrayBuffer();
+    const imageBuffer = Buffer.from(buffer);
+
+    const ftpInstance = FTPUpload.getInstance();
+    const filename = await ftpInstance.uploadImage(imageBuffer);
+
+    const fileLink = this.cdnUrl + filename;
+
+    // 데이터베이스에 파일 링크 저장
+    await this.imageMysqlRepository.saveImageUrls(adventureLog.adventureLogId, [
+      fileLink,
+    ]);
   }
 }
 
