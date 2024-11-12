@@ -29,6 +29,7 @@ import WebView from 'react-native-webview';
 import { useUser } from '../../store/user';
 import { updateStepMission } from '../../utils/apis/Mission/updateMissionInfo';
 import StyledText from '../../styles/StyledText';
+import { updateLog } from '../../utils/apis/updateLog';
 
 const { RnSensorStep, SystemUsage } = NativeModules;
 const stepCounterEmitter = new NativeEventEmitter(RnSensorStep);
@@ -168,6 +169,8 @@ const AdventureScreen = () => {
       // startStepCounter();
     } else {
       updateStepMission(accessToken, setAccessToken, steps);
+      // 로그 업데이트 로직 추가
+      updateLog(accessToken, setAccessToken, 2);
       disconnectSocket();
       closeModal();
       stopStepCounter();

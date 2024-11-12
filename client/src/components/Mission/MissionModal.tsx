@@ -14,6 +14,8 @@ import {
   getWeeklyMissionList,
 } from '../../utils/apis/Mission/getMissionList';
 import { authRequest } from '../../utils/apis/request';
+import { getInfoApi } from '../../utils/apis/users';
+import { updateCoin } from '../../utils/apis/users/updateUserInfo';
 
 const CharacterShopTitleContainer = require('../../assets/images/CharacterShopTitleContainer.png');
 const CharacterShopBackgound = require('../../assets/images/CharacterShopBackground.png');
@@ -39,7 +41,7 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
 }) => {
   const [selectedMenu, setSelectedMenu] = useState<string>('일일 미션');
   const missionList: string[] = ['일일 미션', '주간 미션', '업적'];
-  const { accessToken, setAccessToken } = useUser.getState();
+  const { accessToken, setAccessToken, user } = useUser.getState();
   const authClient = authRequest(accessToken, setAccessToken);
   const [dailyMissionList, setDailyMissionList] = useState<MissionProps[]>([]);
   const [weeklyMissionList, setWeeklyMissionList] = useState<MissionProps[]>(
@@ -51,6 +53,12 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
     console.log('useEffect missionModalVisible, selectedMenu');
 
     if (missionModalVisible === false) return;
+
+    const updateCoinInfo = async () => {
+      const res = await getInfoApi(accessToken, setAccessToken);
+      const newCoin = res.userCoin;
+      updateCoin(newCoin);
+    };
 
     const fetchDailyMissionlist = async () => {
       const res = await getDailyMissionList(accessToken, setAccessToken);
@@ -69,6 +77,8 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
     if (selectedMenu === '주간 미션') {
       fetchWeeklyMissionlist();
     }
+
+    updateCoinInfo();
   }, [missionModalVisible, selectedMenu]);
 
   return (

@@ -32,6 +32,7 @@ import NfcTagging from '../NFC/NfcTagging';
 import { getUsername } from '../../utils/apis/adventure/getUsername';
 import { useUser } from '../../store/user';
 import AdventureFriendsModal from '../Friends/AdventureFriendsModal';
+import { updateCoin } from '../../utils/apis/users/updateUserInfo';
 
 // ------------------------------
 
@@ -48,6 +49,7 @@ import BleManager, {
   Peripheral,
   BleScanCallbackType,
 } from 'react-native-ble-manager';
+import { updateLog } from '../../utils/apis/updateLog';
 
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
@@ -91,6 +93,7 @@ const AdventureMapScreen = ({
   const [opponentUserId, setOpponentUserId] = useState<number>(-1);
   const [friendsModalVisible, setFriendsModalVisible] =
     useState<boolean>(false);
+  const { accessToken, setAccessToken, ttubeotId } = useUser.getState();
 
   // BLE 모드 관련 상태 추가
   const [devices, setDevices] = useState<Peripheral[]>([]);
@@ -265,7 +268,7 @@ const AdventureMapScreen = ({
       });
 
       socketRef.current.addAdventureParkListener(data => {
-        // console.log('addAdventureParkListener:', data.parks);
+        console.log('addAdventureParkListener:', data.parks);
       });
 
       socketRef.current.addAdventureRequestListener(data => {
@@ -282,6 +285,18 @@ const AdventureMapScreen = ({
 
         // 친구 요청 응답 수신 시 모달 닫기
         setIsNfcTagged(false);
+      });
+
+      socketRef.current.addAdventureRewardListener(data => {
+        console.log('보상 정보를 수신합니다.', data);
+
+        if (data.reward > 0) {
+          if (data.type === 1) {
+            updateLog(accessToken, setAccessToken, 1);
+          }
+        }
+
+        updateCoin(data.reward);
       });
     }
   }, []);
