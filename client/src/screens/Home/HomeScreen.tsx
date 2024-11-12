@@ -99,8 +99,9 @@ const HomeScreen = () => {
     if (res === null) {
       setTtubeotId(46);
     } else {
-      setTtubeotId(res.ttubeotType);
+      setTtubeotId(res.ttubeotId);
     }
+    // console.log('내뚜벗 아이디가 뭔교', ttubeotId);
     sendId(ttubeotId);
   };
 
