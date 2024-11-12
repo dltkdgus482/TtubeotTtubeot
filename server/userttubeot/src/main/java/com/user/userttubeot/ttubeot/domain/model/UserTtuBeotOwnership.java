@@ -102,6 +102,15 @@ public class UserTtuBeotOwnership {
         this.ttubeotStatus = newStatus;
     }
 
+    // 점수 누적 메서드
+    public void accumulateScore(int score) {
+        if (score < 0) {
+            throw new IllegalArgumentException("점수는 음수가 될 수 없습니다.");
+        }
+        this.ttubeotScore += score;
+    }
+
+
 
     // DTO to Entity
     public static UserTtuBeotOwnership fromDTO(TtubeotNameRegisterRequestDTO dto, Ttubeot ttubeot,
