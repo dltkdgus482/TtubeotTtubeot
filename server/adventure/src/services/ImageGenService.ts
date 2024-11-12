@@ -87,16 +87,37 @@ class ImageGenService {
     imageUrl: string,
     adventureLogId: number
   ): Promise<void> {
-    const response = await fetch(imageUrl);
-    const imageBlob = await response.blob();
-    const buffer = await imageBlob.arrayBuffer();
-    const imageBuffer = Buffer.from(buffer);
+    console.log("uploadAndSaveImage: 시작", { imageUrl, adventureLogId });
 
-    const ftpInstance = FTPUpload.getInstance();
-    const filename = await ftpInstance.uploadImage(imageBuffer);
+    try {
+      // 이미지 데이터 가져오기
+      const response = await fetch(imageUrl);
+      if (!response.ok) {
+        console.error("uploadAndSaveImage: 이미지 fetch 오류", {
+          status: response.status,
+        });
+        throw new Error("Failed to fetch image.");
+      }
 
-    const fileLink = this.cdnUrl + filename;
-    await this.imageMysqlRepository.saveImageUrls(adventureLogId, [fileLink]);
+      const imageBlob = await response.blob();
+      const buffer = await imageBlob.arrayBuffer();
+      const imageBuffer = Buffer.from(buffer);
+
+      // FTP 업로드
+      const ftpInstance = FTPUpload.getInstance();
+      const filename = await ftpInstance.uploadImage(imageBuffer);
+      console.log("uploadAndSaveImage: FTP 업로드 성공", { filename });
+
+      // URL 생성 및 DB 저장
+      const fileLink = this.cdnUrl + filename;
+      await this.imageMysqlRepository.saveImageUrls(adventureLogId, [fileLink]);
+      console.log("uploadAndSaveImage: DB 저장 성공", { fileLink });
+    } catch (error) {
+      console.error("uploadAndSaveImage: 오류 발생", error);
+      throw new Error("Failed to upload and save image.");
+    }
+
+    console.log("uploadAndSaveImage: 종료", { adventureLogId });
   }
 }
 
