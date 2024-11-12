@@ -45,7 +45,7 @@ public class MissionSchedulerService {
     }
 
     // 매일 자정에 일일 미션 초기화
-    @Scheduled(cron = "0 35 12 * * *")
+    @Scheduled(cron = "0 06 05 * * *")
     public void assignDailyMissions() {
         Mission specificMission = missionRepository.findById(3)
             .orElseThrow(() -> new IllegalArgumentException("ID 3에 해당하는 미션을 찾을 수 없습니다.")); // missionType 0 (일일미션)
