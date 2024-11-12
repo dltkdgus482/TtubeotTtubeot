@@ -1,4 +1,4 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -15,14 +15,17 @@ class RoadViewService {
     heading: number = 0,
     pitch: number = 0,
     fov: number = 90,
-    size: string = '360x640'
+    size: string = "360x640"
   ): string {
     const baseUrl = `/maps/api/streetview?location=${lat},${lng}&size=${size}&heading=${heading}&pitch=${pitch}&fov=${fov}&key=${this.apiKey}`;
     return `https://maps.googleapis.com${baseUrl}`;
   }
 
-  public async checkStreetViewAvailability(lat: number, lng: number): Promise<boolean> {
-    const url = `https://maps.googleapis.com/maps/api/streetview/metadata?location=${lat},${lng}&key=${this.apiKey}`;
+  public async checkStreetViewAvailability(
+    lat: number,
+    lng: number
+  ): Promise<boolean> {
+    const url = `https://maps.googleapis.com/maps/api/streetview/metadata?size=360x640&location=${lat},${lng}&key=${this.apiKey}`;
 
     try {
       const response = await fetch(url);
