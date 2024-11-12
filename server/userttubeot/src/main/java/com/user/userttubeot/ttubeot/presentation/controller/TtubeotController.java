@@ -42,10 +42,10 @@ public class TtubeotController {
     private final AlertServiceImpl alertService;
 
     // 뚜벗 로그 추가
-    @PostMapping("/ttubeot/logs")
-    public ResponseEntity<?> addTtubeotLog(@RequestBody TtubeotLogRequestDTO ttubeotLogRequestDTO) {
-        Long userTtubeotId = ttubeotLogRequestDTO.getUserTtubeotOwnershipId();
-        ttubeotService.addTtubeotLog(userTtubeotId, ttubeotLogRequestDTO);
+    @PostMapping("/auth/ttubeot/logs")
+    public ResponseEntity<?> addTtubeotLog(@RequestAttribute("userId") Integer userId,
+        @RequestBody TtubeotLogRequestDTO ttubeotLogRequestDTO) {
+        ttubeotService.addTtubeotLog(userId, ttubeotLogRequestDTO);
 
         return ResponseEntity.ok("로그가 성공적으로 추가되었습니다.");
     }

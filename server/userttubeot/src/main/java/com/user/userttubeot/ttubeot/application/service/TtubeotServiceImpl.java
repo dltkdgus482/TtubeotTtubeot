@@ -57,13 +57,13 @@ public class TtubeotServiceImpl implements TtubeotService {
     private final UserTtubeotMissionRepository userTtubeotMissionRepository;
 
     @Override
-    public void addTtubeotLog(Long userTtubeotOwnershipId,
+    public void addTtubeotLog(Integer userId,
         TtubeotLogRequestDTO ttubeotLogRequestDTO) {
 
-        // 정상 상태인 뚜벗 찾기 (상태가 0인 경우가 정상)
+        // 해당 유저의 정상 상태인 뚜벗 찾기
         UserTtuBeotOwnership ownership = userTtubeotOwnershipRepository
-            .findByUserTtubeotOwnershipIdAndTtubeotStatus(userTtubeotOwnershipId, 0)
-            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 정상 상태 뚜벗이 없습니다."));
+            .findByUser_UserIdAndTtubeotStatus(userId, 0)
+            .orElseThrow(() -> new TtubeotNotFoundException("정상 상태인 뚜벗이 존재하지 않습니다."));
 
         // 로그 저장
         TtubeotLog ttubeotLog = TtubeotLog.builder()
@@ -456,7 +456,6 @@ public class TtubeotServiceImpl implements TtubeotService {
         int coinsToAdd = totalStepsAdded / 5;
         user.addCoins(coinsToAdd);
         userRepository.save(user);
-
 
         // 5. 결과 반환
         return new MissionRewardResponseDTO(
