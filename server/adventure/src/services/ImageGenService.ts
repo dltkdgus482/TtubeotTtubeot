@@ -48,10 +48,14 @@ class ImageGenService {
         point.lat,
         point.lng
       );
+      console.log("ImageUrl: " + imageUrl);
+
       let generatedImageUrl = await this.aiService.generateImageBasedOnPrompt(
         imageUrl,
         1
       );
+      console.log("GeneratedImageUrl: " + generatedImageUrl);
+
       imageUrls.push(generatedImageUrl);
     }
 
