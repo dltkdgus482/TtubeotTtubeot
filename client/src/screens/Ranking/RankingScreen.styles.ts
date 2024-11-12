@@ -42,10 +42,11 @@ const styles = StyleSheet.create({
   },
   rankingList: {
     width: '100%',
-    backgroundColor: 'white',
+    backgroundColor: '#F5F8FA',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 10,
+    minHeight: 300, // 최소 높이 설정 (예: 300)
   },
   rankingContainer: {
     flexDirection: 'row',
@@ -111,6 +112,17 @@ const styles = StyleSheet.create({
     height: 65,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden', // 원을 벗어나는 이미지 숨기기
+  },
+  underPlayerImageContainer: {
+    top: -80,
+    backgroundColor: 'white',
+    borderRadius: 50,
+    width: 65,
+    height: 65,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden', // 원을 벗어나는 이미지 숨기기
   },
 });
 
