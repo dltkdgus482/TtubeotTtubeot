@@ -53,10 +53,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginVertical: 5,
-    height: 80,
-    paddingHorizontal: 5,
-    marginHorizontal: '1%',
+    paddingVertical: 10, // 상하 여백을 사용해 높이를 유동적으로 만듦
+    paddingHorizontal: '3%', // 좌우 여백을 화면 비율에 맞게 설정
+    marginHorizontal: '2%', // 컨테이너 간의 여백을 화면 비율에 맞게 설정
+    backgroundColor: '#F5F8FA',
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    width: '100%', // 컨테이너가 화면의 대부분을 차지하도록 설정
   },
+
   ranking: {
     width: '14%',
     fontSize: 24,
