@@ -46,7 +46,7 @@ public class MissionSchedulerService {
     }
 
     // 매일 자정에 일일 미션 초기화
-    @Scheduled(cron = "0 30 05 * * *")
+    @Scheduled(cron = "0 32 05 * * *")
     @Transactional
     public void assignDailyMissions() {
         Mission specificMission = missionRepository.findById(3)
