@@ -8,6 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserTtubeotMissionListResponseDTO {
 
-    private List<UserTtubeotMissionResponseDTO> dailyMissions;
+    private List<UserTtubeotMissionResponseDTO> inProgressMissions; // 진행 중 미션 리스트
+    private List<UserTtubeotMissionResponseDTO> completedMissions; // 완료된 미션 리스트
 
 }
