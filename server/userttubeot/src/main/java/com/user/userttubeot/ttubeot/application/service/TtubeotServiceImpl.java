@@ -406,6 +406,10 @@ public class TtubeotServiceImpl implements TtubeotService {
             totalStepsAdded += processMission(mission, steps, "주간");
         }
 
+        // 5. 뚜벗 점수(ttubeot_score) 누적
+        userTtubeot.accumulateScore(totalStepsAdded);
+        userTtubeotOwnershipRepository.save(userTtubeot);
+
         // 5. 결과 반환
         return new MissionRewardResponseDTO(
             totalStepsAdded,
