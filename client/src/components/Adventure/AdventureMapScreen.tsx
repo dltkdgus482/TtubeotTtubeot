@@ -132,7 +132,7 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     isScanning.current = true;
     BleManager.scan([], 10000, true, {
       matchMode: BleScanMatchMode.Sticky,
-      scanMode: BleScanMode.LowLatency,
+      scanMode: BleScanMode.LowPower,
       callbackType: BleScanCallbackType.AllMatches,
     })
       .then(() => {
@@ -156,8 +156,10 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     }
   };
 
-  const startAdvertising = (): void => {
+  const startAdvertising = async (): Promise<void> => {
     if (isAdvertising.current === true) return;
+
+    await stopAdvertising();
 
     isAdvertising.current = true;
     const { user } = useUser.getState();
@@ -167,8 +169,9 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
 
     BLEAdvertiser.setCompanyId(0x004c);
     BLEAdvertiser.broadcast(SERVICE_UUID, messageBytes, {
-      txPowerLevel: 1,
+      txPowerLevel: 2,
       connectable: false,
+      advertiseMode: 2,
     })
       .then(() => {
         console.log('startAdvertising');
@@ -191,8 +194,6 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   };
 
   const discoverPeripheral = async (peripheral: Peripheral) => {
-    if (peripheral.advertising.isConnectable === false) return;
-
     if (peripheral.advertising.serviceUUIDs?.includes(SERVICE_UUID)) {
       console.log('주변 사용자 감지', peripheral);
 
@@ -245,13 +246,7 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       socketRef.current.addAdventureUserListener(data => {
         console.log('addAdventureUserLstener:', data);
 
-        setNearbyUsers(prevUsers => {
-          const isDifferent = data.users.some(
-            (newUser, index) =>
-              !prevUsers[index] || prevUsers[index].user_id !== newUser.user_id,
-          );
-          return isDifferent ? data.users : prevUsers;
-        });
+        setNearbyUsers(data.users);
       });
 
       socketRef.current.addAdventureResultListener(data => {
@@ -261,11 +256,11 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       });
 
       socketRef.current.addAdventureParkListener(data => {
-        console.log('addAdventureParkListener:', data.parks);
+        // console.log('addAdventureParkListener:', data.parks);
       });
 
       socketRef.current.addAdventureRequestListener(data => {
-        console.log('addAdventureRequestListener', data);
+        console.log('친구 요청 수신', data);
         setOpponentUserId(data.user_id);
         setOpponentUsername(data.username);
 

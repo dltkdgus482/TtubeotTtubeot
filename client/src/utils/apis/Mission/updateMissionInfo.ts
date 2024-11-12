@@ -1,13 +1,17 @@
 import { authRequest } from '../request';
 
-export const updateMission = (
+export const updateStepMission = (
   accessToken: string,
   setAccessToken: (accessToken: string) => void,
+  steps: number,
 ) => {
   try {
     const authClient = authRequest(accessToken, setAccessToken);
-    // const res = authClient.post();
-    // console.log(res.data);
+    const data = {
+      steps,
+    };
+    const res = authClient.post('/user/auth/ttubeot/adventure/result', data);
+    console.log(res.data);
   } catch (error) {
     console.log('updateMission Error', error);
   }

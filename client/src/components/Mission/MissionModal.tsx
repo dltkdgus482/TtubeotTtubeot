@@ -59,7 +59,7 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
 
     const fetchWeeklyMissionlist = async () => {
       const res = await getWeeklyMissionList(accessToken, setAccessToken);
-      setWeeklyMissionList(res);
+      setWeeklyMissionList(res.dailyMissions);
     };
 
     if (selectedMenu === '일일 미션') {
@@ -134,7 +134,7 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
                   ? dailyMissionList
                   : selectedMenu === '주간 미션'
                   ? weeklyMissionList
-                  : achievementList
+                  : dailyMissionList
               }
             />
           </ScrollView>

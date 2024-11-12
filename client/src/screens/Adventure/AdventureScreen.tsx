@@ -22,6 +22,8 @@ import useAdventureSocket from '../../utils/apis/adventure/AdventureInit';
 import MissionModal from '../../components/Mission/MissionModal';
 import useTreasureStore from '../../store/treasure';
 import GetTreasureModal from '../../components/ARComponents/GetTreasureModal';
+import { updateStepMission } from '../../utils/apis/Mission/updateMissionInfo';
+import { useUser } from '../../store/user';
 
 const { RnSensorStep, SystemUsage } = NativeModules;
 const stepCounterEmitter = new NativeEventEmitter(RnSensorStep);
@@ -49,7 +51,7 @@ const AdventureScreen = () => {
   //       console.log('System Usage Error', error);
   //     });
   // }, 2000);
-
+  const { accessToken, setAccessToken } = useUser.getState();
   const [adventureStart, setAdventureStart] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [missionVisible, setMissionVisible] = useState<boolean>(false);
@@ -159,6 +161,7 @@ const AdventureScreen = () => {
       openModal();
       // startStepCounter();
     } else {
+      updateStepMission(accessToken, setAccessToken, steps);
       disconnectSocket();
       closeModal();
       stopStepCounter();
