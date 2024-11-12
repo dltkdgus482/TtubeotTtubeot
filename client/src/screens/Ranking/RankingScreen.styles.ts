@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
   rankingImage: {
     width: 60,
     height: 60,
+    marginLeft: -10,
   },
   rankingInfo: {
     flexDirection: 'row',
