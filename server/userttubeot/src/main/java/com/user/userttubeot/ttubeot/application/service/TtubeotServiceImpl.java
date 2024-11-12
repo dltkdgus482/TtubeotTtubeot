@@ -446,6 +446,18 @@ public class TtubeotServiceImpl implements TtubeotService {
         userTtubeot.accumulateScore(totalStepsAdded);
         userTtubeotOwnershipRepository.save(userTtubeot);
 
+        // 6. 유저의 코인(user_coin) 업데이트
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            throw new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
+        }
+        User user = optionalUser.get();
+
+        int coinsToAdd = totalStepsAdded / 5;
+        user.addCoins(coinsToAdd);
+        userRepository.save(user);
+
+
         // 5. 결과 반환
         return new MissionRewardResponseDTO(
             totalStepsAdded,
