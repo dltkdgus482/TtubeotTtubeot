@@ -27,6 +27,7 @@ import com.user.userttubeot.ttubeot.domain.repository.TtubeotLogRepository;
 import com.user.userttubeot.ttubeot.domain.repository.TtubeotRepository;
 import com.user.userttubeot.ttubeot.domain.repository.UserTtubeotMissionRepository;
 import com.user.userttubeot.ttubeot.domain.repository.UserTtubeotOwnershipRepository;
+import com.user.userttubeot.ttubeot.global.exception.InsufficientFundsException;
 import com.user.userttubeot.ttubeot.global.exception.TtubeotNotFoundException;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.repository.UserRepository;
@@ -103,9 +104,24 @@ public class TtubeotServiceImpl implements TtubeotService {
     }
 
     @Override
+    @Transactional
     public TtubeotDrawResponseDTO drawTtubeot(Integer userId,
         TtubeotDrawRequestDTO ttubeotDrawRequestDTO) {
         int type = ttubeotDrawRequestDTO.getType();
+        int price = ttubeotDrawRequestDTO.getPrice();
+
+        // 1. 유저 조회 및 코인 차감 가능 여부 확인
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자를 찾을 수 없습니다."));
+
+        if (user.getUserCoin() < price) {
+            throw new InsufficientFundsException("보유 코인이 부족하여 뚜벗을 뽑을 수 없습니다.");
+        }
+
+        // 2. 유저의 코인 차감
+        user.addCoins(-price);
+        userRepository.save(user);
+
         TtubeotDrawResponseDTO responseDTO;
 
         switch (type) {
@@ -121,6 +137,9 @@ public class TtubeotServiceImpl implements TtubeotService {
             default:
                 throw new IllegalArgumentException("뽑기 타입을 1~3 사이의 숫자로 선택해주십시오.");
         }
+
+        // 4. 남은 코인 정보를 응답에 추가
+        responseDTO.setUserCoin(user.getUserCoin());
         return responseDTO;
     }
 
@@ -540,6 +559,6 @@ public class TtubeotServiceImpl implements TtubeotService {
 
         // 응답 DTO 생성 및 반환
         return new TtubeotDrawResponseDTO(ownership.getUserTtubeotOwnershipId(),
-            selectedTtubeot.getTtubeotId());
+            selectedTtubeot.getTtubeotId(), user.getUserCoin());
     }
 }

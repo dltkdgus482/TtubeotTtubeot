@@ -45,6 +45,9 @@ public class UserTtuBeotOwnership {
     @Column(name = "ttubeot_score", nullable = false)
     private Integer ttubeotScore = 0; // default
 
+    @Column(name = "ttubeot_interest", nullable = false)
+    private Integer ttubeotInterest = 70;
+
     @Column(name = "break_up")
     private LocalDateTime breakUp;
 
@@ -109,7 +112,6 @@ public class UserTtuBeotOwnership {
         }
         this.ttubeotScore += score;
     }
-
 
 
     // DTO to Entity
