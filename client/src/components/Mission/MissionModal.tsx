@@ -24,7 +24,7 @@ interface CharacterShopModalProps {
 }
 
 interface MissionProps {
-  missionActionCount: number; // 현재 진행도
+  missionActionCount: number;
   missionExplanation: string;
   missionName: string;
   missionStatus: string;
@@ -54,18 +54,12 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
 
     const fetchDailyMissionlist = async () => {
       const res = await getDailyMissionList(accessToken, setAccessToken);
-      setDailyMissionList([
-        ...res.inProgressMissions,
-        ...res.completedMissions,
-      ]);
+      setDailyMissionList(res);
     };
 
     const fetchWeeklyMissionlist = async () => {
       const res = await getWeeklyMissionList(accessToken, setAccessToken);
-      setWeeklyMissionList([
-        ...res.inProgressMissions,
-        ...res.completedMissions,
-      ]);
+      setWeeklyMissionList(res);
     };
 
     if (selectedMenu === '일일 미션') {

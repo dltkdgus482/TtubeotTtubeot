@@ -28,6 +28,7 @@ import ButtonFlat from '../../components/Button/ButtonFlat';
 import WebView from 'react-native-webview';
 import { useUser } from '../../store/user';
 import { updateStepMission } from '../../utils/apis/Mission/updateMissionInfo';
+import StyledText from '../../styles/StyledText';
 
 const { RnSensorStep, SystemUsage } = NativeModules;
 const stepCounterEmitter = new NativeEventEmitter(RnSensorStep);
@@ -36,6 +37,7 @@ const background = require('../../assets/images/AdventureBackground.jpg');
 const CameraIcon = require('../../assets/icons/CameraIcon.png');
 const MissionIcon = require('../../assets/icons/MissionIcon.png');
 const MapIcon = require('../../assets/icons/MapIcon.png');
+const horseBalloon = require('../../assets/images/horseBalloon.png');
 
 const isRunningOnEmulator = () => {
   if (Platform.OS === 'android') {
@@ -71,6 +73,11 @@ const AdventureScreen = () => {
   const [steps, setSteps] = useState<number>(0);
   const [initialSteps, setInitialSteps] = useState<number>(0);
   const { accessToken, setAccessToken } = useUser.getState();
+
+  const [horseBalloonContent, setHorseBalloonContent] =
+    useState<string>('친구 발견');
+  const [horseBalloonVisible, setHorseBalloonVisible] =
+    useState<boolean>(false);
 
   useEffect(() => {
     const stepListener = stepCounterEmitter.addListener(
@@ -195,7 +202,13 @@ const AdventureScreen = () => {
 
   const renderPage = () => {
     if (adventureStart) {
-      return <AdventureMapScreen steps={steps} />;
+      return (
+        <AdventureMapScreen
+          steps={steps}
+          setHorseBalloonVisible={setHorseBalloonVisible}
+          setHorseBalloonContent={setHorseBalloonContent}
+        />
+      );
     } else {
       return <AdventureAlert />;
     }
@@ -224,10 +237,6 @@ const AdventureScreen = () => {
         style={styles.backgroundImage}
         resizeMethod="resize"
       />
-      {/* <Animated.Image
-        source={background}
-        style={[styles.backgroundImage, { opacity: opacityAnim }]}
-      /> */}
       <View style={styles.profileContainer}>
         <TtubeotProfile />
       </View>
@@ -254,7 +263,6 @@ const AdventureScreen = () => {
       <View style={styles.startButtonContainer}>
         <TouchableOpacity onPress={handleStartAdventure}>
           <ButtonDefault
-            // content={steps.toString()}
             content={adventureStart ? 'STOP' : 'START'}
             iconSource={MapIcon}
             height={60}
@@ -264,16 +272,6 @@ const AdventureScreen = () => {
         </TouchableOpacity>
       </View>
       <GPSAlertModal modalVisible={modalVisible} closeModal={closeModal} />
-      {/* <View style={{ position: 'absolute', top: 200, left: '50%' }}>
-        <StyledTextInput
-          value={inputValue}
-          onChangeText={setInputValue}
-          keyboardType="numeric"
-        />
-        <TouchableOpacity onPress={() => sendId(inputValue)}>
-          <ButtonFlat content="변경" />
-        </TouchableOpacity>
-      </View> */}
       {isFocused && (
         <View style={styles.ttubeotWebviewContainer} pointerEvents="none">
           <WebView
@@ -300,6 +298,14 @@ const AdventureScreen = () => {
               console.log('Message from WebView:', event.nativeEvent.data);
             }}
           />
+          {horseBalloonVisible && (
+            <View style={styles.horseBalloonContainer}>
+              <Image source={horseBalloon} style={styles.horseBalloon} />
+              <StyledText bold style={styles.horseBalloonText}>
+                {horseBalloonContent}
+              </StyledText>
+            </View>
+          )}
         </View>
       )}
 

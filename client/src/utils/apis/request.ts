@@ -23,6 +23,12 @@ export const setupInterceptors = (
   const { clearUser } = useUser.getState();
 
   axiosInstance.interceptors.request.use(async config => {
+    console.log('--- Request Details ---');
+    console.log('URL:', config.url);
+    console.log('Method:', config.method);
+    console.log('Headers:', config.headers);
+    console.log('Data:', config.data);
+
     if (accessToken && typeof accessToken === 'string') {
       try {
         const { exp } = jwtDecode(accessToken);
@@ -56,9 +62,23 @@ export const setupInterceptors = (
 
   // 응답 에러 처리
   axiosInstance.interceptors.response.use(
-    response => response,
+    response => {
+      console.log('--- Response Details ---');
+      console.log('Status:', response.status);
+      console.log('Headers:', response.headers);
+      console.log('Data:', response.data);
+      return response;
+    },
     error => {
       console.log('API 요청 오류:', error);
+
+      // if (error.response) {
+      //   console.error('Status:', error.response.status);
+      //   console.error('Headers:', error.response.headers);
+      //   console.error('Data:', error.response.data);
+      // } else {
+      //   console.error('Error Message:', error.message);
+      // }
       return Promise.reject(error);
     },
   );

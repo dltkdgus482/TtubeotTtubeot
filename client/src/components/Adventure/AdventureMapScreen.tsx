@@ -59,6 +59,8 @@ global.Buffer = require('buffer').Buffer;
 
 interface AdventureMapScreenProps {
   steps: number;
+  setHorseBalloonVisible: (horseBalloonVisible: boolean) => void;
+  setHorseBalloonContent: (horseBalloonContent: string) => void;
 }
 
 interface UserProps {
@@ -68,7 +70,11 @@ interface UserProps {
   distance: number;
 }
 
-const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
+const AdventureMapScreen = ({
+  steps,
+  setHorseBalloonVisible,
+  setHorseBalloonContent,
+}: AdventureMapScreenProps) => {
   const [location, setLocation] = useState<GeoCoordinates | null>(null);
   const [region, setRegion] = useState<Region | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -203,8 +209,6 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
 
   const discoverPeripheral = async (peripheral: Peripheral) => {
     if (peripheral.advertising.serviceUUIDs?.includes(SERVICE_UUID)) {
-      console.log('주변 사용자 감지', peripheral);
-
       debouncedSetDevices(prevDevices => {
         const exists = prevDevices.some(device => device.id === peripheral.id);
 
@@ -219,7 +223,6 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   };
 
   useEffect(() => {
-    console.log('useEffect devices');
     if (devicesRef.current.length === 0) return;
 
     const sortedDevices = [...devicesRef.current].sort(
@@ -252,8 +255,6 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       socketRef.current = AdventureManager.getInstance();
 
       socketRef.current.addAdventureUserListener(data => {
-        console.log('addAdventureUserListener:', data);
-
         setNearbyUsers(data.users);
       });
 
@@ -311,6 +312,14 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       }
       return;
     }
+
+    setHorseBalloonVisible(true);
+    setHorseBalloonContent('친구 발견!');
+
+    setTimeout(() => {
+      setHorseBalloonVisible(false);
+      setHorseBalloonContent('');
+    }, 4000);
 
     if (isScanning.current === false) {
       startScanning();

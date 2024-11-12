@@ -1,12 +1,14 @@
 import { defaultRequest, authRequest } from '../request';
 import { Alert } from 'react-native';
 
-interface DailyMissionProps {
-  mission: string;
-}
-
-interface WeeklyMissionProps {
-  mission: string;
+interface MissionProps {
+  missionActionCount: number;
+  missionExplanation: string;
+  missionName: string;
+  missionStatus: string;
+  missionTargetCount: number;
+  missionTheme: number;
+  missionType: number;
 }
 
 export const getDailyMissionList = async (
@@ -16,9 +18,10 @@ export const getDailyMissionList = async (
   try {
     const authClient = authRequest(accessToken, setAccessToken);
     const res = await authClient.get('/user/auth/ttubeot/daily');
+    const resData = res.data;
 
-    console.log(res.data);
-    return res.data;
+    console.log(resData);
+    return [...resData.inProgressMissions, ...resData.completedMissions];
   } catch (error) {
     if (error.response.status === 403) {
       console.log(error);
@@ -37,9 +40,11 @@ export const getWeeklyMissionList = async (
   try {
     const authClient = authRequest(accessToken, setAccessToken);
     const res = await authClient.get('/user/auth/ttubeot/weekly');
+    const resData = res.data;
 
-    console.log(res.data);
-    return res.data;
+    console.log(resData);
+
+    return [...resData.inProgressMissions, ...resData.completedMissions];
   } catch (error) {
     if (error.response.status === 403) {
       console.log(error);

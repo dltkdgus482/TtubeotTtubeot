@@ -23,12 +23,9 @@ interface RankingProps {
 
 const RankingScreen = () => {
   const [selected, setSelected] = useState('뚜벗 랭킹');
-  const [rankingList, setRankingList] =
-    useState<RankingProps[]>(dummyRankingList);
+  const [rankingList, setRankingList] = useState<RankingProps[]>([]);
 
   useEffect(() => {
-    setRankingList(dummyRankingList);
-
     const fetchRankingInfo = async () => {
       const res = await getRankingInfo();
       setRankingList(res);
