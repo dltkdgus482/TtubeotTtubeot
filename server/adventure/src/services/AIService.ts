@@ -223,25 +223,17 @@ class AIService {
 
   public async generateImageFromPrompt(prompt: string): Promise<string> {
     try {
-      const response = await axios.post(
-        "https://api.monsterapi.ai/v1/generate/sdxl-base",
-        {
-          enhance: false,
-          optimize: false,
-          prompt: prompt,
-          negprompt: "text, watermark, blurred, low resolution",
-          steps: 50,
-          guidance_scale: 30,
-          style: "enhance",
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.MONSTER_API_KEY}`,
-          },
-        }
-      );
-      return response.data.output?.[0] || "Image generation failed.";
+      const response = await this.client.generate("sdxl-base", {
+        enhance: false,
+        optimize: false,
+        prompt: prompt,
+        negprompt: "text, watermark, blurred, low resolution",
+        steps: 50,
+        guidance_scale: 30,
+        style: "enhance",
+      });
+      const imageUrl = response.output?.[0];
+      return imageUrl || "Image generation failed.";
     } catch (error) {
       console.error("Error generating image:", error);
       throw new Error("Image generation failed.");
