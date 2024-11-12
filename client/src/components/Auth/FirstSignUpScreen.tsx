@@ -4,7 +4,11 @@ import styles from './FirstSignUpScreen.styles';
 import StyledText from '../../styles/StyledText';
 import StyledTextInput from '../../styles/StyledTextInput';
 import ButtonFlat from '../../components/Button/ButtonFlat';
-import { requestSmsVerificationApi, confirmSmsVerificationApi, validatePhone } from '../../utils/apis/users/signup';
+import {
+  requestSmsVerificationApi,
+  confirmSmsVerificationApi,
+  validatePhone,
+} from '../../utils/apis/users/signup';
 import { useUser } from '../../store/user';
 
 interface FirstSignUpScreenProps {
@@ -12,19 +16,24 @@ interface FirstSignUpScreenProps {
   onBack: () => void;
 }
 
-const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({ onNext, onBack }) => {
-  const user = useUser((state) => state.user); // 현재 user 상태 가져오기
-  const setUser = useUser((state) => state.setUser); // 전체 user 객체를 설정하는 함수
+const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({
+  onNext,
+  onBack,
+}) => {
+  const user = useUser(state => state.user); // 현재 user 상태 가져오기
+  const setUser = useUser(state => state.setUser); // 전체 user 객체를 설정하는 함수
   const [phone, setPhone] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [isSmsConfirmed, setIsSmsConfirmed] = useState(false); // 인증 완료 여부 상태
 
-
   useEffect(() => {
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      onBack(); // 뒤로가기 버튼 누르면 onBack 함수 호출
-      return true; // 기본 뒤로가기 동작 막기
-    });
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        onBack(); // 뒤로가기 버튼 누르면 onBack 함수 호출
+        return true; // 기본 뒤로가기 동작 막기
+      },
+    );
 
     return () => backHandler.remove(); // 컴포넌트 언마운트 시 이벤트 리스너 제거
   }, [onBack]);
@@ -51,8 +60,8 @@ const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({ onNext, onBack })
     }
 
     try {
-      const success = await requestSmsVerificationApi(phone);
-      if (success) {
+      const response = await requestSmsVerificationApi(phone);
+      if (response) {
         Alert.alert('문자 인증 요청이 성공적으로 전송되었습니다.');
       } else {
         Alert.alert('인증 요청에 실패했습니다. 다시 시도해주세요.');
@@ -63,19 +72,16 @@ const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({ onNext, onBack })
     }
   };
 
-
   const handleSmsConfirm = async () => {
     if (!verificationCode) {
       Alert.alert('인증번호를 입력해주세요.');
       return;
     }
 
-    const success = await confirmSmsVerificationApi(phone, verificationCode);
-    if (success) {
+    const response = await confirmSmsVerificationApi(phone, verificationCode);
+    if (response) {
       setIsSmsConfirmed(true);
-      Alert.alert('인증이 완료되었습니다.', '', [
-        { text: '확인'},
-      ]);
+      Alert.alert('인증이 완료되었습니다.', '', [{ text: '확인' }]);
     } else {
       Alert.alert('인증에 실패했습니다. 다시 시도해주세요.');
     }
@@ -93,8 +99,12 @@ const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({ onNext, onBack })
             value={phone}
             onChangeText={setPhone}
           />
-          <TouchableOpacity style={styles.requestButton} onPress={handleSmsRequest}>
-            <StyledText bold style={styles.requestButtonText}>인증 요청</StyledText>
+          <TouchableOpacity
+            style={styles.requestButton}
+            onPress={handleSmsRequest}>
+            <StyledText bold style={styles.requestButtonText}>
+              인증 요청
+            </StyledText>
           </TouchableOpacity>
         </View>
         <View style={styles.phoneContainer}>
@@ -107,14 +117,18 @@ const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({ onNext, onBack })
             onChangeText={setVerificationCode}
           />
           <TouchableOpacity
-            style={[styles.requestButton, isSmsConfirmed && styles.confirmedButton]}
+            style={[
+              styles.requestButton,
+              isSmsConfirmed && styles.confirmedButton,
+            ]}
             onPress={handleSmsConfirm}
-            disabled={isSmsConfirmed}
-          >
+            disabled={isSmsConfirmed}>
             <StyledText
               bold
-              style={[styles.requestButtonText, isSmsConfirmed && styles.confirmedButtonText]}
-            >
+              style={[
+                styles.requestButtonText,
+                isSmsConfirmed && styles.confirmedButtonText,
+              ]}>
               {isSmsConfirmed ? '인증 완료' : '인증 확인'}
             </StyledText>
           </TouchableOpacity>
@@ -122,8 +136,7 @@ const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({ onNext, onBack })
         <TouchableOpacity
           style={styles.nextButton}
           onPress={handleNextPress} // handleSmsConfirm에서 인증 성공 시 onNext 호출
-          disabled={!verificationCode}
-        >
+          disabled={!verificationCode}>
           <ButtonFlat content="다음" color="#FDFBF4" width={120} height={50} />
         </TouchableOpacity>
       </View>

@@ -25,5 +25,9 @@ export default StyleSheet.create({
   },
   loginButton: {
     marginTop: 32,
+    paddingBottom: 16,
+  },
+  findPasswordText: {
+    color: '#6A6A6A',
   },
 });

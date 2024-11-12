@@ -9,6 +9,7 @@ import {
   NativeModules,
   PermissionsAndroid,
 } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import { useCameraPermission } from 'react-native-vision-camera';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from './AdventureScreen.styles';
@@ -22,7 +23,9 @@ import useAdventureSocket from '../../utils/apis/adventure/AdventureInit';
 import MissionModal from '../../components/Mission/MissionModal';
 import useTreasureStore from '../../store/treasure';
 import GetTreasureModal from '../../components/ARComponents/GetTreasureModal';
-import { updateStepMission } from '../../utils/apis/Mission/updateMissionInfo';
+import StyledTextInput from '../../styles/StyledTextInput';
+import ButtonFlat from '../../components/Button/ButtonFlat';
+import WebView from 'react-native-webview';
 import { useUser } from '../../store/user';
 
 const { RnSensorStep, SystemUsage } = NativeModules;
@@ -42,16 +45,8 @@ const isRunningOnEmulator = () => {
 };
 
 const AdventureScreen = () => {
-  // setInterval(() => {
-  //   SystemUsage.getSystemUsage()
-  //     .then(data => {
-  //       console.log('System Usage:', data);
-  //     })
-  //     .catch(error => {
-  //       console.log('System Usage Error', error);
-  //     });
-  // }, 2000);
-  const { accessToken, setAccessToken } = useUser.getState();
+  const isFocused = useIsFocused();
+  const { ttubeotId } = useUser.getState();
   const [adventureStart, setAdventureStart] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [missionVisible, setMissionVisible] = useState<boolean>(false);
@@ -68,6 +63,8 @@ const AdventureScreen = () => {
 
   const hasTreasure = useTreasureStore(state => state.hasTreasure);
 
+  const webViewRef = useRef(null);
+  const [inputValue, setInputValue] = useState('1');
   // ------------------------------
 
   const [steps, setSteps] = useState<number>(0);
@@ -207,6 +204,17 @@ const AdventureScreen = () => {
     CameraModal = require('../../components/ARComponents/CameraModal').default;
   }
 
+  const sendId = (id: number) => {
+    if (webViewRef.current && id > 0 && id <= 46) {
+      webViewRef.current.postMessage(JSON.stringify({ type: 'changeId', id }));
+    }
+  };
+
+  useEffect(() => {
+    sendId(ttubeotId);
+    console.log(ttubeotId);
+  }, [ttubeotId]);
+
   return (
     <SafeAreaView style={styles.container}>
       <Image
@@ -254,6 +262,44 @@ const AdventureScreen = () => {
         </TouchableOpacity>
       </View>
       <GPSAlertModal modalVisible={modalVisible} closeModal={closeModal} />
+      <View style={{ position: 'absolute', top: 200, left: '50%' }}>
+        <StyledTextInput
+          value={inputValue}
+          onChangeText={setInputValue}
+          keyboardType="numeric"
+        />
+        <TouchableOpacity onPress={() => sendId(inputValue)}>
+          <ButtonFlat content="변경" />
+        </TouchableOpacity>
+      </View>
+      {isFocused && (
+        <View style={styles.ttubeotWebviewContainer}>
+          <WebView
+            ref={webViewRef}
+            originWhitelist={['*']}
+            source={{ uri: 'file:///android_asset/renderRunModel.html' }}
+            style={styles.ttubeotWebview}
+            allowFileAccess={true}
+            allowFileAccessFromFileURLs={true}
+            allowUniversalAccessFromFileURLs={true}
+            onLoadStart={syntheticEvent => {
+              const { nativeEvent } = syntheticEvent;
+              console.log('WebView Start: ', nativeEvent);
+            }}
+            onError={syntheticEvent => {
+              const { nativeEvent } = syntheticEvent;
+              console.error('WebView onError: ', nativeEvent);
+            }}
+            onHttpError={syntheticEvent => {
+              const { nativeEvent } = syntheticEvent;
+              console.error('WebView onHttpError: ', nativeEvent);
+            }}
+            onMessage={event => {
+              console.log('Message from WebView:', event.nativeEvent.data);
+            }}
+          />
+        </View>
+      )}
 
       {isCameraModalEnabled &&
         CameraModal &&

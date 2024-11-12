@@ -14,15 +14,15 @@ const CancelUserModal = ({
   modalVisible,
   closeModal,
 }: CancelUserModalProps) => {
-  const { accessToken, setAccessToken, setIsLoggedIn } = useUser.getState();
+  const { accessToken, setAccessToken, clearUser } = useUser.getState();
 
   const handleCancelUser = async () => {
     // 회원 탈퇴 API 호출
-    const success = await deleteUserApi(accessToken, setAccessToken);
+    const response = await deleteUserApi(accessToken, setAccessToken);
 
-    if (success) {
+    if (response) {
       // 탈퇴 성공 시 로그아웃 처리 및 모달 닫기
-      setIsLoggedIn(false);
+      clearUser();
       closeModal();
       Alert.alert('회원 탈퇴가 완료되었습니다.');
     } else {

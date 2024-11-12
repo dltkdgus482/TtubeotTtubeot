@@ -39,23 +39,33 @@ export default StyleSheet.create({
   },
   profileContainer: {
     position: 'absolute',
-    top: 40,
+    top: 55,
     left: 15,
   },
   currencyContainer: {
     position: 'absolute',
-    top: 40,
+    top: 55,
     right: 10,
   },
   ttubeotWebviewContainer: {
     position: 'absolute',
     bottom: -70,
-    left: 0,
+    alignSelf: 'center',
   },
   ttubeotWebview: {
     width: 400,
     height: 500,
     backgroundColor: 'transparent',
+  },
+  ttubeotEggContainer: {
+    position: 'absolute',
+    bottom: 200,
+    alignSelf: 'center',
+  },
+  ttubeotEgg: {
+    width: 250,
+    height: 350,
+    resizeMode: 'contain',
   },
   startButtonContainer: {
     alignItems: 'center',

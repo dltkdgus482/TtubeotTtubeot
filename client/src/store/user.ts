@@ -18,9 +18,11 @@ interface UserState {
   user: User;
   isLoggedIn: boolean;
   accessToken: string | null;
+  ttubeotId: number;
   setUser: (user: User) => void;
   setIsLoggedIn: (status: boolean) => void;
   setAccessToken: (token: string | null) => void;
+  setTtubeotId: (ttubeotId: number) => void;
   clearUser: () => void;
 }
 
@@ -52,6 +54,7 @@ export const useUser = create<UserState>()(
         coin: 0,
         userParent: 0,
       },
+      ttubeotId: 46,
       isLoggedIn: false,
       accessToken: null,
 
@@ -65,12 +68,14 @@ export const useUser = create<UserState>()(
       setIsLoggedIn: (status: boolean) => set(() => ({ isLoggedIn: status })),
       setAccessToken: (token: string | null) =>
         set(() => ({ accessToken: token })),
+      setTtubeotId: (ttubeotId: number) =>
+        set(() => ({ ttubeotId: ttubeotId })),
 
       // 로그아웃 시 또는 필요할 때 사용자 정보 지우기
       clearUser: () =>
         set(() => ({
           user: {
-            userId: '',
+            userId: -1,
             userName: '',
             phoneNumber: '',
             userLocationAgreement: 0,
@@ -80,6 +85,7 @@ export const useUser = create<UserState>()(
             coin: 0,
             userParent: 0,
           },
+          ttubeotId: 46,
           isLoggedIn: false,
           accessToken: null,
         })),

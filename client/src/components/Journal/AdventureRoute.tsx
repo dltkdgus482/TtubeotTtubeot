@@ -1,16 +1,48 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Text, View, Modal, Pressable, Image } from 'react-native';
 import styles from './AdventureRoute.styles';
 import Icon from 'react-native-vector-icons/AntDesign';
+import MapView, { PROVIDER_GOOGLE, Polyline, Marker } from 'react-native-maps';
+import { mapStyle } from '../../styles/mapStyle';
+import MaskedView from '@react-native-masked-view/masked-view';
+import StyledText from '../../styles/StyledText';
 
 type AdventureRouteProps = {
   modalVisible: boolean;
   closeModal: () => void;
 };
 
-const mapImage = require('../../assets/images/mockMap.png');
+type Location = {
+  latitude: number;
+  longitude: number;
+};
+
+const startIcon = require('../../assets/icons/start.png');
+const finishIcon = require('../../assets/icons/finish.png');
 
 const AdventureRoute = ({ modalVisible, closeModal }: AdventureRouteProps) => {
+  const mapRef = useRef<MapView>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [locations, setLocations] = useState<Location[]>([
+    { latitude: 35.0935, longitude: 128.8546 },
+    { latitude: 35.0935, longitude: 128.8536 },
+    { latitude: 35.0935, longitude: 128.8526 },
+    { latitude: 35.0925, longitude: 128.8526 },
+    { latitude: 35.0915, longitude: 128.8526 },
+    { latitude: 35.0905, longitude: 128.8526 },
+    { latitude: 35.0895, longitude: 128.8526 },
+    { latitude: 35.0885, longitude: 128.8526 },
+  ]);
+
+  const fitMapToCoordinates = () => {
+    if (mapRef.current && locations.length > 0) {
+      mapRef.current.fitToCoordinates(locations, {
+        edgePadding: { top: 150, right: 150, bottom: 150, left: 150 },
+        animated: true,
+      });
+    }
+  };
+
   return (
     <Modal
       animationType="slide"
@@ -19,8 +51,59 @@ const AdventureRoute = ({ modalVisible, closeModal }: AdventureRouteProps) => {
       onRequestClose={closeModal}>
       <View style={styles.modalBackground}>
         <View style={styles.modalView}>
-          {/* TODO: 진짜 지도 넣어야함 */}
-          <Image source={mapImage} style={styles.map} />
+          <View style={styles.mapContainer}>
+            <MaskedView
+              style={{
+                height: '100%',
+                width: '100%',
+              }}
+              maskElement={
+                <View
+                  style={{
+                    backgroundColor: 'black',
+                    height: '100%',
+                    width: '100%',
+                    borderRadius: 25,
+                    overflow: 'hidden',
+                  }}
+                />
+              }>
+              <MapView
+                ref={mapRef}
+                provider={PROVIDER_GOOGLE}
+                customMapStyle={mapStyle}
+                initialRegion={{
+                  latitude: locations[0].latitude,
+                  longitude: locations[0].longitude,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }}
+                style={styles.map}
+                onMapReady={fitMapToCoordinates}>
+                <Polyline
+                  coordinates={locations}
+                  strokeColor="#FF0000"
+                  strokeWidth={3}
+                />
+                <Marker
+                  coordinate={{
+                    latitude: locations[0].latitude,
+                    longitude: locations[0].longitude,
+                  }}
+                  title="시작"
+                  icon={startIcon}
+                />
+                <Marker
+                  coordinate={{
+                    latitude: locations[locations.length - 1].latitude,
+                    longitude: locations[locations.length - 1].longitude,
+                  }}
+                  title="종료"
+                  icon={finishIcon}
+                />
+              </MapView>
+            </MaskedView>
+          </View>
           <Icon
             name="close"
             size={30}

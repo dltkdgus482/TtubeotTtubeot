@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   ImageBackground,
@@ -14,8 +14,11 @@ import CancelUserModal from '../../components/Profile/CancelUserModal';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useUser } from '../../store/user';
 import { logoutApi } from '../../utils/apis/users';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { modifyUserInfoApi } from '../../utils/apis/users';
+import { RootStackParamList } from '../../types/navigationTypes';
+import { profileColor, EmptyProfile } from '../../components/ProfileImageUrl';
 
 const background = require('../../assets/images/IntroBackground.png');
 const settings1 = require('../../assets/icons/SettingsIcon1.png');
@@ -23,29 +26,75 @@ const settings2 = require('../../assets/icons/SettingsIcon2.png');
 const settings3 = require('../../assets/icons/SettingsIcon3.png');
 const settings4 = require('../../assets/icons/SettingsIcon4.png');
 
+type ProfileScreenNavigationProp = NavigationProp<
+  RootStackParamList,
+  'ProfileScreen'
+>;
+
 const ProfileScreen = () => {
-  const navigation = useNavigation();
-  const { setAccessToken, setIsLoggedIn, accessToken, clearUser } =
-    useUser.getState();
-  const [isGPSOn, setIsGPSOn] = useState<boolean>(false);
-  const [isPushOn, setIsPushOn] = useState<boolean>(false);
+  const navigation = useNavigation<ProfileScreenNavigationProp>();
+  const {
+    user,
+    ttubeotId,
+    setUser,
+    setAccessToken,
+    setIsLoggedIn,
+    accessToken,
+    clearUser,
+  } = useUser.getState();
+  const [isGPSOn, setIsGPSOn] = useState<boolean>(!!user.userLocationAgreement);
+  const [isPushOn, setIsPushOn] = useState<boolean>(
+    !!user.userPushNotificationAgreement,
+  );
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [notFoundTtubeotId, setNotFoundTtubeotId] = useState<number>(1);
 
-  // TODO: 위치정보는 회원 db에 저장
+  useEffect(() => {
+    setIsPushOn(!!user.userPushNotificationAgreement);
+  }, [user.userPushNotificationAgreement]);
 
-  const handlePressGPSToggle = () => {
-    setIsGPSOn(!isGPSOn);
+  useEffect(() => {
+    setNotFoundTtubeotId(generateRandomNumber(1, 5));
+  }, [ttubeotId]);
+
+  const generateRandomNumber = (min: number, max: number) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 
-  // TODO: 상태관리
+  const handlePressGPSToggle = async () => {
+    const newLocationAgreement = isGPSOn ? 0 : 1;
+
+    setIsGPSOn(!isGPSOn); // 로컬 상태 업데이트
+
+    try {
+      const response = await modifyUserInfoApi(accessToken, setAccessToken, {
+        user_location_agreement: newLocationAgreement,
+      });
+
+      if (response) {
+        setUser({ ...user, userLocationAgreement: newLocationAgreement });
+      }
+    } catch (error) {
+      console.error('위치 정보 동의 업데이트 실패:', error);
+      Alert.alert(
+        '위치 정보 동의 업데이트 중 오류가 발생했습니다. 다시 시도해주세요.',
+      );
+    }
+  };
 
   const handlePressPushToggle = () => {
+    setNotFoundTtubeotId(prev => ((prev + 1) % 5) + 1);
+    const newPushAgreement = isPushOn ? 0 : 1;
+    setUser({
+      ...user,
+      userPushNotificationAgreement: newPushAgreement,
+    });
     setIsPushOn(!isPushOn);
   };
 
   const handleLogout = async () => {
     try {
-      await logoutApi(accessToken, setAccessToken, setIsLoggedIn);
+      await logoutApi(user.phoneNumber);
       clearUser(); // 로그아웃 후 사용자 상태 초기화
       Alert.alert('로그아웃 되었습니다.');
     } catch (error) {
@@ -69,12 +118,30 @@ const ProfileScreen = () => {
     <SafeAreaView style={styles.container}>
       <ImageBackground source={background} style={styles.backgroundContainer} />
       <View style={styles.profileContainer}>
-        <Image
-          style={styles.profileImage}
-          source={require('../../assets/icons/tempProfile.png')}
-        />
+        {ttubeotId &&
+          (ttubeotId === 46 ? (
+            <View style={styles.profileNotFoundBackground}>
+              <StyledText bold color="white" style={styles.notFound}>
+                현재 보유 중인
+              </StyledText>
+              <StyledText bold color="white" style={styles.notFound}>
+                뚜벗이 없어요
+              </StyledText>
+              <Image
+                style={styles.profileNotFound}
+                source={EmptyProfile[notFoundTtubeotId]}
+              />
+            </View>
+          ) : (
+            <View style={styles.profileImageContainer}>
+              <Image
+                style={styles.profileImage}
+                source={profileColor[ttubeotId]}
+              />
+            </View>
+          ))}
         <StyledText bold style={styles.nickName}>
-          참참참
+          {user.userName} 님
         </StyledText>
       </View>
       <View style={styles.settingsContainer}>

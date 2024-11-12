@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 100,
     width: '100%',
+    zIndex: 100,
   },
   buttonContainer: {
     position: 'absolute',
@@ -68,6 +69,16 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 60,
     right: 40,
+  },
+  ttubeotWebviewContainer: {
+    position: 'absolute',
+    bottom: -70,
+    alignSelf: 'center',
+  },
+  ttubeotWebview: {
+    width: 400,
+    height: 500,
+    backgroundColor: 'transparent',
   },
 });
 

@@ -5,6 +5,8 @@ import StyledText from '../../styles/StyledText';
 import RankingScreenButtonContainer from './RankingScreenButtonContainer';
 import { dummyRankingList } from './dummyData';
 import { getRankingInfo } from '../../utils/apis/Ranking/getRankingInfo';
+import { useUser } from '../../store/user';
+// import { useIsFocused } from '@react-navigation/native';
 
 const IntroTtubeotRabbit = require('../../assets/ttubeot/IntroTtubeotRabbit.png');
 const gold = require('../../assets/medals/gold.png');
@@ -29,7 +31,7 @@ const RankingScreen = () => {
 
     const fetchRankingInfo = async () => {
       const res = await getRankingInfo();
-      // setRankingList(res);
+      setRankingList(res);
       console.log('rankingInfo', res);
     };
 
