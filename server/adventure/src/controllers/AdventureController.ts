@@ -215,9 +215,10 @@ export class AdventureController {
 
       socket.disconnect();
 
-      console.log("로드뷰 기반 이미지 생성을 시작합니다.");
-      await this.imageGenService.generateImage(adventureLog);
-      console.log("로드뷰 기반 이미지 생성을 종료합니다.");
+      // TODO: 이미지 생성 로직 필요할 시 주석 해제
+      // console.log("로드뷰 기반 이미지 생성을 시작합니다.");
+      // await this.imageGenService.generateImage(adventureLog);
+      // console.log("로드뷰 기반 이미지 생성을 종료합니다.");
 
       // TODO: 여기 FCM 관련 호출 들어가면 됨당
     } catch (error) {
