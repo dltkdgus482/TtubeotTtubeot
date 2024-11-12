@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Image, ScrollView } from 'react-native';
 import styles from './RankingScreen.styles';
 import StyledText from '../../styles/StyledText';
 import RankingScreenButtonContainer from './RankingScreenButtonContainer';

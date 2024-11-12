@@ -88,6 +88,23 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   const isScanning = useRef<boolean>(false);
   const isAdvertising = useRef<boolean>(false);
 
+  const debounce = (func, wait) => {
+    let timeout;
+    return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        func(...args);
+      }, wait);
+    };
+  };
+
+  const debouncedSetDevices = useCallback(
+    debounce(newDevices => {
+      setDevices(newDevices);
+    }, 500),
+    [],
+  );
+
   // BLE 관련 권한 요청
   useEffect(() => {
     BleManager.start({ showAlert: false }).then(() => {
@@ -113,9 +130,9 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     if (isScanning.current === true) return;
 
     isScanning.current = true;
-    BleManager.scan([], 300, true, {
+    BleManager.scan([], 10000, true, {
       matchMode: BleScanMatchMode.Sticky,
-      scanMode: BleScanMode.LowLatency,
+      scanMode: BleScanMode.LowPower,
       callbackType: BleScanCallbackType.AllMatches,
     })
       .then(() => {
@@ -139,8 +156,10 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     }
   };
 
-  const startAdvertising = (): void => {
+  const startAdvertising = async (): Promise<void> => {
     if (isAdvertising.current === true) return;
+
+    await stopAdvertising();
 
     isAdvertising.current = true;
     const { user } = useUser.getState();
@@ -149,7 +168,11 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     const messageBytes = stringToByteArray(message);
 
     BLEAdvertiser.setCompanyId(0x004c);
-    BLEAdvertiser.broadcast(SERVICE_UUID, messageBytes, {})
+    BLEAdvertiser.broadcast(SERVICE_UUID, messageBytes, {
+      txPowerLevel: 2,
+      connectable: false,
+      advertiseMode: 2,
+    })
       .then(() => {
         console.log('startAdvertising');
       })
@@ -171,15 +194,13 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   };
 
   const discoverPeripheral = async (peripheral: Peripheral) => {
-    if (peripheral.advertising.isConnectable === false) return;
-
     if (peripheral.advertising.serviceUUIDs?.includes(SERVICE_UUID)) {
       console.log('주변 사용자 감지', peripheral);
 
-      setDevices(prevDevices => {
+      debouncedSetDevices(prevDevices => {
         const exists = prevDevices.some(device => device.id === peripheral.id);
 
-        if (exists === false) {
+        if (!exists) {
           const updatedDevices = [...prevDevices, peripheral];
           devicesRef.current = updatedDevices;
           return updatedDevices;
@@ -190,8 +211,8 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   };
 
   useEffect(() => {
-    if (devicesRef.current.length === 0) return;
     console.log('useEffect devices');
+    if (devicesRef.current.length === 0) return;
 
     const sortedDevices = [...devicesRef.current].sort(
       (a, b) => (b.rssi || -Infinity) - (a.rssi || -Infinity),
@@ -223,15 +244,9 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       socketRef.current = AdventureManager.getInstance();
 
       socketRef.current.addAdventureUserListener(data => {
-        console.log('addAdventureUserListener', data);
+        console.log('addAdventureUserLstener:', data);
 
-        // 근처 사용자 목록 수신 시 상태 업데이트
-        setNearbyUsers(prevUsers => {
-          if (JSON.stringify(prevUsers) !== JSON.stringify(data.users)) {
-            return data.users;
-          }
-          return prevUsers;
-        });
+        setNearbyUsers(data.users);
       });
 
       socketRef.current.addAdventureResultListener(data => {
@@ -240,8 +255,12 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
         // 모험 결과 수신 시 모달 띄우기
       });
 
+      socketRef.current.addAdventureParkListener(data => {
+        // console.log('addAdventureParkListener:', data.parks);
+      });
+
       socketRef.current.addAdventureRequestListener(data => {
-        console.log('addAdventureRequestListener', data);
+        console.log('친구 요청 수신', data);
         setOpponentUserId(data.user_id);
         setOpponentUsername(data.username);
 
@@ -270,7 +289,8 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   useEffect(() => {
     console.log('useEffect nearbyUsers', nearbyUsers.length);
     // 30m 이내 사용자 필터링
-    setVeryNearbyUsers(nearbyUsers.filter(user => user.distance < 30));
+    const filteredUsers = nearbyUsers.filter(user => user.distance < 30);
+    setVeryNearbyUsers(filteredUsers);
 
     // 30m 이내 사용자 있을 경우 스캔, 광고 시작
     if (nearbyUsers.length === 0) {
@@ -386,6 +406,31 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     socketRef.current.sendFriendRequest(opponnentUserId);
   };
 
+  const markers = useMemo(() => {
+    return (
+      <View>
+        {location && (
+          <Marker
+            coordinate={{
+              latitude: location.latitude,
+              longitude: location.longitude,
+            }}
+            title="현재위치"
+            icon={require('../../assets/ttubeot/mockTtu.png')}
+            tracksViewChanges={false}
+          />
+        )}
+      </View>
+    );
+  }, [location]);
+
+  const debouncedHandleRegionChange = useCallback(
+    debounce(updatedRegion => {
+      setRegion(updatedRegion);
+    }, 2000),
+    [setRegion],
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.mapShadowContainer}>
@@ -421,24 +466,14 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
                     {'m'} */}
                   </StyledText>
                   <MapView
+                    key={nearbyUsers.length}
                     ref={mapRef}
                     provider={PROVIDER_GOOGLE}
                     region={region}
                     customMapStyle={mapStyle}
                     style={styles.map}
-                    onRegionChangeComplete={updatedRegion => {
-                      setRegion(updatedRegion);
-                    }}>
-                    {location && (
-                      <Marker
-                        coordinate={{
-                          latitude: location.latitude,
-                          longitude: location.longitude,
-                        }}
-                        title="현재위치"
-                        icon={require('../../assets/ttubeot/mockTtu.png')}
-                      />
-                    )}
+                    onRegionChangeComplete={debouncedHandleRegionChange}>
+                    {markers}
                   </MapView>
                 </>
               ) : (

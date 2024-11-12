@@ -4,11 +4,10 @@ import styles from './MissionModal.styles';
 import StyledText from '../../styles/StyledText';
 import Icon from 'react-native-vector-icons/AntDesign';
 import MissionList from './MissionList';
-import {
-  dailyMissionList,
-  weeklyMissionList,
-  achievementList,
-} from './dummyData';
+import // dailyMissionList,
+// weeklyMissionList,
+// achievementList,
+'./dummyData';
 import { useUser } from '../../store/user';
 import {
   getDailyMissionList,
@@ -24,6 +23,16 @@ interface CharacterShopModalProps {
   closeMissionModal: () => void;
 }
 
+interface MissionProps {
+  missionActionCount: number; // 현재 진행도
+  missionExplanation: string;
+  missionName: string;
+  missionStatus: string;
+  missionTargetCount: number;
+  missionTheme: number;
+  missionType: number;
+}
+
 const MissionModal: React.FC<CharacterShopModalProps> = ({
   missionModalVisible,
   closeMissionModal,
@@ -32,16 +41,25 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
   const missionList: string[] = ['일일 미션', '주간 미션', '업적'];
   const { accessToken, setAccessToken } = useUser.getState();
   const authClient = authRequest(accessToken, setAccessToken);
+  const [dailyMissionList, setDailyMissionList] = useState<MissionProps[]>([]);
+  const [weeklyMissionList, setWeeklyMissionList] = useState<MissionProps[]>(
+    [],
+  );
+  const [achievementList, setAchievementList] = useState<MissionProps[]>([]);
 
   useEffect(() => {
+    console.log('useEffect missionModalVisible, selectedMenu');
+
     if (missionModalVisible === false) return;
 
     const fetchDailyMissionlist = async () => {
       const res = await getDailyMissionList(accessToken, setAccessToken);
+      setDailyMissionList(res.dailyMissions);
     };
 
     const fetchWeeklyMissionlist = async () => {
       const res = await getWeeklyMissionList(accessToken, setAccessToken);
+      setWeeklyMissionList(res.dailyMissions);
     };
 
     if (selectedMenu === '일일 미션') {
@@ -116,7 +134,7 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
                   ? dailyMissionList
                   : selectedMenu === '주간 미션'
                   ? weeklyMissionList
-                  : achievementList
+                  : dailyMissionList
               }
             />
           </ScrollView>

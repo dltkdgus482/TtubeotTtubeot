@@ -55,12 +55,7 @@ const CancelUserModal = ({
                 </StyledText>
               </Pressable>
               <Pressable style={styles.confirmButton}>
-                <StyledText
-                  color="white"
-                  bold
-                  onPress={() => {
-                    handleCancelUser();
-                  }}>
+                <StyledText color="white" bold onPress={handleCancelUser}>
                   탈퇴
                 </StyledText>
               </Pressable>

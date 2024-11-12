@@ -20,7 +20,7 @@ type IconType =
 
 const BottomTabNavigator = () => {
   return (
-<Tab.Navigator
+    <Tab.Navigator
       initialRouteName="Home"
       screenOptions={({ route }) => {
         const routeName = getFocusedRouteNameFromRoute(route) ?? '';
@@ -69,7 +69,11 @@ const BottomTabNavigator = () => {
           tabBarActiveTintColor: '#3E4A3D',
           tabBarInactiveTintColor: 'gray',
           tabBarStyle: {
-            display: routeName === 'FindPasswordScreen' || routeName === 'SetNewPasswordScreen' ? 'none' : 'flex',
+            display:
+              routeName === 'FindPasswordScreen' ||
+              routeName === 'SetNewPasswordScreen'
+                ? 'none'
+                : 'flex',
             position: 'absolute',
             bottom: 0,
             left: 0,
@@ -83,8 +87,7 @@ const BottomTabNavigator = () => {
           tabBarShowLabel: false,
           headerShown: false,
         };
-      }}
-    >
+      }}>
       <Tab.Screen name="Journal" component={JournalStackNavigator} />
       <Tab.Screen name="Adventure" component={AdventureStackNavigator} />
       <Tab.Screen name="Home" component={HomeStackNavigator} />

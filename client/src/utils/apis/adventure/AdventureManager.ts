@@ -69,7 +69,7 @@ class AdventureManager {
 
   public addAdventureParkListener(callback: (data) => void) {
     this.socket.on('adventure_park', callback);
-    console.log('adventure_park event를 수신합니다.');
+    // console.log('adventure_park event를 수신합니다.');
   }
 
   public addAdventureRequestListener(callback: (data) => void) {
@@ -88,8 +88,16 @@ class AdventureManager {
       user_id: user_id,
     };
     this.socket.emit('adventure_request', data);
-    this.socket.emit('adventure_confirm', data);
     console.log('친구 요청을 전송합니다.', data);
+  }
+
+  public sendFriendRequestAccept(user_id: number) {
+    const data = {
+      user_id: user_id,
+      answer: true,
+    };
+    this.socket.emit('adventure_confirm', data);
+    console.log('친구 요청을 수락합니다.', data);
   }
 
   // 위치 정보 전송 메서드
@@ -102,6 +110,13 @@ class AdventureManager {
   public endAdventure() {
     this.socket.emit('adventure_end');
     console.log('adventure_end event 전송');
+  }
+
+  public removeAllListeners() {
+    if (this.socket) {
+      this.socket.removeAllListeners();
+      console.log('모든 소켓 이벤트 리스너를 제거했습니다.');
+    }
   }
 }
 
