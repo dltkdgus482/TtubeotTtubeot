@@ -14,4 +14,11 @@ public class TtubeotGlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ex.getMessage());
     }
+
+    // 코인이 부족한 경외 처리
+    @ExceptionHandler(InsufficientFundsException.class)
+    public ResponseEntity<String> handleInsufficientFundsException(InsufficientFundsException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ex.getMessage());
+    }
 }

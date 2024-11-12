@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 public interface TtubeotService {
 
     // 뚜벗 로그 추가
-    void addTtubeotLog(Long userTtubeotOwnershipId, TtubeotLogRequestDTO ttubeotLogRequestDTO);
+    void addTtubeotLog(Integer userId, TtubeotLogRequestDTO ttubeotLogRequestDTO);
 
     // 유저의 뚜벗 아이디 조회
     Long getTtubeotOwnershipId(int userId); // 상태가 정상(0)인것을 반환합니다.
