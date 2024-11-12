@@ -46,11 +46,12 @@ public class MissionSchedulerService {
     }
 
     // 매일 자정에 일일 미션 초기화
-    @Scheduled(cron = "0 13 05 * * *")
+    @Scheduled(cron = "0 32 05 * * *")
     @Transactional
     public void assignDailyMissions() {
         Mission specificMission = missionRepository.findById(3)
-            .orElseThrow(() -> new IllegalArgumentException("ID 3에 해당하는 미션을 찾을 수 없습니다.")); // missionType 0 (일일미션)
+            .orElseThrow(() -> new IllegalArgumentException(
+                "ID 3에 해당하는 미션을 찾을 수 없습니다.")); // missionType 0 (일일미션)
         List<Mission> dailyMissions = List.of(specificMission); // ID 3번 미션만 리스트에 포함
         assignMissionsToActiveTtubeots(dailyMissions, "일일 미션이 새로 할당되었습니다.");
     }
@@ -93,14 +94,19 @@ public class MissionSchedulerService {
             }
 
             for (Mission mission : missions) {
-                // builder pattern
-                UserTtubeotMission userTtubeotMission = UserTtubeotMission.builder()
-                    .mission(mission)
-                    .userTtuBeotOwnership(ttubeot)
-                    .missionStatus(MissionStatus.IN_PROGRESS)
-                    .userTtubeotMissionActionCount(0)
-                    .build();
-                userTtubeotMissionRepository.save(userTtubeotMission);
+                // 이미 동일한 미션이 할당되어 있는지 확인
+                boolean isMissionAlreadyAssigned = userTtubeotMissionRepository.existsByUserTtuBeotOwnershipAndMissionAndMissionStatus(
+                    ttubeot, mission, MissionStatus.IN_PROGRESS);
+                if (!isMissionAlreadyAssigned) {
+                    // 새 미션 할당
+                    UserTtubeotMission userTtubeotMission = UserTtubeotMission.builder()
+                        .mission(mission)
+                        .userTtuBeotOwnership(ttubeot)
+                        .missionStatus(MissionStatus.IN_PROGRESS)
+                        .userTtubeotMissionActionCount(0)
+                        .build();
+                    userTtubeotMissionRepository.save(userTtubeotMission);
+                }
             }
         }
     }

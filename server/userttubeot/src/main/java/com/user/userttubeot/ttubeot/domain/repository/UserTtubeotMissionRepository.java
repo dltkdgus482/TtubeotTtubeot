@@ -1,6 +1,7 @@
 package com.user.userttubeot.ttubeot.domain.repository;
 
 import com.user.userttubeot.ttubeot.domain.enums.MissionStatus;
+import com.user.userttubeot.ttubeot.domain.model.Mission;
 import com.user.userttubeot.ttubeot.domain.model.UserTtuBeotOwnership;
 import com.user.userttubeot.ttubeot.domain.model.UserTtubeotMission;
 import java.util.List;
@@ -18,4 +19,6 @@ public interface UserTtubeotMissionRepository extends JpaRepository<UserTtubeotM
     List<UserTtubeotMission> findByUserTtuBeotOwnershipAndMission_MissionThemeAndMission_MissionTypeAndMissionStatus(
         UserTtuBeotOwnership userTtuBeotOwnership, Integer missionTheme, Integer missionType, MissionStatus missionStatus);
 
+    boolean existsByUserTtuBeotOwnershipAndMissionAndMissionStatus(
+        UserTtuBeotOwnership userTtuBeotOwnership, Mission mission, MissionStatus missionStatus);
 }
