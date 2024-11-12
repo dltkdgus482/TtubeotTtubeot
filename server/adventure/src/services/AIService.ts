@@ -128,11 +128,7 @@ class AIService {
     perspectiveHeight: string,
     animalPerspective: string
   ): Promise<string> {
-    log("generatePromptText: 시작", {
-      analyzedImage,
-      perspectiveHeight,
-      animalPerspective,
-    });
+    log("generatePromptText: 시작");
     const messageContent = `
     Create an animated-style image seen from a low, animal perspective at around ${perspectiveHeight}.  
     This view captures a peaceful outdoor setting, with no other animals visible.  
