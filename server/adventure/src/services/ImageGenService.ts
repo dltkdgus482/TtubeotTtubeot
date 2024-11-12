@@ -23,10 +23,10 @@ class ImageGenService {
   }
 
   public async generateImage(adventureLog: AdventureLogModel): Promise<void> {
-    console.log(
-      "GenerateImage Log:",
-      JSON.stringify(adventureLog.gpsLog, null, 2)
-    );
+    // console.log(
+    //   "GenerateImage Log:",
+    //   JSON.stringify(adventureLog.gpsLog, null, 2)
+    // );
 
     const gpsLog = adventureLog.gpsLog;
     let selectedPoint = null;
