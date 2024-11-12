@@ -9,6 +9,8 @@ import {
   View,
   PermissionsAndroid,
   Alert,
+  TouchableOpacity,
+  Image,
   ActivityIndicator,
 } from 'react-native';
 import {
@@ -29,6 +31,7 @@ import AdventureManager from '../../utils/apis/adventure/AdventureManager';
 import NfcTagging from '../NFC/NfcTagging';
 import { getUsername } from '../../utils/apis/adventure/getUsername';
 import { useUser } from '../../store/user';
+import AdventureFriendsModal from '../Friends/AdventureFriendsModal';
 
 // ------------------------------
 
@@ -48,6 +51,7 @@ import BleManager, {
 
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
+const FriendIcon = require('../../assets/icons/FriendIcon.png');
 
 global.Buffer = require('buffer').Buffer;
 
@@ -79,6 +83,8 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   const [isNfcTagged, setIsNfcTagged] = useState<boolean>(false);
   const [opponentUsername, setOpponentUsername] = useState<string>('');
   const [opponentUserId, setOpponentUserId] = useState<number>(-1);
+  const [friendsModalVisible, setFriendsModalVisible] =
+    useState<boolean>(false);
 
   // BLE 모드 관련 상태 추가
   const [devices, setDevices] = useState<Peripheral[]>([]);
@@ -126,8 +132,10 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   }, []);
 
   // BLE 관련 함수 추가
-  const startScanning = (): void => {
+  const startScanning = async (): void => {
     if (isScanning.current === true) return;
+
+    await stopScanning();
 
     isScanning.current = true;
     BleManager.scan([], 10000, true, {
@@ -169,7 +177,7 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
 
     BLEAdvertiser.setCompanyId(0x004c);
     BLEAdvertiser.broadcast(SERVICE_UUID, messageBytes, {
-      txPowerLevel: 2,
+      txPowerLevel: 1,
       connectable: false,
       advertiseMode: 2,
     })
@@ -218,16 +226,16 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       (a, b) => (b.rssi || -Infinity) - (a.rssi || -Infinity),
     );
 
-    const closestDevice = sortedDevices[0];
-    const manufactureData = closestDevice.advertising.manufacturerData['004c'];
-    const closestUserIdByteArray = byteArrayToString(manufactureData.bytes);
-    const closestUserId = asciiToDecimal(closestUserIdByteArray);
-    setOpponentUserId(closestUserId);
+    // const closestDevice = sortedDevices[0];
+    // const manufactureData = closestDevice.advertising.manufacturerData['004c'];
+    // const closestUserIdByteArray = byteArrayToString(manufactureData.bytes);
+    // const closestUserId = asciiToDecimal(closestUserIdByteArray);
+    // setOpponentUserId(closestUserId);
 
-    getUsername(closestUserId).then(username => {
-      setOpponentUsername(username);
-      setIsNfcTagged(true);
-    });
+    // getUsername(closestUserId).then(username => {
+    //   setOpponentUsername(username);
+    //   setIsNfcTagged(true);
+    // });
   }, [devices]);
 
   //------------------------------
@@ -244,7 +252,7 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       socketRef.current = AdventureManager.getInstance();
 
       socketRef.current.addAdventureUserListener(data => {
-        console.log('addAdventureUserLstener:', data);
+        console.log('addAdventureUserListener:', data);
 
         setNearbyUsers(data.users);
       });
@@ -403,7 +411,15 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       return;
     }
 
-    socketRef.current.sendFriendRequest(opponnentUserId);
+    socketRef.current.sendFriendRequestAccept(opponnentUserId);
+  };
+
+  const requestFriend = (opponentUserId: number) => {
+    if (!socketRef.current) {
+      return;
+    }
+
+    socketRef.current.sendFriendRequest(opponentUserId);
   };
 
   const markers = useMemo(() => {
@@ -494,6 +510,17 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
           onAccept={onAccept}
         />
       )}
+      <TouchableOpacity onPress={() => setFriendsModalVisible(true)}>
+        <Image source={FriendIcon} style={styles.albumIcon} />
+      </TouchableOpacity>
+      <AdventureFriendsModal
+        modalVisible={friendsModalVisible}
+        closeFriendsModal={() => {
+          setFriendsModalVisible(false);
+        }}
+        friends={nearbyUsers}
+        requestFriend={requestFriend}
+      />
     </SafeAreaView>
   );
 };

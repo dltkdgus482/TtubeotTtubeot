@@ -27,6 +27,7 @@ import StyledTextInput from '../../styles/StyledTextInput';
 import ButtonFlat from '../../components/Button/ButtonFlat';
 import WebView from 'react-native-webview';
 import { useUser } from '../../store/user';
+import { updateStepMission } from '../../utils/apis/Mission/updateMissionInfo';
 
 const { RnSensorStep, SystemUsage } = NativeModules;
 const stepCounterEmitter = new NativeEventEmitter(RnSensorStep);
@@ -69,6 +70,7 @@ const AdventureScreen = () => {
 
   const [steps, setSteps] = useState<number>(0);
   const [initialSteps, setInitialSteps] = useState<number>(0);
+  const { accessToken, setAccessToken } = useUser.getState();
 
   useEffect(() => {
     const stepListener = stepCounterEmitter.addListener(
@@ -262,7 +264,7 @@ const AdventureScreen = () => {
         </TouchableOpacity>
       </View>
       <GPSAlertModal modalVisible={modalVisible} closeModal={closeModal} />
-      <View style={{ position: 'absolute', top: 200, left: '50%' }}>
+      {/* <View style={{ position: 'absolute', top: 200, left: '50%' }}>
         <StyledTextInput
           value={inputValue}
           onChangeText={setInputValue}
@@ -271,9 +273,9 @@ const AdventureScreen = () => {
         <TouchableOpacity onPress={() => sendId(inputValue)}>
           <ButtonFlat content="변경" />
         </TouchableOpacity>
-      </View>
+      </View> */}
       {isFocused && (
-        <View style={styles.ttubeotWebviewContainer}>
+        <View style={styles.ttubeotWebviewContainer} pointerEvents="none">
           <WebView
             ref={webViewRef}
             originWhitelist={['*']}
