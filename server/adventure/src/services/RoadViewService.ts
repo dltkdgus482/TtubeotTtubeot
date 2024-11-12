@@ -25,7 +25,7 @@ class RoadViewService {
     lat: number,
     lng: number
   ): Promise<boolean> {
-    const url = `https://maps.googleapis.com/maps/api/streetview/metadata?size=360x640&location=${lat},${lng}&key=${this.apiKey}`;
+    const url = `https://maps.googleapis.com/maps/api/streetview?size=360x640&location=${lat},${lng}&key=${this.apiKey}`;
 
     try {
       const response = await fetch(url);
