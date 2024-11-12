@@ -17,18 +17,18 @@ const ButtonContainer = styled.View`
 const RankingScreenButtonContainer = () => {
   return (
     <ButtonContainer>
-      <TouchableOpacity onPress={() => console.log('뚜벗 랭킹 클릭')}>
+      {/* <TouchableOpacity onPress={() => console.log('뚜벗 랭킹 클릭')}>
         <ButtonDefault
           content="뚜벗 랭킹"
           width={120}
           height={60}
           borderRadius={30}
         />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => console.log('사용자 랭킹 클릭')}>
+      </TouchableOpacity> */}
+      <TouchableOpacity onPress={() => console.log('랭킹 클릭')}>
         <ButtonDefault
-          content="사용자 랭킹"
-          width={120}
+          content="랭킹"
+          width={300}
           height={60}
           borderRadius={30}
         />
