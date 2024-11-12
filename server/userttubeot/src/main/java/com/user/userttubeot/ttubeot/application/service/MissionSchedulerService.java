@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @EnableScheduling
@@ -45,7 +46,8 @@ public class MissionSchedulerService {
     }
 
     // 매일 자정에 일일 미션 초기화
-    @Scheduled(cron = "0 30 12 * * *")
+    @Scheduled(cron = "0 13 05 * * *")
+    @Transactional
     public void assignDailyMissions() {
         Mission specificMission = missionRepository.findById(3)
             .orElseThrow(() -> new IllegalArgumentException("ID 3에 해당하는 미션을 찾을 수 없습니다.")); // missionType 0 (일일미션)
