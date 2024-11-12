@@ -12,12 +12,14 @@ class ImageGenService {
   private aiService: AIService;
   private imageMysqlRepository: ImageMysqlRepository;
   private cdnUrl: string;
+  private defaultImageUrl: string; // 기본 이미지 URL
 
   constructor() {
     this.roadViewService = new RoadViewService();
     this.aiService = new AIService();
     this.imageMysqlRepository = new ImageMysqlRepository();
     this.cdnUrl = process.env.CDN_URL || "";
+    this.defaultImageUrl = process.env.DEFAULT_IMAGE_URL || ""; // 기본 이미지 URL 설정
   }
 
   public async generateImage(adventureLog: AdventureLogModel): Promise<void> {
@@ -42,9 +44,19 @@ class ImageGenService {
       }
     }
 
+    // 유효한 좌표가 없는 경우 기본 이미지 사용
     if (!selectedPoint) {
-      console.log("No valid RoadView point found.");
-      return; // 유효한 좌표가 없는 경우 함수 종료
+      console.log("No valid RoadView point found. Using default image.");
+      const generatedImageUrl = await this.aiService.generateImageBasedOnPrompt(
+        this.defaultImageUrl,
+        1
+      );
+
+      await this.uploadAndSaveImage(
+        generatedImageUrl,
+        adventureLog.adventureLogId
+      );
+      return;
     }
 
     console.log("Selected RoadView Point: ", selectedPoint);
@@ -63,8 +75,19 @@ class ImageGenService {
     );
     console.log("GeneratedImageUrl: ", generatedImageUrl);
 
-    // FTP에 업로드 및 URL 저장
-    const response = await fetch(generatedImageUrl);
+    // FTP에 업로드 및 데이터베이스에 링크 저장
+    await this.uploadAndSaveImage(
+      generatedImageUrl,
+      adventureLog.adventureLogId
+    );
+  }
+
+  // FTP 업로드 및 이미지 URL 저장 함수로 분리
+  private async uploadAndSaveImage(
+    imageUrl: string,
+    adventureLogId: number
+  ): Promise<void> {
+    const response = await fetch(imageUrl);
     const imageBlob = await response.blob();
     const buffer = await imageBlob.arrayBuffer();
     const imageBuffer = Buffer.from(buffer);
@@ -73,11 +96,7 @@ class ImageGenService {
     const filename = await ftpInstance.uploadImage(imageBuffer);
 
     const fileLink = this.cdnUrl + filename;
-
-    // 데이터베이스에 파일 링크 저장
-    await this.imageMysqlRepository.saveImageUrls(adventureLog.adventureLogId, [
-      fileLink,
-    ]);
+    await this.imageMysqlRepository.saveImageUrls(adventureLogId, [fileLink]);
   }
 }
 
