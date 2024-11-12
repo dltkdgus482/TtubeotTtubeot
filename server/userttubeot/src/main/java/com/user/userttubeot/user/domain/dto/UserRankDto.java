@@ -12,5 +12,5 @@ public class UserRankDto {
     private Integer userId;
     private String username;
     private Integer score;
-    private Long ttubeotId;
+    private Integer ttubeotId;
 }

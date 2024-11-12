@@ -293,7 +293,7 @@ public class UserService {
                     userId,
                     user.getUserName(),
                     score,
-                    ttubeotService.getTtubeotOwnershipId(userId)
+                    ttubeotService.getDdubeotInfo(userId).getTtubeotId()
                 );
             })
             .sorted(Comparator.comparingInt(UserRankDto::getScore).reversed())
