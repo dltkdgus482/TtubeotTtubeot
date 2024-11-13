@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, ScrollView, ImageBackground } from 'react-native';
+import { View, Image, ScrollView, ImageBackground, Text } from 'react-native';
 import styles from './RankingScreen.styles';
 import StyledText from '../../styles/StyledText';
 import RankingScreenButtonContainer from './RankingScreenButtonContainer';
@@ -47,50 +47,61 @@ const RankingScreen = () => {
 
   return (
     <View style={styles.backGround}>
-      <RankingScreenButtonContainer />
-      <View style={styles.topThreeList}>
-        {rankingList[1] && (
-          <View style={styles.second}>
-            <StyledText bold style={styles.playerName}>
-              {rankingList[1].username}
-            </StyledText>
-            <View style={styles.playerImageContainer}>
-              <Image
-                source={profileColor[rankingList[1].ttubeotId]}
-                style={(styles.playerImage, { width: 80, height: 80 })}
-              />
+      <View style={styles.topContainer}>
+        <ImageBackground
+          source={backgroundImage}
+          style={styles.backgroundImage}
+        />
+        <Text style={styles.rankingText}>랭킹</Text>
+        <Text style={styles.rankingDescription}>
+          이번 주 최고의 랭킹을 확인하세요!
+        </Text>
+        {/* 설명 텍스트 */}
+        {/* <RankingScreenButtonContainer /> */}
+        <View style={styles.topThreeList}>
+          {rankingList[1] && (
+            <View style={styles.second}>
+              <StyledText bold style={styles.playerName}>
+                {rankingList[1].username}
+              </StyledText>
+              <View style={styles.playerImageContainer}>
+                <Image
+                  source={profileColor[rankingList[1].ttubeotId]}
+                  style={{ width: 80, height: 80 }}
+                />
+              </View>
+              <Image source={silver} style={styles.medal} />
             </View>
-            <Image source={silver} style={styles.medal} />
-          </View>
-        )}
-        {rankingList[0] && (
-          <View style={styles.first}>
-            <StyledText bold style={styles.playerName}>
-              {rankingList[0].username}
-            </StyledText>
-            <View style={styles.playerImageContainer}>
-              <Image
-                source={profileColor[rankingList[0].ttubeotId]}
-                style={(styles.playerImage, { width: 80, height: 80 })}
-              />
+          )}
+          {rankingList[0] && (
+            <View style={styles.first}>
+              <StyledText bold style={styles.playerName}>
+                {rankingList[0].username}
+              </StyledText>
+              <View style={styles.playerImageContainer}>
+                <Image
+                  source={profileColor[rankingList[0].ttubeotId]}
+                  style={{ width: 80, height: 80 }}
+                />
+              </View>
+              <Image source={gold} style={styles.medal} />
             </View>
-            <Image source={gold} style={styles.medal} />
-          </View>
-        )}
-        {rankingList[2] && (
-          <View style={styles.third}>
-            <StyledText bold style={styles.playerName}>
-              {rankingList[2].username}
-            </StyledText>
-            <View style={styles.playerImageContainer}>
-              <Image
-                source={profileColor[rankingList[2].ttubeotId]}
-                style={(styles.playerImage, { width: 80, height: 80 })}
-              />
+          )}
+          {rankingList[2] && (
+            <View style={styles.third}>
+              <StyledText bold style={styles.playerName}>
+                {rankingList[2].username}
+              </StyledText>
+              <View style={styles.playerImageContainer}>
+                <Image
+                  source={profileColor[rankingList[2].ttubeotId]}
+                  style={{ width: 80, height: 80 }}
+                />
+              </View>
+              <Image source={bronze} style={styles.medal} />
             </View>
-            <Image source={bronze} style={styles.medal} />
-          </View>
-        )}
+          )}
+        </View>
       </View>
 
       <ScrollView
