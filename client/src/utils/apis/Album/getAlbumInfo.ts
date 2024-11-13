@@ -31,7 +31,7 @@ export const getAlbumInfoApi = async (
     const response = await authClient.get<AlbumInfoResponse>(
       '/user/auth/ttubeot/graduation-info',
     );
-    // console.log('앨범 정봌ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ', response.data);
+    console.log('앨범 정봌ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ', response.data);
     return response.data;
   } catch (error) {
     console.error('앨범 정보를 불러올 수 없습니다.', error);

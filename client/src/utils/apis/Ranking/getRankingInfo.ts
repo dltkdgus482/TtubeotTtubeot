@@ -8,7 +8,6 @@ interface RankingProps {
 }
 
 export const getRankingInfo = async (): Promise<RankingProps[]> => {
-  console.log('여기기기기기');
   try {
     const res = await defaultRequest.get('/user/ranking');
     return res.data;

@@ -26,6 +26,7 @@ class MainApplication : Application(), ReactApplication {
                     packages.add(ReactViroPackage(ReactViroPackage.ViroPlatform.AR))
                 }
                 packages.add(RnSensorStepPackage())
+                packages.add(SystemUsagePackage())
 
                 return packages
             }

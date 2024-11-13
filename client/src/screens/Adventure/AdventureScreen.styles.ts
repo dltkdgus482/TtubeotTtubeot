@@ -80,6 +80,21 @@ const styles = StyleSheet.create({
     height: 500,
     backgroundColor: 'transparent',
   },
+  horseBalloonContainer: {
+    position: 'absolute',
+    top: 100,
+    left: 80,
+  },
+  horseBalloon: {
+    width: 100,
+    height: 100,
+  },
+  horseBalloonText: {
+    position: 'absolute',
+    top: 28,
+    left: 17,
+    fontSize: 14,
+  },
 });
 
 export default styles;
