@@ -180,9 +180,12 @@ const TreasureSceneAR = () => {
   const handlePlaneDetected = () => {
     if (isDetected) return;
 
+    if (isDetected) return;
+
     const randomX = (Math.random() - 0.5) * 3;
     const randomZ = (Math.random() - 0.5) * 3;
     setObjectPosition([randomX, 0, randomZ]);
+    setIsDetected(true);
     setIsDetected(true);
   };
 
