@@ -88,17 +88,15 @@ const styles = StyleSheet.create({
   },
   pictureContainer: {
     width: '100%',
-    height: '84%',
+    height: '86%',
     display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
     gap: 5,
   },
   picture: {
-    width: '42%',
-    height: '50%',
+    width: '100%',
+    height: '90%',
     resizeMode: 'contain',
   },
   journalTitleContainer: {

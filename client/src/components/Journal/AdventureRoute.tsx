@@ -17,20 +17,40 @@ type AdventureRouteProps = {
 const startIcon = require('../../assets/icons/start.png');
 const finishIcon = require('../../assets/icons/finish.png');
 
+const minLatitudeDelta = 0.005;
+const minLongitudeDelta = 0.005;
+
 const AdventureRoute = ({
   modalVisible,
   closeModal,
   gpsLog,
 }: AdventureRouteProps) => {
   const mapRef = useRef<MapView>(null);
-  const [loading, setLoading] = useState<boolean>(false);
 
   const fitMapToCoordinates = () => {
     if (mapRef.current && gpsLog.length > 0) {
+      const initialRegion = {
+        latitude: gpsLog[0].latitude,
+        longitude: gpsLog[0].longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      };
+
+      initialRegion.latitudeDelta = Math.min(
+        initialRegion.latitudeDelta,
+        minLatitudeDelta,
+      );
+      initialRegion.longitudeDelta = Math.min(
+        initialRegion.longitudeDelta,
+        minLongitudeDelta,
+      );
+
       mapRef.current.fitToCoordinates(gpsLog, {
         edgePadding: { top: 150, right: 150, bottom: 150, left: 150 },
         animated: true,
       });
+
+      mapRef.current.animateToRegion(initialRegion, 1000);
     }
   };
 

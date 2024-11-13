@@ -25,6 +25,7 @@ export const getJournalList = async (
       start_at: formatDate(journal.start_at),
       end_at: formatDate(journal.end_at),
     }));
+    console.log(journalList);
 
     return journalList;
   } catch (err) {

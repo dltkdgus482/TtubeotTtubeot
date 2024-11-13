@@ -22,7 +22,7 @@ type JournalDetailProps = {
 };
 
 const flipIcon = require('../../assets/icons/FlipIcon.png');
-const testPic = require('../../assets/images/MockTtubeotPicture.png');
+const noPicture = require('../../assets/images/MockTtubeotPicture.png');
 const ttubeot = require('../../assets/images/TtubeotTitle.png');
 const mockTtu = require('../../assets/ttubeot/IntroTtubeotDog.png');
 
@@ -35,9 +35,14 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
   const [journalDetail, setJournalDetail] = useState<JournalDetailData | null>(
     null,
   );
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    loadJournalDetail();
+    const loadData = async () => {
+      await loadJournalDetail();
+      setLoading(false);
+    };
+    loadData();
   }, []);
 
   useEffect(() => {
@@ -156,10 +161,15 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
               <Image source={mockTtu} style={styles.titleTtubeot} />
             </View>
             <View style={styles.pictureContainer}>
-              <Image source={testPic} style={styles.picture} />
-              <Image source={testPic} style={styles.picture} />
-              <Image source={testPic} style={styles.picture} />
-              <Image source={testPic} style={styles.picture} />
+              <Image
+                source={
+                  journalDetail?.image_urls &&
+                  journalDetail.image_urls.length > 0
+                    ? { uri: journalDetail.image_urls[0] }
+                    : noPicture
+                }
+                style={styles.picture}
+              />
             </View>
           </View>
         </Animated.View>
@@ -241,11 +251,13 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
         <ButtonFlat content="돌아가기" />
       </TouchableOpacity>
 
-      <AdventureRoute
-        modalVisible={isModalOpen}
-        closeModal={closeRouteModal}
-        gpsLog={journalDetail.gps_log}
-      />
+      {!loading && (
+        <AdventureRoute
+          modalVisible={isModalOpen}
+          closeModal={closeRouteModal}
+          gpsLog={journalDetail.gps_log}
+        />
+      )}
     </SafeAreaView>
   );
 };
