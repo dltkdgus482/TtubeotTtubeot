@@ -3,7 +3,15 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   backGround: {
     flex: 1,
+    resizeMode: 'contain', // 이미지 비율을 유지하며 화면을 넓게 보여줌
+    justifyContent: 'center', // 필요 시 중앙 정렬 추가
+    alignItems: 'center', // 필요 시 중앙 정렬 추가
     backgroundColor: '#C7E5C4',
+  },
+  backgroundImage: {
+    // width: '80%', // 화면의 80% 크기로 축소
+    // height: '80%',
+    position: 'absolute',
   },
   topThreeList: {
     width: '100%',
@@ -107,9 +115,10 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   playerName: {
-    fontSize: 14,
+    width: 100,
+    fontSize: 20,
     position: 'absolute',
-    top: -30,
+    top: -110,
   },
   playerImageContainer: {
     position: 'absolute',
@@ -131,6 +140,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden', // 원을 벗어나는 이미지 숨기기
+  },
+  rankingText: {
+    fontSize: 24, // 글자 크기
+    fontWeight: 'bold', // 두께
+    textAlign: 'center', // 중앙 정렬
+    marginVertical: 10, // 상하 여백
   },
 });
 

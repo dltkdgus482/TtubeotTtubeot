@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, ScrollView } from 'react-native';
+import { View, Image, ScrollView, ImageBackground } from 'react-native';
 import styles from './RankingScreen.styles';
 import StyledText from '../../styles/StyledText';
 import RankingScreenButtonContainer from './RankingScreenButtonContainer';
@@ -15,6 +15,7 @@ const gold = require('../../assets/medals/gold.png');
 const silver = require('../../assets/medals/silver.png');
 const bronze = require('../../assets/medals/bronze.png');
 const ttubeotDog = require('../../assets/ttubeot/IntroTtubeotDog.png');
+const backgroundImage = require('../../assets/backgrounds/rankingBackgroundImage.jpg'); // 배경 이미지 경로 설정
 
 interface RankingProps {
   user_id: number;
@@ -50,43 +51,43 @@ const RankingScreen = () => {
       <View style={styles.topThreeList}>
         {rankingList[1] && (
           <View style={styles.second}>
+            <StyledText bold style={styles.playerName}>
+              {rankingList[1].username}
+            </StyledText>
             <View style={styles.playerImageContainer}>
               <Image
                 source={profileColor[rankingList[1].ttubeotId]}
                 style={(styles.playerImage, { width: 80, height: 80 })}
               />
             </View>
-            {/* <StyledText bold style={styles.playerName}>
-        {rankingList[1].username}
-      </StyledText> */}
             <Image source={silver} style={styles.medal} />
           </View>
         )}
         {rankingList[0] && (
           <View style={styles.first}>
+            <StyledText bold style={styles.playerName}>
+              {rankingList[0].username}
+            </StyledText>
             <View style={styles.playerImageContainer}>
               <Image
                 source={profileColor[rankingList[0].ttubeotId]}
                 style={(styles.playerImage, { width: 80, height: 80 })}
               />
             </View>
-            {/* <StyledText bold style={styles.playerName}>
-        {rankingList[0].username}
-      </StyledText> */}
             <Image source={gold} style={styles.medal} />
           </View>
         )}
         {rankingList[2] && (
           <View style={styles.third}>
+            <StyledText bold style={styles.playerName}>
+              {rankingList[2].username}
+            </StyledText>
             <View style={styles.playerImageContainer}>
               <Image
                 source={profileColor[rankingList[2].ttubeotId]}
                 style={(styles.playerImage, { width: 80, height: 80 })}
               />
             </View>
-            {/* <StyledText bold style={styles.playerName}>
-        {rankingList[2].username}
-      </StyledText> */}
             <Image source={bronze} style={styles.medal} />
           </View>
         )}
