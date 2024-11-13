@@ -18,6 +18,7 @@ import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotIdResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInterestResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO;
+import com.user.userttubeot.ttubeot.domain.dto.backend.FcmTokenAdventureRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistToDbDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistToDbDTO;
 import com.user.userttubeot.ttubeot.global.exception.TtubeotNotFoundException;
@@ -181,5 +182,12 @@ public class TtubeotController {
     public ResponseEntity<?> registerMission(@RequestBody MissionRegistToDbDTO registMission) {
         ttubeotService.registMission(registMission);
         return ResponseEntity.ok("미션이 정상적으로 등록되었습니다.");
+    }
+
+    // fcm 토큰 조회
+    @GetMapping("/ttubeot/fcm-token/{userId}")
+    public ResponseEntity<?> getFcmToken(@PathVariable("userId") Integer userId) {
+        FcmTokenAdventureRequestDTO fcmTokenAdventureRequestDTO = alertService.getFcmToken(userId);
+        return ResponseEntity.ok(fcmTokenAdventureRequestDTO);
     }
 }
