@@ -4,6 +4,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import com.user.userttubeot.ttubeot.domain.dto.FcmTokenRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.backend.FcmTokenAdventureRequestDTO;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -48,4 +49,21 @@ public class AlertServiceImpl implements AlertService {
             System.out.println("FCM Message 에러남: " + e.getMessage());
         }
     }
+
+    @Override
+    public FcmTokenAdventureRequestDTO getFcmToken(Integer userId) {
+        // 1. 유저 조회
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자를 찾을 수 없습니다."));
+
+        // 2. FCM 토큰 가져오기
+        String fcmToken = user.getFcmToken();
+        if (fcmToken == null || fcmToken.isEmpty()) {
+            throw new IllegalArgumentException("FCM 토큰이 등록되지 않았습니다.");
+        }
+
+        // 2. dto를 return합니다.
+        return new FcmTokenAdventureRequestDTO(fcmToken);
+    }
+
 }

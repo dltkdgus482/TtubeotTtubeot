@@ -68,5 +68,4 @@ public interface TtubeotService {
 
     // 보유 뚜벗의 관심도 조회
     UserTtubeotInterestResponseDTO getTtubeotInterest(int userId);
-
 }
