@@ -6,38 +6,39 @@ import {
   ViroARPlane,
   ViroAnimations,
   ViroSphere,
+  ViroParticleEmitter,
 } from '@reactvision/react-viro';
 import useTreasureStore from '../store/treasure';
 import { Vibration } from 'react-native';
 
-const woodenTexture = require('../assets/images/WoodenTexture.jpg');
-const sandTexture = require('../assets/images/SandTexture.jpg');
-const dirtTexture = require('../assets/images/DirtTexture.jpg');
-const coinIcon = require('../assets/icons/coinIcon.png');
+const sandTexture = require('../assets/textures/SandTexture.jpg');
+const crackTextures = [
+  require('../assets/cracks/crack1.png'),
+  require('../assets/cracks/crack2.png'),
+  require('../assets/cracks/crack3.png'),
+  require('../assets/cracks/crack4.png'),
+  require('../assets/cracks/crack5.png'),
+  require('../assets/cracks/crack6.png'),
+  require('../assets/cracks/crack7.png'),
+  require('../assets/cracks/crack8.png'),
+];
+const boxTexture = [
+  require('../assets/boxes/box1.jpg'),
+  require('../assets/boxes/box2.jpg'),
+  require('../assets/boxes/box3.jpg'),
+  require('../assets/boxes/box4.jpg'),
+];
+const getRandomBox = () => {
+  const idx = Math.floor(Math.random() * boxTexture.length);
+  return boxTexture[idx];
+};
+
+const getRandomCrack = () => {
+  const idx = Math.floor(Math.random() * crackTextures.length);
+  return crackTextures[idx];
+};
 
 ViroMaterials.createMaterials({
-  glowingBox: {
-    diffuseColor: '#F0D4A7',
-    lightingModel: 'Constant',
-    bloomThreshold: 0.2126,
-    shininess: 0.6,
-    diffuseTexture: woodenTexture,
-    normalTexture: woodenTexture,
-  },
-  glowingCoin: {
-    diffuseColor: '#FFFF00',
-    lightingModel: 'Constant',
-    bloomThreshold: 0.2126,
-    shininess: 0.6,
-    diffuseTexture: coinIcon,
-    normalTexture: coinIcon,
-  },
-  glowingYellow: {
-    diffuseColor: '#E8C7AB',
-    blendMode: 'None',
-    diffuseTexture: dirtTexture,
-    normalTexture: dirtTexture,
-  },
   sandParticle: {
     diffuseColor: '#efac75',
     diffuseTexture: sandTexture,
@@ -108,14 +109,14 @@ ViroAnimations.registerAnimations({
 });
 
 const TreasureSceneAR = () => {
+  const [boxTexture, setBoxTexture] = useState(null);
+  const [crackTexture, setCrackTexture] = useState(null);
   const [objectPosition, setObjectPosition] = useState<
     [number, number, number]
   >([0, 0, 0]);
   const [boxPositionY, setBoxPositionY] = useState(0);
   const [runAnimation, setRunAnimation] = useState(false);
   const [currentAnimation, setCurrentAnimation] = useState('shakeLeft');
-  // const [currentCoinAnimation, setCurrentCoinAnimation] =
-  //   useState('initializeRotation');
   const [particleAnimation, setParticleAnimation] = useState(
     Array(50).fill(false),
   );
@@ -127,6 +128,52 @@ const TreasureSceneAR = () => {
   const [diggingInterval, setDiggingInterval] = useState<NodeJS.Timeout | null>(
     null,
   );
+  const [diggingComplete, setDiggingComplete] = useState(false);
+  const [crackLoading, setCrackLoading] = useState(true);
+  const offsets = [
+    [0.2, 0, 0.2],
+    [-0.2, 0, 0.2],
+    [0.2, 0, -0.2],
+    [-0.2, 0, -0.2],
+  ];
+
+  useEffect(() => {
+    setBoxTexture(getRandomBox());
+    setCrackTexture(getRandomCrack());
+  }, []);
+
+  useEffect(() => {
+    if (boxTexture) {
+      ViroMaterials.createMaterials({
+        box: {
+          diffuseColor: '#F0D4A7',
+          lightingModel: 'Constant',
+          bloomThreshold: 0.2126,
+          shininess: 0.6,
+          diffuseTexture: boxTexture,
+          normalTexture: boxTexture,
+        },
+      });
+    }
+  }, [boxTexture]);
+
+  useEffect(() => {
+    if (crackTexture) {
+      ViroMaterials.createMaterials({
+        crack: {
+          diffuseColor: '#E8C7AB',
+          blendMode: 'Add',
+          lightingModel: 'Constant',
+          bloomThreshold: 0.2126,
+          shininess: 0.6,
+          diffuseTexture: crackTexture,
+          normalTexture: crackTexture,
+        },
+      });
+      setCrackLoading(false);
+    }
+  }),
+    [crackTexture];
 
   const setHasTreasure = useTreasureStore(state => state.setHasTreasure);
 
@@ -199,6 +246,9 @@ const TreasureSceneAR = () => {
       setDiggingInterval(null);
       setIsDigging(false);
     }
+    if (!diggingComplete) {
+      setBoxPositionY(0);
+    }
   };
 
   useEffect(() => {
@@ -264,6 +314,7 @@ const TreasureSceneAR = () => {
   useEffect(() => {
     if (boxPositionY >= 0.2) {
       setTimeout(() => {
+        setDiggingComplete(true);
         setRunAnimation(true);
       }, 500);
     }
@@ -286,13 +337,6 @@ const TreasureSceneAR = () => {
         onAnchorFound={handlePlaneDetected}>
         {isUnboxed && (
           <>
-            {/* <ViroBox
-              position={[objectPosition[0], 0.3, objectPosition[2]]}
-              scale={[0.2, 0.2, 0]}
-              materials={['glowingCoin']}
-              animation={renderCoinAnimation()}
-              onClick={() => getTreasure()}
-            /> */}
             {Array.from({ length: 50 }).map((_, index) => {
               const randomDirectionX = (Math.random() - 0.5) * 2;
               const randomDirectionZ = (Math.random() - 0.5) * 2;
@@ -343,18 +387,20 @@ const TreasureSceneAR = () => {
         )}
         {!isUnboxed && boxPositionY >= 0 && (
           <>
-            <ViroBox
-              position={[
-                objectPosition[0],
-                boxPositionY === 0.2 ? 0.3 : boxPositionY,
-                objectPosition[2],
-              ]}
-              scale={[0.2, boxPositionY, 0.2]}
-              materials={['glowingBox']}
-              animation={renderAnimation()}
-              onClick={runAnimation ? handleClickBox : undefined}
-              lightReceivingBitMask={10}
-            />
+            {boxPositionY > 0 && (
+              <ViroBox
+                position={[
+                  objectPosition[0],
+                  boxPositionY === 0.2 ? 0.3 : boxPositionY,
+                  objectPosition[2],
+                ]}
+                scale={[0.2, boxPositionY, 0.2]}
+                materials={['box']}
+                animation={renderAnimation()}
+                onClick={runAnimation ? handleClickBox : undefined}
+                lightReceivingBitMask={10}
+              />
+            )}
 
             {diggingParticles.map(({ id, position, animationName, scale }) => (
               <ViroSphere
@@ -370,24 +416,39 @@ const TreasureSceneAR = () => {
                 }}
               />
             ))}
-
-            <ViroSphere
-              position={[
-                objectPosition[0],
-                objectPosition[1],
-                objectPosition[2],
-              ]}
-              radius={0.6}
-              scale={[0.7, 0.1, 0.7]}
-              materials={['glowingYellow']}
-              onClickState={stateValue => {
-                if (stateValue === 1) {
-                  handleDiggingStart();
-                } else if (stateValue === 2) {
-                  handleDiggingEnd();
-                }
-              }}
-            />
+            {!crackLoading && (
+              <ViroBox
+                position={objectPosition}
+                // radius={0.6}
+                scale={[0.7, 0, 0.7]}
+                materials={['crack']}
+                onClickState={stateValue => {
+                  if (stateValue === 1) {
+                    handleDiggingStart();
+                  } else if (stateValue === 2) {
+                    handleDiggingEnd();
+                  }
+                }}
+              />
+            )}
+            {offsets.map((offset, index) => (
+              <ViroParticleEmitter
+                key={index}
+                position={[
+                  objectPosition[0] + offset[0],
+                  objectPosition[1] + offset[1],
+                  objectPosition[2] + offset[2],
+                ]}
+                duration={2000}
+                run={true}
+                image={{
+                  source: require('../assets/textures/firework.png'),
+                  height: 0.2,
+                  width: 0.2,
+                  bloomThreshold: 1,
+                }}
+              />
+            ))}
           </>
         )}
       </ViroARPlane>

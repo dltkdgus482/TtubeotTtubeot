@@ -10,7 +10,7 @@ import { useUser } from '../../store/user';
 import ButtonFlat from '../../components/Button/ButtonFlat';
 import { JournalData } from '../../types/JournalData';
 
-const testPic = require('../../assets/images/MockTtubeotPicture.png');
+const testPic = require('../../assets/images/JournalImageNotCreated.png');
 
 const JournalScreen = () => {
   const { accessToken, setAccessToken } = useUser.getState();
