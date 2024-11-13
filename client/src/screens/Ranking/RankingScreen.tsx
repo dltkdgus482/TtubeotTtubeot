@@ -52,11 +52,13 @@ const RankingScreen = () => {
           source={backgroundImage}
           style={styles.backgroundImage}
         />
-        <Text style={styles.rankingText}>랭킹</Text>
-        <Text style={styles.rankingDescription}>
-          이번 주 최고의 랭킹을 확인하세요!
-        </Text>
+        <StyledText bold style={styles.rankingText}>
+          랭킹
+        </StyledText>
         {/* 설명 텍스트 */}
+        {/*<StyledText style={styles.rankingDescription}>
+          이번 주 최고의 랭킹을 확인하세요!
+        </StyledText>*/}
         {/* <RankingScreenButtonContainer /> */}
         <View style={styles.topThreeList}>
           {rankingList[1] && (
@@ -113,17 +115,24 @@ const RankingScreen = () => {
           return (
             <View style={styles.rankingContainer} key={index}>
               <StyledText bold style={styles.ranking}>
-                {index + 1}
+                {(index + 1).toString().padStart(2, '0')}
               </StyledText>
               <View style={styles.rankingInfo}>
-                <Image
-                  source={profileColor[ranking.ttubeotId] || profileColor[1]}
-                  style={(styles.playerImage, { width: 80, height: 80 })}
-                />
+                <View style={styles.imageWrapper}>
+                  <Image
+                    source={profileColor[ranking.ttubeotId] || profileColor[1]}
+                    style={styles.playerImage}
+                  />
+                </View>
                 <StyledText bold style={styles.rankingName}>
                   {ranking.username}
                 </StyledText>
-                <StyledText bold style={styles.rankingScore}>
+                <StyledText
+                  bold
+                  style={[
+                    styles.rankingScore,
+                    ranking.score >= 1000 ? { fontSize: 14 } : null, // 1000 이상일 때 폰트 크기 조정
+                  ]}>
                   {ranking.score.toLocaleString()}
                 </StyledText>
               </View>

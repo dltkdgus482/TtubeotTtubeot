@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     height: '100%',
     top: '10%',
     position: 'absolute', // 배경 이미지를 전체 화면에 고정
-    opacity: 0.5, // 흐릿하게 보이도록 투명도 조절
+    opacity: 0.9, // 흐릿하게 보이도록 투명도 조절
   },
   // topThreeList: {
   //   width: '100%',
@@ -91,12 +91,13 @@ const styles = StyleSheet.create({
   },
 
   ranking: {
-    width: '14%',
-    fontSize: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    textAlign: 'center',
+    fontSize: 30,
+    justifyContent: 'flex-start', // 상위 컨테이너 안에서 왼쪽 정렬
+    alignItems: 'flex-start', // 세로로도 왼쪽 정렬
+    textAlign: 'left', // 텍스트 왼쪽 정렬
+    marginLeft: -10, // 음수 값을 주어 좀 더 왼쪽으로 이동
   },
+
   rankingImage: {
     width: 60,
     height: 60,
@@ -106,7 +107,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
-    width: '84%',
+    width: '90%',
     backgroundColor: '#E6E6E6',
     borderRadius: 20,
     padding: '1%',
@@ -127,8 +128,8 @@ const styles = StyleSheet.create({
     top: 0,
   },
   playerImage: {
-    width: 55,
-    height: 55,
+    width: 80,
+    height: 80,
     marginTop: 8,
   },
   playerName: {
@@ -159,18 +160,27 @@ const styles = StyleSheet.create({
     overflow: 'hidden', // 원을 벗어나는 이미지 숨기기
   },
   rankingText: {
-    height: 100,
-    top: '15%',
-    fontSize: 50, // 글자 크기
-    fontWeight: 'bold', // 두께
+    // marginTop: 10,
+    top: '20%',
+    fontSize: 40, // 글자 크기
+    // fontWeight: 'bold', // 두께
     textAlign: 'center', // 중앙 정렬
   },
   rankingDescription: {
     fontSize: 16,
     color: '#666', // 설명 텍스트 색상 (필요에 따라 조정)
     textAlign: 'center', // 설명 텍스트 중앙 정렬
-    marginTop: 10, // 상단 텍스트와 간격
+    marginTop: 30, // 상단 텍스트와 간격
     marginBottom: 20, // 배경 이미지 및 버튼 컨테이너와의 간격
+  },
+  imageWrapper: {
+    width: 65,
+    height: 65,
+    borderRadius: 50, // width와 height의 절반 값으로 설정해 원형 만들기
+    backgroundColor: 'white', // 흰색 배경
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden', // 원을 벗어나는 이미지 숨기기
   },
 });
 
