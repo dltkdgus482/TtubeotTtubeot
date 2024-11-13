@@ -232,6 +232,9 @@ export class AdventureController {
           `http://${this.baseUrl}/user/ttubeot/user-info`,
           {
             method: "POST",
+            headers: {
+              'Content-Type': 'text/plain',
+            },
             body: userId,
           }
         );
