@@ -54,6 +54,8 @@ import { updateLog } from '../../utils/apis/updateLog';
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 const FriendIcon = require('../../assets/icons/FriendIcon.png');
+const nearbyUsersIcon = require('../../assets/icons/nearbyUsersIcon.png');
+const footPrintIcon = require('../../assets/icons/adventureFootPrint.png');
 
 global.Buffer = require('buffer').Buffer;
 
@@ -66,9 +68,7 @@ interface AdventureMapScreenProps {
 }
 
 interface UserProps {
-  user_id: number;
-  username: string;
-  ttubeot_id: number;
+  userId: number;
   distance: number;
 }
 
@@ -231,17 +231,6 @@ const AdventureMapScreen = ({
     const sortedDevices = [...devicesRef.current].sort(
       (a, b) => (b.rssi || -Infinity) - (a.rssi || -Infinity),
     );
-
-    // const closestDevice = sortedDevices[0];
-    // const manufactureData = closestDevice.advertising.manufacturerData['004c'];
-    // const closestUserIdByteArray = byteArrayToString(manufactureData.bytes);
-    // const closestUserId = asciiToDecimal(closestUserIdByteArray);
-    // setOpponentUserId(closestUserId);
-
-    // getUsername(closestUserId).then(username => {
-    //   setOpponentUsername(username);
-    //   setIsNfcTagged(true);
-    // });
   }, [devices]);
 
   //------------------------------
@@ -494,17 +483,32 @@ const AdventureMapScreen = ({
                 />
               }>
               {region ? (
-                <>
-                  <StyledText bold style={styles.nearbyUserList}>
-                    근처 사용자 수:{' '}
-                    {nearbyUsers && nearbyUsers.length ? nearbyUsers.length : 0}{' '}
-                    명
-                    {/* 팔콘으로부터의 거리:{' '}
-                    {nearbyUsers && nearbyUsers.length
-                      ? nearbyUsers[0].distance.toFixed(2)
-                      : 0}
-                    {'m'} */}
-                  </StyledText>
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setFriendsModalVisible(true);
+                    }}
+                    style={styles.nearbyUsersContainer}>
+                    <Image
+                      source={nearbyUsersIcon}
+                      style={styles.nearbyUsersIcon}
+                      resizeMethod="resize"
+                    />
+                    <StyledText bold style={styles.nearbyUsers}>
+                      {nearbyUsers && nearbyUsers.length
+                        ? nearbyUsers.length.toLocaleString()
+                        : 0}
+                    </StyledText>
+                  </TouchableOpacity>
+                  <View style={styles.stepCounterContainer}>
+                    <Image
+                      source={footPrintIcon}
+                      style={styles.stepCounterIcon}
+                    />
+                    <StyledText bold style={styles.stepCounter}>
+                      {currentSteps.current.toLocaleString()}
+                    </StyledText>
+                  </View>
                   <MapView
                     key={nearbyUsers.length}
                     ref={mapRef}
@@ -515,7 +519,7 @@ const AdventureMapScreen = ({
                     onRegionChangeComplete={debouncedHandleRegionChange}>
                     {markers}
                   </MapView>
-                </>
+                </View>
               ) : (
                 <StyledText>현재 위치를 불러올 수 없습니다.</StyledText>
               )}
@@ -534,9 +538,6 @@ const AdventureMapScreen = ({
           onAccept={onAccept}
         />
       )}
-      <TouchableOpacity onPress={() => setFriendsModalVisible(true)}>
-        <Image source={FriendIcon} style={styles.albumIcon} />
-      </TouchableOpacity>
       <AdventureFriendsModal
         modalVisible={friendsModalVisible}
         closeFriendsModal={() => {

@@ -39,6 +39,8 @@ const CameraIcon = require('../../assets/icons/CameraIcon.png');
 const MissionIcon = require('../../assets/icons/MissionIcon.png');
 const MapIcon = require('../../assets/icons/MapIcon.png');
 const horseBalloon = require('../../assets/images/horseBalloon.png');
+const footPrintIcon = require('../../assets/icons/FootprintIcon.png');
+const greenFootPrintIcon = require('../../assets/icons/FootprintIconDeepGreen.png');
 
 const isRunningOnEmulator = () => {
   if (Platform.OS === 'android') {

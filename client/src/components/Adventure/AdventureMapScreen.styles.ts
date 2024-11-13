@@ -41,12 +41,44 @@ const styles = StyleSheet.create({
     borderWidth: 5,
     borderRadius: 25,
   },
-  nearbyUserList: {
+  nearbyUsersContainer: {
     position: 'absolute',
     fontSize: 20,
     zIndex: 10000,
-    top: 40,
-    left: 15,
+    top: 60,
+    left: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  nearbyUsersIcon: {
+    position: 'absolute',
+    width: 55,
+    height: 55,
+    zIndex: 10,
+  },
+  nearbyUsers: {
+    left: 60,
+    fontSize: 22,
+    top: -2,
+  },
+  stepCounterContainer: {
+    position: 'absolute',
+    fontSize: 20,
+    zIndex: 10000,
+    top: 105,
+    left: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  stepCounterIcon: {
+    position: 'absolute',
+    width: 60,
+    height: 60,
+    resizeMode: 'contain',
+  },
+  stepCounter: {
+    left: 63,
+    fontSize: 22,
   },
 });
 
