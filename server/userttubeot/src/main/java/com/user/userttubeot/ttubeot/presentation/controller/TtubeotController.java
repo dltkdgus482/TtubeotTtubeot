@@ -1,16 +1,13 @@
 package com.user.userttubeot.ttubeot.presentation.controller;
 
 import com.user.userttubeot.ttubeot.application.service.AlertServiceImpl;
-import com.user.userttubeot.ttubeot.application.service.TtubeotService;
 import com.user.userttubeot.ttubeot.application.service.TtubeotServiceImpl;
 import com.user.userttubeot.ttubeot.domain.dto.FcmTokenRequestDTO;
-import com.user.userttubeot.ttubeot.domain.dto.MissionRenewalRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.MissionRewardRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.MissionRewardResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.RecentBreakupTtubeotResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
-import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
@@ -18,20 +15,17 @@ import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotIdResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInterestResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO;
-import com.user.userttubeot.ttubeot.domain.dto.backend.FcmTokenAdventureRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistToDbDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistToDbDTO;
-import com.user.userttubeot.ttubeot.global.exception.TtubeotNotFoundException;
+import com.user.userttubeot.ttubeot.domain.dto.backend.UserInfoAdventureRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -184,10 +178,22 @@ public class TtubeotController {
         return ResponseEntity.ok("미션이 정상적으로 등록되었습니다.");
     }
 
-    // fcm 토큰 조회
-    @GetMapping("/ttubeot/fcm-token/{userId}")
-    public ResponseEntity<?> getFcmToken(@PathVariable("userId") Integer userId) {
-        FcmTokenAdventureRequestDTO fcmTokenAdventureRequestDTO = alertService.getFcmToken(userId);
-        return ResponseEntity.ok(fcmTokenAdventureRequestDTO);
+    // userId 조회
+    @PostMapping("/ttubeot/user-info")
+    public ResponseEntity<?> getUserInfo(@RequestBody UserInfoAdventureRequestDTO userInfo) {
+       Integer userId = userInfo.getUserId();
+       if (userId == null) {
+           return ResponseEntity.badRequest().body("userId가 요청에 포함되어 있지 않습니다.");
+       }
+
+       try {
+           // 알림서비스 호출
+
+       } catch (IllegalArgumentException | IllegalStateException e) {
+           return ResponseEntity.badRequest().body(e.getMessage());
+       }
+
+
+        return null;
     }
 }

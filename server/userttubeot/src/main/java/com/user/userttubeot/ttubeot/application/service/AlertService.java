@@ -1,6 +1,6 @@
 package com.user.userttubeot.ttubeot.application.service;
 
-import com.user.userttubeot.ttubeot.domain.dto.backend.FcmTokenAdventureRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.backend.UserInfoAdventureRequestDTO;
 
 public interface AlertService {
 
@@ -9,6 +9,5 @@ public interface AlertService {
 
     void sendMissionNotaification(String fcmToken, String title, String body);
 
-    // fcm토큰 조회
-    FcmTokenAdventureRequestDTO getFcmToken(Integer userId);
+    void getUserInfoAndSendNotification(Integer userId);
 }

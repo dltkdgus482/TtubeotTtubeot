@@ -4,7 +4,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import com.user.userttubeot.ttubeot.domain.dto.FcmTokenRequestDTO;
-import com.user.userttubeot.ttubeot.domain.dto.backend.FcmTokenAdventureRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.backend.UserInfoAdventureRequestDTO;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -44,26 +44,30 @@ public class AlertServiceImpl implements AlertService {
 
         try {
             String response = FirebaseMessaging.getInstance().send(message);
-            System.out.println("FCM Message 전송 성공: " + response);
+            System.out.println("✅ FCM Message 전송 성공: " + response);
         } catch (Exception e) {
-            System.out.println("FCM Message 에러남: " + e.getMessage());
+            System.out.println("❌ FCM Message 전송 실패: " + e.getMessage());
         }
     }
 
     @Override
-    public FcmTokenAdventureRequestDTO getFcmToken(Integer userId) {
-        // 1. 유저 조회
+    public void getUserInfoAndSendNotification(Integer userId) {
+        // 1. 유저 정보 조회
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자를 찾을 수 없습니다."));
 
-        // 2. FCM 토큰 가져오기
+        // 2. FCM Token 확인
         String fcmToken = user.getFcmToken();
         if (fcmToken == null || fcmToken.isEmpty()) {
-            throw new IllegalArgumentException("FCM 토큰이 등록되지 않았습니다.");
+            throw new IllegalArgumentException("유저의 FCM 토큰이 없습니다");
         }
 
-        // 2. dto를 return합니다.
-        return new FcmTokenAdventureRequestDTO(fcmToken);
-    }
+        String personalizedBody = String.format("%s님, 방금 다녀오신 모험의 사진이 등록되었습니다. 추억을 공유해 보세요!",
+            user.getUserName());
 
+        // 3. 알림 전송
+        sendMissionNotaification(fcmToken, "새로운 모험 사진이 도착했어요!",
+            personalizedBody);
+
+    }
 }
