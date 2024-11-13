@@ -28,6 +28,7 @@ const RankingScreen = () => {
   // const [selected, setSelected] = useState('뚜벗 랭킹');
   const [rankingList, setRankingList] = useState<RankingProps[]>([]);
   const isFocused = useIsFocused(); // 화면 포커스 여부 감지
+  const { user } = useUser.getState();
 
   useEffect(() => {
     const fetchRankingInfo = async () => {
@@ -128,22 +129,23 @@ const RankingScreen = () => {
                   <StyledText bold style={styles.rankingName}>
                     {ranking.username}
                   </StyledText>
-                  <StyledText
-                    bold
+                  <View
                     style={[
-                      styles.rankingScore,
+                      styles.scoreContainer,
                       ranking.score >= 1000 ? { fontSize: 14 } : null, // 1000 이상일 때 폰트 크기 조정
-                      { marginLeft: 'auto' }, // 오른쪽 끝으로 배치
                     ]}>
-                    {ranking.score.toLocaleString()}
-                    <Text style={{ marginRight: 5 }} /> {/* 간격 추가 */}
+                    <StyledText bold style={styles.rankingScore}>
+                      {ranking.score.toLocaleString()}
+                    </StyledText>
+                    <View style={{ width: 5 }} />
+                    {/* 숫자와 아이콘 사이 간격 */}
                     <Icon
                       type="FontAwesome5"
                       name="paw"
                       size={20}
                       color="#000"
                     />
-                  </StyledText>
+                  </View>
                 </View>
               </View>
             </View>
