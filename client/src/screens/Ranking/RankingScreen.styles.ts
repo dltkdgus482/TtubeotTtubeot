@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: '5%',
   },
   rankingName: {
-    width: 150,
+    width: 110,
     fontSize: 18,
     textAlign: 'left',
     marginLeft: 10,
@@ -195,6 +195,12 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start', // 텍스트 요소들을 왼쪽 정렬
     flexDirection: 'column', // 세로 방향으로 정렬
     flex: 1, // 가능한 모든 공간을 차지하도록 설정
+  },
+  scoreContainer: {
+    flexDirection: 'row', // 가로 정렬
+    alignItems: 'center', // 세로 중앙 정렬
+    marginLeft: 'auto', // 오른쪽 끝으로 배치
+    width: 400,
   },
 });
 
