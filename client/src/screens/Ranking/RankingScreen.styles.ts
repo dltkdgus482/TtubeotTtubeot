@@ -8,22 +8,39 @@ const styles = StyleSheet.create({
     alignItems: 'center', // 필요 시 중앙 정렬 추가
     backgroundColor: '#C7E5C4',
   },
-  backgroundImage: {
-    // width: '80%', // 화면의 80% 크기로 축소
-    // height: '80%',
-    position: 'absolute',
+  topContainer: {
+    flex: 1,
+    minHeight: 400,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    position: 'relative',
   },
-  topThreeList: {
+  backgroundImage: {
     width: '100%',
-    height: '26%',
+    height: '100%',
+    top: '10%',
+    position: 'absolute', // 배경 이미지를 전체 화면에 고정
+    opacity: 0.5, // 흐릿하게 보이도록 투명도 조절
+  },
+  // topThreeList: {
+  //   width: '100%',
+  //   height: '26%',
+  //   flexDirection: 'row',
+  //   justifyContent: 'center',
+  //   alignItems: 'flex-end',
+  //   gap: 10,
+  // },
+  topThreeList: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'flex-end',
+    top: '5%',
     gap: 10,
+    paddingVertical: 20,
   },
   first: {
     width: '20%',
-    height: '65%',
+    height: '85%',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     backgroundColor: '#EBC11B',
@@ -32,7 +49,7 @@ const styles = StyleSheet.create({
   },
   second: {
     width: '20%',
-    height: '45%',
+    height: '70%',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     backgroundColor: '#D6CCA6',
@@ -41,7 +58,7 @@ const styles = StyleSheet.create({
   },
   third: {
     width: '20%',
-    height: '30%',
+    height: '50%',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     backgroundColor: '#E79E5E',
@@ -142,10 +159,18 @@ const styles = StyleSheet.create({
     overflow: 'hidden', // 원을 벗어나는 이미지 숨기기
   },
   rankingText: {
-    fontSize: 24, // 글자 크기
+    height: 100,
+    top: '15%',
+    fontSize: 50, // 글자 크기
     fontWeight: 'bold', // 두께
     textAlign: 'center', // 중앙 정렬
-    marginVertical: 10, // 상하 여백
+  },
+  rankingDescription: {
+    fontSize: 16,
+    color: '#666', // 설명 텍스트 색상 (필요에 따라 조정)
+    textAlign: 'center', // 설명 텍스트 중앙 정렬
+    marginTop: 10, // 상단 텍스트와 간격
+    marginBottom: 20, // 배경 이미지 및 버튼 컨테이너와의 간격
   },
 });
 
