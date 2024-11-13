@@ -181,19 +181,24 @@ public class TtubeotController {
     // userId 조회
     @PostMapping("/ttubeot/user-info")
     public ResponseEntity<?> getUserInfo(@RequestBody UserInfoAdventureRequestDTO userInfo) {
-       Integer userId = userInfo.getUserId();
-       if (userId == null) {
-           return ResponseEntity.badRequest().body("userId가 요청에 포함되어 있지 않습니다.");
-       }
+        Integer userId = userInfo.getUserId();
+        if (userId == null) {
+            return ResponseEntity.badRequest().body("userId가 요청에 포함되어 있지 않습니다.");
+        }
 
-       try {
-           // 알림서비스 호출
+        try {
+            // 알림서비스 호출
+            alertService.getUserInfoAndSendNotification(userId);
 
-       } catch (IllegalArgumentException | IllegalStateException e) {
-           return ResponseEntity.badRequest().body(e.getMessage());
-       }
-
-
-        return null;
+            // 성공 응답 반환
+            return ResponseEntity.ok("알림이 성공적으로 전송되었습니다.");
+        } catch (IllegalArgumentException e) {
+            // 유효하지 않은 데이터 처리
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            // 기타 서버 에러 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("서버 오류가 발생했습니다. 관리자에게 문의하십시오.");
+        }
     }
 }
