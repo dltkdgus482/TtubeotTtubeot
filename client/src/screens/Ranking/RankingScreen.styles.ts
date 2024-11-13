@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   },
   first: {
     width: '20%',
-    height: '85%',
+    height: '90%',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     backgroundColor: '#EBC11B',
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   },
   second: {
     width: '20%',
-    height: '70%',
+    height: '65%',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     backgroundColor: '#D6CCA6',
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   },
   third: {
     width: '20%',
-    height: '50%',
+    height: '45%',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     backgroundColor: '#E79E5E',
@@ -142,10 +142,12 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   playerName: {
-    width: 100,
+    width: 120,
     fontSize: 20,
     position: 'absolute',
     top: -110,
+    textAlign: 'center',
+    color: '#183118',
   },
   playerImageContainer: {
     position: 'absolute',
