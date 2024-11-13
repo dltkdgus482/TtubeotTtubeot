@@ -1,6 +1,7 @@
 package com.user.userttubeot.user.domain.entity;
 
 import com.user.userttubeot.ttubeot.domain.model.UserTtuBeotOwnership;
+import com.user.userttubeot.ttubeot.global.exception.InsufficientFundsException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -106,5 +107,15 @@ public class User {
         this.userCoin += coinsToAdd;
     }
 
+    // 코인을 차감합니다.
+    public void deductCoins(Integer coinsToDeduct) {
+        if (coinsToDeduct == null || coinsToDeduct < 0) {
+            throw new IllegalArgumentException("차감할 코인은 0 이상이어야 합니다.");
+        }
+        if (this.userCoin - coinsToDeduct < 0) {
+            throw new InsufficientFundsException("코인이 부족합니다. 현재 코인: " + this.userCoin);
+        }
+        this.userCoin -= coinsToDeduct;
+    }
 
 }
