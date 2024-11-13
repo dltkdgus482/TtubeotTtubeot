@@ -9,6 +9,7 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotExperienceResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
@@ -63,7 +64,8 @@ public class TtubeotServiceImpl implements TtubeotService {
     private final UserTtubeotMissionRepository userTtubeotMissionRepository;
 
     @Override
-    public void addTtubeotLog(Integer userId,
+    @Transactional
+    public UserTtubeotExperienceResponseDTO addTtubeotLog(Integer userId,
         TtubeotLogRequestDTO ttubeotLogRequestDTO) {
 
         // 해당 유저의 정상 상태인 뚜벗 찾기
@@ -77,8 +79,28 @@ public class TtubeotServiceImpl implements TtubeotService {
             .createdAt(LocalDateTime.now())
             .userTtuBeotOwnership(ownership)
             .build();
-
         ttubeotLogRepository.save(ttubeotLog);
+
+        // 뚜벗의 경험치에 반영 -> 모험은 + 10, 나머지는 +1 ~ 2
+        int experienceToAdd = switch (ttubeotLogRequestDTO.getTtubeotLogType()) {
+            case 0 -> 1; // 밥먹기
+            case 1 -> 2; // 친구 상호작용
+            case 2 -> 7; // 모험
+            default -> 0;
+        };
+        // 5. 100을 초과하면 관심지수를 추가하지 않음
+        if (ownership.getTtubeotScore() + experienceToAdd > 100) {
+            return new UserTtubeotExperienceResponseDTO(ownership.getTtubeotInterest());
+        }
+
+        // 6. 관심지수 반영
+        ownership.accumulateScore(experienceToAdd);
+        userTtubeotOwnershipRepository.save(ownership);
+
+        // 7. ResponseDTO 생성 및 반환
+        return new UserTtubeotExperienceResponseDTO(ownership.getTtubeotInterest());
+        // TODO: userCoin에도 반영 - 추후 수정
+
     }
 
     // 유저의 뚜벗 아이디 조회

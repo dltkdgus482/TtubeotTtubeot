@@ -7,6 +7,7 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotExperienceResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInterestResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
@@ -19,7 +20,7 @@ import org.springframework.http.ResponseEntity;
 public interface TtubeotService {
 
     // 뚜벗 로그 추가
-    void addTtubeotLog(Integer userId, TtubeotLogRequestDTO ttubeotLogRequestDTO);
+    UserTtubeotExperienceResponseDTO addTtubeotLog(Integer userId, TtubeotLogRequestDTO ttubeotLogRequestDTO);
 
     // 유저의 뚜벗 아이디 조회
     Long getTtubeotOwnershipId(int userId); // 상태가 정상(0)인것을 반환합니다.
