@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
     width: '100%', // 컨테이너가 화면의 대부분을 차지하도록 설정
+    height: 80,
   },
 
   ranking: {
@@ -114,18 +115,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: '5%',
   },
   rankingName: {
-    width: '45%',
+    width: 150,
     fontSize: 18,
-    textAlign: 'center',
+    textAlign: 'left',
+    marginLeft: 10,
+    marginRight: 'auto', // 이름을 이미지 바로 왼쪽에 고정
   },
   rankingScore: {
     width: '25%',
-    fontSize: 16,
+    fontSize: 20,
     textAlign: 'right',
   },
   medal: {
     position: 'absolute',
     top: 0,
+  },
+  nameAndScore: {
+    flexDirection: 'row', // 이름과 점수를 가로로 배치
+    alignItems: 'center', // 세로 가운데 정렬
+    flex: 1, // 남는 공간을 차지하여 점수가 오른쪽 끝으로 가도록 함
   },
   playerImage: {
     width: 80,
@@ -181,6 +189,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden', // 원을 벗어나는 이미지 숨기기
+    marginRight: 10, // 이미지와 이름 사이 간격
+  },
+  textWrapper: {
+    alignItems: 'flex-start', // 텍스트 요소들을 왼쪽 정렬
+    flexDirection: 'column', // 세로 방향으로 정렬
+    flex: 1, // 가능한 모든 공간을 차지하도록 설정
   },
 });
 
