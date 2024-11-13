@@ -170,10 +170,10 @@ export const getInfoApi = async (accessToken, setAccessToken) => {
 
   try {
     const getInfoRes = await authClient.get('/user/profile');
-    console.log('getinfo', getInfoRes.data);
+    console.log('유저 정보 조회', getInfoRes.data);
     return getInfoRes.data;
   } catch (error) {
-    console.error('프로필 정보 조회 실패:', error);
+    console.error('유저 정보 조회 실패:', error);
     throw error;
   }
 };
