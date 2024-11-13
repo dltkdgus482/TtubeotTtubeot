@@ -546,6 +546,7 @@ public class TtubeotServiceImpl implements TtubeotService {
 
     @Override
     public UserTtubeotInterestResponseDTO getTtubeotInterest(int userId) {
+        Random random = new Random();
         // 1. 유저가 소유하고있는 정상상태의 뚜벗을 조회합니다.
         Optional<UserTtuBeotOwnership> optionalUserTtubeot = userTtubeotOwnershipRepository.findByUser_UserIdAndTtubeotStatus(
             userId, 0);
@@ -556,8 +557,11 @@ public class TtubeotServiceImpl implements TtubeotService {
         // 2. 해당 뚜벗의 관심도를 조회합니다.
         int userTtubeotInterest = optionalUserTtubeot.get().getTtubeotInterest();
 
-        // 3. responseDTO에 담아서 반환합니다.
-        return new UserTtubeotInterestResponseDTO(userTtubeotInterest);
+        // 3. 뚜벗의 현재 상태를 조회합니다. -> 로그데이터 기반인데 현재는 0 or 1 랜덤으로
+        int currentTtubeotStatus = random.nextInt(2);
+
+        // 4. responseDTO에 담아서 반환합니다.
+        return new UserTtubeotInterestResponseDTO(userTtubeotInterest, currentTtubeotStatus);
     }
 
     // TtubeotDrawResponseDTO 생성 메서드

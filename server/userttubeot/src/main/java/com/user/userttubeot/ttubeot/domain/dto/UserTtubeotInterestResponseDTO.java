@@ -8,5 +8,6 @@ import lombok.Data;
 public class UserTtubeotInterestResponseDTO {
 
     private Integer ttubeotInterest;
+    private Integer currentTtubeotStatus; // 뚜벗의 현재 상태
 
 }
