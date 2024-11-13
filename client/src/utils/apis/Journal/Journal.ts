@@ -25,7 +25,6 @@ export const getJournalList = async (
       start_at: formatDate(journal.start_at),
       end_at: formatDate(journal.end_at),
     }));
-    console.log(journalList);
 
     return journalList;
   } catch (err) {
@@ -43,7 +42,6 @@ export const getJournalDetail = async (
     const authClient = authRequest(accessToken, setAccessToken);
     const res = await authClient.get(`/adventure/reports/${journalId}`);
     const journal = res.data.data;
-    console.log(journal);
 
     return {
       ...journal,

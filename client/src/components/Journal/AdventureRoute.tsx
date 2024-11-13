@@ -26,6 +26,7 @@ const AdventureRoute = ({
   gpsLog,
 }: AdventureRouteProps) => {
   const mapRef = useRef<MapView>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const fitMapToCoordinates = () => {
     if (mapRef.current && gpsLog.length > 0) {

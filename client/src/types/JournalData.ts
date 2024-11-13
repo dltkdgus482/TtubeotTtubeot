@@ -26,7 +26,7 @@ export type JournalDetailData = {
   start_at: string;
   end_at: string;
   gps_log_key: string;
-  gps_log?: Location[];
+  gps_log: Location[];
   image_urls: string[];
   duration: number;
 };
