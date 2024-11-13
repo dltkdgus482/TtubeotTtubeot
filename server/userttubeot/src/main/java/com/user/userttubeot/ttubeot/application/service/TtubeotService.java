@@ -7,6 +7,7 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInterestResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
@@ -64,5 +65,8 @@ public interface TtubeotService {
 
     // 가장 최근에 헤어진 뚜벗 조회
     RecentBreakupTtubeotResponseDTO getRecentBreakUpTtubeot(int userId);
+
+    // 보유 뚜벗의 관심도 조회
+    UserTtubeotInterestResponseDTO getTtubeotInterest(int userId);
 
 }

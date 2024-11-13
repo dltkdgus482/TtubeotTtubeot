@@ -82,6 +82,9 @@ public class UserTtuBeotOwnership {
         if (this.ttubeotScore == null) {
             this.ttubeotScore = 0;
         }
+        if (this.ttubeotInterest == null) {
+            this.ttubeotInterest = 70;
+        }
     }
 
     @PreUpdate

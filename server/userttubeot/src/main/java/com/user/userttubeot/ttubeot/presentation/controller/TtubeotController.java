@@ -16,6 +16,7 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotIdResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInterestResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistToDbDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistToDbDTO;
@@ -147,6 +148,14 @@ public class TtubeotController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    // 유저가 키우고 있는 뚜벗의 관심도 조회
+    @GetMapping("/auth/ttubeot/interest")
+    public ResponseEntity<?> getTtubeotInterest(@RequestAttribute("userId") Integer userId) {
+        UserTtubeotInterestResponseDTO userTtubeotInterest = ttubeotService.getTtubeotInterest(
+            userId);
+        return ResponseEntity.ok(userTtubeotInterest);
+    }
+
     /*
      * api for firebase
      * */
@@ -173,6 +182,4 @@ public class TtubeotController {
         ttubeotService.registMission(registMission);
         return ResponseEntity.ok("미션이 정상적으로 등록되었습니다.");
     }
-
-
 }

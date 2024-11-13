@@ -12,6 +12,7 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInterestResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistToDbDTO;
@@ -541,6 +542,22 @@ public class TtubeotServiceImpl implements TtubeotService {
         dto.setGraduationStatus(ownership.getTtubeotStatus());
 
         return dto;
+    }
+
+    @Override
+    public UserTtubeotInterestResponseDTO getTtubeotInterest(int userId) {
+        // 1. 유저가 소유하고있는 정상상태의 뚜벗을 조회합니다.
+        Optional<UserTtuBeotOwnership> optionalUserTtubeot = userTtubeotOwnershipRepository.findByUser_UserIdAndTtubeotStatus(
+            userId, 0);
+        if (optionalUserTtubeot.isEmpty()) {
+            throw new TtubeotNotFoundException("정상 상태의 뚜벗이 없습니다.");
+        }
+
+        // 2. 해당 뚜벗의 관심도를 조회합니다.
+        int userTtubeotInterest = optionalUserTtubeot.get().getTtubeotInterest();
+
+        // 3. responseDTO에 담아서 반환합니다.
+        return new UserTtubeotInterestResponseDTO(userTtubeotInterest);
     }
 
     // TtubeotDrawResponseDTO 생성 메서드
