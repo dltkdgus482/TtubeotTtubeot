@@ -40,8 +40,9 @@ public class AlertServiceImpl implements AlertService {
                 .setTitle(title)
                 .setBody(body)
                 .build())
+            .putData("title", title)
+            .putData("body", body)
             .build();
-
         try {
             String response = FirebaseMessaging.getInstance().send(message);
             System.out.println("✅ FCM Message 전송 성공: " + response);
