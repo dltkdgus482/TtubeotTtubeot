@@ -19,22 +19,6 @@ class AdventureManager {
 
   public constructor(socket: Socket) {
     this.socket = socket;
-
-    // this.socket.on('adventure_result', data => {
-    //   console.log('모험 일지를 수신했습니다. 모험을 종료합니다. ', data);
-    // });
-
-    // this.socket.on('adventure_park', data => {
-    //   console.log('공원 정보를 수신했습니다', data);
-    // });
-
-    // this.socket.on('adventure_request', data => {
-    //   console.log('친구 요청을 수신했습니다', data);
-    // });
-
-    // this.socket.on('adventure_confirm', data => {
-    //   console.log('친구 요청 응답을 수신했습니다', data);
-    // });
   }
 
   static initialize(socket: Socket) {
@@ -80,6 +64,11 @@ class AdventureManager {
   public addAdventureConfirmListener(callback: (data) => void) {
     this.socket.on('adventure_confirm', callback);
     console.log('adventure_confirm event를 수신합니다.');
+  }
+
+  public addAdventureRewardListener(callback: (data) => void) {
+    this.socket.on('adventure_reward', callback);
+    console.log('adventure_reward event를 수신합니다.');
   }
 
   // 근처 사용자에게 친구 요청 전송 메서드

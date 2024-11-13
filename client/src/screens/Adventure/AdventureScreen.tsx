@@ -29,6 +29,7 @@ import WebView from 'react-native-webview';
 import { useUser } from '../../store/user';
 import { updateStepMission } from '../../utils/apis/Mission/updateMissionInfo';
 import StyledText from '../../styles/StyledText';
+import { updateLog } from '../../utils/apis/updateLog';
 
 const { RnSensorStep, SystemUsage } = NativeModules;
 const stepCounterEmitter = new NativeEventEmitter(RnSensorStep);
@@ -38,6 +39,8 @@ const CameraIcon = require('../../assets/icons/CameraIcon.png');
 const MissionIcon = require('../../assets/icons/MissionIcon.png');
 const MapIcon = require('../../assets/icons/MapIcon.png');
 const horseBalloon = require('../../assets/images/horseBalloon.png');
+const footPrintIcon = require('../../assets/icons/FootprintIcon.png');
+const greenFootPrintIcon = require('../../assets/icons/FootprintIconDeepGreen.png');
 
 const isRunningOnEmulator = () => {
   if (Platform.OS === 'android') {
@@ -168,6 +171,8 @@ const AdventureScreen = () => {
       // startStepCounter();
     } else {
       updateStepMission(accessToken, setAccessToken, steps);
+      // 로그 업데이트 로직 추가
+      updateLog(accessToken, setAccessToken, 2);
       disconnectSocket();
       closeModal();
       stopStepCounter();

@@ -26,9 +26,7 @@ export const getUserInfo = async ({
   userId,
 }: GetUserInfoParams): Promise<GetUserInfoReturns> => {
   try {
-    const authClient = authRequest(accessToken, setAccessToken);
-    const userInfo = authClient.get(`/user/other-profile/${userId}`);
-    console.log('getUserInfo', userInfo.data);
+    const userInfo = await defaultRequest.get(`/user/other-profile/${userId}`);
     return userInfo.data;
   } catch (error) {
     console.log('getUserInfo Error', error);
@@ -43,7 +41,7 @@ export const getTtubeotInfo = async ({
 }: GetUserInfoParams): Promise<GetTtuebeotInfoReturns> => {
   try {
     const authClient = authRequest(accessToken, setAccessToken);
-    const ttubeotInfo = authClient.get(
+    const ttubeotInfo = await authClient.get(
       `/user/ttubeot/adventure/${userId}/details`,
     );
     console.log('getTtubeotInfo', ttubeotInfo.data);
