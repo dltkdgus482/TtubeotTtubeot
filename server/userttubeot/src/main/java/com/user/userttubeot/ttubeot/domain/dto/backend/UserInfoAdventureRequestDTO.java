@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class FcmTokenAdventureRequestDTO {
+public class UserInfoAdventureRequestDTO {
 
-    private String fcmToken;
+    private Integer userId;
 
 }
