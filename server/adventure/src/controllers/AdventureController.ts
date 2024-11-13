@@ -227,13 +227,12 @@ export class AdventureController {
 
       // TODO: 여기 FCM 관련 호출 들어가면 됨당
       if (genImageRes) {
-        const userId: number = adventureLog.userId;
+        const userId: string = adventureLog.userId.toString();
         const res = await fetch(
           `http://${this.baseUrl}/user/ttubeot/user-info`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId }),
+            body: userId,
           }
         );
         console.log("이미지 생성 완료 후 유저 서버에 userId를 전송합니다.");
