@@ -129,18 +129,17 @@ const RankingScreen = () => {
           const isHighlighted = user.userId == ranking.userId;
 
           return (
-            <View
-              style={[
-                styles.rankingContainer,
-                isHighlighted
-                  ? { borderWidth: 4, borderColor: '#E6E6E6' }
-                  : { borderWidth: 4, borderColor: '#F5F8FA' }, // 조건부 스타일링
-              ]}
-              key={index}>
+            <View style={styles.rankingContainer} key={index}>
               <StyledText bold style={styles.ranking}>
                 {(index + 1).toString().padStart(2, '0')}
               </StyledText>
-              <View style={styles.rankingInfo}>
+              <View
+                style={[
+                  styles.rankingInfo,
+                  isHighlighted
+                    ? { borderWidth: 4, borderColor: '#183118' }
+                    : {},
+                ]}>
                 <View style={styles.imageWrapper}>
                   <Image
                     source={profileColor[ranking.ttubeotId] || profileColor[1]}
