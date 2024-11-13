@@ -8,7 +8,7 @@ import { getRankingInfo } from '../../utils/apis/Ranking/getRankingInfo';
 import { useUser } from '../../store/user';
 import { profileColor } from '../../components/ProfileImageUrl';
 import { useIsFocused } from '@react-navigation/native';
-// import { useIsFocused } from '@react-navigation/native';
+import Icon from '../../components/Icon';
 
 const IntroTtubeotRabbit = require('../../assets/ttubeot/IntroTtubeotRabbit.png');
 const gold = require('../../assets/medals/gold.png');
@@ -124,17 +124,27 @@ const RankingScreen = () => {
                     style={styles.playerImage}
                   />
                 </View>
-                <StyledText bold style={styles.rankingName}>
-                  {ranking.username}
-                </StyledText>
-                <StyledText
-                  bold
-                  style={[
-                    styles.rankingScore,
-                    ranking.score >= 1000 ? { fontSize: 14 } : null, // 1000 이상일 때 폰트 크기 조정
-                  ]}>
-                  {ranking.score.toLocaleString()}
-                </StyledText>
+                <View style={styles.nameAndScore}>
+                  <StyledText bold style={styles.rankingName}>
+                    {ranking.username}
+                  </StyledText>
+                  <StyledText
+                    bold
+                    style={[
+                      styles.rankingScore,
+                      ranking.score >= 1000 ? { fontSize: 14 } : null, // 1000 이상일 때 폰트 크기 조정
+                      { marginLeft: 'auto' }, // 오른쪽 끝으로 배치
+                    ]}>
+                    {ranking.score.toLocaleString()}
+                    <Text style={{ marginRight: 5 }} /> {/* 간격 추가 */}
+                    <Icon
+                      type="FontAwesome5"
+                      name="paw"
+                      size={20}
+                      color="#000"
+                    />
+                  </StyledText>
+                </View>
               </View>
             </View>
           );
