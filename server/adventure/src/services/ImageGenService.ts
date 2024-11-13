@@ -22,7 +22,9 @@ class ImageGenService {
     this.defaultImageUrl = process.env.DEFAULT_IMAGE_URL || ""; // 기본 이미지 URL 설정
   }
 
-  public async generateImage(adventureLog: AdventureLogModel): Promise<void> {
+  public async generateImage(
+    adventureLog: AdventureLogModel
+  ): Promise<boolean> {
     // console.log(
     //   "GenerateImage Log:",
     //   JSON.stringify(adventureLog.gpsLog, null, 2)
@@ -52,11 +54,17 @@ class ImageGenService {
         1
       );
 
-      await this.uploadAndSaveImage(
+      // 기본 이미지 기반으로 생성된 사진이 제대로 업로드, 저장되었는지 여부 반환
+      const res = await this.uploadAndSaveImage(
         generatedImageUrl,
         adventureLog.adventureLogId
       );
-      return;
+
+      if (!res) {
+        return false;
+      }
+
+      return true;
     }
 
     console.log("Selected RoadView Point: ", selectedPoint);
@@ -76,17 +84,23 @@ class ImageGenService {
     console.log("GeneratedImageUrl: ", generatedImageUrl);
 
     // FTP에 업로드 및 데이터베이스에 링크 저장
-    await this.uploadAndSaveImage(
+    const res = await this.uploadAndSaveImage(
       generatedImageUrl,
       adventureLog.adventureLogId
     );
+
+    if (!res) {
+      return false;
+    }
+
+    return true;
   }
 
   // FTP 업로드 및 이미지 URL 저장 함수로 분리
   private async uploadAndSaveImage(
     imageUrl: string,
     adventureLogId: number
-  ): Promise<void> {
+  ): Promise<boolean> {
     console.log("uploadAndSaveImage: 시작", { imageUrl, adventureLogId });
 
     try {
@@ -96,7 +110,7 @@ class ImageGenService {
         console.error("uploadAndSaveImage: 이미지 fetch 오류", {
           status: response.status,
         });
-        throw new Error("Failed to fetch image.");
+        return false;
       }
 
       const imageBlob = await response.blob();
@@ -112,12 +126,13 @@ class ImageGenService {
       const fileLink = this.cdnUrl + filename;
       await this.imageMysqlRepository.saveImageUrls(adventureLogId, [fileLink]);
       console.log("uploadAndSaveImage: DB 저장 성공", { fileLink });
+      return true;
     } catch (error) {
       console.error("uploadAndSaveImage: 오류 발생", error);
-      throw new Error("Failed to upload and save image.");
+      return false;
+    } finally {
+      console.log("uploadAndSaveImage: 종료", { adventureLogId });
     }
-
-    console.log("uploadAndSaveImage: 종료", { adventureLogId });
   }
 }
 
