@@ -35,13 +35,17 @@ import com.user.userttubeot.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -546,7 +550,6 @@ public class TtubeotServiceImpl implements TtubeotService {
 
     @Override
     public UserTtubeotInterestResponseDTO getTtubeotInterest(int userId) {
-        Random random = new Random();
         // 1. 유저가 소유하고있는 정상상태의 뚜벗을 조회합니다.
         Optional<UserTtuBeotOwnership> optionalUserTtubeot = userTtubeotOwnershipRepository.findByUser_UserIdAndTtubeotStatus(
             userId, 0);
@@ -554,14 +557,42 @@ public class TtubeotServiceImpl implements TtubeotService {
             throw new TtubeotNotFoundException("정상 상태의 뚜벗이 없습니다.");
         }
 
+        UserTtuBeotOwnership userTtubeotOwnership = optionalUserTtubeot.get();
+
         // 2. 해당 뚜벗의 관심도를 조회합니다.
-        int userTtubeotInterest = optionalUserTtubeot.get().getTtubeotInterest();
+        int userTtubeotInterest = userTtubeotOwnership.getTtubeotInterest();
 
-        // 3. 뚜벗의 현재 상태를 조회합니다. -> 로그데이터 기반인데 현재는 0 or 1 랜덤으로
-        int currentTtubeotStatus = random.nextInt(2);
+        // 3. 최근 10개의 로그 데이터 조회
+        Pageable pageable = PageRequest.of(0, 10);
+        List<TtubeotLog> recentLogs = ttubeotLogRepository.findRecentLogsByOwnership(
+            userTtubeotOwnership, pageable);
 
-        // 4. responseDTO에 담아서 반환합니다.
-        return new UserTtubeotInterestResponseDTO(userTtubeotInterest, currentTtubeotStatus);
+        // 4. 로그 데이터를 기반으로 뚜벗의 현재 상태 계산
+        Map<Integer, Long> logTypeCounts = recentLogs.stream()
+            .collect(Collectors.groupingBy(TtubeotLog::getTtubeotLogType, Collectors.counting()));
+
+        long foodCount = logTypeCounts.getOrDefault(0, 0L);
+        long socialAndAdventureCount =
+            logTypeCounts.getOrDefault(1, 0L) + logTypeCounts.getOrDefault(2, 0L);  // 친구 + 모험
+
+        int currentTtubeotStatus;
+
+        if (foodCount >= 3 && socialAndAdventureCount >= 3) {
+            currentTtubeotStatus = 2; // 평온
+        } else if (foodCount < socialAndAdventureCount) {
+            currentTtubeotStatus = 0; // 배고픔
+        } else {
+            currentTtubeotStatus = 1; // 심심함
+        }
+
+        // 5. 가장 최근 로그의 정보 추출
+        TtubeotLog lastLog = recentLogs.isEmpty() ? null : recentLogs.get(0);
+        Integer lastActionType = lastLog != null ? lastLog.getTtubeotLogType() : null;
+        LocalDateTime lastActionTime = lastLog != null ? lastLog.getCreatedAt() : null;
+
+        // 6. responseDTO에 담아서 반환합니다.
+        return new UserTtubeotInterestResponseDTO(userTtubeotInterest, currentTtubeotStatus,
+            lastActionType, lastActionTime);
     }
 
     // TtubeotDrawResponseDTO 생성 메서드
