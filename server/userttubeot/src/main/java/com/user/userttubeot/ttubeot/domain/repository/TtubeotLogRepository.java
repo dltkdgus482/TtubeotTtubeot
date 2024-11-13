@@ -18,6 +18,6 @@ public interface TtubeotLogRepository extends JpaRepository<TtubeotLog, Long> {
     List<TtubeotLog> findByUserTtuBeotOwnership_User_UserIdAndCreatedAtBetween(Integer userId, LocalDateTime start, LocalDateTime end);
 
     // 특정 userTtubeotOwnershipId와 LogType이 3인 로그의 갯수를 반환
-    @Query("SELECT COUNT(t) FROM TtubeotLog t WHERE t.userTtuBeotOwnership.userTtubeotOwnershipId = :ownershipId AND t.ttubeotLogType = 3")
+    @Query("SELECT COUNT(t) FROM TtubeotLog t WHERE t.userTtuBeotOwnership.userTtubeotOwnershipId = :ownershipId AND t.ttubeotLogType = 2")
     int countLogsByOwnershipIdAndLogType(@Param("ownershipId") Long ownershipId);
 }
