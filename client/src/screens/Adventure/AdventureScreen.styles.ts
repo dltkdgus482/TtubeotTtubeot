@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
   },
   content: {
     position: 'absolute',
-    top: 150,
+    top: 140,
     width: '100%',
     paddingHorizontal: 0,
     display: 'flex',
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   startButtonContainer: {
     alignItems: 'center',
     position: 'absolute',
-    bottom: 100,
+    bottom: 120,
     width: '100%',
     zIndex: 100,
   },
