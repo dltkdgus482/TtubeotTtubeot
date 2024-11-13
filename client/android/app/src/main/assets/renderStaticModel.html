@@ -52,7 +52,9 @@
 
       const controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableZoom = false;
-      controls.enableRotate = false;
+      controls.enableRotate = true;
+      controls.maxPolarAngle = Math.PI / 2 - 0.332;
+      controls.minPolarAngle = Math.PI / 2 - 0.532;
       controls.enablePan = false;
 
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -9,7 +9,7 @@ import {
   NativeModules,
   PermissionsAndroid,
 } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import { useCameraPermission } from 'react-native-vision-camera';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from './AdventureScreen.styles';
@@ -230,11 +230,11 @@ const AdventureScreen = () => {
     }
   };
 
-  useEffect(() => {
-    sendId(ttubeotId);
-    console.log(ttubeotId);
-  }, [ttubeotId]);
-
+  useFocusEffect(
+    useCallback(() => {
+      sendId(ttubeotId);
+    }, [ttubeotId]),
+  );
   return (
     <SafeAreaView style={styles.container}>
       <Image
@@ -277,42 +277,40 @@ const AdventureScreen = () => {
         </TouchableOpacity>
       </View>
       <GPSAlertModal modalVisible={modalVisible} closeModal={closeModal} />
-      {isFocused && (
-        <View style={styles.ttubeotWebviewContainer} pointerEvents="none">
-          <WebView
-            ref={webViewRef}
-            originWhitelist={['*']}
-            source={{ uri: 'file:///android_asset/renderRunModel.html' }}
-            style={styles.ttubeotWebview}
-            allowFileAccess={true}
-            allowFileAccessFromFileURLs={true}
-            allowUniversalAccessFromFileURLs={true}
-            onLoadStart={syntheticEvent => {
-              const { nativeEvent } = syntheticEvent;
-              console.log('WebView Start: ', nativeEvent);
-            }}
-            onError={syntheticEvent => {
-              const { nativeEvent } = syntheticEvent;
-              console.error('WebView onError: ', nativeEvent);
-            }}
-            onHttpError={syntheticEvent => {
-              const { nativeEvent } = syntheticEvent;
-              console.error('WebView onHttpError: ', nativeEvent);
-            }}
-            onMessage={event => {
-              console.log('Message from WebView:', event.nativeEvent.data);
-            }}
-          />
-          {horseBalloonVisible && (
-            <View style={styles.horseBalloonContainer}>
-              <Image source={horseBalloon} style={styles.horseBalloon} />
-              <StyledText bold style={styles.horseBalloonText}>
-                {horseBalloonContent}
-              </StyledText>
-            </View>
-          )}
-        </View>
-      )}
+      <View style={styles.ttubeotWebviewContainer} pointerEvents="none">
+        <WebView
+          ref={webViewRef}
+          originWhitelist={['*']}
+          source={{ uri: 'file:///android_asset/renderRunModel.html' }}
+          style={styles.ttubeotWebview}
+          allowFileAccess={true}
+          allowFileAccessFromFileURLs={true}
+          allowUniversalAccessFromFileURLs={true}
+          onLoadStart={syntheticEvent => {
+            const { nativeEvent } = syntheticEvent;
+            console.log('WebView Start: ', nativeEvent);
+          }}
+          onError={syntheticEvent => {
+            const { nativeEvent } = syntheticEvent;
+            console.error('WebView onError: ', nativeEvent);
+          }}
+          onHttpError={syntheticEvent => {
+            const { nativeEvent } = syntheticEvent;
+            console.error('WebView onHttpError: ', nativeEvent);
+          }}
+          onMessage={event => {
+            console.log('Message from WebView:', event.nativeEvent.data);
+          }}
+        />
+        {horseBalloonVisible && (
+          <View style={styles.horseBalloonContainer}>
+            <Image source={horseBalloon} style={styles.horseBalloon} />
+            <StyledText bold style={styles.horseBalloonText}>
+              {horseBalloonContent}
+            </StyledText>
+          </View>
+        )}
+      </View>
 
       {isCameraModalEnabled &&
         CameraModal &&

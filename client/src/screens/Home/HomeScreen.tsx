@@ -99,8 +99,9 @@ const HomeScreen = () => {
     if (res === null) {
       setTtubeotId(46);
     } else {
-      setTtubeotId(res.ttubeotType);
+      setTtubeotId(res.ttubeotId);
     }
+    // console.log('내뚜벗 아이디가 뭔교', ttubeotId);
     sendId(ttubeotId);
   };
 
@@ -164,34 +165,32 @@ const HomeScreen = () => {
     <SafeAreaView style={styles.container}>
       {/* 배경 이미지 */}
       <Image source={background} style={styles.backgroundImage} />
-      {isFocused && (
-        <View style={styles.ttubeotWebviewContainer}>
-          <WebView
-            ref={webViewRef}
-            originWhitelist={['*']}
-            source={{ uri: 'file:///android_asset/renderModel.html' }}
-            style={styles.ttubeotWebview}
-            allowFileAccess={true}
-            allowFileAccessFromFileURLs={true}
-            allowUniversalAccessFromFileURLs={true}
-            onLoadStart={syntheticEvent => {
-              const { nativeEvent } = syntheticEvent;
-              console.log('WebView Start: ', nativeEvent);
-            }}
-            onError={syntheticEvent => {
-              const { nativeEvent } = syntheticEvent;
-              console.error('WebView onError: ', nativeEvent);
-            }}
-            onHttpError={syntheticEvent => {
-              const { nativeEvent } = syntheticEvent;
-              console.error('WebView onHttpError: ', nativeEvent);
-            }}
-            onMessage={event => {
-              console.log('Message from WebView:', event.nativeEvent.data);
-            }}
-          />
-        </View>
-      )}
+      <View style={styles.ttubeotWebviewContainer}>
+        <WebView
+          ref={webViewRef}
+          originWhitelist={['*']}
+          source={{ uri: 'file:///android_asset/renderModel.html' }}
+          style={styles.ttubeotWebview}
+          allowFileAccess={true}
+          allowFileAccessFromFileURLs={true}
+          allowUniversalAccessFromFileURLs={true}
+          onLoadStart={syntheticEvent => {
+            const { nativeEvent } = syntheticEvent;
+            console.log('WebView Start: ', nativeEvent);
+          }}
+          onError={syntheticEvent => {
+            const { nativeEvent } = syntheticEvent;
+            console.error('WebView onError: ', nativeEvent);
+          }}
+          onHttpError={syntheticEvent => {
+            const { nativeEvent } = syntheticEvent;
+            console.error('WebView onHttpError: ', nativeEvent);
+          }}
+          onMessage={event => {
+            console.log('Message from WebView:', event.nativeEvent.data);
+          }}
+        />
+      </View>
 
       {/* 버튼 컨테이너 */}
       {!modalVisible && !missionModalVisible && !albumModalVisible && (

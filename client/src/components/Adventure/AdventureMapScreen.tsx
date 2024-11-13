@@ -39,6 +39,7 @@ import { updateCoin } from '../../utils/apis/users/updateUserInfo';
 // BLE 관련 모듈 추가
 
 import BLEAdvertiser from 'react-native-ble-advertiser';
+// @ts-ignore
 import { SERVICE_UUID } from '@env';
 
 import { NativeModules, NativeEventEmitter } from 'react-native';

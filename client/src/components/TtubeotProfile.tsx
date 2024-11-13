@@ -111,7 +111,7 @@ const TtubeotProfile = () => {
         setTtubeotId(46);
       } else {
         setTtubeotData(res);
-        setTtubeotId(res.ttubeotType);
+        setTtubeotId(res.ttubeotId);
         setIsLoading(false);
       }
     };
