@@ -46,7 +46,7 @@ public class UserTtuBeotOwnership {
     private Integer ttubeotScore = 0; // default
 
     @Column(name = "ttubeot_interest", nullable = false)
-    private Integer ttubeotInterest = 70;
+    private Integer ttubeotInterest = 50;
 
     @Column(name = "break_up")
     private LocalDateTime breakUp;
