@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
   },
   adventureCount: {
-    fontSize: 14,
+    fontSize: 16,
     marginTop: 18,
   },
   journalContainer: {
