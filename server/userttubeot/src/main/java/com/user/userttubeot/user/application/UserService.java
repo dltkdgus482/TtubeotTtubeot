@@ -3,6 +3,7 @@ package com.user.userttubeot.user.application;
 import com.user.userttubeot.ttubeot.application.service.TtubeotServiceImpl;
 import com.user.userttubeot.ttubeot.domain.model.UserTtuBeotOwnership;
 import com.user.userttubeot.ttubeot.domain.repository.UserTtubeotOwnershipRepository;
+import com.user.userttubeot.ttubeot.global.exception.TtubeotNotFoundException;
 import com.user.userttubeot.user.domain.dto.TokenDto;
 import com.user.userttubeot.user.domain.dto.UserProfileDto;
 import com.user.userttubeot.user.domain.dto.UserRankDto;
@@ -289,11 +290,19 @@ public class UserService {
                     .mapToInt(UserTtuBeotOwnership::getTtubeotScore)
                     .sum();
 
+                int ttubeotId;
+                try {
+                    ttubeotId = ttubeotService.getDdubeotInfo(userId).getTtubeotId();
+                } catch (TtubeotNotFoundException e) {
+                    // 예외 발생 시 기본값 1로 설정
+                    ttubeotId = 1;
+                }
+
                 return new UserRankDto(
                     userId,
                     user.getUserName(),
                     score,
-                    ttubeotService.getDdubeotInfo(userId).getTtubeotId()
+                    ttubeotId
                 );
             })
             .sorted(Comparator.comparingInt(UserRankDto::getScore).reversed())
