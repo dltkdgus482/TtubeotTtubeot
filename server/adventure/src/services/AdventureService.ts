@@ -128,6 +128,8 @@ class AdventureService {
       adventureLog.adventureCoin
     );
 
+    // 여기
+
     return adventureLog;
   }
 
