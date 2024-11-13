@@ -32,7 +32,7 @@ public class MissionSchedulerService {
     private final UserRepository userRepository;
 
     // 매일 일정시간에 모든 유저에게 테스트 알림 전송
-    @Scheduled(cron = "00 23 13 * * *")
+    @Scheduled(cron = "00 40 13 * * *")
     public void sendTestNotification() {
         // 모든 유저 조회
         List<User> users = userRepository.findAll();
