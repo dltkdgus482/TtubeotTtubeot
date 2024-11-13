@@ -120,7 +120,7 @@ public class TtubeotServiceImpl implements TtubeotService {
         }
 
         // 2. 유저의 코인 차감
-        user.addCoins(-price);
+        user.deductCoins(price);
         userRepository.save(user);
 
         TtubeotDrawResponseDTO responseDTO;
