@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   },
   rankingList: {
     width: '100%',
-    backgroundColor: '#F5F8FA',
+    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 10,
@@ -81,7 +81,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10, // 상하 여백을 사용해 높이를 유동적으로 만듦
     paddingHorizontal: '3%', // 좌우 여백을 화면 비율에 맞게 설정
     marginHorizontal: '2%', // 컨테이너 간의 여백을 화면 비율에 맞게 설정
-    backgroundColor: '#F5F8FA',
     borderRadius: 20,
     shadowColor: '#000',
     shadowOpacity: 0.1,
@@ -110,7 +109,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     alignItems: 'center',
     width: '90%',
-    backgroundColor: '#E6E6E6',
+    backgroundColor: '#F5F8FA',
     borderRadius: 20,
     padding: '1%',
     paddingHorizontal: '5%',
@@ -130,7 +129,10 @@ const styles = StyleSheet.create({
   medal: {
     position: 'absolute',
     top: 0,
+    height: 55, // 원하는 사이즈로 높이 조정
+    objectFit: 'contain',
   },
+
   nameAndScore: {
     flexDirection: 'row', // 이름과 점수를 가로로 배치
     alignItems: 'center', // 세로 가운데 정렬
@@ -143,11 +145,11 @@ const styles = StyleSheet.create({
   },
   playerName: {
     width: 120,
-    fontSize: 20,
+    fontSize: 18,
     position: 'absolute',
     top: -110,
     textAlign: 'center',
-    color: '#183118',
+    color: '#231514',
   },
   playerImageContainer: {
     position: 'absolute',

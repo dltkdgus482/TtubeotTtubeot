@@ -137,8 +137,9 @@ const RankingScreen = () => {
                 style={[
                   styles.rankingInfo,
                   isHighlighted
-                    ? { borderWidth: 4, borderColor: '#183118' }
-                    : {},
+                    ? { borderWidth: 4, borderColor: '#7C92B3' }
+                    : // ? { borderWidth: 4, borderColor: '#72C9B3' }
+                      {},
                 ]}>
                 <View style={styles.imageWrapper}>
                   <Image
