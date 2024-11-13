@@ -18,7 +18,7 @@ const ttubeotDog = require('../../assets/ttubeot/IntroTtubeotDog.png');
 const backgroundImage = require('../../assets/backgrounds/rankingBackgroundImage.jpg'); // 배경 이미지 경로 설정
 
 interface RankingProps {
-  user_id: number;
+  userId: number;
   username: string;
   score: number;
   ttubeotId: number;
@@ -29,6 +29,8 @@ const RankingScreen = () => {
   const [rankingList, setRankingList] = useState<RankingProps[]>([]);
   const isFocused = useIsFocused(); // 화면 포커스 여부 감지
   const { user } = useUser.getState();
+  // console.log(user.userId);
+  // console.log('Ranking User ID:', rankingList[3].userId);
 
   useEffect(() => {
     const fetchRankingInfo = async () => {
@@ -56,18 +58,18 @@ const RankingScreen = () => {
         <StyledText bold style={styles.rankingText}>
           랭킹
         </StyledText>
-        {/* 설명 텍스트 */}
-        {/*<StyledText style={styles.rankingDescription}>
-          이번 주 최고의 랭킹을 확인하세요!
-        </StyledText>*/}
-        {/* <RankingScreenButtonContainer /> */}
         <View style={styles.topThreeList}>
           {rankingList[1] && (
             <View style={styles.second}>
               <StyledText bold style={styles.playerName}>
                 {rankingList[1].username}
               </StyledText>
-              <View style={styles.playerImageContainer}>
+              <View
+                style={[
+                  styles.playerImageContainer,
+                  user.userId == rankingList[1].userId &&
+                    styles.highlightedBorder,
+                ]}>
                 <Image
                   source={profileColor[rankingList[1].ttubeotId]}
                   style={{ width: 80, height: 80 }}
@@ -81,7 +83,12 @@ const RankingScreen = () => {
               <StyledText bold style={styles.playerName}>
                 {rankingList[0].username}
               </StyledText>
-              <View style={styles.playerImageContainer}>
+              <View
+                style={[
+                  styles.playerImageContainer,
+                  user.userId == rankingList[0].userId &&
+                    styles.highlightedBorder,
+                ]}>
                 <Image
                   source={profileColor[rankingList[0].ttubeotId]}
                   style={{ width: 80, height: 80 }}
@@ -95,7 +102,12 @@ const RankingScreen = () => {
               <StyledText bold style={styles.playerName}>
                 {rankingList[2].username}
               </StyledText>
-              <View style={styles.playerImageContainer}>
+              <View
+                style={[
+                  styles.playerImageContainer,
+                  user.userId == rankingList[2].userId &&
+                    styles.highlightedBorder,
+                ]}>
                 <Image
                   source={profileColor[rankingList[2].ttubeotId]}
                   style={{ width: 80, height: 80 }}
@@ -113,8 +125,18 @@ const RankingScreen = () => {
         {rankingList.map((ranking, index) => {
           if (index <= 2 || index >= 999) return null;
 
+          // 강조 스타일 적용 조건
+          const isHighlighted = user.userId == ranking.userId;
+
           return (
-            <View style={styles.rankingContainer} key={index}>
+            <View
+              style={[
+                styles.rankingContainer,
+                isHighlighted
+                  ? { borderWidth: 4, borderColor: '#E6E6E6' }
+                  : { borderWidth: 4, borderColor: '#F5F8FA' }, // 조건부 스타일링
+              ]}
+              key={index}>
               <StyledText bold style={styles.ranking}>
                 {(index + 1).toString().padStart(2, '0')}
               </StyledText>
@@ -132,13 +154,12 @@ const RankingScreen = () => {
                   <View
                     style={[
                       styles.scoreContainer,
-                      ranking.score >= 1000 ? { fontSize: 14 } : null, // 1000 이상일 때 폰트 크기 조정
+                      ranking.score >= 1000 ? { fontSize: 14 } : null,
                     ]}>
                     <StyledText bold style={styles.rankingScore}>
                       {ranking.score.toLocaleString()}
                     </StyledText>
                     <View style={{ width: 5 }} />
-                    {/* 숫자와 아이콘 사이 간격 */}
                     <Icon
                       type="FontAwesome5"
                       name="paw"

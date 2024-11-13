@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
     width: '100%', // 컨테이너가 화면의 대부분을 차지하도록 설정
+    // padding: 4,
     height: 80,
   },
 
@@ -201,6 +202,19 @@ const styles = StyleSheet.create({
     alignItems: 'center', // 세로 중앙 정렬
     marginLeft: 'auto', // 오른쪽 끝으로 배치
     width: 400,
+  },
+  highlightedContainer: {
+    borderRadius: 10,
+    borderColor: '#E6E6E6',
+    borderWidth: 4,
+    margin: -4, // 테두리 크기만큼 마진을 설정하여 위치 고정
+  },
+
+  highlightedBorder: {
+    borderWidth: 5, // 강조된 테두리 두께
+    borderColor: '#FFD700', // 테두리 색상 (예: 금색)
+    borderRadius: 50, // 이미지에 맞게 설정
+    padding: 5, // 내부 여백을 추가하여 기존 테두리 바깥쪽에 강조 테두리 표시
   },
 });
 
