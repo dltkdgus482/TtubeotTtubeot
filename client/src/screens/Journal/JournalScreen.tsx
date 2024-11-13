@@ -90,9 +90,6 @@ const JournalScreen = () => {
               </StyledText>
             </View>
           )}
-          <TouchableOpacity onPress={loadJournalList}>
-            <ButtonFlat content="불러오기" />
-          </TouchableOpacity>
           <View style={styles.journalBottomMargin} />
         </ScrollView>
       )}
