@@ -82,20 +82,20 @@ export default StyleSheet.create({
   },
   horseBalloonContainer: {
     position: 'absolute',
-    bottom: 390, // 캐릭터 위쪽에 말풍선 위치를 맞추기 위한 값
-    left: 55,
+    bottom: 390, // 캐릭터 위쪽에 말풍선 위치를 맞추기 위한 값 (코끼리만 440)
+    left: 50,
     alignSelf: 'center',
     alignItems: 'center',
   },
   horseBalloon: {
-    width: 100,
-    height: 100,
+    width: 110,
+    height: 110,
     resizeMode: 'contain',
   },
   horseBalloonText: {
     position: 'absolute',
-    top: 24,
-    left: 32,
+    top: 25,
+    left: 34,
     fontSize: 24,
     color: 'black',
   },
