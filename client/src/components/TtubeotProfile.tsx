@@ -116,7 +116,7 @@ const TtubeotProfile = () => {
       }
     };
     fetchUserTtubeot();
-  }, [user.userId]);
+  }, [user.userId, ttubeotId]);
 
   return (
     <Profile>
