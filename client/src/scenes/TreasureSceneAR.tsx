@@ -13,14 +13,15 @@ import { Vibration } from 'react-native';
 
 const sandTexture = require('../assets/textures/SandTexture.jpg');
 const crackTextures = [
-  require('../assets/cracks/crack1.png'),
-  require('../assets/cracks/crack2.png'),
-  require('../assets/cracks/crack3.png'),
-  require('../assets/cracks/crack4.png'),
-  require('../assets/cracks/crack5.png'),
-  require('../assets/cracks/crack6.png'),
-  require('../assets/cracks/crack7.png'),
-  require('../assets/cracks/crack8.png'),
+  require('../assets/cracks/crack.png'),
+  // require('../assets/cracks/crack1.png'),
+  // require('../assets/cracks/crack2.png'),
+  // require('../assets/cracks/crack3.png'),
+  // require('../assets/cracks/crack4.png'),
+  // require('../assets/cracks/crack5.png'),
+  // require('../assets/cracks/crack6.png'),
+  // require('../assets/cracks/crack7.png'),
+  // require('../assets/cracks/crack8.png'),
 ];
 const boxTexture = [
   require('../assets/boxes/box1.jpg'),
@@ -109,6 +110,8 @@ ViroAnimations.registerAnimations({
 });
 
 const TreasureSceneAR = () => {
+  const { hasTreasure, isDigging, setHasTreasure, setIsDigging } =
+    useTreasureStore();
   const [boxTexture, setBoxTexture] = useState(null);
   const [crackTexture, setCrackTexture] = useState(null);
   const [objectPosition, setObjectPosition] = useState<
@@ -124,7 +127,6 @@ const TreasureSceneAR = () => {
   const [isUnboxed, setIsUnboxed] = useState(false);
   const [isDetected, setIsDetected] = useState(false);
   const [diggingParticles, setDiggingParticles] = useState<any[]>([]);
-  const [isDigging, setIsDigging] = useState(false);
   const [diggingInterval, setDiggingInterval] = useState<NodeJS.Timeout | null>(
     null,
   );
@@ -161,10 +163,10 @@ const TreasureSceneAR = () => {
     if (crackTexture) {
       ViroMaterials.createMaterials({
         crack: {
-          diffuseColor: '#E8C7AB',
-          blendMode: 'Add',
+          diffuseColor: '#ffffff',
+          // blendMode: 'Add',
           lightingModel: 'Constant',
-          bloomThreshold: 0.2126,
+          bloomThreshold: 0.8126,
           shininess: 0.6,
           diffuseTexture: crackTexture,
           normalTexture: crackTexture,
@@ -175,17 +177,12 @@ const TreasureSceneAR = () => {
   }),
     [crackTexture];
 
-  const setHasTreasure = useTreasureStore(state => state.setHasTreasure);
-
   const handlePlaneDetected = () => {
-    if (isDetected) return;
-
     if (isDetected) return;
 
     const randomX = (Math.random() - 0.5) * 3;
     const randomZ = (Math.random() - 0.5) * 3;
     setObjectPosition([randomX, 0, randomZ]);
-    setIsDetected(true);
     setIsDetected(true);
   };
 
@@ -422,8 +419,8 @@ const TreasureSceneAR = () => {
             {!crackLoading && (
               <ViroBox
                 position={objectPosition}
-                // radius={0.6}
                 scale={[0.7, 0, 0.7]}
+                rotation={[0, -90, 0]}
                 materials={['crack']}
                 onClickState={stateValue => {
                   if (stateValue === 1) {
