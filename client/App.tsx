@@ -21,6 +21,7 @@ import LoginScreen from './src/screens/Auth/LoginScreen';
 import HomeScreen from './src/screens/Home/HomeScreen';
 import FindPasswordScreen from './src/screens/Profile/FindPasswordScreen';
 import SetNewPasswordScreen from './src/screens/Profile/SetNewPasswordScreen';
+import messaging from '@react-native-firebase/messaging';
 
 const Stack = createStackNavigator();
 
@@ -30,9 +31,13 @@ const theme = {
 };
 
 function App(): React.JSX.Element {
-  // useEffect(() => {
-  //   useUser.getState().clearUser();
-  // }, []);
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      console.log(JSON.stringify(remoteMessage));
+    });
+
+    return unsubscribe;
+  }, []);
 
   const { isLoggedIn } = useUser();
 

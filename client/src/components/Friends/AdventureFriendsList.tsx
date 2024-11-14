@@ -3,7 +3,7 @@ import { View, Image, TouchableOpacity } from 'react-native';
 import styles from './AdventureFriendsModal.styles';
 import StyledText from '../../styles/StyledText';
 import { useUser } from '../../store/user';
-import { getUserInfo, getTtubeotInfo } from '../../utils/apis/users/userInfo';
+import { getUserInfo } from '../../utils/apis/users/userInfo';
 
 const mockTtu = require('../../assets/ttubeot/mockTtu.png');
 const sendCoin = require('../../assets/icons/sendCoinIcon.png');

@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 20,
-    top: -100,
+    top: -105,
     right: -45,
   },
   modalTitleContainer: {
