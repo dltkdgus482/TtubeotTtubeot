@@ -18,7 +18,7 @@ interface TtubeotStatusResponse {
 
 interface TtubeotInterestInfoResponse {
   ttubeotInterest: number; // 관심지수
-  currentTtubeotStatus: number; // 0 - 배고픔, 1 - 심심함
+  currentTtubeotStatus: number; // 0 - 배고픔, 1 - 심심함, 2 - 평온
 }
 
 export const getUserTtubeotId = async (
