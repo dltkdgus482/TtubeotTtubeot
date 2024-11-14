@@ -598,7 +598,7 @@ public class TtubeotServiceImpl implements TtubeotService {
 
         int currentTtubeotStatus;
 
-        if (foodCount >= 3 && socialAndAdventureCount >= 3) {
+        if (foodCount >= 1 && socialAndAdventureCount >= 1) {
             currentTtubeotStatus = 2; // 평온
         } else if (foodCount < socialAndAdventureCount) {
             currentTtubeotStatus = 0; // 배고픔
@@ -619,11 +619,9 @@ public class TtubeotServiceImpl implements TtubeotService {
     @Override
     public Integer findTtubeotIdByOwnershipId(Long ttubeotOwnershipId) {
         return userTtubeotOwnershipRepository.findById(ttubeotOwnershipId)
-            .map(
-                userTtubeotOwnership -> userTtubeotOwnership.getTtubeot()
-                    .getTtubeotId())  // 값이 존재할 경우 ttubeotId 반환
-            .orElseThrow(() -> new RuntimeException(
-                "해당 소유 ID에 대한 TtubeotId를 찾을 수 없습니다: " + ttubeotOwnershipId));
+            .map(ownership -> ownership.getTtubeot().getTtubeotId())
+            .orElseThrow(() ->
+                new RuntimeException("해당 소유 ID에 대한 TtubeotId를 찾을 수 없습니다: " + ttubeotOwnershipId));
     }
 
     @Override

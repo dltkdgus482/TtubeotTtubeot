@@ -1,5 +1,7 @@
 package com.user.userttubeot.ttubeot.application.service;
 
+import com.google.firebase.messaging.AndroidConfig;
+import com.google.firebase.messaging.AndroidNotification;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
@@ -41,6 +43,13 @@ public class AlertServiceImpl implements AlertService {
                 .build())
             .putData("title", title)
             .putData("body", body)
+            .setAndroidConfig(AndroidConfig.builder()
+                .setPriority(AndroidConfig.Priority.HIGH) // 우선 순위를 HIGH로 설정
+                .setNotification(AndroidNotification.builder()
+                    .setSound("default") // 기본 알림 소리 설정
+                    .setClickAction("OPEN_ACTIVITY") // 알림 클릭 시 액션 (옵션)
+                    .build())
+                .build())
             .build();
         try {
             String response = FirebaseMessaging.getInstance().send(message);
