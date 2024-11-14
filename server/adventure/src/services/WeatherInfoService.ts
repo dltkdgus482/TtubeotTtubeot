@@ -153,6 +153,11 @@ class WeatherService {
       const sunStatus = this.getSunStatus(time);
       const season = this.getSeason(date);
 
+      console.log(
+        "기상, 날씨 정보 생성 완료: ",
+        `계절: ${season}, ${weatherSummary}, 시간대: ${sunStatus}`
+      );
+
       return `계절: ${season}, ${weatherSummary}, 시간대: ${sunStatus}`;
     } catch (error) {
       console.error("Error fetching weather information:", error);
