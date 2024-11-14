@@ -626,6 +626,22 @@ public class TtubeotServiceImpl implements TtubeotService {
                 "해당 소유 ID에 대한 TtubeotId를 찾을 수 없습니다: " + ttubeotOwnershipId));
     }
 
+    @Override
+    public Integer changeTtubeotInterest(Long ttubeotInterestId, Integer mount) {
+        UserTtuBeotOwnership userTtuBeotOwnership = userTtubeotOwnershipRepository.findById(
+                ttubeotInterestId)
+            .orElseThrow(() -> new RuntimeException(
+                "해당 ttubeotInterestId에 대한 소유 정보를 찾을 수 없습니다: " + ttubeotInterestId));
+        return userTtuBeotOwnership.changeInterest(mount);
+    }
+
+    @Override
+    public UserTtuBeotOwnership getUserTtuBeotOwnership(int userId) {
+        return userTtubeotOwnershipRepository.findByUser_UserIdAndTtubeotStatus(userId, 0)
+            .orElseThrow(
+                () -> new RuntimeException("해당 유저 ID와 상태에 맞는 소유 정보를 찾을 수 없습니다: " + userId));
+    }
+
     // TtubeotDrawResponseDTO 생성 메서드
     private TtubeotDrawResponseDTO createTtubeotDrawResponseDTO(Integer userId,
         Ttubeot selectedTtubeot) {
