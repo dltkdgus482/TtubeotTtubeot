@@ -45,7 +45,7 @@ public class UserService {
     private final FriendRepository friendRepository;
 
     /**
-     * 회원가입 요청 DTO를 User 엔티티로 변환
+     * 회원가입 요청 DTO 를 User 엔티티로 변환
      *
      * @param dto               회원가입 요청 DTO
      * @param passwordSalt      비밀번호 암호화에 사용할 Salt 값
@@ -59,6 +59,7 @@ public class UserService {
             .userPhone(dto.getUserPhone())
             .userPassword(encryptedPassword)
             .userPasswordSalt(passwordSalt)
+            .userCoin(500)
             .userLocationAgreement(dto.getUserLocationAgreement() == 1)
             .userType((byte) dto.getUserType())
             .build();
