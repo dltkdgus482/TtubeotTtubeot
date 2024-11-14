@@ -77,7 +77,7 @@ public interface TtubeotService {
     Integer findTtubeotIdByOwnershipId(Long ttubeotOwnershipId);
 
     // 뚜벗 interest 변화
-    Integer changeTtubeotInterest(Long ttubeotInterestId, Integer mount);
+    UserTtuBeotOwnership changeTtubeotInterest(Long ttubeotInterestId, Integer mount);
 
     UserTtuBeotOwnership getUserTtuBeotOwnership(int userId);
 }

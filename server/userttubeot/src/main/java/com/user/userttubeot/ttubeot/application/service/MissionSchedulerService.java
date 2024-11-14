@@ -80,7 +80,8 @@ public class MissionSchedulerService {
         log.info("모든 사용자에 대한 ttubeot_interest 감소 작업 완료");
     }
 
-    private void processUserInterestDecrease(User user) {
+    @Transactional
+    public void processUserInterestDecrease(User user) {
         Integer userId = user.getUserId();
         log.info("사용자 ID {}에 대한 ttubeot_interest 감소 작업을 시작합니다.", userId);
 
@@ -90,7 +91,10 @@ public class MissionSchedulerService {
         Integer currentInterest = ttubeotService.getTtubeotInterest(userId).getTtubeotInterest();
         log.info("현재 관심도: {} (소유 ID: {})", currentInterest, ownershipId);
 
-        Integer updatedInterest = ttubeotService.changeTtubeotInterest(ownershipId, -1);
+        UserTtuBeotOwnership updatedUserTtuBeotOwnership = ttubeotService.changeTtubeotInterest(
+            ownershipId, -1);
+
+        Integer updatedInterest = updatedUserTtuBeotOwnership.getTtubeotInterest();
         log.info("업데이트된 관심도: {} (소유 ID: {})", updatedInterest, ownershipId);
 
         // 관심도 변화에 따른 알림 전송
@@ -102,7 +106,7 @@ public class MissionSchedulerService {
             log.info("관심도가 0 이하로 떨어져 뚜벗이 도망갔습니다. (사용자 ID: {})", userId);
         }
 
-        userTtubeotOwnershipRepository.save(userTtuBeotOwnership);
+        userTtubeotOwnershipRepository.save(updatedUserTtuBeotOwnership);
         log.info("사용자 ID {}의 ttubeot_interest 감소 작업이 완료되었습니다.", userId);
     }
 

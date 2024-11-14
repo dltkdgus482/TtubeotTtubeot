@@ -625,12 +625,13 @@ public class TtubeotServiceImpl implements TtubeotService {
     }
 
     @Override
-    public Integer changeTtubeotInterest(Long ttubeotInterestId, Integer mount) {
+    public UserTtuBeotOwnership changeTtubeotInterest(Long ttubeotInterestId, Integer mount) {
         UserTtuBeotOwnership userTtuBeotOwnership = userTtubeotOwnershipRepository.findById(
                 ttubeotInterestId)
             .orElseThrow(() -> new RuntimeException(
                 "해당 ttubeotInterestId에 대한 소유 정보를 찾을 수 없습니다: " + ttubeotInterestId));
-        return userTtuBeotOwnership.changeInterest(mount);
+        userTtuBeotOwnership.changeInterest(mount);
+        return userTtuBeotOwnership;
     }
 
     @Override
