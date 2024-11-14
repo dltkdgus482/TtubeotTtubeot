@@ -67,7 +67,7 @@ public class MissionSchedulerService {
     }
 
     // 매 시간마다 흥미 감소
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void decreaseTtubeotInterestHourly() {
         log.info("매시간 정각에 실행되는 작업: ttubeot_interest 감소 작업 시작");
 
