@@ -599,7 +599,7 @@ public class TtubeotServiceImpl implements TtubeotService {
 
         int currentTtubeotStatus;
 
-        if (foodCount >= 3 && socialAndAdventureCount >= 3) {
+        if (foodCount >= 1 && socialAndAdventureCount >= 1) {
             currentTtubeotStatus = 2; // 평온
         } else if (foodCount < socialAndAdventureCount) {
             currentTtubeotStatus = 0; // 배고픔
