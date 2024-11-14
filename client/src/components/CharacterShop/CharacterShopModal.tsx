@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Modal, ScrollView, Image, TouchableOpacity } from 'react-native';
 import styles from './CharacterShopModal.styles';
 import StyledText from '../../styles/StyledText';
-import Icon from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/Ionicons';
 import CharacterShopitemList from './CharacterShopItemList';
 
 const CharacterShopTitleContainer = require('../../assets/images/CharacterShopTitleContainer.png');
@@ -17,8 +17,14 @@ const CharacterShopModal: React.FC<CharacterShopModalProps> = ({
   modalVisible,
   closeShopModal,
 }) => {
-  const [selectedMenu, setSelectedMenu] = useState<string>('뚜벗');
-  const menuList: string[] = ['뚜벗', '밥', '기타'];
+  const [selectedMenu, setSelectedMenu] = useState<string>('랜덤');
+  const menuList: string[] = ['랜덤', '그룹', '확정'];
+
+  useEffect(() => {
+    if (modalVisible) {
+      setSelectedMenu('랜덤');
+    }
+  }, [modalVisible]);
 
   return (
     <Modal
