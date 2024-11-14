@@ -175,6 +175,7 @@ class AdventureService {
         lng: park.location.coordinates[0],
         distance: park.distance,
         remain_count: remainCounts.length,
+        remainCounts: remainCounts,
       });
     }
 
