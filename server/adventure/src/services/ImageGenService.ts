@@ -4,36 +4,34 @@ import AdventureLogModel from "../models/AdventureLogModel";
 import ImageMysqlRepository from "../repositories/AdventureImageMysqlRepository";
 import FTPUpload from "../utils/FTPUpload";
 import dotenv from "dotenv";
+import axios from "axios";
+import UserService from "./UserService";
 
 dotenv.config();
 
 class ImageGenService {
   private roadViewService: RoadViewService;
   private aiService: AIService;
+  private userService: UserService;
   private imageMysqlRepository: ImageMysqlRepository;
   private cdnUrl: string;
-  private defaultImageUrl: string; // 기본 이미지 URL
+  private defaultImageUrl: string;
 
   constructor() {
     this.roadViewService = new RoadViewService();
     this.aiService = new AIService();
+    this.userService = new UserService();
     this.imageMysqlRepository = new ImageMysqlRepository();
     this.cdnUrl = process.env.CDN_URL || "";
-    this.defaultImageUrl = process.env.DEFAULT_IMAGE_URL || ""; // 기본 이미지 URL 설정
+    this.defaultImageUrl = process.env.DEFAULT_IMAGE_URL || "";
   }
 
   public async generateImage(
     adventureLog: AdventureLogModel
   ): Promise<boolean> {
-    // console.log(
-    //   "GenerateImage Log:",
-    //   JSON.stringify(adventureLog.gpsLog, null, 2)
-    // );
-
     const gpsLog = adventureLog.gpsLog;
-    let selectedPoint = gpsLog[0];
+    let selectedPoint = null;
 
-    // 첫 번째 유효한 RoadView 좌표만 찾기
     for (let i = 0; i < gpsLog.length; i++) {
       if (
         await this.roadViewService.checkStreetViewAvailability(
@@ -42,25 +40,52 @@ class ImageGenService {
         )
       ) {
         selectedPoint = gpsLog[i];
-        break; // 첫 번째 유효한 좌표를 찾았으므로 반복문 종료
+        break;
       }
+    }
+
+    // 새로운 메서드를 통해 ttubeot 데이터를 가져옵니다.
+    const userTtubeotOwnershipId = adventureLog.userTtubeotOwnershipId;
+    const ttubeotId = await this.userService.getTtubeotIdByOwnershipId(
+      userTtubeotOwnershipId
+    );
+
+    const { date, time } = adventureLog.calculateMiddleAt();
+
+    // 유효한 좌표가 없는 경우 기본 이미지 사용
+    if (!selectedPoint) {
+      console.log("No valid RoadView point found. Using default image.");
+      const generatedImageUrl = await this.aiService.generateImageBasedOnPrompt(
+        this.defaultImageUrl,
+        1,
+        gpsLog[0].lat,
+        gpsLog[0].lng,
+        date,
+        time
+      );
+      // 기본 이미지 기반으로 생성된 사진이 제대로 업로드, 저장되었는지 여부 반환
+      const res = await this.uploadAndSaveImage(
+        generatedImageUrl,
+        adventureLog.adventureLogId
+      );
+
+      if (!res) {
+        return false;
+      }
+      return true;
     }
 
     console.log("Selected RoadView Point: ", selectedPoint);
 
-    // 이미지 URL 생성
     const imageUrl = this.roadViewService.getStreetViewLink(
       selectedPoint.lat,
       selectedPoint.lng
     );
     console.log("ImageUrl: ", imageUrl);
 
-    const { date, time } = adventureLog.calculateMiddleAt();
-
-    // AI 서비스로 이미지 생성
     const generatedImageUrl = await this.aiService.generateImageBasedOnPrompt(
       imageUrl,
-      1,
+      ttubeotId,
       selectedPoint.lat,
       selectedPoint.lng,
       date,
@@ -68,20 +93,14 @@ class ImageGenService {
     );
     console.log("GeneratedImageUrl: ", generatedImageUrl);
 
-    // FTP에 업로드 및 데이터베이스에 링크 저장
     const res = await this.uploadAndSaveImage(
       generatedImageUrl,
       adventureLog.adventureLogId
     );
 
-    if (!res) {
-      return false;
-    }
-
-    return true;
+    return res;
   }
 
-  // FTP 업로드 및 이미지 URL 저장 함수로 분리
   private async uploadAndSaveImage(
     imageUrl: string,
     adventureLogId: number
@@ -89,7 +108,6 @@ class ImageGenService {
     console.log("uploadAndSaveImage: 시작", { imageUrl, adventureLogId });
 
     try {
-      // 이미지 데이터 가져오기
       const response = await fetch(imageUrl);
       if (!response.ok) {
         console.error("uploadAndSaveImage: 이미지 fetch 오류", {
@@ -102,12 +120,10 @@ class ImageGenService {
       const buffer = await imageBlob.arrayBuffer();
       const imageBuffer = Buffer.from(buffer);
 
-      // FTP 업로드
       const ftpInstance = FTPUpload.getInstance();
       const filename = await ftpInstance.uploadImage(imageBuffer);
       console.log("uploadAndSaveImage: FTP 업로드 성공", { filename });
 
-      // URL 생성 및 DB 저장
       const fileLink = this.cdnUrl + filename;
       await this.imageMysqlRepository.saveImageUrls(adventureLogId, [fileLink]);
       console.log("uploadAndSaveImage: DB 저장 성공", { fileLink });
