@@ -1,7 +1,8 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, Text } from 'react-native';
 import ButtonDefault from '../../components/Button/ButtonDefault';
 import styled from 'styled-components/native';
+import styles from './RankingScreen.styles';
 
 const ButtonContainer = styled.View`
   width: 100%;
@@ -17,22 +18,15 @@ const ButtonContainer = styled.View`
 const RankingScreenButtonContainer = () => {
   return (
     <ButtonContainer>
-      <TouchableOpacity onPress={() => console.log('뚜벗 랭킹 클릭')}>
+      {/* <TouchableOpacity onPress={() => console.log('뚜벗 랭킹 클릭')}>
         <ButtonDefault
           content="뚜벗 랭킹"
           width={120}
           height={60}
           borderRadius={30}
         />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => console.log('사용자 랭킹 클릭')}>
-        <ButtonDefault
-          content="사용자 랭킹"
-          width={120}
-          height={60}
-          borderRadius={30}
-        />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
+      <Text style={styles.rankingText}>랭킹</Text>
     </ButtonContainer>
   );
 };
