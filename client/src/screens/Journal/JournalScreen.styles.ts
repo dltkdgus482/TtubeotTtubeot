@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   journalBottomMargin: {
-    height: 100,
+    height: 550,
   },
 });
 

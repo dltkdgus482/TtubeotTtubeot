@@ -5,7 +5,7 @@ import StyledText from '../../styles/StyledText';
 const CompleteIcon = require('../../assets/icons/CompleteIcon.png');
 
 interface MissionProps {
-  missionActionCount: number; // 현재 진행도
+  missionActionCount: number;
   missionExplanation: string;
   missionName: string;
   missionStatus: string;
@@ -52,7 +52,7 @@ const MissionList = ({ missionList }: MissionListProps) => {
                 </View>
               </View>
               <View style={styles.completeCheckBox}>
-                {item.missionStatus !== 'IN_PROGRESS' && (
+                {item.missionStatus === 'COMPLETED' && (
                   <Image source={CompleteIcon} style={styles.completeCheck} />
                 )}
               </View>

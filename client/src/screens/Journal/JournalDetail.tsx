@@ -22,7 +22,7 @@ type JournalDetailProps = {
 };
 
 const flipIcon = require('../../assets/icons/FlipIcon.png');
-const noPicture = require('../../assets/images/MockTtubeotPicture.png');
+const noPicture = require('../../assets/images/JournalImageNotCreated.png');
 const ttubeot = require('../../assets/images/TtubeotTitle.png');
 const mockTtu = require('../../assets/ttubeot/IntroTtubeotDog.png');
 

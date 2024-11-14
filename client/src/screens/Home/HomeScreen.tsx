@@ -190,56 +190,32 @@ const HomeScreen = () => {
     <SafeAreaView style={styles.container}>
       {/* 배경 이미지 */}
       <Image source={background} style={styles.backgroundImage} />
-      {isFocused && (
-        <View style={styles.ttubeotWebviewContainer}>
-          <WebView
-            ref={webViewRef}
-            originWhitelist={['*']}
-            source={{ uri: 'file:///android_asset/renderModel.html' }}
-            style={styles.ttubeotWebview}
-            allowFileAccess={true}
-            allowFileAccessFromFileURLs={true}
-            allowUniversalAccessFromFileURLs={true}
-            javaScriptEnabled={true} // 자바스크립트 사용 가능하도록 설정
-            onLoadStart={syntheticEvent => {
-              const { nativeEvent } = syntheticEvent;
-              console.log('WebView Start: ', nativeEvent);
-            }}
-            onError={syntheticEvent => {
-              const { nativeEvent } = syntheticEvent;
-              console.error('WebView onError: ', nativeEvent);
-            }}
-            onHttpError={syntheticEvent => {
-              const { nativeEvent } = syntheticEvent;
-              console.error('WebView onHttpError: ', nativeEvent);
-            }}
-            onMessage={event => {
-              const messageData = event.nativeEvent.data;
-              console.log('Message from WebView:', messageData);
-
-              try {
-                const message = JSON.parse(messageData);
-
-                // 콘솔에 모델 클릭 메시지 출력
-                if (message.action === 'modelClicked') {
-                  console.log(message.message);
-                }
-              } catch (error) {
-                console.error('Error parsing message from WebView:', error);
-              }
-            }}
-          />
-          {/* 말풍선 표시 */}
-          {horseBalloonVisible && (
-            <View style={styles.horseBalloonContainer}>
-              <Image source={horseBalloon} style={styles.horseBalloon} />
-              <StyledText bold style={styles.horseBalloonText}>
-                {horseBalloonContent}
-              </StyledText>
-            </View>
-          )}
-        </View>
-      )}
+      <View style={styles.ttubeotWebviewContainer}>
+        <WebView
+          ref={webViewRef}
+          originWhitelist={['*']}
+          source={{ uri: 'file:///android_asset/renderModel.html' }}
+          style={styles.ttubeotWebview}
+          allowFileAccess={true}
+          allowFileAccessFromFileURLs={true}
+          allowUniversalAccessFromFileURLs={true}
+          onLoadStart={syntheticEvent => {
+            const { nativeEvent } = syntheticEvent;
+            console.log('WebView Start: ', nativeEvent);
+          }}
+          onError={syntheticEvent => {
+            const { nativeEvent } = syntheticEvent;
+            console.error('WebView onError: ', nativeEvent);
+          }}
+          onHttpError={syntheticEvent => {
+            const { nativeEvent } = syntheticEvent;
+            console.error('WebView onHttpError: ', nativeEvent);
+          }}
+          onMessage={event => {
+            console.log('Message from WebView:', event.nativeEvent.data);
+          }}
+        />
+      </View>
 
       {/* 버튼 컨테이너 */}
       {!modalVisible && !missionModalVisible && !albumModalVisible && (
