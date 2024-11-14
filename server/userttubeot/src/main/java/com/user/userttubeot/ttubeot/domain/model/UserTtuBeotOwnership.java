@@ -14,7 +14,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -127,4 +126,22 @@ public class UserTtuBeotOwnership {
             .user(user)
             .build();
     }
+
+    // 뚜벗 interest 변화
+    public Integer changeInterest(int interest) {
+        this.ttubeotInterest += interest;
+
+        // ttubeotInterest 가 0 미만이면 0으로 설정
+        if (this.ttubeotInterest < 0) {
+            this.ttubeotInterest = 0;
+        }
+        // ttubeotInterest 가 100을 초과하면 100으로 설정
+        if (this.ttubeotInterest > 100) {
+            this.ttubeotInterest = 100;
+        }
+
+        return this.ttubeotInterest;
+    }
+
+
 }

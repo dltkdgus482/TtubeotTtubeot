@@ -15,6 +15,7 @@ import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInterestResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistToDbDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistToDbDTO;
+import com.user.userttubeot.ttubeot.domain.model.UserTtuBeotOwnership;
 import org.springframework.http.ResponseEntity;
 
 public interface TtubeotService {
@@ -72,5 +73,11 @@ public interface TtubeotService {
     // 보유 뚜벗의 관심도 조회
     UserTtubeotInterestResponseDTO getTtubeotInterest(int userId);
 
+    // ID로 뚜벗 ID 찾기
     Integer findTtubeotIdByOwnershipId(Long ttubeotOwnershipId);
+
+    // 뚜벗 interest 변화
+    Integer changeTtubeotInterest(Long ttubeotInterestId, Integer mount);
+
+    UserTtuBeotOwnership getUserTtuBeotOwnership(int userId);
 }

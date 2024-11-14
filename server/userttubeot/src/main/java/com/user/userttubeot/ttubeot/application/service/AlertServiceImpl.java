@@ -6,7 +6,6 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import com.user.userttubeot.ttubeot.domain.dto.FcmTokenRequestDTO;
-import com.user.userttubeot.ttubeot.domain.dto.backend.UserInfoAdventureRequestDTO;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -35,7 +34,7 @@ public class AlertServiceImpl implements AlertService {
     }
 
     @Override
-    public void sendMissionNotaification(String fcmToken, String title, String body) {
+    public void sendMissionNotification(String fcmToken, String title, String body) {
         Message message = Message.builder()
             .setToken(fcmToken)
             .setNotification(Notification.builder()
@@ -76,7 +75,7 @@ public class AlertServiceImpl implements AlertService {
             user.getUserName());
 
         // 3. 알림 전송
-        sendMissionNotaification(fcmToken, "새로운 모험 사진이 도착했어요!",
+        sendMissionNotification(fcmToken, "새로운 모험 사진이 도착했어요!",
             personalizedBody);
 
     }
