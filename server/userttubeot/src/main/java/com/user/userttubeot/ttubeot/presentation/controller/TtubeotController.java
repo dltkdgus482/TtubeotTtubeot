@@ -10,7 +10,7 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
-import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGetIdRespDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGetIdRespDto;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotIdResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
@@ -209,11 +209,11 @@ public class TtubeotController {
 
         try {
             Integer ttubeotId = ttubeotService.findTtubeotIdByOwnershipId(ttubeotOwnershipId);
-            return ResponseEntity.ok(new UserTtubeotGetIdRespDTO(ttubeotId, "뚜벗 ID 조회 성공"));
+            return ResponseEntity.ok(new UserTtubeotGetIdRespDto(ttubeotId, "뚜벗 ID 조회 성공"));
         } catch (RuntimeException e) {
             // 예외 발생 시 NOT_FOUND 상태와 함께 예외 메시지를 반환
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new UserTtubeotGetIdRespDTO(null, e.getMessage()));
+                .body(new UserTtubeotGetIdRespDto(null, e.getMessage()));
         }
     }
 }
