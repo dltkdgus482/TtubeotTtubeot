@@ -32,7 +32,7 @@ public class MissionSchedulerService {
     private final UserRepository userRepository;
 
     // 매일 일정시간에 모든 유저에게 테스트 알림 전송
-    @Scheduled(cron = "00 35 00 * * *")
+    @Scheduled(cron = "00 07 03 * * *")
     public void sendTestNotification() {
         // 모든 유저 조회
         List<User> users = userRepository.findAll();
@@ -46,7 +46,7 @@ public class MissionSchedulerService {
     }
 
     // 매일 자정에 일일 미션 초기화
-    @Scheduled(cron = "0 32 05 * * *")
+    @Scheduled(cron = "0 30 00 * * *")
     @Transactional
     public void assignDailyMissions() {
         Mission specificMission = missionRepository.findById(3)
