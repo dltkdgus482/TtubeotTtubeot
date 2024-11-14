@@ -11,6 +11,7 @@ import com.user.userttubeot.user.application.UserService;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.repository.UserRepository;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -66,18 +67,18 @@ public class MissionSchedulerService {
         assignMissionsToActiveTtubeots(weeklyMissions, "주간 미션이 새로 할당되었습니다.");
     }
 
-    // 매 시간마다 흥미 감소
     @Scheduled(cron = "0 0 * * * *")
     public void decreaseTtubeotInterestHourly() {
-        log.info("매시간 정각에 실행되는 작업: ttubeot_interest 감소 작업 시작");
+        String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        log.info("매시간 정각에 실행되는 작업: ttubeot_interest 감소 작업 시작. 현재 시간: {}", currentTime);
 
         List<User> allUsers = userRepository.findAll();
-        log.info("총 {}명의 사용자에 대해 흥미 감소 작업을 수행합니다.", allUsers.size());
+        log.info("총 {}명의 사용자에 대해 흥미 감소 작업을 수행합니다. 현재 시간: {}", allUsers.size(), currentTime);
 
         for (User user : allUsers) {
             processUserInterestDecrease(user);
         }
-        log.info("모든 사용자에 대한 ttubeot_interest 감소 작업 완료");
+        log.info("모든 사용자에 대한 ttubeot_interest 감소 작업 완료. 현재 시간: {}", currentTime);
     }
 
     @Transactional
