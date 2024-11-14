@@ -31,7 +31,7 @@ class ImageGenService {
     // );
 
     const gpsLog = adventureLog.gpsLog;
-    let selectedPoint = null;
+    let selectedPoint = gpsLog[0];
 
     // 첫 번째 유효한 RoadView 좌표만 찾기
     for (let i = 0; i < gpsLog.length; i++) {
@@ -46,27 +46,6 @@ class ImageGenService {
       }
     }
 
-    // 유효한 좌표가 없는 경우 기본 이미지 사용
-    if (!selectedPoint) {
-      console.log("No valid RoadView point found. Using default image.");
-      const generatedImageUrl = await this.aiService.generateImageBasedOnPrompt(
-        this.defaultImageUrl,
-        1
-      );
-
-      // 기본 이미지 기반으로 생성된 사진이 제대로 업로드, 저장되었는지 여부 반환
-      const res = await this.uploadAndSaveImage(
-        generatedImageUrl,
-        adventureLog.adventureLogId
-      );
-
-      if (!res) {
-        return false;
-      }
-
-      return true;
-    }
-
     console.log("Selected RoadView Point: ", selectedPoint);
 
     // 이미지 URL 생성
@@ -76,10 +55,16 @@ class ImageGenService {
     );
     console.log("ImageUrl: ", imageUrl);
 
+    const { date, time } = adventureLog.calculateMiddleAt();
+
     // AI 서비스로 이미지 생성
     const generatedImageUrl = await this.aiService.generateImageBasedOnPrompt(
       imageUrl,
-      1
+      1,
+      selectedPoint.lat,
+      selectedPoint.lng,
+      date,
+      time
     );
     console.log("GeneratedImageUrl: ", generatedImageUrl);
 
