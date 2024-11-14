@@ -3,18 +3,21 @@ import dotenv from "dotenv";
 import MonsterApiClient from "monsterapi";
 import OpenAI from "openai";
 import axios from "axios";
+import WeatherService from "./WeatherInfoService";
 
 dotenv.config();
 
 class AIService {
   private client: MonsterApiClient;
   private openai: OpenAI;
+  private weatherService: WeatherService;
 
   constructor() {
     const monsterApiKey = process.env.MONSTER_API_KEY as string;
     const openaiApiKey = process.env.OPEN_AI_API_KEY as string;
     this.client = new MonsterApiClient(monsterApiKey);
     this.openai = new OpenAI({ apiKey: openaiApiKey });
+    this.weatherService = new WeatherService();
   }
 
   animalPerspectives = [
@@ -108,7 +111,7 @@ class AIService {
             content: [
               {
                 type: "text",
-                text: `Please analyze this image in detail, focusing on...`,
+                text: `Please describe the image in detail`,
               },
               { type: "image_url", image_url: { url: imageUrl } },
             ],
@@ -126,20 +129,21 @@ class AIService {
   private async generatePromptText(
     analyzedImage: string,
     perspectiveHeight: string,
-    animalPerspective: string
+    animalPerspective: string,
+    weatherSummary: string
   ): Promise<string> {
     log("generatePromptText: 시작");
     const messageContent = `
-    Create an animated-style image seen from a low, animal perspective at around ${perspectiveHeight}.  
-    This view captures a peaceful outdoor setting, with no other animals visible.  
-    The animal, ${animalPerspective}, is gently following its owner, who is just ahead on a walk,  
-    creating a calm, exploratory atmosphere filled with curiosity.  
-    Incorporate elements from ${analyzedImage} into the scene to enrich the landscape,  
-    while maintaining a soft, adorable look with vibrant colors.  
-    Ensure the image has clear, well-defined details with no blurred lines.  
-    Emphasize a warm, inviting ambiance with charming, lively surroundings.  
-    Avoid any text or signs, focusing only on the landscape and surrounding details  
-    to bring the animated experience vividly to life.  
+    Create an animated-style image seen from a ${perspectiveHeight}, animal perspective at around ${perspectiveHeight}. 
+
+    This view captures a peaceful outdoor setting, with no other animals visible. The animal, ${animalPerspective}, is gently following its owner, who is just ahead on a walk, creating a calm, exploratory atmosphere filled with curiosity.
+
+    Incorporate elements from ${analyzedImage} into the scene to enrich the landscape, while maintaining a soft, adorable look with vibrant colors. Ensure the image has clear, well-defined details with no blurred lines.
+
+    Emphasize a warm, inviting ambiance with charming, lively surroundings, especially appealing to young children or elementary school students. Use bright, fun colors and make the setting look playful and friendly.
+
+    Avoid any text or signs, focusing only on the landscape and surrounding details to bring the animated experience vividly to life.  
+    ${weatherSummary} is the current weather condition, please take it into account.
     `;
 
     try {
@@ -159,7 +163,11 @@ class AIService {
 
   public async generatePromptFromImage(
     imageUrl: string,
-    ttubeotId: number
+    ttubeotId: number,
+    lat: number,
+    lng: number,
+    date: string,
+    time: string
   ): Promise<string> {
     log("generatePromptFromImage: 시작", { imageUrl, ttubeotId });
     const animalPerspective = this.getAnimalPerspective(ttubeotId);
@@ -203,10 +211,17 @@ class AIService {
       : "high";
 
     const analyzedImage = await this.analyzeImage(imageUrl);
+    const weatherSummary = await this.weatherService.requestWeatherInfo(
+      lat,
+      lng,
+      date,
+      time
+    );
     const prompt = await this.generatePromptText(
       analyzedImage,
       perspectiveHeight,
-      animalPerspective
+      animalPerspective,
+      weatherSummary
     );
     log("generatePromptFromImage: 종료");
     return prompt;
@@ -235,10 +250,21 @@ class AIService {
 
   public async generateImageBasedOnPrompt(
     imageUrl: string,
-    ttubeotId: number
+    ttubeotId: number,
+    lat: number,
+    lng: number,
+    date: string,
+    time: string
   ): Promise<string> {
     log("generateImageBasedOnPrompt: 시작", { imageUrl, ttubeotId });
-    const prompt = await this.generatePromptFromImage(imageUrl, ttubeotId);
+    const prompt = await this.generatePromptFromImage(
+      imageUrl,
+      ttubeotId,
+      lat,
+      lng,
+      date,
+      time
+    );
     const generatedImageUrl = await this.generateImageFromPrompt(prompt);
     log("generateImageBasedOnPrompt: 종료", { generatedImageUrl });
     return generatedImageUrl;

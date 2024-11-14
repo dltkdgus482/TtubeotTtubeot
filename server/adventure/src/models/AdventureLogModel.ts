@@ -9,7 +9,7 @@ class AdventureLogModel {
   startAt: Date;
   endAt: Date;
   gpsLogKey: string;
-  gpsLog: { lat: number, lng: number, steps: number, timestamp: number }[];
+  gpsLog: { lat: number; lng: number; steps: number; timestamp: number }[];
   imgUrls: string[];
 
   constructor(data: Partial<AdventureLogModel>) {
@@ -22,13 +22,24 @@ class AdventureLogModel {
     this.adventureSteps = data.adventureSteps ?? 0;
     this.startAt = data.startAt ?? new Date();
     this.endAt = data.endAt ?? new Date();
-    this.gpsLogKey = data.gpsLogKey ?? '';
+    this.gpsLogKey = data.gpsLogKey ?? "";
     this.gpsLog = data.gpsLog ?? [];
     this.imgUrls = data.imgUrls ?? [];
   }
 
   static create(data: Partial<AdventureLogModel>): AdventureLogModel {
     return new AdventureLogModel(data);
+  }
+
+  calculateMiddleAt(): { date: string; time: string } {
+    const middleTimestamp = (this.startAt.getTime() + this.endAt.getTime()) / 2;
+    const middleDate = new Date(middleTimestamp);
+
+    const date = middleDate.toISOString().split("T")[0].replace(/-/g, ""); // YYYYMMDD 형식
+    const [hours, minutes] = middleDate.toTimeString().split(":"); // HHMM 형식
+    const time = `${hours}${minutes}`;
+
+    return { date, time };
   }
 
   toJsonObject(): any {
@@ -44,7 +55,7 @@ class AdventureLogModel {
       end_at: this.endAt,
       gps_log_key: this.gpsLogKey,
       gps_log: this.gpsLog,
-      img_urls: this.imgUrls
+      img_urls: this.imgUrls,
     };
   }
 }
