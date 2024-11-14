@@ -619,12 +619,11 @@ public class TtubeotServiceImpl implements TtubeotService {
     @Override
     public Integer findTtubeotIdByOwnershipId(Long ttubeotOwnershipId) {
         return userTtubeotOwnershipRepository.findById(ttubeotOwnershipId)
-            .map(
-                userTtubeotOwnership -> userTtubeotOwnership.getTtubeot()
-                    .getTtubeotId())  // 값이 존재할 경우 ttubeotId 반환
-            .orElseThrow(() -> new RuntimeException(
-                "해당 소유 ID에 대한 TtubeotId를 찾을 수 없습니다: " + ttubeotOwnershipId));
+            .map(ownership -> ownership.getTtubeot().getTtubeotId())
+            .orElseThrow(() ->
+                new RuntimeException("해당 소유 ID에 대한 TtubeotId를 찾을 수 없습니다: " + ttubeotOwnershipId));
     }
+
 
     // TtubeotDrawResponseDTO 생성 메서드
     private TtubeotDrawResponseDTO createTtubeotDrawResponseDTO(Integer userId,
