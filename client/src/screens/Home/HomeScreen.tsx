@@ -148,37 +148,41 @@ const HomeScreen = () => {
   useFocusEffect(
     useCallback(() => {
       fetchUserTtubeot();
+      fetchInterestInfo();
       sendId(ttubeotId);
     }, [user, ttubeotId]),
   );
 
   // useEffect(() => {
-  //   const fetchTtubeotStatus = async () => {
-  //     const statusData = await getTtubeotStatus(accessToken, setAccessToken);
-  //     if (statusData) {
-  //       setTtubeotStatus(statusData.ttubeotStatus);
-  //       setAffectionPoints(calculateAffectionPoints(statusData.ttubeotStatus)); // 애정지수 계산 함수 사용
+  //   const fetchInterestInfo = async () => {
+  //     if (ttubeotId !== 46) {
+  //       // ttubeotId가 46이 아닐 때만 호출
+  //       const ttubeotInterestInfo = await getTtubeotInterestApi(
+  //         accessToken,
+  //         setAccessToken,
+  //       );
+  //       if (ttubeotInterestInfo) {
+  //         setAffectionPoints(ttubeotInterestInfo.ttubeotInterest);
+  //         setCurrentTtubeotStatus(ttubeotInterestInfo.currentTtubeotStatus);
+  //       }
   //     }
   //   };
-  //   fetchTtubeotStatus();
-  // }, [accessToken, setAccessToken]);
+  //   fetchInterestInfo();
+  // }, [ttubeotId, accessToken, setAccessToken]);
 
-  useEffect(() => {
-    const fetchInterestInfo = async () => {
-      if (ttubeotId !== 46) {
-        // ttubeotId가 46이 아닐 때만 호출
-        const ttubeotInterestInfo = await getTtubeotInterestApi(
-          accessToken,
-          setAccessToken,
-        );
-        if (ttubeotInterestInfo) {
-          setAffectionPoints(ttubeotInterestInfo.ttubeotInterest);
-          setCurrentTtubeotStatus(ttubeotInterestInfo.currentTtubeotStatus);
-        }
+  const fetchInterestInfo = async () => {
+    if (ttubeotId !== 46) {
+      // ttubeotId가 46이 아닐 때만 호출
+      const ttubeotInterestInfo = await getTtubeotInterestApi(
+        accessToken,
+        setAccessToken,
+      );
+      if (ttubeotInterestInfo) {
+        setAffectionPoints(ttubeotInterestInfo.ttubeotInterest);
+        setCurrentTtubeotStatus(ttubeotInterestInfo.currentTtubeotStatus);
       }
-    };
-    fetchInterestInfo();
-  }, [ttubeotId, accessToken, setAccessToken]);
+    }
+  };
 
   const sendId = (id: number) => {
     if (webViewRef.current && id > 0 && id <= 46) {
@@ -215,6 +219,19 @@ const HomeScreen = () => {
             console.log('Message from WebView:', event.nativeEvent.data);
           }}
         />
+        {/* 말풍선 표시 */}
+        {horseBalloonVisible && (
+          <View
+            style={[
+              styles.horseBalloonContainer,
+              // { bottom: modelHeight + 30 },
+            ]}>
+            <Image source={horseBalloon} style={styles.horseBalloon} />
+            <StyledText bold style={styles.horseBalloonText}>
+              {horseBalloonContent}
+            </StyledText>
+          </View>
+        )}
       </View>
 
       {/* 버튼 컨테이너 */}
