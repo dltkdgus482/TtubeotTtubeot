@@ -6,13 +6,13 @@ import com.user.userttubeot.ttubeot.domain.dto.RecentBreakupTtubeotResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogListResponseDTO;
+import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotExperienceResponseDTO;
-import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInterestResponseDTO;
-import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
-import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInterestResponseDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistToDbDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistToDbDTO;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,8 @@ import org.springframework.http.ResponseEntity;
 public interface TtubeotService {
 
     // 뚜벗 로그 추가
-    UserTtubeotExperienceResponseDTO addTtubeotLog(Integer userId, TtubeotLogRequestDTO ttubeotLogRequestDTO);
+    UserTtubeotExperienceResponseDTO addTtubeotLog(Integer userId,
+        TtubeotLogRequestDTO ttubeotLogRequestDTO);
 
     // 유저의 뚜벗 아이디 조회
     Long getTtubeotOwnershipId(int userId); // 상태가 정상(0)인것을 반환합니다.
@@ -62,11 +63,14 @@ public interface TtubeotService {
     UserTtubeotMissionListResponseDTO getUserWeeklyMissionList(int userId);
 
     // 미션 갱신 후 보상 지급
-    MissionRewardResponseDTO requestCoin(int userId, MissionRewardRequestDTO missionRewardRequestDTO);
+    MissionRewardResponseDTO requestCoin(int userId,
+        MissionRewardRequestDTO missionRewardRequestDTO);
 
     // 가장 최근에 헤어진 뚜벗 조회
     RecentBreakupTtubeotResponseDTO getRecentBreakUpTtubeot(int userId);
 
     // 보유 뚜벗의 관심도 조회
     UserTtubeotInterestResponseDTO getTtubeotInterest(int userId);
+
+    Integer findTtubeotIdByOwnershipId(Long ttubeotOwnershipId);
 }
