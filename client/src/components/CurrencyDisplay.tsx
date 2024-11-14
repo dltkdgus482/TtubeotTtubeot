@@ -33,7 +33,7 @@ const CurrencyShadow = styled(View)`
   bottom: 0;
   border-color: #c5c1b6;
   border-width: 4px;
-  width: 80px;
+  width: 94px;
   height: 33px;
   border-radius: 20px;
   opacity: 0.5;
@@ -41,12 +41,12 @@ const CurrencyShadow = styled(View)`
 
 const IconContainer = styled(View)`
   position: absolute;
-  left: -25px;
+  left: -18px;
 `;
 
 const CurrencyContainer = styled(View)`
   border-radius: 20px;
-  width: 80px;
+  width: 94px;
   display: flex;
   justify-content: center;
   align-items: flex-end;
@@ -62,11 +62,11 @@ const CurrencyDisplay = () => {
       <CurrencyBackground />
       <CurrencyContainer>
         <StyledText bold style={{ fontSize: 16 }}>
-          {user.coin}
+          {user.coin.toLocaleString()}
         </StyledText>
       </CurrencyContainer>
       <IconContainer>
-        <Image source={coinIcon} style={{ width: 40, height: 40 }} />
+        <Image source={coinIcon} style={{ width: 34, height: 34 }} />
       </IconContainer>
     </CurrencyDisplayContainer>
   );

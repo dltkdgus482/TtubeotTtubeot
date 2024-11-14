@@ -23,10 +23,16 @@ import FriendsModal from '../../components/Friends/FriendsModal.tsx';
 import BLE from '../../components/BLE/BLEModal.tsx';
 import BLEModal from '../../components/BLE/BLEModal.tsx';
 import StyledTextInput from '../../styles/StyledTextInput.ts';
+import StyledText from '../../styles/StyledText.ts';
 import ButtonFlat from '../../components/Button/ButtonFlat.tsx';
-import { getAlbumInfoApi } from '../../utils/apis/Album/getAlbumInfo.ts';
 import { useUser } from '../../store/user.ts';
-import { getTtubeotDetail } from '../../utils/apis/users/userTtubeot.ts';
+import {
+  getTtubeotDetail,
+  getTtubeotStatus,
+  getTtubeotInterestApi,
+} from '../../utils/apis/users/userTtubeot.ts';
+import { getInfoApi } from '../../utils/apis/users/index.ts';
+import AffectionDisplay from '../../components/AffectionDisplay.tsx';
 
 const background = require('../../assets/images/HomeBackground.jpg');
 const ShopIcon = require('../../assets/icons/ShopIcon.png');
@@ -34,21 +40,32 @@ const MissionIcon = require('../../assets/icons/MissionIcon.png');
 const AlbumIcon = require('../../assets/icons/AlbumIcon.png');
 const FriendIcon = require('../../assets/icons/FriendIcon.png');
 const MapIcon = require('../../assets/icons/MapIcon.png');
+const horseBalloon = require('../../assets/images/horseBalloon.png');
 
 const HomeScreen = () => {
   const isFocused = useIsFocused();
-  const { ttubeotId, setTtubeotId, user, accessToken, setAccessToken } =
-    useUser.getState();
+  const {
+    user,
+    setUser,
+    accessToken,
+    setAccessToken,
+    ttubeotId,
+    setTtubeotId,
+  } = useUser.getState();
   const [modalVisible, setModalVisible] = useState(false);
   const [albumModalVisible, setAlbumModalVisible] = useState(false);
   const [missionModalVisible, setMissionModalVisible] = useState(false);
   const [friendsModalVisible, setFriendsModalVisible] = useState(false);
   const navigation = useNavigation();
   const [BLEModalVisible, setBLEModalVisible] = useState(false);
-  const [characterList, setCharacterList] = useState([]);
+  const [ttubeotStatus, setTtubeotStatus] = useState<number | null>(null);
+  const [affectionPoints, setAffectionPoints] = useState<number>(0);
+  const [currentTtubeotStatus, setCurrentTtubeotStatus] = useState<number>(2); // 기본은 정상 상태로
+  const [horseBalloonVisible, setHorseBalloonVisible] =
+    useState<boolean>(false);
+  const [horseBalloonContent, setHorseBalloonContent] = useState<string>('');
 
   const webViewRef = useRef(null);
-  // const [inputValue, setInputValue] = useState<any>(46);
 
   const openShopModal = () => {
     setModalVisible(true);
@@ -90,6 +107,29 @@ const HomeScreen = () => {
     setBLEModalVisible(false);
   };
 
+  useEffect(() => {
+    if (currentTtubeotStatus === 0) {
+      setHorseBalloonVisible(true);
+      setHorseBalloonContent('🍽'); // 배고픔
+    } else if (currentTtubeotStatus === 1) {
+      setHorseBalloonVisible(true);
+      setHorseBalloonContent('🐾'); // 심심함
+    } else {
+      setHorseBalloonVisible(false); // 평온 상태일 때는 말풍선을 숨김
+    }
+  }, [currentTtubeotStatus]);
+
+  useEffect(() => {
+    const fetchCoinInfo = async () => {
+      const updatedUserInfo = await getInfoApi(accessToken, setAccessToken);
+      if (updatedUserInfo) {
+        setUser({ ...user, coin: updatedUserInfo.userCoin });
+      }
+    };
+
+    fetchCoinInfo();
+  }, [accessToken, setAccessToken, setUser, user]);
+
   const fetchUserTtubeot = async () => {
     const res = await getTtubeotDetail(
       user.userId,
@@ -101,7 +141,7 @@ const HomeScreen = () => {
     } else {
       setTtubeotId(res.ttubeotId);
     }
-    // console.log('내뚜벗 아이디가 뭔교', ttubeotId);
+    console.log('내뚜벗 아이디가 뭔교', ttubeotId);
     sendId(ttubeotId);
   };
 
@@ -112,54 +152,39 @@ const HomeScreen = () => {
     }, [user, ttubeotId]),
   );
 
+  // useEffect(() => {
+  //   const fetchTtubeotStatus = async () => {
+  //     const statusData = await getTtubeotStatus(accessToken, setAccessToken);
+  //     if (statusData) {
+  //       setTtubeotStatus(statusData.ttubeotStatus);
+  //       setAffectionPoints(calculateAffectionPoints(statusData.ttubeotStatus)); // 애정지수 계산 함수 사용
+  //     }
+  //   };
+  //   fetchTtubeotStatus();
+  // }, [accessToken, setAccessToken]);
+
+  useEffect(() => {
+    const fetchInterestInfo = async () => {
+      if (ttubeotId !== 46) {
+        // ttubeotId가 46이 아닐 때만 호출
+        const ttubeotInterestInfo = await getTtubeotInterestApi(
+          accessToken,
+          setAccessToken,
+        );
+        if (ttubeotInterestInfo) {
+          setAffectionPoints(ttubeotInterestInfo.ttubeotInterest);
+          setCurrentTtubeotStatus(ttubeotInterestInfo.currentTtubeotStatus);
+        }
+      }
+    };
+    fetchInterestInfo();
+  }, [ttubeotId, accessToken, setAccessToken]);
+
   const sendId = (id: number) => {
     if (webViewRef.current && id > 0 && id <= 46) {
       webViewRef.current.postMessage(JSON.stringify({ type: 'changeId', id }));
     }
   };
-
-  const fetchAlbumData = async () => {
-    try {
-      // 기본 배열 생성 (45개의 뚜벗)
-      const defaultList = Array.from({ length: 45 }, (_, index) => ({
-        ttubeotName: `뚜벗${index + 1}`,
-        ttubeotScore: 0,
-        breakUp: null,
-        createdAt: '',
-        ttubeotId: index + 1,
-        ttubeotStatus: -1, // 기본값 -1로 설정 (0: 현재 보유 중, 1: 졸업, 2: 중퇴)
-        adventureCount: 0,
-      }));
-
-      const response = await getAlbumInfoApi(accessToken, setAccessToken);
-      if (response) {
-        const updatedList = defaultList.map(character => {
-          const apiCharacter = response.ttubeotGraduationInfoDtoList.find(
-            item => item.ttubeotId === character.ttubeotId,
-          );
-          return apiCharacter
-            ? {
-                ...character,
-                ttubeotName: apiCharacter.ttubeotName,
-                ttubeotScore: apiCharacter.ttubeotScore,
-                breakUp: apiCharacter.breakUp,
-                createdAt: apiCharacter.createdAt,
-                ttubeotStatus: apiCharacter.ttubeotStatus,
-                adventureCount: apiCharacter.adventureCount,
-              }
-            : character;
-        });
-
-        setCharacterList(updatedList); // 업데이트된 리스트 설정
-      }
-    } catch (error) {
-      console.error('앨범 데이터를 가져오는 중 오류가 발생했습니다.', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchAlbumData();
-  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -201,9 +226,6 @@ const HomeScreen = () => {
           <TouchableOpacity onPress={openMissionModal}>
             <Image source={MissionIcon} style={styles.missionIcon} />
           </TouchableOpacity>
-          {/* <TouchableOpacity onPress={openBLEModal}>
-            <Image source={AlbumIcon} style={styles.albumIcon} />
-          </TouchableOpacity> */}
           <TouchableOpacity onPress={openFriendsModal}>
             <Image source={FriendIcon} style={styles.albumIcon} />
           </TouchableOpacity>
@@ -222,6 +244,12 @@ const HomeScreen = () => {
         <CurrencyDisplay />
       </View>
 
+      {ttubeotId !== 46 && (
+        <View style={styles.affectionContainer}>
+          <AffectionDisplay affectionPoints={affectionPoints} />
+        </View>
+      )}
+
       {/* 모달 컴포넌트 */}
       <CharacterShopModal
         modalVisible={modalVisible}
@@ -236,7 +264,6 @@ const HomeScreen = () => {
       <AlbumModal
         modalVisible={albumModalVisible}
         closeAlbumModal={closeAlbumModal}
-        characterList={characterList}
       />
 
       <FriendsModal
@@ -244,7 +271,6 @@ const HomeScreen = () => {
         closeFriendsModal={closeFriendsModal}
       />
       <BLEModal modalVisible={BLEModalVisible} closeBLEModal={closeBLEModal} />
-      {/* WebView로 3D 모델 표시 */}
     </SafeAreaView>
   );
 };
