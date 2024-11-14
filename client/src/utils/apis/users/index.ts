@@ -1,7 +1,6 @@
 import { defaultRequest, authRequest } from '../request';
 import { Alert } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
-import { useUser } from '../../../store/user';
 
 // [POST] '/user/login'
 // 로그인
