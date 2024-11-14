@@ -9,6 +9,8 @@ import {
   View,
   PermissionsAndroid,
   Alert,
+  TouchableOpacity,
+  Image,
   ActivityIndicator,
 } from 'react-native';
 import {
@@ -29,12 +31,15 @@ import AdventureManager from '../../utils/apis/adventure/AdventureManager';
 import NfcTagging from '../NFC/NfcTagging';
 import { getUsername } from '../../utils/apis/adventure/getUsername';
 import { useUser } from '../../store/user';
+import AdventureFriendsModal from '../Friends/AdventureFriendsModal';
+import { updateCoin } from '../../utils/apis/users/updateUserInfo';
 
 // ------------------------------
 
 // BLE 관련 모듈 추가
 
 import BLEAdvertiser from 'react-native-ble-advertiser';
+// @ts-ignore
 import { SERVICE_UUID } from '@env';
 
 import { NativeModules, NativeEventEmitter } from 'react-native';
@@ -45,9 +50,13 @@ import BleManager, {
   Peripheral,
   BleScanCallbackType,
 } from 'react-native-ble-manager';
+import { updateLog } from '../../utils/apis/updateLog';
 
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
+const FriendIcon = require('../../assets/icons/FriendIcon.png');
+const nearbyUsersIcon = require('../../assets/icons/nearbyUsersIcon.png');
+const footPrintIcon = require('../../assets/icons/adventureFootPrint.png');
 
 global.Buffer = require('buffer').Buffer;
 
@@ -55,16 +64,20 @@ global.Buffer = require('buffer').Buffer;
 
 interface AdventureMapScreenProps {
   steps: number;
+  setHorseBalloonVisible: (horseBalloonVisible: boolean) => void;
+  setHorseBalloonContent: (horseBalloonContent: string) => void;
 }
 
 interface UserProps {
-  user_id: number;
-  username: string;
-  ttubeot_id: number;
+  userId: number;
   distance: number;
 }
 
-const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
+const AdventureMapScreen = ({
+  steps,
+  setHorseBalloonVisible,
+  setHorseBalloonContent,
+}: AdventureMapScreenProps) => {
   const [location, setLocation] = useState<GeoCoordinates | null>(null);
   const [region, setRegion] = useState<Region | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -79,6 +92,9 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   const [isNfcTagged, setIsNfcTagged] = useState<boolean>(false);
   const [opponentUsername, setOpponentUsername] = useState<string>('');
   const [opponentUserId, setOpponentUserId] = useState<number>(-1);
+  const [friendsModalVisible, setFriendsModalVisible] =
+    useState<boolean>(false);
+  const { accessToken, setAccessToken, ttubeotId } = useUser.getState();
 
   // BLE 모드 관련 상태 추가
   const [devices, setDevices] = useState<Peripheral[]>([]);
@@ -87,6 +103,23 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   // 렌더링과 관련 없는 상태들은 useRef로 관리
   const isScanning = useRef<boolean>(false);
   const isAdvertising = useRef<boolean>(false);
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        func(...args);
+      }, wait);
+    };
+  };
+
+  const debouncedSetDevices = useCallback(
+    debounce(newDevices => {
+      setDevices(newDevices);
+    }, 500),
+    [],
+  );
 
   // BLE 관련 권한 요청
   useEffect(() => {
@@ -109,13 +142,15 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   }, []);
 
   // BLE 관련 함수 추가
-  const startScanning = (): void => {
+  const startScanning = async (): void => {
     if (isScanning.current === true) return;
 
+    await stopScanning();
+
     isScanning.current = true;
-    BleManager.scan([], 300, true, {
+    BleManager.scan([], 10000, true, {
       matchMode: BleScanMatchMode.Sticky,
-      scanMode: BleScanMode.LowLatency,
+      scanMode: BleScanMode.LowPower,
       callbackType: BleScanCallbackType.AllMatches,
     })
       .then(() => {
@@ -139,8 +174,10 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     }
   };
 
-  const startAdvertising = (): void => {
+  const startAdvertising = async (): Promise<void> => {
     if (isAdvertising.current === true) return;
+
+    await stopAdvertising();
 
     isAdvertising.current = true;
     const { user } = useUser.getState();
@@ -149,7 +186,11 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
     const messageBytes = stringToByteArray(message);
 
     BLEAdvertiser.setCompanyId(0x004c);
-    BLEAdvertiser.broadcast(SERVICE_UUID, messageBytes, {})
+    BLEAdvertiser.broadcast(SERVICE_UUID, messageBytes, {
+      txPowerLevel: 1,
+      connectable: false,
+      advertiseMode: 2,
+    })
       .then(() => {
         console.log('startAdvertising');
       })
@@ -171,15 +212,11 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   };
 
   const discoverPeripheral = async (peripheral: Peripheral) => {
-    if (peripheral.advertising.isConnectable === false) return;
-
     if (peripheral.advertising.serviceUUIDs?.includes(SERVICE_UUID)) {
-      console.log('주변 사용자 감지', peripheral);
-
-      setDevices(prevDevices => {
+      debouncedSetDevices(prevDevices => {
         const exists = prevDevices.some(device => device.id === peripheral.id);
 
-        if (exists === false) {
+        if (!exists) {
           const updatedDevices = [...prevDevices, peripheral];
           devicesRef.current = updatedDevices;
           return updatedDevices;
@@ -191,22 +228,10 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
 
   useEffect(() => {
     if (devicesRef.current.length === 0) return;
-    console.log('useEffect devices');
 
     const sortedDevices = [...devicesRef.current].sort(
       (a, b) => (b.rssi || -Infinity) - (a.rssi || -Infinity),
     );
-
-    const closestDevice = sortedDevices[0];
-    const manufactureData = closestDevice.advertising.manufacturerData['004c'];
-    const closestUserIdByteArray = byteArrayToString(manufactureData.bytes);
-    const closestUserId = asciiToDecimal(closestUserIdByteArray);
-    setOpponentUserId(closestUserId);
-
-    getUsername(closestUserId).then(username => {
-      setOpponentUsername(username);
-      setIsNfcTagged(true);
-    });
   }, [devices]);
 
   //------------------------------
@@ -223,15 +248,7 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       socketRef.current = AdventureManager.getInstance();
 
       socketRef.current.addAdventureUserListener(data => {
-        console.log('addAdventureUserListener', data);
-
-        // 근처 사용자 목록 수신 시 상태 업데이트
-        setNearbyUsers(prevUsers => {
-          if (JSON.stringify(prevUsers) !== JSON.stringify(data.users)) {
-            return data.users;
-          }
-          return prevUsers;
-        });
+        setNearbyUsers(data.users);
       });
 
       socketRef.current.addAdventureResultListener(data => {
@@ -240,8 +257,12 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
         // 모험 결과 수신 시 모달 띄우기
       });
 
+      socketRef.current.addAdventureParkListener(data => {
+        console.log('addAdventureParkListener:', data.parks);
+      });
+
       socketRef.current.addAdventureRequestListener(data => {
-        console.log('addAdventureRequestListener', data);
+        console.log('친구 요청 수신', data);
         setOpponentUserId(data.user_id);
         setOpponentUsername(data.username);
 
@@ -254,6 +275,18 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
 
         // 친구 요청 응답 수신 시 모달 닫기
         setIsNfcTagged(false);
+      });
+
+      socketRef.current.addAdventureRewardListener(data => {
+        console.log('보상 정보를 수신합니다.', data);
+
+        if (data.reward > 0) {
+          if (data.type === 1) {
+            updateLog(accessToken, setAccessToken, 1);
+          }
+        }
+
+        updateCoin(data.reward);
       });
     }
   }, []);
@@ -270,7 +303,8 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
   useEffect(() => {
     console.log('useEffect nearbyUsers', nearbyUsers.length);
     // 30m 이내 사용자 필터링
-    setVeryNearbyUsers(nearbyUsers.filter(user => user.distance < 30));
+    const filteredUsers = nearbyUsers.filter(user => user.distance < 30);
+    setVeryNearbyUsers(filteredUsers);
 
     // 30m 이내 사용자 있을 경우 스캔, 광고 시작
     if (nearbyUsers.length === 0) {
@@ -283,6 +317,14 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       }
       return;
     }
+
+    setHorseBalloonVisible(true);
+    setHorseBalloonContent('친구 발견!');
+
+    setTimeout(() => {
+      setHorseBalloonVisible(false);
+      setHorseBalloonContent('');
+    }, 4000);
 
     if (isScanning.current === false) {
       startScanning();
@@ -383,8 +425,41 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
       return;
     }
 
-    socketRef.current.sendFriendRequest(opponnentUserId);
+    socketRef.current.sendFriendRequestAccept(opponnentUserId);
   };
+
+  const requestFriend = (opponentUserId: number) => {
+    if (!socketRef.current) {
+      return;
+    }
+
+    socketRef.current.sendFriendRequest(opponentUserId);
+  };
+
+  const markers = useMemo(() => {
+    return (
+      <View>
+        {location && (
+          <Marker
+            coordinate={{
+              latitude: location.latitude,
+              longitude: location.longitude,
+            }}
+            title="현재위치"
+            icon={require('../../assets/ttubeot/mockTtu.png')}
+            tracksViewChanges={false}
+          />
+        )}
+      </View>
+    );
+  }, [location]);
+
+  const debouncedHandleRegionChange = useCallback(
+    debounce(updatedRegion => {
+      setRegion(updatedRegion);
+    }, 2000),
+    [setRegion],
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -409,38 +484,43 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
                 />
               }>
               {region ? (
-                <>
-                  <StyledText bold style={styles.nearbyUserList}>
-                    근처 사용자 수:{' '}
-                    {nearbyUsers && nearbyUsers.length ? nearbyUsers.length : 0}{' '}
-                    명
-                    {/* 팔콘으로부터의 거리:{' '}
-                    {nearbyUsers && nearbyUsers.length
-                      ? nearbyUsers[0].distance.toFixed(2)
-                      : 0}
-                    {'m'} */}
-                  </StyledText>
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setFriendsModalVisible(true);
+                    }}
+                    style={styles.nearbyUsersContainer}>
+                    <Image
+                      source={nearbyUsersIcon}
+                      style={styles.nearbyUsersIcon}
+                      resizeMethod="resize"
+                    />
+                    <StyledText bold style={styles.nearbyUsers}>
+                      {nearbyUsers && nearbyUsers.length
+                        ? nearbyUsers.length.toLocaleString()
+                        : 0}
+                    </StyledText>
+                  </TouchableOpacity>
+                  <View style={styles.stepCounterContainer}>
+                    <Image
+                      source={footPrintIcon}
+                      style={styles.stepCounterIcon}
+                    />
+                    <StyledText bold style={styles.stepCounter}>
+                      {currentSteps.current.toLocaleString()}
+                    </StyledText>
+                  </View>
                   <MapView
+                    key={nearbyUsers.length}
                     ref={mapRef}
                     provider={PROVIDER_GOOGLE}
                     region={region}
                     customMapStyle={mapStyle}
                     style={styles.map}
-                    onRegionChangeComplete={updatedRegion => {
-                      setRegion(updatedRegion);
-                    }}>
-                    {location && (
-                      <Marker
-                        coordinate={{
-                          latitude: location.latitude,
-                          longitude: location.longitude,
-                        }}
-                        title="현재위치"
-                        icon={require('../../assets/ttubeot/mockTtu.png')}
-                      />
-                    )}
+                    onRegionChangeComplete={debouncedHandleRegionChange}>
+                    {markers}
                   </MapView>
-                </>
+                </View>
               ) : (
                 <StyledText>현재 위치를 불러올 수 없습니다.</StyledText>
               )}
@@ -459,6 +539,14 @@ const AdventureMapScreen = ({ steps }: AdventureMapScreenProps) => {
           onAccept={onAccept}
         />
       )}
+      <AdventureFriendsModal
+        modalVisible={friendsModalVisible}
+        closeFriendsModal={() => {
+          setFriendsModalVisible(false);
+        }}
+        friends={nearbyUsers}
+        requestFriend={requestFriend}
+      />
     </SafeAreaView>
   );
 };

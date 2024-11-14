@@ -48,7 +48,7 @@ export default StyleSheet.create({
   closeButton: {
     position: 'absolute',
     top: 12,
-    right: 12,
+    right: 15,
   },
   characterGrid: {
     marginTop: 0,

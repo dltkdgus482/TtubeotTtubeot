@@ -19,22 +19,6 @@ class AdventureManager {
 
   public constructor(socket: Socket) {
     this.socket = socket;
-
-    // this.socket.on('adventure_result', data => {
-    //   console.log('모험 일지를 수신했습니다. 모험을 종료합니다. ', data);
-    // });
-
-    // this.socket.on('adventure_park', data => {
-    //   console.log('공원 정보를 수신했습니다', data);
-    // });
-
-    // this.socket.on('adventure_request', data => {
-    //   console.log('친구 요청을 수신했습니다', data);
-    // });
-
-    // this.socket.on('adventure_confirm', data => {
-    //   console.log('친구 요청 응답을 수신했습니다', data);
-    // });
   }
 
   static initialize(socket: Socket) {
@@ -69,7 +53,7 @@ class AdventureManager {
 
   public addAdventureParkListener(callback: (data) => void) {
     this.socket.on('adventure_park', callback);
-    console.log('adventure_park event를 수신합니다.');
+    // console.log('adventure_park event를 수신합니다.');
   }
 
   public addAdventureRequestListener(callback: (data) => void) {
@@ -82,14 +66,27 @@ class AdventureManager {
     console.log('adventure_confirm event를 수신합니다.');
   }
 
+  public addAdventureRewardListener(callback: (data) => void) {
+    this.socket.on('adventure_reward', callback);
+    console.log('adventure_reward event를 수신합니다.');
+  }
+
   // 근처 사용자에게 친구 요청 전송 메서드
   public sendFriendRequest(user_id: number) {
     const data = {
       user_id: user_id,
     };
     this.socket.emit('adventure_request', data);
-    this.socket.emit('adventure_confirm', data);
     console.log('친구 요청을 전송합니다.', data);
+  }
+
+  public sendFriendRequestAccept(user_id: number) {
+    const data = {
+      user_id: user_id,
+      answer: true,
+    };
+    this.socket.emit('adventure_confirm', data);
+    console.log('친구 요청을 수락합니다.', data);
   }
 
   // 위치 정보 전송 메서드
@@ -102,6 +99,13 @@ class AdventureManager {
   public endAdventure() {
     this.socket.emit('adventure_end');
     console.log('adventure_end event 전송');
+  }
+
+  public removeAllListeners() {
+    if (this.socket) {
+      this.socket.removeAllListeners();
+      console.log('모든 소켓 이벤트 리스너를 제거했습니다.');
+    }
   }
 }
 

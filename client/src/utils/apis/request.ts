@@ -23,11 +23,11 @@ export const setupInterceptors = (
   const { clearUser } = useUser.getState();
 
   axiosInstance.interceptors.request.use(async config => {
-    // console.log('--- Request Details ---');
-    // console.log('URL:', config.url);
-    // console.log('Method:', config.method);
-    // console.log('Headers:', config.headers);
-    // console.log('Data:', config.data);
+    console.log('--- Request Details ---');
+    console.log('URL:', config.url);
+    console.log('Method:', config.method);
+    console.log('Headers:', config.headers);
+    console.log('Data:', config.data);
 
     if (accessToken && typeof accessToken === 'string') {
       try {
@@ -71,6 +71,14 @@ export const setupInterceptors = (
     },
     error => {
       console.log('API 요청 오류:', error);
+
+      // if (error.response) {
+      //   console.error('Status:', error.response.status);
+      //   console.error('Headers:', error.response.headers);
+      //   console.error('Data:', error.response.data);
+      // } else {
+      //   console.error('Error Message:', error.message);
+      // }
       return Promise.reject(error);
     },
   );

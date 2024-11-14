@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
   },
   content: {
     position: 'absolute',
-    top: 150,
+    top: 140,
     width: '100%',
     paddingHorizontal: 0,
     display: 'flex',
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   startButtonContainer: {
     alignItems: 'center',
     position: 'absolute',
-    bottom: 100,
+    bottom: 120,
     width: '100%',
     zIndex: 100,
   },
@@ -79,6 +79,21 @@ const styles = StyleSheet.create({
     width: 400,
     height: 500,
     backgroundColor: 'transparent',
+  },
+  horseBalloonContainer: {
+    position: 'absolute',
+    top: 100,
+    left: 80,
+  },
+  horseBalloon: {
+    width: 100,
+    height: 100,
+  },
+  horseBalloonText: {
+    position: 'absolute',
+    top: 28,
+    left: 17,
+    fontSize: 14,
   },
 });
 

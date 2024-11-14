@@ -5,47 +5,60 @@ import StyledText from '../../styles/StyledText';
 const CompleteIcon = require('../../assets/icons/CompleteIcon.png');
 
 interface MissionProps {
-  name: string;
-  source: any;
-  description: string;
-  cur: number;
-  goal: number;
+  missionActionCount: number;
+  missionExplanation: string;
+  missionName: string;
+  missionStatus: string;
+  missionTargetCount: number;
+  missionTheme: number;
+  missionType: number;
 }
 
 interface MissionListProps {
   missionList: MissionProps[];
 }
 
+import { useEffect } from 'react';
+
+const missionImageSource = require('../../assets/images/RandomCharacter.png');
+
 const MissionList = ({ missionList }: MissionListProps) => {
+  useEffect(() => {
+    console.log(missionList);
+  }, [missionList]);
   return (
     <View>
-      {missionList.map((item, index) => {
-        const progress = (item.cur / item.goal) * 100;
-        return (
-          <View style={styles.item} key={index}>
-            <View style={styles.itemImageContainer}>
-              <Image source={item.source} style={styles.itemImage} />
-            </View>
-            <View style={styles.itemInfoContainer}>
-              <StyledText bold style={styles.itemName}>
-                {item.name}
-              </StyledText>
-              <StyledText bold>{item.description}</StyledText>
-              <View style={styles.progressBarContainer}>
-                <View style={[styles.progressBar, { width: `${progress}%` }]} />
-                <StyledText bold style={styles.progressText}>
-                  {item.cur} / {item.goal}
+      {missionList.length > 0 &&
+        missionList.map((item, index) => {
+          const progress =
+            (item.missionActionCount / item.missionTargetCount) * 100;
+          return (
+            <View style={styles.item} key={index}>
+              <View style={styles.itemImageContainer}>
+                <Image source={missionImageSource} style={styles.itemImage} />
+              </View>
+              <View style={styles.itemInfoContainer}>
+                <StyledText bold style={styles.itemName}>
+                  {item.missionName}
                 </StyledText>
+                <StyledText bold>{item.missionExplanation}</StyledText>
+                <View style={styles.progressBarContainer}>
+                  <View
+                    style={[styles.progressBar, { width: `${progress}%` }]}
+                  />
+                  <StyledText bold style={styles.progressText}>
+                    {item.missionActionCount} / {item.missionTargetCount}
+                  </StyledText>
+                </View>
+              </View>
+              <View style={styles.completeCheckBox}>
+                {item.missionStatus === 'COMPLETED' && (
+                  <Image source={CompleteIcon} style={styles.completeCheck} />
+                )}
               </View>
             </View>
-            <View style={styles.completeCheckBox}>
-              {item.cur === item.goal && (
-                <Image source={CompleteIcon} style={styles.completeCheck} />
-              )}
-            </View>
-          </View>
-        );
-      })}
+          );
+        })}
     </View>
   );
 };

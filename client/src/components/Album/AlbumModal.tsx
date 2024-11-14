@@ -14,19 +14,12 @@ import { profileColor, profileBlack } from '../ProfileImageUrl';
 import MaskedView from '@react-native-masked-view/masked-view';
 import WebView from 'react-native-webview';
 import { formatLocalDateTime } from '../../utils/libs/formatDate';
+import { useUser } from '../../store/user';
+import { getAlbumInfoApi } from '../../utils/apis/Album/getAlbumInfo';
 
 interface AlbumModalProps {
   modalVisible: boolean;
   closeAlbumModal: () => void;
-  characterList: Array<{
-    ttubeotName: string;
-    ttubeotScore: number;
-    breakUp: string | null; // 졸업일
-    createdAt: string; // 만난 날짜
-    ttubeotId: number;
-    ttubeotStatus: number; // (0: 현재 보유 중, 1: 졸업, 2: 중퇴)
-    adventureCount: number; // 함께한 모험 횟수
-  }>;
 }
 
 const TitleContainer = require('../../assets/images/CharacterShopTitleContainer.png');
@@ -37,9 +30,9 @@ const FootprintIcon = require('../../assets/icons/StepFootprintIcon.png');
 const AlbumModal: React.FC<AlbumModalProps> = ({
   modalVisible,
   closeAlbumModal,
-  characterList,
 }) => {
-  // console.log('캐릭터!!!!!!!리스트:', characterList);
+  const { accessToken, setAccessToken } = useUser.getState();
+  const [characterList, setCharacterList] = useState([]);
   const [selectedCharacter, setSelectedCharacter] = useState<number | null>(
     null,
   );
@@ -75,6 +68,52 @@ const AlbumModal: React.FC<AlbumModalProps> = ({
     </TouchableOpacity>
   );
 
+  useEffect(() => {
+    const fetchAlbumData = async () => {
+      if (modalVisible) {
+        const defaultList = Array.from({ length: 45 }, (_, index) => ({
+          ttubeotName: `뚜벗${index + 1}`,
+          ttubeotScore: 0,
+          breakUp: null,
+          createdAt: '',
+          ttubeotId: index + 1,
+          ttubeotStatus: -1,
+          adventureCount: 0,
+        }));
+
+        const response = await getAlbumInfoApi(accessToken, setAccessToken);
+        if (response) {
+          const updatedList = defaultList.map(character => {
+            const apiCharacter = response.ttubeotGraduationInfoDtoList.find(
+              item => item.ttubeotId === character.ttubeotId,
+            );
+            return apiCharacter
+              ? {
+                  ...character,
+                  ttubeotName: apiCharacter.ttubeotName,
+                  ttubeotScore: apiCharacter.ttubeotScore,
+                  breakUp: apiCharacter.breakUp,
+                  createdAt: apiCharacter.createdAt,
+                  ttubeotStatus: apiCharacter.ttubeotStatus,
+                  adventureCount: apiCharacter.adventureCount,
+                }
+              : character;
+          });
+          setCharacterList(updatedList);
+          setLoadedCount(updatedList.length); // 데이터 로드 후 loadedCount 설정
+        }
+      }
+    };
+
+    fetchAlbumData();
+  }, [modalVisible, accessToken, setAccessToken]);
+
+  const loadMoreCharacters = () => {
+    if (loadedCount < characterList.length) {
+      setLoadedCount(prev => prev + 3);
+    }
+  };
+
   const handleCharacterSelect = (ttubeotId: number) => {
     setSelectedCharacter(ttubeotId);
   };
@@ -104,12 +143,6 @@ const AlbumModal: React.FC<AlbumModalProps> = ({
     inputRange: [0, 1],
     outputRange: [0, 1],
   });
-
-  const loadMoreCharacters = () => {
-    if (loadedCount < characterList.length) {
-      setLoadedCount(prev => prev + 3);
-    }
-  };
 
   const sendId = (id: number) => {
     setTimeout(() => {

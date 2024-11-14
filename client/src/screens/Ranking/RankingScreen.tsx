@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Image, ScrollView } from 'react-native';
 import styles from './RankingScreen.styles';
 import StyledText from '../../styles/StyledText';
 import RankingScreenButtonContainer from './RankingScreenButtonContainer';
@@ -23,12 +23,9 @@ interface RankingProps {
 
 const RankingScreen = () => {
   const [selected, setSelected] = useState('뚜벗 랭킹');
-  const [rankingList, setRankingList] =
-    useState<RankingProps[]>(dummyRankingList);
+  const [rankingList, setRankingList] = useState<RankingProps[]>([]);
 
   useEffect(() => {
-    setRankingList(dummyRankingList);
-
     const fetchRankingInfo = async () => {
       const res = await getRankingInfo();
       setRankingList(res);

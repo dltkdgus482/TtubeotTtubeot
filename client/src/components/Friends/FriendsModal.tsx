@@ -14,18 +14,18 @@ interface FriendsModalProps {
 }
 
 interface TtubeotProps {
-  ttubeot_type: number;
-  ttubeot_image: any;
-  create_at: string;
-  ttubeot_score: number;
-  ttubeot_name: string;
+  ttubeotType: number;
+  ttubeotImage: any;
+  createAt: string;
+  ttubeotScore: number;
+  ttubeotName: string;
 }
 
 interface FriendProps {
-  user_id: number;
+  userId: number;
   username: string;
-  user_walk: number | null;
-  user_ttubeot: TtubeotProps | null;
+  userWalk: number | null;
+  userTtubeot: TtubeotProps | null;
 }
 
 const Backgound = require('../../assets/images/CharacterShopBackground.png');
@@ -49,6 +49,7 @@ const FriendsModal: React.FC<FriendsModalProps> = ({
     const fetchFriends = async (): Promise<void> => {
       const res = await getFriendList(accessToken, setAccessToken);
       setFriends(res);
+      console.log(res);
     };
 
     fetchFriends();
@@ -96,11 +97,12 @@ const FriendsModal: React.FC<FriendsModalProps> = ({
                           style={styles.footPrintIcon}
                         />
                       </View>
-                      <StyledText style={styles.footPrintText}>
+                      <StyledText bold style={styles.footPrintText}>
                         오늘 총{' '}
-                        {friend.user_walk !== null
-                          ? friend.user_walk.toLocaleString()
-                          : 0}
+                        {(friend.userWalk !== null
+                          ? friend.userWalk
+                          : 0
+                        ).toLocaleString()}{' '}
                         걸음
                       </StyledText>
                     </View>
@@ -110,14 +112,14 @@ const FriendsModal: React.FC<FriendsModalProps> = ({
                     onPress={async () => {
                       const res = await removeFriend(
                         user.userId,
-                        friend.user_id,
+                        friend.userId,
                         accessToken,
                         setAccessToken,
                       );
 
                       if (res === true) {
                         setFriends(prevFriends =>
-                          prevFriends.filter(f => f.user_id !== friend.user_id),
+                          prevFriends.filter(f => f.userId !== friend.userId),
                         );
                       }
                     }}>

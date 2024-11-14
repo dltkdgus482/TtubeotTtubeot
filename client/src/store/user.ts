@@ -19,7 +19,7 @@ interface UserState {
   isLoggedIn: boolean;
   accessToken: string | null;
   ttubeotId: number;
-  setUser: (user: User) => void;
+  setUser: (updatedProperties: Partial<User>) => void;
   setIsLoggedIn: (status: boolean) => void;
   setAccessToken: (token: string | null) => void;
   setTtubeotId: (ttubeotId: number) => void;

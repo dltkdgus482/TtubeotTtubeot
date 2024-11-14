@@ -55,11 +55,11 @@ const LastSignUpScreen: React.FC<LastSignUpScreenProps> = ({ onBack }) => {
     }
 
     const formData = {
-      user_name: userNameInput,
-      user_phone: user.phoneNumber,
-      user_password: password,
-      user_location_agreement: user.userLocationAgreement,
-      user_type: user.userType,
+      userName: userNameInput,
+      userPhone: user.phoneNumber,
+      userPassword: password,
+      userLocationAgreement: user.userLocationAgreement,
+      userType: user.userType,
     };
     try {
       const response = await signUpApi(formData);

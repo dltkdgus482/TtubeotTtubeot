@@ -20,7 +20,8 @@ export default StyleSheet.create({
   buttonContainer: {
     position: 'absolute',
     right: 20,
-    top: 100,
+    // top: 100,
+    top: 150,
     justifyContent: 'center',
     alignContent: 'space-between',
     gap: 10,
@@ -47,6 +48,11 @@ export default StyleSheet.create({
     top: 55,
     right: 10,
   },
+  affectionContainer: {
+    position: 'absolute',
+    top: 90,
+    right: 10,
+  },
   ttubeotWebviewContainer: {
     position: 'absolute',
     bottom: -70,
@@ -55,6 +61,7 @@ export default StyleSheet.create({
   ttubeotWebview: {
     width: 400,
     height: 500,
+    // backgroundColor: 'white',
     backgroundColor: 'transparent',
   },
   ttubeotEggContainer: {
@@ -72,5 +79,24 @@ export default StyleSheet.create({
     position: 'absolute',
     bottom: 150,
     width: '100%',
+  },
+  horseBalloonContainer: {
+    position: 'absolute',
+    bottom: 390, // 캐릭터 위쪽에 말풍선 위치를 맞추기 위한 값
+    left: 55,
+    alignSelf: 'center',
+    alignItems: 'center',
+  },
+  horseBalloon: {
+    width: 100,
+    height: 100,
+    resizeMode: 'contain',
+  },
+  horseBalloonText: {
+    position: 'absolute',
+    top: 24,
+    left: 32,
+    fontSize: 24,
+    color: 'black',
   },
 });
