@@ -36,7 +36,6 @@ import com.user.userttubeot.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -615,6 +614,16 @@ public class TtubeotServiceImpl implements TtubeotService {
         // 6. responseDTO에 담아서 반환합니다.
         return new UserTtubeotInterestResponseDTO(userTtubeotInterest, currentTtubeotStatus,
             lastActionType, lastActionTime);
+    }
+
+    @Override
+    public Integer findTtubeotIdByOwnershipId(Long ttubeotOwnershipId) {
+        return userTtubeotOwnershipRepository.findById(ttubeotOwnershipId)
+            .map(
+                userTtubeotOwnership -> userTtubeotOwnership.getTtubeot()
+                    .getTtubeotId())  // 값이 존재할 경우 ttubeotId 반환
+            .orElseThrow(() -> new RuntimeException(
+                "해당 소유 ID에 대한 TtubeotId를 찾을 수 없습니다: " + ttubeotOwnershipId));
     }
 
     // TtubeotDrawResponseDTO 생성 메서드

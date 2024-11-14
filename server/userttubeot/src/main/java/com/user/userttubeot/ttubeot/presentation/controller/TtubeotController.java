@@ -10,6 +10,7 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGetIdRespDto;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotIdResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
@@ -201,4 +202,21 @@ public class TtubeotController {
                 .body("서버 오류가 발생했습니다. 관리자에게 문의하십시오.");
         }
     }
+
+    @GetMapping("/ttubeot/find-ttubeot/{ttubeotOwnershipId}")
+    public ResponseEntity<UserTtubeotGetIdRespDto> getTtubeotIdByOwnershipId(
+        @PathVariable("ttubeotOwnershipId") Long ttubeotOwnershipId) {
+
+        try {
+            Integer ttubeotId = ttubeotService.findTtubeotIdByOwnershipId(ttubeotOwnershipId);
+            return ResponseEntity.ok(
+                new UserTtubeotGetIdRespDto("TtubeotId가 성공적으로 조회되었습니다", ttubeotId));
+        } catch (RuntimeException e) {
+            // 예외 발생 시 NOT_FOUND 상태와 함께 예외 메시지를 응답으로 반환
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new UserTtubeotGetIdRespDto(e.getMessage(), -1));
+        }
+    }
+
+
 }
