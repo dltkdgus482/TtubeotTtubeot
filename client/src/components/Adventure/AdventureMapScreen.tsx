@@ -95,6 +95,7 @@ const AdventureMapScreen = ({
   const [friendsModalVisible, setFriendsModalVisible] =
     useState<boolean>(false);
   const { accessToken, setAccessToken, ttubeotId } = useUser.getState();
+  // const { hasTreasure}
 
   // BLE 모드 관련 상태 추가
   const [devices, setDevices] = useState<Peripheral[]>([]);

@@ -108,7 +108,7 @@ export const authRequest = (accessToken, setAccessToken) => {
   const { clearUser } = useUser.getState();
 
   // accessToken 유효성 검사
-  console.log('access token: ' + accessToken);
+  // console.log('access token: ' + accessToken);
   if (!accessToken || typeof accessToken !== 'string') {
     console.warn('유효하지 않은 accessToken입니다.');
     clearUser();
