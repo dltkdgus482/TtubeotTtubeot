@@ -112,6 +112,9 @@ const LastSignUpScreen: React.FC<LastSignUpScreenProps> = ({ onBack }) => {
             </StyledText>
           </TouchableOpacity>
         </View>
+        <StyledText style={styles.nicknameHint}>
+          한글 또는 영어로 이루어진 2 ~ 8자 조합으로 입력해 주세요.
+        </StyledText>
         <StyledTextInput
           style={styles.input}
           placeholder="비밀번호를 입력해주세요"
