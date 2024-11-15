@@ -33,6 +33,7 @@ import { getUsername } from '../../utils/apis/adventure/getUsername';
 import { useUser } from '../../store/user';
 import AdventureFriendsModal from '../Friends/AdventureFriendsModal';
 import { updateCoin } from '../../utils/apis/users/updateUserInfo';
+import FriendRequestModal from '../Friends/FriendRequestModal';
 
 // ------------------------------
 
@@ -64,6 +65,7 @@ global.Buffer = require('buffer').Buffer;
 
 interface AdventureMapScreenProps {
   steps: number;
+  horseBalloonVisible: boolean;
   setHorseBalloonVisible: (horseBalloonVisible: boolean) => void;
   setHorseBalloonContent: (horseBalloonContent: string) => void;
 }
@@ -75,6 +77,7 @@ interface UserProps {
 
 const AdventureMapScreen = ({
   steps,
+  horseBalloonVisible,
   setHorseBalloonVisible,
   setHorseBalloonContent,
 }: AdventureMapScreenProps) => {
@@ -94,8 +97,14 @@ const AdventureMapScreen = ({
   const [opponentUserId, setOpponentUserId] = useState<number>(-1);
   const [friendsModalVisible, setFriendsModalVisible] =
     useState<boolean>(false);
+  const [isFriendRequestSent, setIsFriendRequestSent] =
+    useState<boolean>(false);
+  const [isFriendRequestReceived, setIsFriendRequestReceived] =
+    useState<boolean>(false);
   const { accessToken, setAccessToken, ttubeotId } = useUser.getState();
   // const { hasTreasure}
+  const [isFriendRequestConfirmSent, setIsFriendRequestConfirmSent] =
+    useState<boolean>(false);
 
   // BLE 모드 관련 상태 추가
   const [devices, setDevices] = useState<Peripheral[]>([]);
@@ -259,7 +268,7 @@ const AdventureMapScreen = ({
       });
 
       socketRef.current.addAdventureParkListener(data => {
-        console.log('addAdventureParkListener:', data.parks);
+        // console.log('addAdventureParkListener:', data.parks);
       });
 
       socketRef.current.addAdventureRequestListener(data => {
@@ -281,9 +290,27 @@ const AdventureMapScreen = ({
       socketRef.current.addAdventureRewardListener(data => {
         console.log('보상 정보를 수신합니다.', data);
 
-        if (data.reward > 0) {
-          if (data.type === 1) {
+        if (data.type === 1) {
+          if (data.reward > 0) {
             updateLog(accessToken, setAccessToken, 1);
+
+            setHorseBalloonVisible(false);
+            setHorseBalloonContent('코인 보상!');
+            setHorseBalloonVisible(true);
+
+            setTimeout(() => {
+              setHorseBalloonVisible(false);
+              setHorseBalloonContent('');
+            }, 3000);
+          } else if (data.reward === 0) {
+            setHorseBalloonVisible(false);
+            setHorseBalloonContent('까비');
+            setHorseBalloonVisible(true);
+
+            setTimeout(() => {
+              setHorseBalloonVisible(false);
+              setHorseBalloonContent('');
+            }, 3000);
           }
         }
 
@@ -291,15 +318,6 @@ const AdventureMapScreen = ({
       });
     }
   }, []);
-
-  const fetchUsername = async (userId: number) => {
-    try {
-      const res = await getUsername(userId);
-      setOpponentUsername(res);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   useEffect(() => {
     console.log('useEffect nearbyUsers', nearbyUsers.length);
@@ -319,13 +337,15 @@ const AdventureMapScreen = ({
       return;
     }
 
-    setHorseBalloonVisible(true);
-    setHorseBalloonContent('친구 발견!');
+    if (!horseBalloonVisible) {
+      setHorseBalloonVisible(true);
+      setHorseBalloonContent('친구 발견!');
 
-    setTimeout(() => {
-      setHorseBalloonVisible(false);
-      setHorseBalloonContent('');
-    }, 4000);
+      setTimeout(() => {
+        setHorseBalloonVisible(false);
+        setHorseBalloonContent('');
+      }, 3000);
+    }
 
     if (isScanning.current === false) {
       startScanning();
@@ -427,6 +447,10 @@ const AdventureMapScreen = ({
     }
 
     socketRef.current.sendFriendRequestAccept(opponnentUserId);
+    setIsFriendRequestConfirmSent(true);
+    setTimeout(() => {
+      setIsFriendRequestConfirmSent(false);
+    }, 3000);
   };
 
   const requestFriend = (opponentUserId: number) => {
@@ -435,6 +459,10 @@ const AdventureMapScreen = ({
     }
 
     socketRef.current.sendFriendRequest(opponentUserId);
+    setIsFriendRequestSent(true);
+    setTimeout(() => {
+      setIsFriendRequestSent(false);
+    }, 3000);
   };
 
   const markers = useMemo(() => {
@@ -529,6 +557,14 @@ const AdventureMapScreen = ({
           )}
         </View>
       </View>
+      <AdventureFriendsModal
+        modalVisible={friendsModalVisible}
+        closeFriendsModal={() => {
+          setFriendsModalVisible(false);
+        }}
+        friends={nearbyUsers}
+        requestFriend={requestFriend}
+      />
       {isNfcTagged && opponentUsername !== '' && (
         <NfcTagging
           visible={isNfcTagged}
@@ -540,14 +576,40 @@ const AdventureMapScreen = ({
           onAccept={onAccept}
         />
       )}
-      <AdventureFriendsModal
-        modalVisible={friendsModalVisible}
-        closeFriendsModal={() => {
-          setFriendsModalVisible(false);
-        }}
-        friends={nearbyUsers}
-        requestFriend={requestFriend}
-      />
+      {isFriendRequestSent && opponentUsername !== '' && (
+        <FriendRequestModal
+          visible={isFriendRequestSent}
+          onClose={() => {
+            setIsFriendRequestSent(false);
+          }}
+          bluetoothId={opponentUsername}
+          content1="님에게 친구 요청을 보냈어요!"
+          content2="응답을 기다리는 중..."
+        />
+      )}
+      {/* 수락 여부를 판별 */}
+      {/* {isFriendRequestReceived && opponentUsername !== '' && (
+        <FriendRequestModal
+          visible={isFriendRequestReceived}
+          onClose={() => {
+            setIsFriendRequestReceived(false);
+          }}
+          bluetoothId={opponentUsername}
+          content1="님에게 친구 요청을 보냈어요!"
+          content2="응답을 기다리는 중..."
+        />
+      )} */}
+      {isFriendRequestConfirmSent && opponentUsername !== '' && (
+        <FriendRequestModal
+          visible={isFriendRequestConfirmSent}
+          onClose={() => {
+            setIsFriendRequestConfirmSent(false);
+          }}
+          bluetoothId={opponentUsername}
+          content1="님으로부터 친구 요청이 왔어요!"
+          content2="친구 요청을 수락하셨습니다!"
+        />
+      )}
     </SafeAreaView>
   );
 };

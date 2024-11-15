@@ -1,6 +1,7 @@
 import { defaultRequest, authRequest } from '../request';
 import { Alert } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
+// import { useUser } from '../../../store/user';
 
 // [POST] '/user/login'
 // 로그인
@@ -81,6 +82,9 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
 // [POST] '/user/logout'
 // 로그아웃
 export const logoutApi = async (userPhone: string) => {
+  // const { setAccessToken, setIsLoggedIn } = useUser.getState();
+  // setAccessToken(null);
+  // setIsLoggedIn(false);
   try {
     const response = await defaultRequest.post('/user/logout', {
       userPhone: userPhone,

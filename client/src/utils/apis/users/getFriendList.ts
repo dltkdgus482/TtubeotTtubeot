@@ -1,4 +1,4 @@
-import { authRequest } from '../request';
+import { authRequest, defaultRequest } from '../request';
 
 interface TtubeotProps {
   ttubeot_type: number;
@@ -42,6 +42,30 @@ export const removeFriend = async (
     return true;
   } catch (error) {
     console.log('removeFriend Error', error);
+    return false;
+  }
+};
+
+export const isFriend = async (
+  userId: number,
+  friendId: number,
+): Promise<boolean> => {
+  try {
+    const res = await defaultRequest(
+      `/user/friend/check-friend/${userId}/${friendId}`,
+    );
+
+    if (res.status === 200) {
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    if (error.response.status === 404) {
+      console.log('친구가 아닙니다.');
+    } else {
+      console.log('isFriend Error', error);
+    }
     return false;
   }
 };

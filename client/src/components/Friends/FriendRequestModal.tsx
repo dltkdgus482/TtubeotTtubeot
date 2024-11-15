@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, View, Modal, TouchableOpacity } from 'react-native';
-import styles from './NfcTagging.styles';
+import styles from './FriendRequestModal.styles';
 import StyledText from '../../styles/StyledText';
 import styled from 'styled-components/native';
 import ButtonFlat from '../Button/ButtonFlat';
@@ -9,8 +9,8 @@ interface NfcTaggingProps {
   visible: boolean;
   onClose: () => void;
   bluetoothId: string;
-  onAccept: (opponentUserId: number) => void;
-  opponentUserId: number;
+  content1: string;
+  content2: string;
 }
 
 const ProfileImageContainer = styled(View)`
@@ -29,12 +29,12 @@ const ProfileImage = styled(Image)`
 
 const profileImageSource = require('../../assets/ttubeot/mockTtu.png');
 
-const NfcTagging: React.FC<NfcTaggingProps> = ({
+const FriendRequestModal: React.FC<NfcTaggingProps> = ({
   visible,
   onClose,
   bluetoothId,
-  onAccept,
-  opponentUserId,
+  content1,
+  content2,
 }) => {
   return (
     <Modal
@@ -50,7 +50,8 @@ const NfcTagging: React.FC<NfcTaggingProps> = ({
               뚜벗 친구 요청
             </StyledText>
             <StyledText bold style={styles.tagSubTitle}>
-              {bluetoothId}님으로부터 친구 요청이 왔어요!
+              {bluetoothId}
+              {content1}
             </StyledText>
           </View>
           <View style={styles.profileContainer}>
@@ -58,28 +59,13 @@ const NfcTagging: React.FC<NfcTaggingProps> = ({
               <ProfileImage source={profileImageSource} />
             </ProfileImageContainer>
             <StyledText bold style={styles.nameStyle}>
-              친구 요청을 수락하시겠어요?
+              {content2}
             </StyledText>
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              onPress={() => {
-                onAccept(opponentUserId);
-                onClose();
-              }}>
-              <ButtonFlat
-                content="수락"
-                color="#3E4A3D"
-                fontColor="#FFFFFF"
-                borderRadius={25}
-                shadowDisplay={false}
-                width={120}
-                height={50}
-              />
-            </TouchableOpacity>
             <TouchableOpacity onPress={onClose}>
               <ButtonFlat
-                content="거절"
+                content="닫기"
                 color="#E9E9E9"
                 borderRadius={25}
                 shadowDisplay={false}
@@ -94,4 +80,4 @@ const NfcTagging: React.FC<NfcTaggingProps> = ({
   );
 };
 
-export default NfcTagging;
+export default FriendRequestModal;

@@ -31,6 +31,9 @@ const theme = {
 };
 
 function App(): React.JSX.Element {
+  // 포그라운드 상태에서 파이어베이스 메세지 수신 시
+  // 푸쉬 알림이 표시되지 않는 대신 아래의 remoteMessage
+  // 변수를 이용할 수 있음
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       console.log(JSON.stringify(remoteMessage));
