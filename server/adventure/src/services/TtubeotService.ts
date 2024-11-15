@@ -10,6 +10,8 @@ class TtubeotService {
     userTtubeotOwnershipId: number
   ): Promise<any> {
     try {
+      console.log("userTtubeotOwnershipId: ", userTtubeotOwnershipId);
+
       const response = await axios.get(
         `http://${this.baseUrl}/user/ttubeot/find-ttubeot/${userTtubeotOwnershipId}`
       );

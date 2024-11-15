@@ -36,14 +36,14 @@ class ReportService {
         await this.adventureImageMysqlRepository.findImageUrlsByAdventureLogId(
           adventureLog.adventure_log_id
         );
-      // let ttubeotInfo = await this.ttubeotService.getTtubeotIdByOwnershipId(
-      //   adventureLog.user_ttubeot_ownership_id
-      // );
+      let ttubeotInfo = await this.ttubeotService.getTtubeotIdByOwnershipId(
+        adventureLog.user_ttubeot_ownership_id
+      );
 
-      // console.log(ttubeotInfo);
+      console.log(ttubeotInfo);
 
-      // adventureLog.ttubeot_id = ttubeotInfo.ttubeot_id;
-      // adventureLog.ttubeot_name = ttubeotInfo.ttubeot_name;
+      adventureLog.ttubeot_id = ttubeotInfo.ttubeot_id;
+      adventureLog.ttubeot_name = ttubeotInfo.ttubeot_name;
     }
     return adventureLogList;
   }
