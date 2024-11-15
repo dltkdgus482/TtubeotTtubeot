@@ -57,7 +57,7 @@ const JournalScreen = () => {
             <>
               <View style={styles.titleContainer}>
                 <StyledText bold color="white" style={styles.title}>
-                  모험일지
+                  모험 발자취
                 </StyledText>
                 <StyledText color="white" style={styles.adventureCount}>
                   총 {journalList.length}번의 모험을 다녀왔어요!
