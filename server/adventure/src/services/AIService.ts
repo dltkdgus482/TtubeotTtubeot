@@ -143,6 +143,9 @@ class AIService {
     Emphasize a warm, inviting ambiance with charming, lively surroundings, especially appealing to young children or elementary school students. Use bright, fun colors and make the setting look playful and friendly.
 
     Avoid any text or signs, focusing only on the landscape and surrounding details to bring the animated experience vividly to life.  
+    
+    Even if a person appears in the image, adults should not be included, and only elementary school-aged children should be present.
+    
     ${weatherSummary} is the current weather condition, please take it into account.
     `;
 
