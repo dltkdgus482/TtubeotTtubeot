@@ -8,20 +8,21 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     opacity: 0.65,
+    resizeMode: 'cover',
   },
   profileContainer: {
     position: 'absolute',
-    top: 40,
+    top: 55,
     left: 15,
   },
   currencyContainer: {
     position: 'absolute',
-    top: 40,
+    top: 55,
     right: 10,
   },
   content: {
     position: 'absolute',
-    top: 140,
+    top: 130,
     width: '100%',
     paddingHorizontal: 0,
     display: 'flex',
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    top: 75,
+    top: 90,
     right: 8,
     display: 'flex',
     flexDirection: 'row',
@@ -49,6 +50,9 @@ const styles = StyleSheet.create({
   cameraIcon: {
     width: 55,
     height: 57,
+  },
+  disabledCamera: {
+    opacity: 0.5,
   },
   cameraContainer: {
     position: 'absolute',
@@ -72,7 +76,7 @@ const styles = StyleSheet.create({
   },
   ttubeotWebviewContainer: {
     position: 'absolute',
-    bottom: -70,
+    bottom: -45,
     alignSelf: 'center',
   },
   ttubeotWebview: {

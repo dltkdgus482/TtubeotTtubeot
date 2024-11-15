@@ -8,6 +8,7 @@ import {
   NativeEventEmitter,
   NativeModules,
   PermissionsAndroid,
+  ActivityIndicator,
 } from 'react-native';
 import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import { useCameraPermission } from 'react-native-vision-camera';
@@ -67,7 +68,10 @@ const AdventureScreen = () => {
 
   const [isTreasureOpen, setIsTreasureOpen] = useState<boolean>(false);
 
-  const hasTreasure = useTreasureStore(state => state.hasTreasure);
+  const { hasTreasure, nearbyTreasure } = useTreasureStore();
+
+  const [isPressedNextButton, setIsPressedNextButton] =
+    useState<boolean>(false);
 
   const webViewRef = useRef(null);
   const [inputValue, setInputValue] = useState('1');
@@ -123,12 +127,10 @@ const AdventureScreen = () => {
   // ------------------------------
 
   useEffect(() => {
-    setIsCameraOpen(false);
-    setTimeout(() => {
-      if (hasTreasure) {
-        setIsTreasureOpen(true);
-      }
-    }, 500);
+    if (hasTreasure) {
+      setIsTreasureOpen(true);
+      setIsCameraOpen(false);
+    }
   }, [hasTreasure]);
 
   useEffect(() => {
@@ -147,37 +149,64 @@ const AdventureScreen = () => {
 
   const openModal = () => {
     setModalVisible(true);
-    connectSocket();
-    startStepCounter();
+    // connectSocket();
+    // startStepCounter();
   };
 
   const closeModal = () => {
     setModalVisible(false);
-    setAdventureStart(!adventureStart);
-
-    // setTimeout(() => {
-    //   Animated.timing(opacityAnim, {
-    //     toValue: adventureStart ? 0.65 : 0.3,
-    //     duration: 500,
-    //     useNativeDriver: true,
-    //   }).start();
-    // }, 100);
+    // disconnectSocket();
+    // stopStepCounter();
   };
 
   const handleStartAdventure = () => {
     if (!adventureStart) {
-      // connectSocket();
       openModal();
+      // connectSocket();
       // startStepCounter();
     } else {
       updateStepMission(accessToken, setAccessToken, steps);
       // 로그 업데이트 로직 추가
       updateLog(accessToken, setAccessToken, 2);
       disconnectSocket();
-      closeModal();
       stopStepCounter();
+      setIsPressedNextButton(false);
+      setAdventureStart(false);
     }
   };
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (isPressedNextButton) {
+      connectSocket();
+      startStepCounter();
+      setTimeout(() => {
+        setAdventureStart(true);
+        setLoading(false);
+      }, 2000);
+    } else {
+      setAdventureStart(false);
+      setLoading(true);
+      // disconnectSocket();
+      // stopStepCounter();
+    }
+  }, [isPressedNextButton]);
+
+  useEffect(() => {
+    console.log('보물 찾음?', nearbyTreasure);
+    const openAR = async () => {
+      if (hasPermission) {
+        setIsARMode(true);
+        setIsCameraOpen(true);
+      } else {
+        await requestPermission();
+      }
+    };
+    if (nearbyTreasure) {
+      openAR();
+    }
+  }, [nearbyTreasure]);
 
   const handlePressArButton = async () => {
     if (hasPermission) {
@@ -207,7 +236,9 @@ const AdventureScreen = () => {
 
   const renderPage = () => {
     if (adventureStart) {
-      return (
+      return loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
         <AdventureMapScreen
           steps={steps}
           horseBalloonVisible={horseBalloonVisible}
@@ -250,10 +281,16 @@ const AdventureScreen = () => {
         <CurrencyDisplay />
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={handlePressArButton}>
+        <TouchableOpacity
+          onPress={handlePressArButton}
+          // disabled={!nearbyTreasure}
+        >
           <Image
             source={CameraIcon}
-            style={styles.cameraIcon}
+            style={[
+              styles.cameraIcon,
+              !nearbyTreasure && styles.disabledCamera,
+            ]}
             resizeMethod="resize"
           />
         </TouchableOpacity>
@@ -277,7 +314,11 @@ const AdventureScreen = () => {
           />
         </TouchableOpacity>
       </View>
-      <GPSAlertModal modalVisible={modalVisible} closeModal={closeModal} />
+      <GPSAlertModal
+        modalVisible={modalVisible}
+        setIsPressedNextButton={setIsPressedNextButton}
+        closeModal={closeModal}
+      />
       <View style={styles.ttubeotWebviewContainer} pointerEvents="none">
         <WebView
           ref={webViewRef}

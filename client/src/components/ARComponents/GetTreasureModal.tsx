@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   StyleSheet,
   View,
@@ -11,6 +11,9 @@ import styles from './GetTreasureModal.styles';
 import StyledText from '../../styles/StyledText';
 import useTreasureStore from '../../store/treasure';
 import ButtonFlat from '../Button/ButtonFlat';
+import { useFocusEffect } from '@react-navigation/native';
+import { getTreasureRequest } from '../../utils/apis/adventure/GetTreasure';
+import { useUser } from '../../store/user';
 
 type GetTreasureModalProps = {
   modalVisible: boolean;
@@ -23,11 +26,12 @@ const GetTreasureModal = ({
   modalVisible,
   closeModal,
 }: GetTreasureModalProps) => {
-  const setHasTreasure = useTreasureStore(state => state.setHasTreasure);
+  const { currentReward, setHasTreasure, setNearbyTreasure } =
+    useTreasureStore();
 
   const getTreasure = () => {
-    // TODO: 보물 획득하는 로직
     setHasTreasure(false);
+    setNearbyTreasure(false);
     setTimeout(() => {
       closeModal();
     }, 500);
@@ -42,7 +46,7 @@ const GetTreasureModal = ({
       <View style={styles.modalView}>
         <View style={styles.treasureContainer}>
           <Image source={coinIcon} />
-          <StyledText>x 5</StyledText>
+          {currentReward !== 0 && <StyledText>x {currentReward}</StyledText>}
         </View>
         <TouchableOpacity onPress={getTreasure}>
           <ButtonFlat content="획득하고 나가기" width={200} height={50} />
