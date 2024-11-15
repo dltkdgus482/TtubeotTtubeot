@@ -2,16 +2,19 @@ import AdventureMongoRepository from "../repositories/AdventureMongoRepository";
 import AdventureMysqlRepository from "../repositories/AdventureMysqlRepository";
 import AdventureImageMysqlRepository from "../repositories/AdventureImageMysqlRepository";
 import AdventureLogModel from "../models/AdventureLogModel";
+import TtubeotService from "../services/TtubeotService";
 
 class ReportService {
   private adventureMongoRepository: AdventureMongoRepository;
   private adventureMysqlRepository: AdventureMysqlRepository;
   private adventureImageMysqlRepository: AdventureImageMysqlRepository;
+  private ttubeotService: TtubeotService;
 
   constructor() {
     this.adventureMongoRepository = new AdventureMongoRepository();
     this.adventureMysqlRepository = new AdventureMysqlRepository();
     this.adventureImageMysqlRepository = new AdventureImageMysqlRepository();
+    this.ttubeotService = new TtubeotService();
   }
 
   async getAdventureLogList(
@@ -25,11 +28,17 @@ class ReportService {
         page,
         size
       );
+
     for (let adventureLog of adventureLogList) {
       adventureLog.image_urls =
         await this.adventureImageMysqlRepository.findImageUrlsByAdventureLogId(
           adventureLog.adventure_log_id
         );
+      let ttubeotInfo = await this.ttubeotService.getTtubeotIdByOwnershipId(
+        adventureLog.userTtubeotOwnershipId
+      );
+      adventureLog.ttubeot_id = ttubeotInfo.ttubeotId;
+      adventureLog.ttubeot_name = ttubeotInfo.ttubeotName;
     }
     return adventureLogList;
   }

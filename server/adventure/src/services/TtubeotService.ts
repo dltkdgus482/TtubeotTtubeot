@@ -18,7 +18,7 @@ class TtubeotService {
       return response.data;
     } catch (error) {
       console.error("Error fetching Ttubeot data:", error);
-      return 1;
+      return null;
     }
   }
 }

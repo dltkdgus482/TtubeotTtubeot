@@ -9,6 +9,8 @@ class AdventureLogModel {
   startAt: Date;
   endAt: Date;
   gpsLogKey: string;
+  ttubeotId: number;
+  ttubeotName: string;
   gpsLog: { lat: number; lng: number; steps: number; timestamp: number }[];
   imgUrls: string[];
 
@@ -20,9 +22,17 @@ class AdventureLogModel {
     this.adventureCalorie = data.adventureCalorie ?? 0;
     this.adventureCoin = data.adventureCoin ?? 0;
     this.adventureSteps = data.adventureSteps ?? 0;
-    this.startAt = data.startAt ?? new Date();
-    this.endAt = data.endAt ?? new Date();
+    this.startAt =
+      data.startAt instanceof Date
+        ? data.startAt
+        : new Date(data.startAt ?? Date.now());
+    this.endAt =
+      data.endAt instanceof Date
+        ? data.endAt
+        : new Date(data.endAt ?? Date.now());
     this.gpsLogKey = data.gpsLogKey ?? "";
+    this.ttubeotId = data.ttubeotId ?? 0;
+    this.ttubeotName = data.ttubeotName ?? "";
     this.gpsLog = data.gpsLog ?? [];
     this.imgUrls = data.imgUrls ?? [];
   }
@@ -32,23 +42,17 @@ class AdventureLogModel {
   }
 
   calculateMiddleAt(): { date: string; time: string } {
-    // 문자열을 Date 객체로 변환
-    const startAt = new Date(this.startAt);
-    const endAt = new Date(this.endAt);
-
-    // Date 변환 확인
-    if (isNaN(startAt.getTime()) || isNaN(endAt.getTime())) {
+    // 날짜 유효성 확인
+    if (isNaN(this.startAt.getTime()) || isNaN(this.endAt.getTime())) {
       throw new Error("Invalid startAt or endAt date format");
     }
 
     // 중간 타임스탬프 계산
-    const middleTimestamp = (startAt.getTime() + endAt.getTime()) / 2;
+    const middleTimestamp = (this.startAt.getTime() + this.endAt.getTime()) / 2;
     const middleDate = new Date(middleTimestamp);
 
-    // YYYYMMDD 형식으로 변환
+    // YYYYMMDD 및 HHMM 형식 변환
     const date = middleDate.toISOString().split("T")[0].replace(/-/g, "");
-
-    // HHMM 형식으로 변환
     const [hours, minutes] = middleDate.toTimeString().split(":");
     const time = `${hours}${minutes}`;
 
@@ -67,6 +71,8 @@ class AdventureLogModel {
       start_at: this.startAt,
       end_at: this.endAt,
       gps_log_key: this.gpsLogKey,
+      ttubeot_id: this.ttubeotId,
+      ttubeot_name: this.ttubeotName,
       gps_log: this.gpsLog,
       img_urls: this.imgUrls,
     };
