@@ -60,6 +60,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
+  distance: {
+    fontSize: 10,
+    color: 'gray',
+  },
 });
 
 export default styles;

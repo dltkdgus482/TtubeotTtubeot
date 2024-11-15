@@ -1,9 +1,14 @@
 import React from 'react';
-import { View, Modal, Image, TouchableWithoutFeedback } from 'react-native';
+import {
+  View,
+  Modal,
+  Image,
+  TouchableWithoutFeedback,
+  ScrollView,
+} from 'react-native';
 import styles from './AdventureFriendsModal.styles';
 import StyledText from '../../styles/StyledText';
 import AdventureFriendsList from './AdventureFriendsList';
-import { distance } from 'three/webgpu';
 
 interface UserProps {
   userId: number;
@@ -37,7 +42,7 @@ const AdventureFriendsModal = ({
                 주변 사용자 목록
               </StyledText>
             </View>
-            <View style={styles.friendsContainer}>
+            <ScrollView style={styles.friendsContainer}>
               {friends.length > 0 ? (
                 friends.map((friend, index) => (
                   <AdventureFriendsList
@@ -50,7 +55,7 @@ const AdventureFriendsModal = ({
               ) : (
                 <StyledText bold>근처에 사용자가 없습니다..</StyledText>
               )}
-            </View>
+            </ScrollView>
           </View>
         </View>
       </TouchableWithoutFeedback>

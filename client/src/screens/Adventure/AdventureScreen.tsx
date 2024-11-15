@@ -210,6 +210,7 @@ const AdventureScreen = () => {
       return (
         <AdventureMapScreen
           steps={steps}
+          horseBalloonVisible={horseBalloonVisible}
           setHorseBalloonVisible={setHorseBalloonVisible}
           setHorseBalloonContent={setHorseBalloonContent}
         />
