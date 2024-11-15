@@ -70,7 +70,7 @@ class ReportService {
       adventureLog.user_ttubeot_ownership_id
     );
 
-    console.log(ttubeotInfo);
+    console.log("뚜벗 정보: ", ttubeotInfo);
 
     adventureLog.ttubeot_id = ttubeotInfo.ttubeotId;
     adventureLog.ttubeot_name = ttubeotInfo.ttubeotName;
