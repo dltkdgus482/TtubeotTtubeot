@@ -238,7 +238,7 @@ class AIService {
         negprompt: "text, watermark, blurred, low resolution",
         steps: 50,
         guidance_scale: 30,
-        style: "enhance",
+        style: "craft-clay",
       });
       const imageUrl = response.output?.[0];
       log("generateImageFromPrompt: 성공", { imageUrl });
