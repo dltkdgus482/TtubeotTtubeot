@@ -163,7 +163,7 @@ export class AdventureController {
             data: {
               user_id: userId,
               username: userInfo.username,
-              ttubeot_id: userInfo.ttubeot_id,
+              ttubeot_id: userInfo.ttubeotId,
             },
           },
         });
