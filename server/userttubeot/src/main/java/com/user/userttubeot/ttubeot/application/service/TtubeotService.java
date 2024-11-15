@@ -74,7 +74,7 @@ public interface TtubeotService {
     UserTtubeotInterestResponseDTO getTtubeotInterest(int userId);
 
     // ID로 뚜벗 ID 찾기
-    UserTtuBeotOwnership findTtubeotIdByOwnershipId(Long ttubeotOwnershipId);
+    Integer findTtubeotIdByOwnershipId(Long ttubeotOwnershipId);
 
     // 뚜벗 interest 변화
     UserTtuBeotOwnership changeTtubeotInterest(Long ttubeotInterestId, Integer mount);
