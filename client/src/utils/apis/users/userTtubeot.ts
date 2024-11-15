@@ -50,10 +50,10 @@ export const getTtubeotDetail = async (
     const res = await authClient.get(
       `/user/ttubeot/adventure/${userId}/details`,
     );
-    console.log('응답!!!!!!!!!!!', res.data);
+    // console.log('응답!!!!!!!!!!!', res.data);
     return res.data;
   } catch (err) {
-    console.log('에러!!!!!!!!!!!!!!!!', err);
+    console.log('뚜벗 상세 정보 불러오기 실패:', err);
     return null;
   }
 };
