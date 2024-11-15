@@ -67,10 +67,17 @@ public class TtubeotServiceImpl implements TtubeotService {
     public UserTtubeotExperienceResponseDTO addTtubeotLog(Integer userId,
         TtubeotLogRequestDTO ttubeotLogRequestDTO) {
 
+        log.info("addTtubeotLog 시작 - userId: {}, LogType: {}", userId, ttubeotLogRequestDTO.getTtubeotLogType());
+
         // 해당 유저의 정상 상태인 뚜벗 찾기
         UserTtuBeotOwnership ownership = userTtubeotOwnershipRepository
             .findByUser_UserIdAndTtubeotStatus(userId, 0)
-            .orElseThrow(() -> new TtubeotNotFoundException("정상 상태인 뚜벗이 존재하지 않습니다."));
+            .orElseThrow(() -> {
+                log.error("정상 상태인 뚜벗을 찾을 수 없음 - userId: {}", userId);
+                return new TtubeotNotFoundException("정상 상태인 뚜벗이 존재하지 않습니다.");
+            });
+
+        log.info("정상 상태의 뚜벗을 찾음 - ownershipId: {}", ownership.getUserTtubeotOwnershipId());
 
         // 로그 저장
         TtubeotLog ttubeotLog = TtubeotLog.builder()
@@ -80,26 +87,34 @@ public class TtubeotServiceImpl implements TtubeotService {
             .build();
         ttubeotLogRepository.save(ttubeotLog);
 
-        // 뚜벗의 경험치에 반영 -> 모험은 + 10, 나머지는 +1 ~ 2
+        log.info("Ttubeot 로그 저장 완료 - LogType: {}, OwnershipId: {}", ttubeotLog.getTtubeotLogType(), ownership.getUserTtubeotOwnershipId());
+
+        // 관심 지수에 반영
         int experienceToAdd = switch (ttubeotLogRequestDTO.getTtubeotLogType()) {
             case 0 -> 1; // 밥먹기
             case 1 -> 2; // 친구 상호작용
             case 2 -> 7; // 모험
             default -> 0;
         };
-        // 5. 100을 초과하면 관심지수를 추가하지 않음
-        if (ownership.getTtubeotScore() + experienceToAdd > 100) {
+
+        log.debug("관심 지수 추가 값 계산 - experienceToAdd: {}", experienceToAdd);
+
+        // 관심지수 제한 체크
+        if (ownership.getTtubeotInterest() + experienceToAdd > 100) {
+            log.info("관심 지수가 100을 초과하여 추가하지 않음 - 현재 관심 지수: {}", ownership.getTtubeotInterest());
             return new UserTtubeotExperienceResponseDTO(ownership.getTtubeotInterest());
         }
 
-        // 6. 관심지수 반영
-        ownership.accumulateScore(experienceToAdd);
+        // 관심지수 반영
+        ownership.changeInterest(experienceToAdd);
         userTtubeotOwnershipRepository.save(ownership);
 
-        // 7. ResponseDTO 생성 및 반환
-        return new UserTtubeotExperienceResponseDTO(ownership.getTtubeotInterest());
-        // TODO: userCoin에도 반영 - 추후 수정
+        log.info("관심 지수 업데이트 완료 - 새로운 관심 지수: {}", ownership.getTtubeotInterest());
 
+        // TODO: userCoin 에도 반영 - 추후 수정
+
+        // ResponseDTO 생성 및 반환
+        return new UserTtubeotExperienceResponseDTO(ownership.getTtubeotInterest());
     }
 
     // 유저의 뚜벗 아이디 조회
