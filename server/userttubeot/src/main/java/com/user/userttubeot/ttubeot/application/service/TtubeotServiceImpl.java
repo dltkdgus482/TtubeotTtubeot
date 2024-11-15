@@ -67,7 +67,8 @@ public class TtubeotServiceImpl implements TtubeotService {
     public UserTtubeotExperienceResponseDTO addTtubeotLog(Integer userId,
         TtubeotLogRequestDTO ttubeotLogRequestDTO) {
 
-        log.info("addTtubeotLog 시작 - userId: {}, LogType: {}", userId, ttubeotLogRequestDTO.getTtubeotLogType());
+        log.info("addTtubeotLog 시작 - userId: {}, LogType: {}", userId,
+            ttubeotLogRequestDTO.getTtubeotLogType());
 
         // 해당 유저의 정상 상태인 뚜벗 찾기
         UserTtuBeotOwnership ownership = userTtubeotOwnershipRepository
@@ -87,7 +88,8 @@ public class TtubeotServiceImpl implements TtubeotService {
             .build();
         ttubeotLogRepository.save(ttubeotLog);
 
-        log.info("Ttubeot 로그 저장 완료 - LogType: {}, OwnershipId: {}", ttubeotLog.getTtubeotLogType(), ownership.getUserTtubeotOwnershipId());
+        log.info("Ttubeot 로그 저장 완료 - LogType: {}, OwnershipId: {}", ttubeotLog.getTtubeotLogType(),
+            ownership.getUserTtubeotOwnershipId());
 
         // 관심 지수에 반영
         int experienceToAdd = switch (ttubeotLogRequestDTO.getTtubeotLogType()) {
@@ -655,6 +657,24 @@ public class TtubeotServiceImpl implements TtubeotService {
             .orElseThrow(
                 () -> new RuntimeException("해당 유저 ID와 상태에 맞는 소유 정보를 찾을 수 없습니다: " + userId));
     }
+
+    @Transactional
+    public boolean deleteUserTtuBeotOwnership(Long userTtuBeotOwnershipId) {
+        try {
+            UserTtuBeotOwnership userTtuBeotOwnership = userTtubeotOwnershipRepository.findById(
+                    userTtuBeotOwnershipId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                    "해당 ID의 소유권이 존재하지 않습니다: " + userTtuBeotOwnershipId));
+
+            userTtubeotOwnershipRepository.delete(userTtuBeotOwnership);
+            return true; // 삭제 성공 시 true 반환
+        } catch (Exception e) {
+            // 예외 발생 시 false 반환
+            System.err.println("삭제 중 오류 발생: " + e.getMessage());
+            return false;
+        }
+    }
+
 
     // TtubeotDrawResponseDTO 생성 메서드
     private TtubeotDrawResponseDTO createTtubeotDrawResponseDTO(Integer userId,

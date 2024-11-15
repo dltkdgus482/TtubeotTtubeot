@@ -80,4 +80,6 @@ public interface TtubeotService {
     UserTtuBeotOwnership changeTtubeotInterest(Long ttubeotInterestId, Integer mount);
 
     UserTtuBeotOwnership getUserTtuBeotOwnership(int userId);
+
+    boolean deleteUserTtuBeotOwnership(Long ttubeotInterestId);
 }

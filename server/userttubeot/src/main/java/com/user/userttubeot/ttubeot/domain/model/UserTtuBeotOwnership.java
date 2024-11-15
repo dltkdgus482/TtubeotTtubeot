@@ -2,6 +2,7 @@ package com.user.userttubeot.ttubeot.domain.model;
 
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.user.domain.entity.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -39,7 +40,7 @@ public class UserTtuBeotOwnership {
     private String ttubeotName;
 
     @Column(name = "ttubeot_status", nullable = false)
-    private Integer ttubeotStatus = 0; // DEAULT
+    private Integer ttubeotStatus = 0; // DEFAULT
 
     @Column(name = "ttubeot_score", nullable = false)
     private Integer ttubeotScore = 0; // default
@@ -64,10 +65,10 @@ public class UserTtuBeotOwnership {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "userTtuBeotOwnership", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "userTtuBeotOwnership", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<TtubeotLog> ttubeotLogs = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userTtuBeotOwnership", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "userTtuBeotOwnership", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<UserTtubeotMission> userTtubeotMissions = new ArrayList<>();
 
 
