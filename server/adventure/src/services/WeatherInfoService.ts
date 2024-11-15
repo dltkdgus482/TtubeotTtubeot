@@ -112,12 +112,20 @@ class WeatherService {
 
   // 낮/밤 상태 결정 함수
   private getSunStatus(time: string): string {
+    console.log("이미지 생성에 사용될 시간: ", time);
+
+    // "HHmm" 형식에서 시간과 분을 추출
+    const hours = parseInt(time.slice(0, 2), 10);
+    const minutes = parseInt(time.slice(2, 4), 10);
+
     // UTC 시간 문자열을 Date 객체로 변환
-    const utcDate = new Date(`1970-01-01T${time}Z`);
+    const utcDate = new Date(Date.UTC(1970, 0, 1, hours, minutes));
 
     // 9시간을 더해 KST로 변환
     const kstHour = (utcDate.getUTCHours() + 9) % 24;
+    console.log(kstHour);
 
+    // KST 기준으로 낮/밤 판별
     return kstHour >= 6 && kstHour < 18 ? "낮" : "밤";
   }
 
