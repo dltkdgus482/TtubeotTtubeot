@@ -37,8 +37,11 @@ class ReportService {
       let ttubeotInfo = await this.ttubeotService.getTtubeotIdByOwnershipId(
         adventureLog.userTtubeotOwnershipId
       );
-      adventureLog.ttubeot_id = ttubeotInfo.ttubeotId;
-      adventureLog.ttubeot_name = ttubeotInfo.ttubeotName;
+
+      console.log(ttubeotInfo);
+
+      adventureLog.ttubeot_id = ttubeotInfo.ttubeot_id;
+      adventureLog.ttubeot_name = ttubeotInfo.ttubeot_name;
     }
     return adventureLogList;
   }
