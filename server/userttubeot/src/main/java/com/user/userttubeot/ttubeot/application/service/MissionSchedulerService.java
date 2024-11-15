@@ -67,9 +67,11 @@ public class MissionSchedulerService {
         assignMissionsToActiveTtubeots(weeklyMissions, "주간 미션이 새로 할당되었습니다.");
     }
 
-    @Scheduled(cron = "0 0 * * * *")
+    // 뚜벗 관심 지수 감소
+    @Scheduled(cron = "0 * * * * *")
     public void decreaseTtubeotInterestHourly() {
-        String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String currentTime = LocalDateTime.now()
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         log.info("매시간 정각에 실행되는 작업: ttubeot_interest 감소 작업 시작. 현재 시간: {}", currentTime);
 
         List<User> allUsers = userRepository.findAll();
@@ -123,7 +125,12 @@ public class MissionSchedulerService {
     }
 
     private void sendNotification(User user, String title, String message) {
-        alertService.sendMissionNotification(user.getFcmToken(), title, message);
+        String fcmToken = user.getFcmToken();
+        if (fcmToken == null || fcmToken.isEmpty()) {
+            log.warn("사용자의 FCM 토큰이 유효하지 않습니다. 알림을 전송할 수 없습니다. (사용자 ID: {})", user.getUserId());
+            return;
+        }
+        alertService.sendMissionNotification(fcmToken, title, message);
         log.info("알림 전송 완료 - 사용자 ID: {}, 제목: {}, 메시지: {}", user.getUserId(), title, message);
     }
 
