@@ -42,7 +42,7 @@ import { isFriend } from '../../utils/apis/users/getFriendList';
 
 import BLEAdvertiser from 'react-native-ble-advertiser';
 // @ts-ignore
-import { SERVICE_UUID } from '@env';
+import { SERVICE_UUID, SECRET_KEY } from '@env';
 
 import { NativeModules, NativeEventEmitter } from 'react-native';
 
@@ -53,6 +53,8 @@ import BleManager, {
   BleScanCallbackType,
 } from 'react-native-ble-manager';
 import { updateLog } from '../../utils/apis/updateLog';
+import { profileColor } from '../ProfileImageUrl';
+import useTreasureStore from '../../store/treasure';
 
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
@@ -135,7 +137,7 @@ const AdventureMapScreen = ({
   // BLE 관련 권한 요청
   useEffect(() => {
     BleManager.start({ showAlert: false }).then(() => {
-      console.log('BleManager is started');
+      // console.log('BleManager is started');
     });
 
     requestPermissions();
@@ -165,10 +167,10 @@ const AdventureMapScreen = ({
       callbackType: BleScanCallbackType.AllMatches,
     })
       .then(() => {
-        console.log('startScanning');
+        // console.log('startScanning');
       })
       .catch(error => {
-        console.log('startScanning error:', error);
+        // console.log('startScanning error:', error);
         isScanning.current = false;
       });
   };
@@ -179,9 +181,9 @@ const AdventureMapScreen = ({
     try {
       await BleManager.stopScan();
       isScanning.current = false;
-      console.log('stopScanning');
+      // console.log('stopScanning');
     } catch (error) {
-      console.log('stopScanning error:', error);
+      // console.log('stopScanning error:', error);
     }
   };
 
@@ -203,10 +205,10 @@ const AdventureMapScreen = ({
       advertiseMode: 2,
     })
       .then(() => {
-        console.log('startAdvertising');
+        // console.log('startAdvertising');
       })
       .catch(error => {
-        console.log('startAdvertising error:', error);
+        // console.log('startAdvertising error:', error);
       });
   };
 
@@ -216,9 +218,9 @@ const AdventureMapScreen = ({
     try {
       await BLEAdvertiser.stopBroadcast();
       isAdvertising.current = false;
-      console.log('stopAdvertising');
+      // console.log('stopAdvertising');
     } catch (error) {
-      console.log('stopAdvertising error:', error);
+      // console.log('stopAdvertising error:', error);
     }
   };
 
@@ -247,9 +249,31 @@ const AdventureMapScreen = ({
 
   //------------------------------
 
+  const [remainCounts, setRemainCounts] = useState<number[]>([]);
+  const [remainCount, setRemainCount] = useState<number>(0);
+  const [nearbyParkDistance, setNearbyParkDistance] = useState<number | null>(
+    null,
+  );
+  const { nearbyTreasure, currentReward, setNearbyTreasure, setCurrentReward } =
+    useTreasureStore();
+
   useEffect(() => {
-    currentSteps.current = steps;
+    // currentSteps.current = steps;
+    currentSteps.current = 1000;
+    if (
+      remainCounts.length > 0 &&
+      currentSteps.current > remainCounts[0] &&
+      nearbyParkDistance < 100
+    ) {
+      setNearbyTreasure(true);
+    }
   }, [steps]);
+
+  // useEffect(() => {
+  //   console.log('걸음수', remainCounts);
+  //   console.log('남은 보물', remainCount);
+  //   console.log('보물걸음', treasureSteps);
+  // }, [remainCount]);
 
   // -----------------------------
 
@@ -263,17 +287,23 @@ const AdventureMapScreen = ({
       });
 
       socketRef.current.addAdventureResultListener(data => {
-        console.log('addAdventureResultListener:', data);
-
+        // console.log('addAdventureResultListener:', data);
         // 모험 결과 수신 시 모달 띄우기
       });
 
       socketRef.current.addAdventureParkListener(data => {
-        // console.log('addAdventureParkListener:', data.parks);
+        // // console.log('addAdventureParkListener:', data.parks);
+        const newData = data.parks[0];
+        console.log('newData:', newData);
+        // if (newData.distance < 250) {
+        setRemainCounts(newData.remainCounts);
+        setRemainCount(newData.remain_count);
+        setNearbyParkDistance(newData.distance);
+        // }
       });
 
       socketRef.current.addAdventureRequestListener(data => {
-        console.log('친구 요청 수신', data);
+        // console.log('친구 요청 수신', data);
         setOpponentUserId(data.user_id);
         setOpponentUsername(data.username);
 
@@ -282,29 +312,41 @@ const AdventureMapScreen = ({
       });
 
       socketRef.current.addAdventureConfirmListener(data => {
-        console.log('친구 요청을 수신합니다', data);
+        // console.log('친구 요청을 수신합니다', data);
 
         // 친구 요청 응답 수신 시 모달 닫기
         setIsNfcTagged(false);
       });
 
       socketRef.current.addAdventureRewardListener(data => {
-        console.log('보상 정보를 수신합니다.', data);
+        // console.log('보상 정보를 수신합니다.', data);
 
         if (data.type === 1) {
           if (data.reward > 0) {
             updateLog(accessToken, setAccessToken, 1);
-          } else if (data.reward === 0) {
+            updateCoin(data.reward);
+          }
+
+          if (data.type === 0) {
+            console.log(data.reward);
+            setCurrentReward(data.reward);
           }
         }
-
-        updateCoin(data.reward);
       });
     }
   }, []);
 
+  const fetchUsername = async (userId: number) => {
+    try {
+      const res = await getUsername(userId);
+      setOpponentUsername(res);
+    } catch (error) {
+      // console.log(error);
+    }
+  };
+
   useEffect(() => {
-    console.log('useEffect nearbyUsers', nearbyUsers.length);
+    // console.log('useEffect nearbyUsers', nearbyUsers.length);
     // 30m 이내 사용자 필터링
     const filteredUsers = nearbyUsers.filter(user => user.distance < 30);
     setVeryNearbyUsers(filteredUsers);
@@ -354,14 +396,14 @@ const AdventureMapScreen = ({
       );
       return granted === PermissionsAndroid.RESULTS.GRANTED;
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       return false;
     }
   };
 
   const getCurrentLocation = useCallback(() => {
     if (!isConnected || !socketRef.current) {
-      console.log('소켓이 연결되지 않아 위치 정보를 전송하지 않습니다.');
+      // console.log('소켓이 연결되지 않아 위치 정보를 전송하지 않습니다.');
       return;
     }
 
@@ -452,16 +494,19 @@ const AdventureMapScreen = ({
   const markers = useMemo(() => {
     return (
       <View>
-        {location && (
-          <Marker
-            coordinate={{
-              latitude: location.latitude,
-              longitude: location.longitude,
-            }}
-            title="현재위치"
-            icon={require('../../assets/ttubeot/mockTtu.png')}
-            tracksViewChanges={false}
-          />
+        {location && ttubeotId !== 0 && (
+          <View>
+            <Marker
+              coordinate={{
+                latitude: location.latitude,
+                longitude: location.longitude,
+              }}>
+              <View style={styles.markerContainer}>
+                <View style={styles.markerBackground} />
+                <Image source={profileColor[ttubeotId]} style={styles.marker} />
+              </View>
+            </Marker>
+          </View>
         )}
       </View>
     );

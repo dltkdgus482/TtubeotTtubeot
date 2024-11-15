@@ -8,16 +8,36 @@ import { useNavigation } from '@react-navigation/native';
 
 type GPSAlertModalProps = {
   modalVisible: boolean;
+  setIsPressedNextButton: React.Dispatch<React.SetStateAction<boolean>>;
   closeModal: () => void;
 };
 
-const GPSAlertModal = ({ modalVisible, closeModal }: GPSAlertModalProps) => {
+const GPSAlertModal = ({
+  modalVisible,
+  setIsPressedNextButton,
+  closeModal,
+}: GPSAlertModalProps) => {
   const navigation = useNavigation();
 
   const handlePressSettingButton = () => {
     // TODO: 모험 중인지 상태관리로 빼야 함
     navigation.navigate('Profile');
   };
+
+  const closeModalWithNextButton = () => {
+    setIsPressedNextButton(true);
+    setTimeout(() => {
+      closeModal();
+    }, 100);
+  };
+
+  const closeModalWithCloseButton = () => {
+    setIsPressedNextButton(false);
+    setTimeout(() => {
+      closeModal();
+    }, 100);
+  };
+
   return (
     <Modal
       animationType="slide"
@@ -43,7 +63,7 @@ const GPSAlertModal = ({ modalVisible, closeModal }: GPSAlertModalProps) => {
             <StyledText style={styles.settingButton}>설정 바로가기</StyledText>
           </Pressable>
           <View style={styles.nextButton}>
-            <Pressable onPress={closeModal}>
+            <Pressable onPress={closeModalWithNextButton}>
               <ButtonFlat
                 content={'다음'}
                 color="#3E4A3D"
@@ -59,7 +79,7 @@ const GPSAlertModal = ({ modalVisible, closeModal }: GPSAlertModalProps) => {
             size={30}
             color="black"
             style={styles.closeButton}
-            onPress={closeModal}
+            onPress={closeModalWithCloseButton}
           />
         </View>
       </View>
