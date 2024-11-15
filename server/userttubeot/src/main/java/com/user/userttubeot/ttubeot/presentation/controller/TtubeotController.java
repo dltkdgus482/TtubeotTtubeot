@@ -19,6 +19,7 @@ import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO
 import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistToDbDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistToDbDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.UserInfoAdventureRequestDTO;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -209,12 +210,16 @@ public class TtubeotController {
         @PathVariable("ttubeotOwnershipId") Long ttubeotOwnershipId) {
 
         try {
-            Integer ttubeotId = ttubeotService.findTtubeotIdByOwnershipId(ttubeotOwnershipId);
-            return ResponseEntity.ok(new UserTtubeotGetIdRespDTO(ttubeotId, "뚜벗 ID 조회 성공"));
+            UserTtubeotGetIdRespDTO ttubeotInfo = ttubeotService.findTtubeotIdByOwnershipId(
+                ttubeotOwnershipId);
+            return ResponseEntity.ok(ttubeotInfo);
         } catch (RuntimeException e) {
             // 예외 발생 시 NOT_FOUND 상태와 함께 예외 메시지를 반환
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new UserTtubeotGetIdRespDTO(null, e.getMessage()));
+                .body(Map.of(
+                    "message", e.getMessage(),
+                    "ttubeotOwnershipId", ttubeotOwnershipId
+                ));
         }
     }
 

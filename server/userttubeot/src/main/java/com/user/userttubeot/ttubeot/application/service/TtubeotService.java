@@ -9,6 +9,7 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotExperienceResponseDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGetIdRespDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInterestResponseDTO;
@@ -74,7 +75,7 @@ public interface TtubeotService {
     UserTtubeotInterestResponseDTO getTtubeotInterest(int userId);
 
     // ID로 뚜벗 ID 찾기
-    Integer findTtubeotIdByOwnershipId(Long ttubeotOwnershipId);
+    UserTtubeotGetIdRespDTO findTtubeotIdByOwnershipId(Long ttubeotOwnershipId);
 
     // 뚜벗 interest 변화
     UserTtuBeotOwnership changeTtubeotInterest(Long ttubeotInterestId, Integer mount);
