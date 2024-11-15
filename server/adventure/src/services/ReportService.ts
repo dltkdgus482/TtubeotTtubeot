@@ -31,14 +31,15 @@ class ReportService {
 
     for (let adventureLog of adventureLogList) {
       console.log(adventureLog);
+      console.log(adventureLog.user_ttubeot_ownership_id);
 
       adventureLog.image_urls =
         await this.adventureImageMysqlRepository.findImageUrlsByAdventureLogId(
           adventureLog.adventure_log_id
         );
-      // let ttubeotInfo = await this.ttubeotService.getTtubeotIdByOwnershipId(
-      //   adventureLog.user_ttubeot_ownership_id
-      // );
+      let ttubeotInfo = await this.ttubeotService.getTtubeotIdByOwnershipId(
+        adventureLog.user_ttubeot_ownership_id
+      );
 
       // console.log(ttubeotInfo);
 
