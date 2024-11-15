@@ -218,29 +218,29 @@ export class AdventureController {
       socket.disconnect();
 
       // TODO: 이미지 생성 로직 필요할 시 주석 해제
-      // console.log("로드뷰 기반 이미지 생성을 시작합니다.");
+      console.log("로드뷰 기반 이미지 생성을 시작합니다.");
 
       // 이미지가 성공적으로 생성되었는지 여부 판별
-      // const genImageRes = await this.imageGenService.generateImage(
-      //   adventureLog
-      // );
+      const genImageRes = await this.imageGenService.generateImage(
+        adventureLog
+      );
 
       // TODO: 여기 FCM 관련 호출 들어가면 됨당
-      // if (genImageRes) {
-      //   const userId: string = adventureLog.userId.toString();
-      //   const res = await fetch(
-      //     `http://${this.baseUrl}/user/ttubeot/user-info`,
-      //     {
-      //       method: "POST",
-      //       headers: {
-      //         'Content-Type': 'application/json',
-      //       },
-      //       body: userId,
-      //     }
-      //   );
-      //   console.log("이미지 생성 완료 후 유저 서버에 userId를 전송합니다.");
-      // }
-      // console.log("로드뷰 기반 이미지 생성을 종료합니다.");
+      if (genImageRes) {
+        const userId: string = adventureLog.userId.toString();
+        const res = await fetch(
+          `http://${this.baseUrl}/user/ttubeot/user-info`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: userId,
+          }
+        );
+        console.log("이미지 생성 완료 후 유저 서버에 userId를 전송합니다.");
+      }
+      console.log("로드뷰 기반 이미지 생성을 종료합니다.");
     } catch (error) {
       console.error("Error in handleEndAdventure:", error);
       socket.emit("error", { message: "Failed to end adventure" });
