@@ -124,7 +124,7 @@ const HomeScreen = () => {
 
   const handleBalloonPress = async () => {
     // 이거 나중에 0으로 고쳐라
-    if (currentTtubeotStatus === 1) {
+    if (currentTtubeotStatus === 0) {
       await updateLog(accessToken, setAccessToken, 0);
       console.log('로그 추가 api 호출완');
       fetchInterestInfo();
