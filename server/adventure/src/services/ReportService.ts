@@ -40,7 +40,7 @@ class ReportService {
 
       adventureLog.ttubeot_id = ttubeotInfo.ttubeotId;
       adventureLog.ttubeot_name = ttubeotInfo.ttubeotName;
-      console.log("뚜벗 정보: ", ttubeotInfo);
+      // console.log("뚜벗 정보: ", ttubeotInfo);
     }
     return adventureLogList;
   }
@@ -65,6 +65,14 @@ class ReportService {
       await this.adventureImageMysqlRepository.findImageUrlsByAdventureLogId(
         adventureLog.adventure_log_id
       );
+
+    let ttubeotInfo = await this.ttubeotService.getTtubeotIdByOwnershipId(
+      adventureLog.user_ttubeot_ownership_id
+    );
+
+    adventureLog.ttubeot_id = ttubeotInfo.ttubeotId;
+    adventureLog.ttubeot_name = ttubeotInfo.ttubeotName;
+
     return adventureLog;
   }
 }
