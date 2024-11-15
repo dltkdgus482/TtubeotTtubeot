@@ -27,7 +27,7 @@ export const drawTtubeot = async (
       ttubeotId,
       grade,
     };
-    console.log(data);
+    // console.log(data);
     const res = await authClient.post('/user/auth/ttubeot/draw', data);
 
     console.log('뚜벗 뽑기', res.data);

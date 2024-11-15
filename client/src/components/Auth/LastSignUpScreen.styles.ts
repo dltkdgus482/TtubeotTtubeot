@@ -58,4 +58,12 @@ export default StyleSheet.create({
     marginBottom: 8,
     alignSelf: 'flex-start',
   },
+  nicknameHint: {
+    color: '#3F3F3F',
+    fontSize: 12,
+    marginTop: -22,
+    marginLeft: 10,
+    marginBottom: 8,
+    alignSelf: 'flex-start',
+  },
 });
