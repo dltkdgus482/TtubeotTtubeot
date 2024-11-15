@@ -24,7 +24,7 @@ class WeatherService {
 
   private async loadGridData(): Promise<any[]> {
     // 루트 경로에 있는 grid_data.json 파일 경로 설정
-    const filePath = path.join(__dirname, "../../grid_data.json");
+    const filePath = path.join(process.cwd(), "grid_data.json");
 
     // 파일이 존재하는지 확인 후 읽기
     if (!fs.existsSync(filePath)) {
