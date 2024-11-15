@@ -23,7 +23,14 @@ class WeatherService {
   };
 
   private async loadGridData(): Promise<any[]> {
+    // 루트 경로에 있는 grid_data.json 파일 경로 설정
     const filePath = path.join(__dirname, "../../grid_data.json");
+
+    // 파일이 존재하는지 확인 후 읽기
+    if (!fs.existsSync(filePath)) {
+      console.error(`File not found: ${filePath}`);
+    }
+
     const fileContent = fs.readFileSync(filePath, "utf-8");
     return JSON.parse(fileContent);
   }
@@ -32,7 +39,7 @@ class WeatherService {
     lat: number,
     lon: number
   ): Promise<{ x: number; y: number } | null> {
-    const gridData = await this.loadGridData();
+    const gridData = (await this.loadGridData()) || []; // gridData가 null일 경우 빈 배열로 설정
     let closestGrid = null;
     let smallestDistance = Infinity;
 
@@ -46,6 +53,11 @@ class WeatherService {
         closestGrid = { x: grid.x, y: grid.y };
       }
     });
+
+    // gridData가 빈 배열이면 기본값 설정
+    if (closestGrid === null) {
+      closestGrid = { x: 60, y: 127 };
+    }
 
     console.log("Nearest Grid:", closestGrid);
     return closestGrid;
