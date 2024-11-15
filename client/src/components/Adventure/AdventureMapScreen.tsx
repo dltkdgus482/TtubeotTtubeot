@@ -34,6 +34,7 @@ import { useUser } from '../../store/user';
 import AdventureFriendsModal from '../Friends/AdventureFriendsModal';
 import { updateCoin } from '../../utils/apis/users/updateUserInfo';
 import FriendRequestModal from '../Friends/FriendRequestModal';
+import { isFriend } from '../../utils/apis/users/getFriendList';
 
 // ------------------------------
 
@@ -293,24 +294,7 @@ const AdventureMapScreen = ({
         if (data.type === 1) {
           if (data.reward > 0) {
             updateLog(accessToken, setAccessToken, 1);
-
-            setHorseBalloonVisible(false);
-            setHorseBalloonContent('코인 보상!');
-            setHorseBalloonVisible(true);
-
-            setTimeout(() => {
-              setHorseBalloonVisible(false);
-              setHorseBalloonContent('');
-            }, 3000);
           } else if (data.reward === 0) {
-            setHorseBalloonVisible(false);
-            setHorseBalloonContent('까비');
-            setHorseBalloonVisible(true);
-
-            setTimeout(() => {
-              setHorseBalloonVisible(false);
-              setHorseBalloonContent('');
-            }, 3000);
           }
         }
 

@@ -18,10 +18,10 @@ import IntroScreen from './src/screens/IntroScreen';
 import { useUser } from './src/store/user';
 import SignUpScreen from './src/screens/Auth/SignUpScreen';
 import LoginScreen from './src/screens/Auth/LoginScreen';
-import HomeScreen from './src/screens/Home/HomeScreen';
 import FindPasswordScreen from './src/screens/Profile/FindPasswordScreen';
 import SetNewPasswordScreen from './src/screens/Profile/SetNewPasswordScreen';
 import messaging from '@react-native-firebase/messaging';
+import notifee, { AndroidImportance } from '@notifee/react-native';
 
 const Stack = createStackNavigator();
 
@@ -31,12 +31,36 @@ const theme = {
 };
 
 function App(): React.JSX.Element {
-  // 포그라운드 상태에서 파이어베이스 메세지 수신 시
-  // 푸쉬 알림이 표시되지 않는 대신 아래의 remoteMessage
-  // 변수를 이용할 수 있음
+  const setupNotificationChannel = async () => {
+    await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+      importance: AndroidImportance.HIGH,
+    });
+  };
+
+  const requestNotificationPermission = async () => {
+    const settings = await notifee.requestPermission();
+  };
+
   useEffect(() => {
+    setupNotificationChannel();
+
+    requestNotificationPermission();
+
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log(JSON.stringify(remoteMessage));
+      const { notification } = remoteMessage;
+
+      if (notification) {
+        await notifee.displayNotification({
+          title: notification?.title || '알림 제목',
+          body: notification?.body || '알림 내용',
+          android: {
+            channelId: 'default',
+            importance: AndroidImportance.HIGH,
+          },
+        });
+      }
     });
 
     return unsubscribe;
