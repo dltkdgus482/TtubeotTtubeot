@@ -112,8 +112,13 @@ class WeatherService {
 
   // 낮/밤 상태 결정 함수
   private getSunStatus(time: string): string {
-    const hour = parseInt(time.slice(0, 2), 10);
-    return hour >= 6 && hour < 18 ? "낮" : "밤";
+    // UTC 시간 문자열을 Date 객체로 변환
+    const utcDate = new Date(`1970-01-01T${time}Z`);
+
+    // 9시간을 더해 KST로 변환
+    const kstHour = (utcDate.getUTCHours() + 9) % 24;
+
+    return kstHour >= 6 && kstHour < 18 ? "낮" : "밤";
   }
 
   private getSeason(date: string): string {

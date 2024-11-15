@@ -152,6 +152,7 @@ class AIService {
         messages: [{ role: "user", content: messageContent }],
       });
       log("generatePromptText: 성공");
+      log("generatePromptText 내용: ", response.choices[0]?.message?.content);
       return (
         response.choices[0]?.message?.content || "Prompt generation failed."
       );
