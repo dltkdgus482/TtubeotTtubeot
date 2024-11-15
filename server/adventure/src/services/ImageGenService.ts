@@ -54,7 +54,10 @@ class ImageGenService {
 
     // 유효한 좌표가 없는 경우 기본 이미지 사용
     if (!selectedPoint) {
-      console.log("No valid RoadView point found. Using default image.");
+      console.log(
+        "No valid RoadView point found. Using default image. URL: " +
+          this.defaultImageUrl
+      );
       const generatedImageUrl = await this.aiService.generateImageBasedOnPrompt(
         this.defaultImageUrl,
         ttubeotId,
