@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Pressable,
   Animated,
+  ImageSourcePropType,
 } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import styles from './HomeScreen.styles';
@@ -33,6 +34,8 @@ import {
 } from '../../utils/apis/users/userTtubeot.ts';
 import { getInfoApi } from '../../utils/apis/users/index.ts';
 import AffectionDisplay from '../../components/AffectionDisplay.tsx';
+import { updateLog } from '../../utils/apis/updateLog.ts';
+import WarningModal from '../../components/CharacterShop/WarningModal.tsx';
 
 const background = require('../../assets/images/HomeBackground.jpg');
 const ShopIcon = require('../../assets/icons/ShopIcon.png');
@@ -40,7 +43,11 @@ const MissionIcon = require('../../assets/icons/MissionIcon.png');
 const AlbumIcon = require('../../assets/icons/AlbumIcon.png');
 const FriendIcon = require('../../assets/icons/FriendIcon.png');
 const MapIcon = require('../../assets/icons/MapIcon.png');
-const horseBalloon = require('../../assets/images/horseBalloon.png');
+const horseBalloon = require('../../assets/images/horseBalloon2.png');
+const PawIcon = require('../../assets/icons/3dPawIcon.png'); // 심심할 때
+const HeartIcon = require('../../assets/icons/3dHeartIcon.png'); // 관심지수 80% 이상일 때
+const HungryIcon = require('../../assets/icons/3dHungryIcon.png'); // 배고플 때
+const meetingTtubeotButton = require('../../assets/icons/meetingTtubeotButton.png');
 
 const HomeScreen = () => {
   const isFocused = useIsFocused();
@@ -63,11 +70,19 @@ const HomeScreen = () => {
   const [currentTtubeotStatus, setCurrentTtubeotStatus] = useState<number>(2); // 기본은 정상 상태로
   const [horseBalloonVisible, setHorseBalloonVisible] =
     useState<boolean>(false);
-  const [horseBalloonContent, setHorseBalloonContent] = useState<string>('');
+  const [horseBalloonContent, setHorseBalloonContent] =
+    useState<ImageSourcePropType>(null);
+  const [warningModalVisible, setWarningModalVisible] = useState(false);
 
   const webViewRef = useRef(null);
 
   const openShopModal = () => {
+    if (ttubeotId !== 46) {
+      setWarningModalVisible(true);
+      setTimeout(() => {
+        setWarningModalVisible(false);
+      }, 2500);
+    }
     setModalVisible(true);
   };
 
@@ -107,15 +122,24 @@ const HomeScreen = () => {
     setBLEModalVisible(false);
   };
 
+  const handleBalloonPress = async () => {
+    // 이거 나중에 0으로 고쳐라
+    if (currentTtubeotStatus === 1) {
+      await updateLog(accessToken, setAccessToken, 0);
+      console.log('로그 추가 api 호출완');
+      fetchInterestInfo();
+    }
+  };
+
   useEffect(() => {
     if (currentTtubeotStatus === 0) {
       setHorseBalloonVisible(true);
-      setHorseBalloonContent('🍽'); // 배고픔
+      setHorseBalloonContent(HungryIcon); // 배고픔
     } else if (currentTtubeotStatus === 1) {
       setHorseBalloonVisible(true);
-      setHorseBalloonContent('🐾'); // 심심함
+      setHorseBalloonContent(PawIcon); // 심심함
     } else {
-      setHorseBalloonVisible(false); // 평온 상태일 때는 말풍선을 숨김
+      setHorseBalloonVisible(false); // todo: 관심지수 확인해서 80% 이상이면 하트 띄우기?
     }
   }, [currentTtubeotStatus]);
 
@@ -154,23 +178,6 @@ const HomeScreen = () => {
     }, [user, ttubeotId]),
   );
 
-  // useEffect(() => {
-  //   const fetchInterestInfo = async () => {
-  //     if (ttubeotId !== 46) {
-  //       // ttubeotId가 46이 아닐 때만 호출
-  //       const ttubeotInterestInfo = await getTtubeotInterestApi(
-  //         accessToken,
-  //         setAccessToken,
-  //       );
-  //       if (ttubeotInterestInfo) {
-  //         setAffectionPoints(ttubeotInterestInfo.ttubeotInterest);
-  //         setCurrentTtubeotStatus(ttubeotInterestInfo.currentTtubeotStatus);
-  //       }
-  //     }
-  //   };
-  //   fetchInterestInfo();
-  // }, [ttubeotId, accessToken, setAccessToken]);
-
   const fetchInterestInfo = async () => {
     if (ttubeotId !== 46) {
       // ttubeotId가 46이 아닐 때만 호출
@@ -195,7 +202,12 @@ const HomeScreen = () => {
     <SafeAreaView style={styles.container}>
       {/* 배경 이미지 */}
       <Image source={background} style={styles.backgroundImage} />
-      <View style={styles.ttubeotWebviewContainer}>
+      <View
+        style={[
+          ttubeotId === 46
+            ? styles.eggContainer
+            : styles.ttubeotWebviewContainer,
+        ]}>
         <WebView
           ref={webViewRef}
           originWhitelist={['*']}
@@ -220,18 +232,45 @@ const HomeScreen = () => {
             console.log('Message from WebView:', event.nativeEvent.data);
           }}
         />
+
+        {ttubeotId === 46 && (
+          <TouchableOpacity
+            style={styles.meetingTtubeotButtonContainer}
+            onPress={openShopModal}>
+            <Image
+              source={meetingTtubeotButton}
+              style={styles.meetingTtubeotButton}
+            />
+            <StyledText bold style={styles.meetingTtubeotText}>
+              뚜벗 만나러 가기
+            </StyledText>
+          </TouchableOpacity>
+        )}
         {/* 말풍선 표시 */}
         {horseBalloonVisible && (
-          <View
+          <TouchableOpacity
             style={[
-              styles.horseBalloonContainer,
-              // { bottom: modelHeight + 30 },
-            ]}>
-            <Image source={horseBalloon} style={styles.horseBalloon} />
-            <StyledText bold style={styles.horseBalloonText}>
-              {horseBalloonContent}
-            </StyledText>
-          </View>
+              ttubeotId === 23 || ttubeotId === 24 || ttubeotId === 45
+                ? styles.horseBalloonBigContainer
+                : styles.horseBalloonContainer,
+            ]}
+            onPress={handleBalloonPress}
+            disabled={currentTtubeotStatus === 1}>
+            <Image
+              source={horseBalloon}
+              blurRadius={0.8}
+              style={styles.horseBalloon}
+            />
+            <Image
+              source={horseBalloonContent}
+              blurRadius={0.9}
+              style={[
+                ttubeotId === 23 || ttubeotId === 24 || ttubeotId === 45
+                  ? styles.balloonBigContent
+                  : styles.balloonContent,
+              ]}
+            />
+          </TouchableOpacity>
         )}
       </View>
 
@@ -273,6 +312,7 @@ const HomeScreen = () => {
         modalVisible={modalVisible}
         closeShopModal={closeShopModal}
       />
+      <WarningModal visible={warningModalVisible} />
 
       <MissionModal
         missionModalVisible={missionModalVisible}

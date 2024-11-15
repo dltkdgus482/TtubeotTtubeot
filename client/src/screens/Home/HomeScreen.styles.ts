@@ -58,6 +58,11 @@ export default StyleSheet.create({
     bottom: -70,
     alignSelf: 'center',
   },
+  eggContainer: {
+    position: 'absolute',
+    bottom: -20,
+    alignSelf: 'center',
+  },
   ttubeotWebview: {
     width: 400,
     height: 500,
@@ -82,21 +87,63 @@ export default StyleSheet.create({
   },
   horseBalloonContainer: {
     position: 'absolute',
-    bottom: 390, // 캐릭터 위쪽에 말풍선 위치를 맞추기 위한 값 (코끼리만 440)
-    left: 50,
+    bottom: 390, // 기본
+    left: 100,
+    alignSelf: 'center',
+    alignItems: 'center',
+  },
+  horseBalloonBigContainer: {
+    position: 'absolute',
+    bottom: 460, // 키큰애들
+    left: 75,
     alignSelf: 'center',
     alignItems: 'center',
   },
   horseBalloon: {
-    width: 110,
+    width: 120,
     height: 110,
-    resizeMode: 'contain',
+    resizeMode: 'stretch',
+    opacity: 0.9,
   },
-  horseBalloonText: {
+  balloonContent: {
     position: 'absolute',
-    top: 25,
-    left: 34,
+    width: 36,
+    height: 36,
+    resizeMode: 'contain',
+    top: 26, // 기본
+    left: 42, // 기본
     fontSize: 24,
     color: 'black',
+    opacity: 0.85,
+  },
+  balloonBigContent: {
+    position: 'absolute',
+    width: 36,
+    height: 36,
+    resizeMode: 'contain',
+    top: 26, // 키큰애들
+    left: 42, // 키큰애들
+    fontSize: 24,
+    color: 'black',
+    opacity: 0.85,
+  },
+  meetingTtubeotButtonContainer: {
+    position: 'absolute',
+    bottom: 145,
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  meetingTtubeotButton: {
+    width: 200,
+    height: 80,
+    resizeMode: 'contain',
+  },
+  meetingTtubeotText: {
+    position: 'absolute',
+    color: '#49453B',
+    bottom: 34,
+    fontSize: 16,
+    textAlign: 'center',
   },
 });

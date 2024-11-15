@@ -80,6 +80,25 @@ const styles = StyleSheet.create({
     left: 63,
     fontSize: 22,
   },
+  markerContainer: {
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  markerBackground: {
+    width: 50,
+    height: 50,
+    backgroundColor: 'blue',
+    borderRadius: 700,
+    opacity: 0.25,
+  },
+  marker: {
+    width: 35,
+    height: 35,
+    position: 'absolute',
+    borderRadius: 200,
+  },
 });
 
 export default styles;
