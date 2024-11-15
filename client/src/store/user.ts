@@ -11,6 +11,7 @@ interface User {
   userType: number; // 0 - 자녀, 1 - 부모
   goal: number;
   coin: number;
+  steps: number;
   userParent: number;
 }
 
@@ -52,6 +53,7 @@ export const useUser = create<UserState>()(
         userType: 0, // 0 자녀 or 1 부모
         goal: 0,
         coin: 0,
+        steps: 0,
         userParent: 0,
       },
       ttubeotId: 46,
@@ -83,6 +85,7 @@ export const useUser = create<UserState>()(
             userType: 0,
             goal: 0,
             coin: 0,
+            steps: 0,
             userParent: 0,
           },
           ttubeotId: 46,

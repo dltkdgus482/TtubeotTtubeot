@@ -30,6 +30,7 @@ import { useUser } from '../../store/user';
 import { updateStepMission } from '../../utils/apis/Mission/updateMissionInfo';
 import StyledText from '../../styles/StyledText';
 import { updateLog } from '../../utils/apis/updateLog';
+import { getTtubeotDetail } from '../../utils/apis/users/userTtubeot';
 
 const { RnSensorStep, SystemUsage } = NativeModules;
 const stepCounterEmitter = new NativeEventEmitter(RnSensorStep);
@@ -52,7 +53,7 @@ const isRunningOnEmulator = () => {
 
 const AdventureScreen = () => {
   const isFocused = useIsFocused();
-  const { ttubeotId } = useUser.getState();
+  const { ttubeotId, user, setUser } = useUser.getState();
   const [adventureStart, setAdventureStart] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [missionVisible, setMissionVisible] = useState<boolean>(false);
@@ -81,6 +82,18 @@ const AdventureScreen = () => {
     useState<string>('친구 발견');
   const [horseBalloonVisible, setHorseBalloonVisible] =
     useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchUserTtubeot = async () => {
+      const res = await getTtubeotDetail(
+        user.userId,
+        accessToken,
+        setAccessToken,
+      );
+      setUser({ ...user, steps: res.ttubeotScore });
+    };
+    fetchUserTtubeot();
+  }, []);
 
   useEffect(() => {
     const stepListener = stepCounterEmitter.addListener(
@@ -115,6 +128,7 @@ const AdventureScreen = () => {
 
   const stopStepCounter = () => {
     // 서버에 미션 갱신 요청
+
     RnSensorStep.stop();
     setSteps(0);
     setInitialSteps(null);
@@ -163,6 +177,10 @@ const AdventureScreen = () => {
     //   }).start();
     // }, 100);
   };
+
+  useEffect(() => {
+    setUser({ ...user, steps: user.steps + steps });
+  }, [steps]);
 
   const handleStartAdventure = () => {
     if (!adventureStart) {

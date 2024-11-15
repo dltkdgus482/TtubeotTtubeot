@@ -136,6 +136,7 @@ const HomeScreen = () => {
       accessToken,
       setAccessToken,
     );
+    setUser({ ...user, steps: res.ttubeotScore });
     if (res === null) {
       setTtubeotId(46);
     } else {

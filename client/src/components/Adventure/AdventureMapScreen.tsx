@@ -263,8 +263,7 @@ const AdventureMapScreen = ({
       });
 
       socketRef.current.addAdventureResultListener(data => {
-        console.log('addAdventureResultListener:', data);
-
+        // console.log('addAdventureResultListener:', data);
         // 모험 결과 수신 시 모달 띄우기
       });
 
@@ -273,7 +272,7 @@ const AdventureMapScreen = ({
       });
 
       socketRef.current.addAdventureRequestListener(data => {
-        console.log('친구 요청 수신', data);
+        // console.log('친구 요청 수신', data);
         setOpponentUserId(data.user_id);
         setOpponentUsername(data.username);
 
@@ -282,17 +281,19 @@ const AdventureMapScreen = ({
       });
 
       socketRef.current.addAdventureConfirmListener(data => {
-        console.log('친구 요청을 수신합니다', data);
+        console.log('----- 친구 요청을 수신합니다 -----', data);
 
         // 친구 요청 응답 수신 시 모달 닫기
         setIsNfcTagged(false);
       });
 
       socketRef.current.addAdventureRewardListener(data => {
-        console.log('보상 정보를 수신합니다.', data);
+        // console.log('보상 정보를 수신합니다.', data);
 
         if (data.type === 1) {
+          // 친구추가, 인사 구분하는 로직 필요
           if (data.reward > 0) {
+            console.log(data);
             updateLog(accessToken, setAccessToken, 1);
           } else if (data.reward === 0) {
           }
@@ -304,7 +305,7 @@ const AdventureMapScreen = ({
   }, []);
 
   useEffect(() => {
-    console.log('useEffect nearbyUsers', nearbyUsers.length);
+    // console.log('useEffect nearbyUsers', nearbyUsers.length);
     // 30m 이내 사용자 필터링
     const filteredUsers = nearbyUsers.filter(user => user.distance < 30);
     setVeryNearbyUsers(filteredUsers);

@@ -144,7 +144,7 @@ const TtubeotProfile = () => {
                 </View>
               </View>
               <StyledText color="white" bold>
-                {ttubeotData?.ttubeotScore} 걸음
+                {user.steps} 걸음
               </StyledText>
             </ProfileBottom>
           </ProfileDetails>
