@@ -10,7 +10,7 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotDrawResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
-import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGetIdRespDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtuBeotOwnershipDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotIdResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotInfoResponseDTO;
@@ -19,7 +19,7 @@ import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO
 import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistToDbDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistToDbDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.UserInfoAdventureRequestDTO;
-import com.user.userttubeot.ttubeot.domain.model.UserTtuBeotOwnership;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -210,13 +210,16 @@ public class TtubeotController {
         @PathVariable("ttubeotOwnershipId") Long ttubeotOwnershipId) {
 
         try {
-            UserTtuBeotOwnership ttubeot = ttubeotService.findTtubeotIdByOwnershipId(
+            UserTtuBeotOwnershipDTO ttubeot = ttubeotService.findTtubeotIdByOwnershipId(
                 ttubeotOwnershipId);
             return ResponseEntity.ok(ttubeot);
         } catch (RuntimeException e) {
-            // 예외 발생 시 NOT_FOUND 상태와 함께 예외 메시지를 반환
+            // 실패 시 NOT_FOUND 상태와 함께 메시지를 반환
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new UserTtubeotGetIdRespDTO(null, e.getMessage()));
+                .body(Map.of(
+                    "message", e.getMessage(),
+                    "ttubeotOwnershipId", ttubeotOwnershipId
+                ));
         }
     }
 

@@ -9,6 +9,7 @@ import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogListResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogRequestDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotLogResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.TtubeotNameRegisterRequestDTO;
+import com.user.userttubeot.ttubeot.domain.dto.UserTtuBeotOwnershipDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotExperienceResponseDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoDTO;
 import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotGraduationInfoListDTO;
@@ -634,11 +635,14 @@ public class TtubeotServiceImpl implements TtubeotService {
     }
 
     @Override
-    public UserTtuBeotOwnership findTtubeotIdByOwnershipId(Long ttubeotOwnershipId) {
-        return userTtubeotOwnershipRepository.findById(ttubeotOwnershipId)
-            .orElseThrow(() ->
-                new RuntimeException("해당 소유 ID에 대한 TtubeotId를 찾을 수 없습니다: " + ttubeotOwnershipId));
+    public UserTtuBeotOwnershipDTO findTtubeotIdByOwnershipId(Long ttubeotOwnershipId) {
+        UserTtuBeotOwnership ownership = userTtubeotOwnershipRepository.findById(ttubeotOwnershipId)
+            .orElseThrow(() -> new RuntimeException(
+                "해당 소유 ID에 대한 TtubeotId를 찾을 수 없습니다: " + ttubeotOwnershipId));
+
+        return UserTtuBeotOwnershipDTO.fromEntity(ownership);
     }
+
 
     @Override
     public UserTtuBeotOwnership changeTtubeotInterest(Long ttubeotInterestId, Integer mount) {
