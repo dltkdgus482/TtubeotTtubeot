@@ -19,13 +19,15 @@ export const getJournalList = async (
   try {
     const authClient = authRequest(accessToken, setAccessToken);
     const res = await authClient.get('/adventure/reports?page=1&size=10');
+    console.log(res.data.data);
+
     const journalList = res.data.data.map((journal: JournalData) => ({
       ...journal,
       duration: calculateDurationInMinutes(journal.start_at, journal.end_at),
       start_at: formatDate(journal.start_at),
       end_at: formatDate(journal.end_at),
     }));
-    console.log('jouranl :', journalList);
+    // console.log('jouranl :', journalList);
     return journalList;
   } catch (err) {
     console.error('err :', err);
