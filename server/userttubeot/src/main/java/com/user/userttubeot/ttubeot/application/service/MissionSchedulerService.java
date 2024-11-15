@@ -68,7 +68,7 @@ public class MissionSchedulerService {
     }
 
     // 뚜벗 관심 지수 감소
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 30 * * * *")
     public void decreaseTtubeotInterestHourly() {
         String currentTime = LocalDateTime.now()
             .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
