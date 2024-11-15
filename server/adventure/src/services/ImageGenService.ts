@@ -57,7 +57,7 @@ class ImageGenService {
       console.log("No valid RoadView point found. Using default image.");
       const generatedImageUrl = await this.aiService.generateImageBasedOnPrompt(
         this.defaultImageUrl,
-        1,
+        ttubeotId,
         gpsLog[0].lat,
         gpsLog[0].lng,
         date,
