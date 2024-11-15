@@ -26,7 +26,7 @@ const AffectionFill = styled(LinearGradient)<{ width: number }>`
   width: ${props => props.width}%;
   border-radius: 30px;
   position: absolute;
-  left: 1px;
+  left: 2px;
 `;
 
 const IconContainer = styled(View)`
@@ -40,14 +40,16 @@ interface AffectionDisplayProps {
 }
 
 const AffectionDisplay = ({ affectionPoints }: AffectionDisplayProps) => {
+  const backgroundWidth = 94; // AffectionBackground의 고정 너비
+
   return (
     <AffectionDisplayContainer>
       <IconContainer>
         <Image source={heartIcon} style={{ width: 26, height: 26 }} />
       </IconContainer>
-      <AffectionBackground>
+      <AffectionBackground style={{ width: backgroundWidth }}>
         <AffectionFill
-          width={affectionPoints}
+          width={(affectionPoints / 100) * backgroundWidth}
           colors={['#FFE4B7', '#ffc466']}
           start={{ x: 0, y: 0.5 }}
           end={{ x: 1, y: 0.5 }}
