@@ -73,24 +73,6 @@ class UserService {
       body: JSON.stringify(requestBody),
     });
   }
-
-  async getTtubeotIdByOwnershipId(
-    userTtubeotOwnershipId: number
-  ): Promise<number> {
-    try {
-      const response = await axios.get(
-        `http://${this.baseUrl}/user/ttubeot/find-ttubeot/${userTtubeotOwnershipId}`
-      );
-      console.log("Fetched Ttubeot Data:", response.data);
-
-      // 응답 본문에서 ttubeotId만 추출하여 반환
-      const ttubeotId = response.data.ttubeotId;
-      return ttubeotId;
-    } catch (error) {
-      console.error("Error fetching Ttubeot data:", error);
-      return 1;
-    }
-  }
 }
 
 export default UserService;

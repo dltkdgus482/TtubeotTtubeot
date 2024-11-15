@@ -5,14 +5,14 @@ import ImageMysqlRepository from "../repositories/AdventureImageMysqlRepository"
 import FTPUpload from "../utils/FTPUpload";
 import dotenv from "dotenv";
 import axios from "axios";
-import UserService from "./UserService";
+import TtubeotService from "./TtubeotService";
 
 dotenv.config();
 
 class ImageGenService {
   private roadViewService: RoadViewService;
   private aiService: AIService;
-  private userService: UserService;
+  private ttubeotService: TtubeotService;
   private imageMysqlRepository: ImageMysqlRepository;
   private cdnUrl: string;
   private defaultImageUrl: string;
@@ -20,7 +20,7 @@ class ImageGenService {
   constructor() {
     this.roadViewService = new RoadViewService();
     this.aiService = new AIService();
-    this.userService = new UserService();
+    this.ttubeotService = new TtubeotService();
     this.imageMysqlRepository = new ImageMysqlRepository();
     this.cdnUrl = process.env.CDN_URL || "";
     this.defaultImageUrl = process.env.DEFAULT_IMAGE_URL || "";
@@ -46,7 +46,7 @@ class ImageGenService {
 
     // 새로운 메서드를 통해 ttubeot 데이터를 가져옵니다.
     const userTtubeotOwnershipId = adventureLog.userTtubeotOwnershipId;
-    const ttubeotId = await this.userService.getTtubeotIdByOwnershipId(
+    const ttubeotId = await this.ttubeotService.getTtubeotIdByOwnershipId(
       userTtubeotOwnershipId
     );
 
