@@ -30,9 +30,6 @@ class ReportService {
       );
 
     for (let adventureLog of adventureLogList) {
-      console.log(adventureLog);
-      console.log(adventureLog.user_ttubeot_ownership_id);
-
       adventureLog.image_urls =
         await this.adventureImageMysqlRepository.findImageUrlsByAdventureLogId(
           adventureLog.adventure_log_id
@@ -41,10 +38,8 @@ class ReportService {
         adventureLog.user_ttubeot_ownership_id
       );
 
-      // console.log(ttubeotInfo);
-
-      // adventureLog.ttubeot_id = ttubeotInfo.ttubeot_id;
-      // adventureLog.ttubeot_name = ttubeotInfo.ttubeot_name;
+      adventureLog.ttubeot_id = ttubeotInfo.ttubeot_id;
+      adventureLog.ttubeot_name = ttubeotInfo.ttubeot_name;
     }
     return adventureLogList;
   }

@@ -15,7 +15,7 @@ class TtubeotService {
       const response = await axios.get(
         `http://${this.baseUrl}/user/ttubeot/find-ttubeot/${userTtubeotOwnershipId}`
       );
-      console.log("Fetched Ttubeot Data:", response);
+      console.log("Fetched Ttubeot Data:", response.data);
 
       return response.data;
     } catch (error) {
