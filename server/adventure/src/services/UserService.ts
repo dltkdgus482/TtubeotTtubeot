@@ -14,12 +14,12 @@ class UserService {
     let result = await response.json();
     console.log(result);
 
-    return result.user_ttubeot_ownership_id;
+    return result.userTtubeotOwnershipId;
   }
 
   async getUserInfo(
     userId: number
-  ): Promise<{ username: string; ttubeot_id: number }> {
+  ): Promise<{ username: string; ttubeotId: number }> {
     let response = await fetch(
       `http://${this.baseUrl}/user/other-profile/${userId}`
     );
@@ -27,7 +27,7 @@ class UserService {
     let result = await response.json();
     console.log(result);
 
-    return { username: result.username, ttubeot_id: result.ttubeot_id };
+    return { username: result.username, ttubeotId: result.ttubeotId };
   }
 
   async checkFriendship(userId: number, friendId: number): Promise<boolean> {

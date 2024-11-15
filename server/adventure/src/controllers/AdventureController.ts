@@ -52,19 +52,19 @@ export class AdventureController {
         userId
       );
       console.log("사용자의 뚜벗 소유권 ID : ", userTtubeotOwnershipId);
-      let { username, ttubeot_id } = await this.userService.getUserInfo(userId);
+      let { username, ttubeotId } = await this.userService.getUserInfo(userId);
       console.log(
         "사용자의 이름 : ",
         username,
-        "사용자의 뚜벗 ID : ",
-        ttubeot_id
+        " 사용자의 뚜벗 ID : ",
+        ttubeotId
       );
 
       await this.adventureService.initAdventure(
         userId,
         userTtubeotOwnershipId,
         username,
-        ttubeot_id,
+        ttubeotId,
         socket.id
       );
     } catch (error) {
