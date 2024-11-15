@@ -32,11 +32,24 @@ class AdventureLogModel {
   }
 
   calculateMiddleAt(): { date: string; time: string } {
-    const middleTimestamp = (this.startAt.getTime() + this.endAt.getTime()) / 2;
+    // 문자열을 Date 객체로 변환
+    const startAt = new Date(this.startAt);
+    const endAt = new Date(this.endAt);
+
+    // Date 변환 확인
+    if (isNaN(startAt.getTime()) || isNaN(endAt.getTime())) {
+      throw new Error("Invalid startAt or endAt date format");
+    }
+
+    // 중간 타임스탬프 계산
+    const middleTimestamp = (startAt.getTime() + endAt.getTime()) / 2;
     const middleDate = new Date(middleTimestamp);
 
-    const date = middleDate.toISOString().split("T")[0].replace(/-/g, ""); // YYYYMMDD 형식
-    const [hours, minutes] = middleDate.toTimeString().split(":"); // HHMM 형식
+    // YYYYMMDD 형식으로 변환
+    const date = middleDate.toISOString().split("T")[0].replace(/-/g, "");
+
+    // HHMM 형식으로 변환
+    const [hours, minutes] = middleDate.toTimeString().split(":");
     const time = `${hours}${minutes}`;
 
     return { date, time };
