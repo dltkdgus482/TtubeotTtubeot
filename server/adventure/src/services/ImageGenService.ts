@@ -46,9 +46,11 @@ class ImageGenService {
 
     // 새로운 메서드를 통해 ttubeot 데이터를 가져옵니다.
     const userTtubeotOwnershipId = adventureLog.userTtubeotOwnershipId;
-    const ttubeotId = await this.ttubeotService.getTtubeotIdByOwnershipId(
-      userTtubeotOwnershipId
-    );
+    const ttubeotId = (
+      await this.ttubeotService.getTtubeotIdByOwnershipId(
+        userTtubeotOwnershipId
+      )
+    ).ttubeotId; // await 추가
 
     const { date, time } = adventureLog.calculateMiddleAt();
 

@@ -9,8 +9,8 @@ class AdventureLogModel {
   startAt: Date;
   endAt: Date;
   gpsLogKey: string;
-  ttubeotId: number;
-  ttubeotName: string;
+  ttubeot_id: number;
+  ttubeot_name: string;
   gpsLog: { lat: number; lng: number; steps: number; timestamp: number }[];
   imgUrls: string[];
 
@@ -31,8 +31,8 @@ class AdventureLogModel {
         ? data.endAt
         : new Date(data.endAt ?? Date.now());
     this.gpsLogKey = data.gpsLogKey ?? "";
-    this.ttubeotId = data.ttubeotId ?? 0;
-    this.ttubeotName = data.ttubeotName ?? "";
+    this.ttubeot_id = data.ttubeot_id ?? 0;
+    this.ttubeot_name = data.ttubeot_name ?? "";
     this.gpsLog = data.gpsLog ?? [];
     this.imgUrls = data.imgUrls ?? [];
   }
@@ -71,8 +71,8 @@ class AdventureLogModel {
       start_at: this.startAt,
       end_at: this.endAt,
       gps_log_key: this.gpsLogKey,
-      ttubeot_id: this.ttubeotId,
-      ttubeot_name: this.ttubeotName,
+      ttubeot_id: this.ttubeot_id,
+      ttubeot_name: this.ttubeot_name,
       gps_log: this.gpsLog,
       img_urls: this.imgUrls,
     };
