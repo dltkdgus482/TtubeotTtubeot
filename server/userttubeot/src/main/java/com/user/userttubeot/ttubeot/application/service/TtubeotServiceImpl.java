@@ -634,9 +634,8 @@ public class TtubeotServiceImpl implements TtubeotService {
     }
 
     @Override
-    public Integer findTtubeotIdByOwnershipId(Long ttubeotOwnershipId) {
+    public UserTtuBeotOwnership findTtubeotIdByOwnershipId(Long ttubeotOwnershipId) {
         return userTtubeotOwnershipRepository.findById(ttubeotOwnershipId)
-            .map(ownership -> ownership.getTtubeot().getTtubeotId())
             .orElseThrow(() ->
                 new RuntimeException("해당 소유 ID에 대한 TtubeotId를 찾을 수 없습니다: " + ttubeotOwnershipId));
     }
