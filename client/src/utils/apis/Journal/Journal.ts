@@ -6,9 +6,16 @@ const formatDate = (dateString: string) => {
 };
 
 const calculateDurationInMinutes = (startAt: string, endAt: string) => {
-  const start = new Date(startAt);
-  const end = new Date(endAt);
-  const differenceInMs = end.getTime() - start.getTime();
+  // KST 시간대를 UTC로 변환
+  const startInUTC = new Date(
+    new Date(startAt).getTime() - 9 * 60 * 60 * 1000, // KST(GMT+9)를 UTC로 변환
+  );
+
+  // UTC 그대로 사용
+  const endInUTC = new Date(endAt);
+
+  // 시간 차이 계산
+  const differenceInMs = endInUTC.getTime() - startInUTC.getTime();
   return Math.floor(differenceInMs / (1000 * 60));
 };
 
