@@ -40,6 +40,7 @@ class ReportService {
 
       adventureLog.ttubeot_id = ttubeotInfo.ttubeot_id;
       adventureLog.ttubeot_name = ttubeotInfo.ttubeot_name;
+      console.log(ttubeotInfo);
     }
     return adventureLogList;
   }
