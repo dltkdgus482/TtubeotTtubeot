@@ -16,6 +16,7 @@ import { JournalData, JournalDetailData } from '../../types/JournalData';
 import { getJournalDetail } from '../../utils/apis/Journal/Journal';
 import { useUser } from '../../store/user';
 import { profileColor } from '../../components/ProfileImageUrl';
+import PictureModal from './PictureModal';
 
 type JournalDetailProps = {
   journal: JournalData;
@@ -26,8 +27,8 @@ const flipIcon = require('../../assets/icons/FlipIcon.png');
 const flipFrontIcon = require('../../assets/icons/FlipFrontIcon.png');
 const flipBackIcon = require('../../assets/icons/FlipBackIcon.png');
 const noPicture = require('../../assets/images/JournalImageNotCreated.png');
-const ttubeot = require('../../assets/images/TtubeotTitle.png');
-const mockTtu = require('../../assets/ttubeot/IntroTtubeotDog.png');
+const ttubeot = require('../../assets/images/TtubeotTitleKR.png');
+const fullScreen = require('../../assets/icons/fullScreen.png');
 
 const JournalDetail = ({ journal, closeJournalDetail }: JournalDetailProps) => {
   const { accessToken, setAccessToken } = useUser.getState();
@@ -161,6 +162,16 @@ const JournalDetail = ({ journal, closeJournalDetail }: JournalDetailProps) => {
     return '과';
   };
 
+  const [pictureModalOpen, setPictureModalOpen] = useState<boolean>(false);
+
+  const openPictureModal = () => {
+    setPictureModalOpen(true);
+  };
+
+  const closePictureModal = () => {
+    setPictureModalOpen(false);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.backgroundCircle} />
@@ -187,21 +198,38 @@ const JournalDetail = ({ journal, closeJournalDetail }: JournalDetailProps) => {
                 style={styles.title}
                 resizeMode="contain"
               />
-              <Image
-                source={profileColor[journal.ttubeot_id]}
-                style={styles.titleTtubeot}
-              />
             </View>
             <View style={styles.pictureContainer}>
-              <Image
-                source={
-                  journalDetail?.image_urls &&
-                  journalDetail.image_urls.length > 0
-                    ? { uri: journalDetail.image_urls[0] }
-                    : noPicture
-                }
-                style={styles.picture}
-              />
+              {journalDetail?.image_urls &&
+              journalDetail.image_urls.length > 0 ? (
+                <TouchableOpacity
+                  style={{ width: '100%', height: '100%' }}
+                  onPress={openPictureModal}>
+                  <Image
+                    source={{ uri: journalDetail.image_urls[0] }}
+                    style={styles.picture}
+                  />
+                  <View style={styles.fullScreenButton}>
+                    <View style={styles.fullScreenButtonBackground} />
+                    <Image source={fullScreen} style={styles.fullScreenIcon} />
+                  </View>
+                </TouchableOpacity>
+              ) : (
+                <Image source={noPicture} style={styles.picture} />
+              )}
+              <View style={styles.pictureFooter}>
+                <View style={styles.withTtubeotContainer}>
+                  <Image
+                    source={profileColor[journal.ttubeot_id]}
+                    style={styles.withTtubeot}
+                  />
+                </View>
+                <View style={styles.footerText}>
+                  <StyledText bold>
+                    과 함께한 {journalDetail?.start_at}일의 모험 기록
+                  </StyledText>
+                </View>
+              </View>
             </View>
           </View>
         </Animated.View>
@@ -301,6 +329,13 @@ const JournalDetail = ({ journal, closeJournalDetail }: JournalDetailProps) => {
           modalVisible={isModalOpen}
           closeModal={closeRouteModal}
           gpsLog={journalDetail.gps_log}
+        />
+      )}
+      {journalDetail?.image_urls && journalDetail.image_urls.length > 0 && (
+        <PictureModal
+          modalVisible={pictureModalOpen}
+          picture={journalDetail.image_urls[0]}
+          closeModal={closePictureModal}
         />
       )}
     </SafeAreaView>
