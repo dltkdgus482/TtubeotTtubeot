@@ -15,9 +15,8 @@ const testPic = require('../../assets/images/JournalImageNotCreated.png');
 const JournalScreen = () => {
   const { accessToken, setAccessToken } = useUser.getState();
   const [journalList, setJournalList] = useState<JournalData[]>([]);
-  const [selectedJournalId, setSelectedJournalId] = useState<number | null>(
-    null,
-  );
+  const [selectedJournalId, setSelectedJournalId] =
+    useState<JournalData | null>(null);
   const [refreshing, setRefreshing] = useState(false); // 새로고침 상태 관리
 
   const loadJournalList = async () => {
@@ -40,8 +39,8 @@ const JournalScreen = () => {
     setRefreshing(false); // 새로고침 완료
   };
 
-  const openJournalDetail = (id: number) => {
-    setSelectedJournalId(id);
+  const openJournalDetail = (journal: JournalData) => {
+    setSelectedJournalId(journal);
   };
 
   const closeJournalDetail = () => {
@@ -79,7 +78,7 @@ const JournalScreen = () => {
     <SafeAreaView style={styles.container}>
       {selectedJournalId ? (
         <JournalDetail
-          id={selectedJournalId}
+          journal={selectedJournalId}
           closeJournalDetail={closeJournalDetail}
         />
       ) : (
@@ -104,7 +103,7 @@ const JournalScreen = () => {
                   <TouchableOpacity
                     key={journal.adventure_log_id}
                     style={styles.journalCard}
-                    onPress={() => openJournalDetail(journal.adventure_log_id)}>
+                    onPress={() => openJournalDetail(journal)}>
                     <View style={styles.journalCardBackground} />
                     <Image
                       style={styles.journalPicture}

@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '25%',
     resizeMode: 'contain',
-    transform: [{ scaleX: -1 }],
+    // transform: [{ scaleX: -1 }],
   },
   pictureContainer: {
     width: '100%',
