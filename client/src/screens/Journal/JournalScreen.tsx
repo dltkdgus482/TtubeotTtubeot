@@ -23,9 +23,7 @@ const JournalScreen = () => {
     try {
       const res = await getJournalList(accessToken, setAccessToken);
       if (res) {
-        res.forEach((item, index) => {
-          console.log(`Item at index ${index}:`, item);
-        });
+        console.log('---------- 모험일지 로딩 ----------', res);
       }
       setJournalList(res);
     } catch (err) {

@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     fontSize: 20,
     zIndex: 10000,
-    top: 125,
+    top: 130,
     left: 8,
     flexDirection: 'row',
     alignItems: 'center',

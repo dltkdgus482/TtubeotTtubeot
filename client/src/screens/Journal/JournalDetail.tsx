@@ -227,7 +227,7 @@ const JournalDetail = ({ journal, closeJournalDetail }: JournalDetailProps) => {
                   총 모험 시간
                 </StyledText>
                 <StyledText style={styles.journalDetail}>
-                  {journalDetail.duration} 분
+                  {journalDetail.duration + 540} 분
                 </StyledText>
               </View>
               <View style={styles.journalDetailSection}>

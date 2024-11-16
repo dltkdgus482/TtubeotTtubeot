@@ -15,6 +15,7 @@ interface MissionProps {
 }
 
 interface MissionListProps {
+  selectedMenu: string;
   missionList: MissionProps[];
 }
 
@@ -22,7 +23,7 @@ import { useEffect } from 'react';
 
 const missionImageSource = require('../../assets/images/RandomCharacter.png');
 
-const MissionList = ({ missionList }: MissionListProps) => {
+const MissionList = ({ selectedMenu, missionList }: MissionListProps) => {
   useEffect(() => {
     console.log(missionList);
   }, [missionList]);
@@ -30,6 +31,17 @@ const MissionList = ({ missionList }: MissionListProps) => {
     <View>
       {missionList.length > 0 &&
         missionList.map((item, index) => {
+          if (
+            selectedMenu === '일일 미션' &&
+            item.missionStatus === 'COMPLETED'
+          ) {
+            return null;
+          }
+
+          if (selectedMenu === '완료' && item.missionStatus !== 'COMPLETED') {
+            return null;
+          }
+
           const progress =
             (item.missionActionCount / item.missionTargetCount) * 100;
           return (

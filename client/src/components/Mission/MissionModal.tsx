@@ -40,14 +40,13 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
   closeMissionModal,
 }) => {
   const [selectedMenu, setSelectedMenu] = useState<string>('일일 미션');
-  const missionList: string[] = ['일일 미션', '주간 미션', '업적'];
+  const missionList: string[] = ['일일 미션', '주간 미션', '완료'];
   const { accessToken, setAccessToken, user } = useUser.getState();
   const authClient = authRequest(accessToken, setAccessToken);
   const [dailyMissionList, setDailyMissionList] = useState<MissionProps[]>([]);
   const [weeklyMissionList, setWeeklyMissionList] = useState<MissionProps[]>(
     [],
   );
-  const [achievementList, setAchievementList] = useState<MissionProps[]>([]);
 
   useEffect(() => {
     console.log('useEffect missionModalVisible, selectedMenu');
@@ -140,12 +139,13 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
           </View>
           <ScrollView style={styles.itemContainer}>
             <MissionList
+              selectedMenu={selectedMenu}
               missionList={
                 selectedMenu === '일일 미션'
                   ? dailyMissionList
                   : selectedMenu === '주간 미션'
                   ? weeklyMissionList
-                  : dailyMissionList
+                  : [...dailyMissionList, ...weeklyMissionList]
               }
             />
           </ScrollView>
