@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, TouchableOpacity, Image } from 'react-native';
 import StyledText from '../../styles/StyledText';
 import styles from './AdventureAlert.styles';
+import ButtonFlat from '../Button/ButtonFlat';
+import ButtonDefault from '../Button/ButtonDefault';
 
 const treasure = require('../../assets/icons/TreasureAlertIcon.png');
 const friend = require('../../assets/icons/Friend.png');
@@ -44,9 +46,21 @@ const AdventureAlert = () => {
           <StyledText bold style={styles.alertTitle}>
             친구는 어떻게 만나냐면
           </StyledText>
-          <StyledText>설명 적을 자리</StyledText>
-          <TouchableOpacity onPress={() => setPage(1)}>
-            <StyledText>뒤로가기</StyledText>
+          <View style={styles.alertDescriptionContainer}>
+            <StyledText bold style={styles.alertDescription}>
+              1. 동해물과 백두산이
+            </StyledText>
+            <StyledText bold style={styles.alertDescription}>
+              2. 마르고 닳도록
+            </StyledText>
+            <StyledText bold style={styles.alertDescription}>
+              3. 하느님이 보우하사
+            </StyledText>
+          </View>
+          <TouchableOpacity
+            style={styles.alertButton}
+            onPress={() => setPage(1)}>
+            <ButtonFlat content="뒤로가기" color="" />
           </TouchableOpacity>
         </View>
       );

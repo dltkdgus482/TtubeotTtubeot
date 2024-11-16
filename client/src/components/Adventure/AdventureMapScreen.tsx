@@ -258,8 +258,8 @@ const AdventureMapScreen = ({
     useTreasureStore();
 
   useEffect(() => {
-    // currentSteps.current = steps;
-    currentSteps.current = 1000;
+    currentSteps.current = steps;
+    // currentSteps.current = 1000;
     if (
       remainCounts.length > 0 &&
       currentSteps.current > remainCounts[0] &&
@@ -595,6 +595,7 @@ const AdventureMapScreen = ({
         }}
         friends={nearbyUsers}
         requestFriend={requestFriend}
+        isFriendRequestConfirmSent={isFriendRequestConfirmSent}
       />
       {isNfcTagged && opponentUsername !== '' && (
         <NfcTagging

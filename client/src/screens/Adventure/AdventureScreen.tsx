@@ -174,7 +174,7 @@ const AdventureScreen = () => {
   };
 
   useEffect(() => {
-    setUser({ ...user, steps: user.steps + steps });
+    setUser({ ...user, steps: user.steps + 1 });
   }, [steps]);
 
   const handleStartAdventure = () => {
