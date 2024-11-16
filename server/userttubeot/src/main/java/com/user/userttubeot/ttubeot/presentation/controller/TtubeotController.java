@@ -19,6 +19,7 @@ import com.user.userttubeot.ttubeot.domain.dto.UserTtubeotMissionListResponseDTO
 import com.user.userttubeot.ttubeot.domain.dto.backend.MissionRegistToDbDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.TtubeotRegistToDbDTO;
 import com.user.userttubeot.ttubeot.domain.dto.backend.UserInfoAdventureRequestDTO;
+import com.user.userttubeot.ttubeot.global.exception.DailyLimitReachedException;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -44,9 +45,17 @@ public class TtubeotController {
     @PostMapping("/auth/ttubeot/logs")
     public ResponseEntity<?> addTtubeotLog(@RequestAttribute("userId") Integer userId,
         @RequestBody TtubeotLogRequestDTO ttubeotLogRequestDTO) {
-        ttubeotService.addTtubeotLog(userId, ttubeotLogRequestDTO);
-
-        return ResponseEntity.ok("로그가 성공적으로 추가되었습니다.");
+        try {
+            ttubeotService.addTtubeotLog(userId, ttubeotLogRequestDTO);
+            return ResponseEntity.ok("로그가 성공적으로 추가되었습니다.");
+        } catch (DailyLimitReachedException e) {
+            // 예외가 발생하면 400 Bad Request와 함께 메시지를 반환
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            // 기타 예상하지 못한 예외 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("알 수 없는 오류가 발생했습니다.");
+        }
     }
 
     // 유저의 뚜벗 상세 정보 조회 -> 정상인 것만. (모험 사용)
