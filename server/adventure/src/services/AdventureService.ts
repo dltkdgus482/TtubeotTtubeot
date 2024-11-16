@@ -115,6 +115,7 @@ class AdventureService {
     adventureLog.adventureCalorie =
       CalcAdventureStats.getCalorieBurned(userSteps);
     adventureLog.adventureSteps = userSteps;
+    adventureLog.adventureCoin += userSteps / 50;
 
     await this.adventureMysqlRepository.updateAdventureLog(adventureLog);
 
