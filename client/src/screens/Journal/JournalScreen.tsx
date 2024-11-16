@@ -110,6 +110,7 @@ const JournalScreen = () => {
                           ? { uri: journal.image_urls[0] }
                           : testPic
                       }
+                      resizeMethod="resize"
                     />
 
                     <View style={styles.journalTitle}>

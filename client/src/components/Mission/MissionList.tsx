@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './MissionModal.styles';
 import { View, Image } from 'react-native';
 import StyledText from '../../styles/StyledText';
+import { useUser } from '../../store/user';
 const CompleteIcon = require('../../assets/icons/CompleteIcon.png');
 
 interface MissionProps {
@@ -22,6 +23,9 @@ interface MissionListProps {
 import { useEffect } from 'react';
 
 const missionImageSource = require('../../assets/images/RandomCharacter.png');
+const hatIcon = require('../../assets/icons/hatIcon.png');
+const handshakeIcon = require('../../assets/icons/handshakeIcon.png');
+const forkAndKnifeIcon = require('../../assets/icons/forkAndKnifeIcon.png');
 
 const MissionList = ({ selectedMenu, missionList }: MissionListProps) => {
   useEffect(() => {
@@ -42,12 +46,23 @@ const MissionList = ({ selectedMenu, missionList }: MissionListProps) => {
             return null;
           }
 
+          const missionTheme = item.missionTheme;
+
           const progress =
             (item.missionActionCount / item.missionTargetCount) * 100;
           return (
             <View style={styles.item} key={index}>
               <View style={styles.itemImageContainer}>
-                <Image source={missionImageSource} style={styles.itemImage} />
+                <Image
+                  source={
+                    missionTheme === 0
+                      ? forkAndKnifeIcon
+                      : missionTheme === 1
+                      ? hatIcon
+                      : handshakeIcon
+                  }
+                  style={styles.itemImage}
+                />
               </View>
               <View style={styles.itemInfoContainer}>
                 <StyledText bold style={styles.itemName}>
