@@ -23,7 +23,7 @@ const JournalScreen = () => {
     try {
       const res = await getJournalList(accessToken, setAccessToken);
       if (res) {
-        console.log('response', res);
+        console.log('---------- 모험일지 로딩 ----------', res);
       }
       setJournalList(res);
     } catch (err) {
@@ -70,7 +70,15 @@ const JournalScreen = () => {
                     style={styles.journalCard}
                     onPress={() => openJournalDetail(journal.adventure_log_id)}>
                     <View style={styles.journalCardBackground} />
-                    <Image style={styles.journalPicture} source={testPic} />
+                    <Image
+                      style={styles.journalPicture}
+                      source={
+                        journal.image_urls.length > 0
+                          ? { uri: journal.image_urls[0] }
+                          : testPic
+                      }
+                      resizeMethod="resize"
+                    />
                     <View style={styles.journalTitle}>
                       <StyledText bold>{journal.start_at}</StyledText>
                     </View>

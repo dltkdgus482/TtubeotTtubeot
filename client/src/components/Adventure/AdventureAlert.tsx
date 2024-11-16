@@ -56,12 +56,12 @@ const AdventureAlert = () => {
             <StyledText bold style={styles.alertDescription}>
               3. 하느님이 보우하사
             </StyledText>
+            <TouchableOpacity
+              style={styles.alertButton}
+              onPress={() => setPage(1)}>
+              <ButtonFlat content="뒤로가기" color="" />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={styles.alertButton}
-            onPress={() => setPage(1)}>
-            <ButtonFlat content="뒤로가기" color="" />
-          </TouchableOpacity>
         </View>
       );
     }

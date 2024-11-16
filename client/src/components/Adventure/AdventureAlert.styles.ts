@@ -65,9 +65,12 @@ const styles = StyleSheet.create({
   alertDescriptionContainer: {
     flexDirection: 'column',
     justifyContent: 'center',
-    alignContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
   },
-  alertDescription: {},
+  alertDescription: {
+    textAlign: 'center',
+  },
 });
 
 export default styles;

@@ -41,7 +41,7 @@ const AdventureFriendsModal = ({
           <View style={styles.modalView}>
             <View style={styles.modalTitleContainer}>
               <StyledText bold style={styles.modalTitle}>
-                주변 사용자 목록
+                주변 모험가 목록
               </StyledText>
             </View>
             <ScrollView style={styles.friendsContainer}>
@@ -56,7 +56,7 @@ const AdventureFriendsModal = ({
                   />
                 ))
               ) : (
-                <StyledText bold>근처에 사용자가 없습니다..</StyledText>
+                <StyledText bold>근처에 모험가가 없습니다..</StyledText>
               )}
             </ScrollView>
           </View>
