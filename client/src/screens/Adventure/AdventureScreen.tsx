@@ -311,8 +311,7 @@ const AdventureScreen = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           onPress={handlePressArButton}
-          // disabled={!nearbyTreasure}
-        >
+          disabled={!nearbyTreasure && currentReward === 0}>
           <Image
             source={CameraIcon}
             style={[

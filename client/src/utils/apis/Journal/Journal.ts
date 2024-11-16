@@ -22,19 +22,27 @@ const calculateDurationInMinutes = (startAt: string, endAt: string) => {
 export const getJournalList = async (
   accessToken: string,
   setAccessToken: (accessToken: string) => void,
+  page: number = 1,
 ): Promise<JournalData[]> => {
   try {
     const authClient = authRequest(accessToken, setAccessToken);
-    const res = await authClient.get('/adventure/reports?page=1&size=10');
-    console.log(res.data.data);
+    const res = await authClient.get(`/adventure/reports?page=${page}&size=9`);
+    // console.log(res.data.data);
 
-    const journalList = res.data.data.map((journal: JournalData) => ({
-      ...journal,
-      duration: calculateDurationInMinutes(journal.start_at, journal.end_at),
-      start_at: formatDate(journal.start_at),
-      end_at: formatDate(journal.end_at),
-    }));
-    // console.log('jouranl :', journalList);
+    const journalList = res.data.data
+      // .filter((journal: JournalData) => {
+      //   const isValidDistance = journal.adventure_distance >= 3;
+      //   const isValidSteps = journal.adventure_steps >= 30;
+      //   const isValidDuration =
+      //     calculateDurationInMinutes(journal.start_at, journal.end_at) >= 1;
+      //   return isValidDistance && isValidSteps && isValidDuration;
+      // })
+      .map((journal: JournalData) => ({
+        ...journal,
+        duration: calculateDurationInMinutes(journal.start_at, journal.end_at),
+        start_at: formatDate(journal.start_at),
+        end_at: formatDate(journal.end_at),
+      }));
     return journalList;
   } catch (err) {
     console.error('err :', err);
@@ -51,6 +59,7 @@ export const getJournalDetail = async (
     const authClient = authRequest(accessToken, setAccessToken);
     const res = await authClient.get(`/adventure/reports/${journalId}`);
     const journal = res.data.data;
+    console.log('journal', journal);
 
     return {
       ...journal,

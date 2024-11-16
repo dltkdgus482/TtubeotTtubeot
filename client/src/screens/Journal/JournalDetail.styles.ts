@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#3E4A3D',
   },
   flipContainer: {
+    top: 20,
     width: 30,
     height: 30,
     padding: 20,
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginTop: '1%',
     marginBottom: '4%',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
   },
@@ -80,15 +81,9 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'contain',
   },
-  titleTtubeot: {
-    height: '100%',
-    width: '25%',
-    resizeMode: 'contain',
-    // transform: [{ scaleX: -1 }],
-  },
   pictureContainer: {
     width: '100%',
-    height: '86%',
+    height: '83%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -98,6 +93,28 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '90%',
     resizeMode: 'contain',
+  },
+  pictureFooter: {
+    position: 'absolute',
+    bottom: -3,
+    paddingRight: 2,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 4,
+  },
+  withTtubeotContainer: {
+    borderRadius: 100,
+    backgroundColor: '#E3D6C5',
+  },
+  withTtubeot: {
+    height: 40,
+    width: 40,
+    resizeMode: 'contain',
+    borderRadius: 100,
+  },
+  footerText: {
+    // bottom: -10,
   },
   journalTitleContainer: {
     borderBottomWidth: 1,
@@ -146,6 +163,27 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 120,
     padding: 10,
+  },
+  fullScreenButton: {
+    position: 'absolute',
+    bottom: 70,
+    right: 10,
+    padding: 5,
+  },
+  fullScreenButtonBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#000',
+    borderRadius: 100,
+    opacity: 0.5,
+  },
+  fullScreenIcon: {
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
   },
 });
 
