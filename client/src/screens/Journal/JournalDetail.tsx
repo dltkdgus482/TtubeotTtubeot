@@ -23,6 +23,8 @@ type JournalDetailProps = {
 };
 
 const flipIcon = require('../../assets/icons/FlipIcon.png');
+const flipFrontIcon = require('../../assets/icons/FlipFrontIcon.png');
+const flipBackIcon = require('../../assets/icons/FlipBackIcon.png');
 const noPicture = require('../../assets/images/JournalImageNotCreated.png');
 const ttubeot = require('../../assets/images/TtubeotTitle.png');
 const mockTtu = require('../../assets/ttubeot/IntroTtubeotDog.png');
@@ -85,7 +87,6 @@ const JournalDetail = ({ journal, closeJournalDetail }: JournalDetailProps) => {
         accessToken,
         setAccessToken,
       );
-      console.log(res);
       if (res) {
         setJournalDetail(res);
       }
@@ -166,7 +167,10 @@ const JournalDetail = ({ journal, closeJournalDetail }: JournalDetailProps) => {
       <TouchableOpacity onPress={flipContainer}>
         <Animated.View
           style={[styles.flipContainer, { backgroundColor: animatedColor }]}>
-          <Image style={styles.flipButton} source={flipIcon} />
+          <Image
+            style={styles.flipButton}
+            source={isFrontView ? flipFrontIcon : flipBackIcon}
+          />
         </Animated.View>
       </TouchableOpacity>
       <Animated.View style={[styles.shadow, { opacity: shadowOpacity }]} />
@@ -268,7 +272,11 @@ const JournalDetail = ({ journal, closeJournalDetail }: JournalDetailProps) => {
                 <StyledText style={styles.journalDetail}>
                   모험 경로 확인
                 </StyledText>
-                {journalDetail?.gps_log && journalDetail.gps_log.length > 0 ? (
+                {journalDetail?.gps_log &&
+                journalDetail.gps_log.length > 0 &&
+                journalDetail.adventure_distance >= 3 &&
+                journalDetail.adventure_steps >= 30 &&
+                journalDetail.duration >= 1 ? (
                   <Pressable onPress={openRouteModal}>
                     <StyledText color="#7C92B3" style={styles.journalDetailMap}>
                       확인하기
