@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -12,8 +12,8 @@ import StyledText from '../../styles/StyledText';
 import useTreasureStore from '../../store/treasure';
 import ButtonFlat from '../Button/ButtonFlat';
 import { useFocusEffect } from '@react-navigation/native';
-import { getTreasureRequest } from '../../utils/apis/adventure/GetTreasure';
 import { useUser } from '../../store/user';
+import { updateCoin } from '../../utils/apis/users/updateUserInfo';
 
 type GetTreasureModalProps = {
   modalVisible: boolean;
@@ -26,16 +26,30 @@ const GetTreasureModal = ({
   modalVisible,
   closeModal,
 }: GetTreasureModalProps) => {
-  const { currentReward, setHasTreasure, setNearbyTreasure } =
-    useTreasureStore();
+  const {
+    currentReward,
+    treasureCount,
+    setCurrentReward,
+    setTreasureCount,
+    setHasTreasure,
+    setNearbyTreasure,
+  } = useTreasureStore();
 
   const getTreasure = () => {
+    updateCoin(currentReward);
     setHasTreasure(false);
     setNearbyTreasure(false);
+    setCurrentReward(0);
+    setTreasureCount(treasureCount + 1);
     setTimeout(() => {
       closeModal();
     }, 500);
   };
+
+  useEffect(() => {
+    console.log('currentReward', currentReward);
+    console.log('treasureCount', treasureCount);
+  }, [currentReward, treasureCount]);
 
   return (
     <Modal

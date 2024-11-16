@@ -55,12 +55,15 @@ import BleManager, {
 import { updateLog } from '../../utils/apis/updateLog';
 import { profileColor } from '../ProfileImageUrl';
 import useTreasureStore from '../../store/treasure';
+import ParkDetailModal from './ParkDetailModal';
+import { Park } from '../../types/Park';
 
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 const FriendIcon = require('../../assets/icons/FriendIcon.png');
 const nearbyUsersIcon = require('../../assets/icons/nearbyUsersIcon.png');
 const footPrintIcon = require('../../assets/icons/adventureFootPrint.png');
+const treasureMarkerIcon = require('../../assets/icons/treasureMarker.png');
 
 global.Buffer = require('buffer').Buffer;
 
@@ -251,15 +254,15 @@ const AdventureMapScreen = ({
 
   const [remainCounts, setRemainCounts] = useState<number[]>([]);
   const [remainCount, setRemainCount] = useState<number>(0);
+  const [parkList, setParkList] = useState<Park[]>([]);
   const [nearbyParkDistance, setNearbyParkDistance] = useState<number | null>(
     null,
   );
-  const { nearbyTreasure, currentReward, setNearbyTreasure, setCurrentReward } =
-    useTreasureStore();
+  const { setNearbyTreasure, setCurrentReward } = useTreasureStore();
 
   useEffect(() => {
-    // currentSteps.current = steps;
-    currentSteps.current = 1000;
+    currentSteps.current = steps;
+    // currentSteps.current = 1000;
     if (
       remainCounts.length > 0 &&
       currentSteps.current > remainCounts[0] &&
@@ -269,11 +272,9 @@ const AdventureMapScreen = ({
     }
   }, [steps]);
 
-  // useEffect(() => {
-  //   console.log('걸음수', remainCounts);
-  //   console.log('남은 보물', remainCount);
-  //   console.log('보물걸음', treasureSteps);
-  // }, [remainCount]);
+  useEffect(() => {
+    console.log(parkList);
+  }, [parkList]);
 
   // -----------------------------
 
@@ -292,14 +293,14 @@ const AdventureMapScreen = ({
       });
 
       socketRef.current.addAdventureParkListener(data => {
-        // // console.log('addAdventureParkListener:', data.parks);
-        const newData = data.parks[0];
-        console.log('newData:', newData);
-        // if (newData.distance < 250) {
-        setRemainCounts(newData.remainCounts);
-        setRemainCount(newData.remain_count);
-        setNearbyParkDistance(newData.distance);
-        // }
+        // console.log('addAdventureParkListener:', data.parks);
+        setParkList(data.parks);
+
+        const nearbyPark = data.parks[0];
+
+        setRemainCounts(nearbyPark.remainCounts);
+        setRemainCount(nearbyPark.remain_count);
+        setNearbyParkDistance(nearbyPark.distance);
       });
 
       socketRef.current.addAdventureRequestListener(data => {
@@ -319,7 +320,7 @@ const AdventureMapScreen = ({
       });
 
       socketRef.current.addAdventureRewardListener(data => {
-        // console.log('보상 정보를 수신합니다.', data);
+        console.log('보상 정보를 수신합니다.', data);
 
         if (data.type === 1) {
           // 친구추가, 인사 구분하는 로직 필요
@@ -328,10 +329,11 @@ const AdventureMapScreen = ({
             updateLog(accessToken, setAccessToken, 1);
             updateCoin(data.reward);
           }
-
-          if (data.type === 0) {
-            console.log(data.reward);
+        }
+        if (data.type === 0) {
+          if (data.reward > 0) {
             setCurrentReward(data.reward);
+            setNearbyParkDistance(null);
           }
         }
       });
@@ -493,6 +495,12 @@ const AdventureMapScreen = ({
     }, 3000);
   };
 
+  const [selectedPark, setSelectedPark] = useState<Park | null>(null);
+
+  const closeParkDetailModal = () => {
+    setSelectedPark(null);
+  };
+
   const markers = useMemo(() => {
     return (
       <View>
@@ -508,6 +516,26 @@ const AdventureMapScreen = ({
                 <Image source={profileColor[ttubeotId]} style={styles.marker} />
               </View>
             </Marker>
+            {parkList &&
+              parkList.length > 0 &&
+              parkList.map(park => {
+                if (park.remain_count > 0) {
+                  return (
+                    <Marker
+                      coordinate={{
+                        latitude: park.lat,
+                        longitude: park.lng,
+                      }}
+                      key={park.distance}
+                      title={park.name}
+                      icon={treasureMarkerIcon}
+                      onPress={() => {
+                        setSelectedPark(park);
+                      }}
+                    />
+                  );
+                }
+              })}
           </View>
         )}
       </View>
@@ -524,7 +552,7 @@ const AdventureMapScreen = ({
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.mapShadowContainer}>
-        <View style={styles.mapShadow}></View>
+        <View style={styles.mapShadow} />
         <View style={styles.mapContainer}>
           {loading ? (
             <ActivityIndicator size="large" color="#0000ff" />
@@ -532,12 +560,12 @@ const AdventureMapScreen = ({
             <StyledText>{errorMessage}</StyledText>
           ) : (
             <MaskedView
-              style={{ height: 500, width: '100%' }}
+              style={{ height: 390, width: '100%' }}
               maskElement={
                 <View
                   style={{
                     backgroundColor: 'black',
-                    height: 500,
+                    height: 390,
                     borderRadius: 25,
                     overflow: 'hidden',
                   }}
@@ -640,6 +668,15 @@ const AdventureMapScreen = ({
           content1="님으로부터 친구 요청이 왔어요!"
           content2="친구 요청을 수락하셨습니다!"
         />
+      )}
+      {selectedPark && (
+        <View style={styles.parkModalContainer}>
+          <ParkDetailModal
+            park={selectedPark}
+            modalVisible={selectedPark !== null}
+            closeModal={closeParkDetailModal}
+          />
+        </View>
       )}
     </SafeAreaView>
   );

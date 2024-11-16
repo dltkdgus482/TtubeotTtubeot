@@ -31,6 +31,7 @@ import { useUser } from '../../store/user';
 import { updateStepMission } from '../../utils/apis/Mission/updateMissionInfo';
 import StyledText from '../../styles/StyledText';
 import { updateLog } from '../../utils/apis/updateLog';
+import useAdventureStore from '../../store/adventure';
 import { getTtubeotDetail } from '../../utils/apis/users/userTtubeot';
 
 const { RnSensorStep, SystemUsage } = NativeModules;
@@ -69,7 +70,7 @@ const AdventureScreen = () => {
 
   const [isTreasureOpen, setIsTreasureOpen] = useState<boolean>(false);
 
-  const { hasTreasure, nearbyTreasure } = useTreasureStore();
+  const { hasTreasure, nearbyTreasure, currentReward } = useTreasureStore();
 
   const [isPressedNextButton, setIsPressedNextButton] =
     useState<boolean>(false);
@@ -107,6 +108,7 @@ const AdventureScreen = () => {
           setInitialSteps(event.steps);
         } else {
           setSteps(event.steps - initialSteps);
+          // setSteps(0);
         }
       },
     );
@@ -194,15 +196,13 @@ const AdventureScreen = () => {
   };
 
   const [loading, setLoading] = useState(true);
+  const { socketConnected } = useAdventureStore();
 
   useEffect(() => {
     if (isPressedNextButton) {
       connectSocket();
       startStepCounter();
-      setTimeout(() => {
-        setAdventureStart(true);
-        setLoading(false);
-      }, 2000);
+      setAdventureStart(true);
     } else {
       setAdventureStart(false);
       setLoading(true);
@@ -212,7 +212,13 @@ const AdventureScreen = () => {
   }, [isPressedNextButton]);
 
   useEffect(() => {
-    console.log('보물 찾음?', nearbyTreasure);
+    if (socketConnected) {
+      setLoading(false);
+    }
+  }, [socketConnected]);
+
+  useEffect(() => {
+    console.log('보물 찾음?', nearbyTreasure, currentReward);
     const openAR = async () => {
       if (hasPermission) {
         setIsARMode(true);
@@ -221,10 +227,10 @@ const AdventureScreen = () => {
         await requestPermission();
       }
     };
-    if (nearbyTreasure) {
+    if (nearbyTreasure && currentReward > 0) {
       openAR();
     }
-  }, [nearbyTreasure]);
+  }, [nearbyTreasure, currentReward]);
 
   const handlePressArButton = async () => {
     if (hasPermission) {
@@ -255,7 +261,11 @@ const AdventureScreen = () => {
   const renderPage = () => {
     if (adventureStart) {
       return loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator
+          size="large"
+          color="#0000ff"
+          style={styles.loading}
+        />
       ) : (
         <AdventureMapScreen
           steps={steps}

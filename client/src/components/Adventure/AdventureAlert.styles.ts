@@ -3,12 +3,12 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    top: 120,
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    top: 200,
   },
   alertContainer: {
-    position: 'absolute',
-    left: '50%',
-    transform: [{ translateX: -150 }],
     width: 300,
     height: 200,
     borderRadius: 40,

@@ -4,6 +4,7 @@ import { useUser } from '../../../store/user';
 import { authRequest, getNewToken } from '../../apis/request';
 import AdventureManager from './AdventureManager';
 import { update } from 'three/examples/jsm/libs/tween.module.js';
+import useAdventureStore from '../../../store/adventure';
 
 const SOCKET_SERVER_URL = 'https://ssafy.picel.net';
 const SOCKET_PATH = '/adventure/socket.io';
@@ -15,6 +16,7 @@ interface InitMessage {
 const useAdventureSocket = () => {
   const socketRef = useRef<Socket | null>(null);
   const { accessToken, setAccessToken } = useUser.getState();
+  const { setSocketConnected } = useAdventureStore();
 
   const connectSocket = useCallback(async () => {
     if (socketRef.current !== null) {
@@ -36,7 +38,7 @@ const useAdventureSocket = () => {
       const initMessage: InitMessage = { token: `Bearer ${accessToken}` };
       socketRef.current?.emit('adventure_init', initMessage);
       console.log('소켓 연결 수립 및 adventure_init 이벤트 전송:', initMessage);
-
+      setSocketConnected(true);
       // AdventureManager 초기화 및 소켓 인스턴스 전달
       AdventureManager.initialize(socketRef.current!);
     });
@@ -50,6 +52,7 @@ const useAdventureSocket = () => {
         console.log('adventure_result 이벤트 수신:', data);
 
         socketRef.current?.disconnect();
+        setSocketConnected(false);
         console.log('소켓 연결이 종료되었습니다.');
         AdventureManager.destory();
         socketRef.current.removeAllListeners();

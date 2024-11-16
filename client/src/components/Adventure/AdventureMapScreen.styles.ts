@@ -5,11 +5,20 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'relative',
     width: '100%',
-    paddingHorizontal: 20,
+    height: '100%',
+    top: 100,
+    paddingHorizontal: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   albumIcon: {
     width: 60,
     height: 60,
+  },
+  mapShadowContainer: {
+    position: 'relative',
+    width: '100%',
+    height: '100%',
   },
   mapContainer: {
     width: '100%',
@@ -17,20 +26,12 @@ const styles = StyleSheet.create({
     borderColor: '#C7E5C4',
     borderWidth: 5,
     borderRadius: 25,
-    paddingBottom: 10,
-    overflow: 'hidden',
     backgroundColor: 'white',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
     position: 'relative',
   },
   map: {
     width: '100%',
-    height: '100%',
-  },
-  mapShadowContainer: {
-    position: 'relative',
+    height: 400,
   },
   mapShadow: {
     position: 'absolute',
@@ -98,6 +99,12 @@ const styles = StyleSheet.create({
     height: 35,
     position: 'absolute',
     borderRadius: 200,
+  },
+  parkModalContainer: {
+    position: 'absolute',
+    top: 150,
+    width: '80%',
+    height: 200,
   },
 });
 
