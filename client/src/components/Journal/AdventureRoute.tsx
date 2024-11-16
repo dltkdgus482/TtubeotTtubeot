@@ -64,57 +64,68 @@ const AdventureRoute = ({
       <View style={styles.modalBackground}>
         <View style={styles.modalView}>
           <View style={styles.mapContainer}>
-            <MaskedView
-              style={{
-                height: '100%',
-                width: '100%',
-              }}
-              maskElement={
-                <View
-                  style={{
-                    backgroundColor: 'black',
-                    height: '100%',
-                    width: '100%',
-                    borderRadius: 25,
-                    overflow: 'hidden',
-                  }}
-                />
-              }>
-              <MapView
-                ref={mapRef}
-                provider={PROVIDER_GOOGLE}
-                customMapStyle={mapStyle}
-                initialRegion={{
-                  latitude: gpsLog[0].latitude,
-                  longitude: gpsLog[0].longitude,
-                  latitudeDelta: 0.0922,
-                  longitudeDelta: 0.0421,
+            {gpsLog.length > 0 ? (
+              <MaskedView
+                style={{
+                  height: '100%',
+                  width: '100%',
                 }}
-                style={styles.map}
-                onMapReady={fitMapToCoordinates}>
-                <Polyline
-                  coordinates={gpsLog}
-                  strokeColor="#FF0000"
-                  strokeWidth={3}
-                />
-                <Marker
-                  coordinate={{
+                maskElement={
+                  <View
+                    style={{
+                      backgroundColor: 'black',
+                      height: '100%',
+                      width: '100%',
+                      borderRadius: 25,
+                      overflow: 'hidden',
+                    }}
+                  />
+                }>
+                <MapView
+                  ref={mapRef}
+                  provider={PROVIDER_GOOGLE}
+                  customMapStyle={mapStyle}
+                  initialRegion={{
                     latitude: gpsLog[0].latitude,
                     longitude: gpsLog[0].longitude,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
                   }}
-                  title="시작"
-                  icon={startIcon}
-                />
-                <Marker
-                  coordinate={{
-                    latitude: gpsLog[gpsLog.length - 1].latitude,
-                    longitude: gpsLog[gpsLog.length - 1].longitude,
-                  }}
-                  title="종료"
-                  icon={finishIcon}
-                />
-              </MapView>
-            </MaskedView>
+                  style={styles.map}
+                  onMapReady={fitMapToCoordinates}>
+                  <Polyline
+                    coordinates={gpsLog}
+                    strokeColor="#FF0000"
+                    strokeWidth={3}
+                  />
+                  <Marker
+                    coordinate={{
+                      latitude: gpsLog[0].latitude,
+                      longitude: gpsLog[0].longitude,
+                    }}
+                    title="시작"
+                    icon={startIcon}
+                  />
+                  <Marker
+                    coordinate={{
+                      latitude: gpsLog[gpsLog.length - 1].latitude,
+                      longitude: gpsLog[gpsLog.length - 1].longitude,
+                    }}
+                    title="종료"
+                    icon={finishIcon}
+                  />
+                </MapView>
+              </MaskedView>
+            ) : (
+              <View style={styles.emptyGpsLogContainer}>
+                <StyledText style={styles.emptyGpsLogText}>
+                  "탐험 기록이 없어요!"
+                </StyledText>
+                <StyledText style={styles.emptyGpsLogText}>
+                  "새로운 모험을 시작해보세요!"
+                </StyledText>
+              </View>
+            )}
           </View>
           <Icon
             name="close"
