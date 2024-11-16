@@ -64,7 +64,10 @@ const styles = StyleSheet.create({
   },
   alertDescriptionContainer: {
     flexDirection: 'column',
+    justifyContent: 'center',
+    alignContent: 'center',
   },
+  alertDescription: {},
 });
 
 export default styles;
