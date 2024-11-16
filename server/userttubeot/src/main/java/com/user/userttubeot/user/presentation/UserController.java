@@ -7,6 +7,7 @@ import com.user.userttubeot.user.domain.dto.UserChangePasswordRequestDto;
 import com.user.userttubeot.user.domain.dto.UserProfileDto;
 import com.user.userttubeot.user.domain.dto.UserRankDto;
 import com.user.userttubeot.user.domain.dto.UserResponseDto;
+import com.user.userttubeot.user.domain.dto.UserRewardResqDto;
 import com.user.userttubeot.user.domain.dto.UserSignupRequestDto;
 import com.user.userttubeot.user.domain.dto.UserUpdateRequestDto;
 import com.user.userttubeot.user.domain.entity.User;
@@ -19,6 +20,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,6 +46,8 @@ public class UserController {
 
     private final UserService userService;
     private final CookieUtil cookieUtil;
+    @Value("${secret.key}")
+    private String secretHeader;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody @Valid UserSignupRequestDto request) {
@@ -216,5 +221,53 @@ public class UserController {
         }
     }
 
+    @PostMapping("/user/adventure-coin")
+    public ResponseEntity<?> adventureCoin(
+        @RequestHeader("Secret-Key") String secretKey,
+        @RequestBody UserRewardResqDto dto
+    ) {
+        return processCoinRequest("모험 코인 요청", secretKey, dto);
+    }
 
+    @PostMapping("/user/find-treasure")
+    public ResponseEntity<?> findTreasure(
+        @RequestHeader("Secret-Key") String secretKey,
+        @RequestBody UserRewardResqDto dto
+    ) {
+        return processCoinRequest("보물 획득 요청", secretKey, dto);
+    }
+
+    private ResponseEntity<?> processCoinRequest(
+        String logPrefix,
+        String secretKey,
+        UserRewardResqDto dto
+    ) {
+        try {
+            // 요청 로그
+            log.info("{}: userId={}, coin={}", logPrefix, dto.getUserId(), dto.getCoin());
+
+            // Secret-Key 검증
+            if (!secretHeader.equals(secretKey)) {
+                log.warn("{} - 잘못된 Secret-Key가 제공되었습니다: {}", logPrefix, secretKey);
+                return ResponseEntity.status(403).body("잘못된 Secret-Key입니다.");
+            }
+
+            // 비즈니스 로직 수행
+            Integer userId = dto.getUserId();
+            Integer coin = dto.getCoin();
+            userService.addCoins(userId, coin);
+
+            // 성공 로그
+            log.info("{} - 성공적으로 코인 추가: userId={}, 추가된 코인={}", logPrefix, userId, coin);
+            return ResponseEntity.ok("코인이 성공적으로 추가되었습니다.");
+        } catch (IllegalArgumentException e) {
+            // 입력 데이터 유효성 오류
+            log.error("{} - 입력 데이터 오류: {}", logPrefix, e.getMessage());
+            return ResponseEntity.badRequest().body("잘못된 입력 데이터입니다.");
+        } catch (Exception e) {
+            // 예기치 못한 에러
+            log.error("{} - 예기치 못한 오류 발생", logPrefix, e);
+            return ResponseEntity.status(500).body("서버 내부 오류가 발생했습니다.");
+        }
+    }
 }

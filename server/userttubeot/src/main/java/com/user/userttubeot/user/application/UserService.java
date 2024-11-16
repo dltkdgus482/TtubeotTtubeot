@@ -325,4 +325,10 @@ public class UserService {
 
         return userProfile;
     }
+
+    public void addCoins(Integer userId, Integer coin) {
+        User user = findUserById(userId);
+        user.addCoins(coin); // 상태 변경
+        userRepository.save(user);
+    }
 }
