@@ -29,4 +29,14 @@ public interface TtubeotLogRepository extends JpaRepository<TtubeotLog, Long> {
     @Query("SELECT t FROM TtubeotLog t WHERE t.userTtuBeotOwnership = :ownership ORDER BY t.createdAt DESC")
     List<TtubeotLog> findRecentLogsByOwnership(@Param("ownership") UserTtuBeotOwnership ownership,
         Pageable pageable);
+
+    // 특정 날짜, 타입, 그리고 ID로 로그 개수 조회
+    @Query("SELECT COUNT(t) FROM TtubeotLog t " +
+        "WHERE t.createdAt BETWEEN :startDate AND :endDate " +
+        "AND t.ttubeotLogType = :logType " +
+        "AND t.userTtuBeotOwnership.userTtubeotOwnershipId = :ownershipId")
+    int countLogsByDateTypeAndId(@Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate,
+        @Param("logType") int logType,
+        @Param("ownershipId") Long ownershipId);
 }
