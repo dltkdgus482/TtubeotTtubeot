@@ -13,6 +13,7 @@ interface Treasure {
   setNearbyTreasure: (value: boolean) => void;
   setTreasureCount: (value: number) => void;
   setCurrentReward: (value: number) => void;
+  checkAndResetTreasureCount: () => Promise<void>;
 }
 
 const useTreasureStore = create<Treasure>(set => ({
@@ -26,6 +27,22 @@ const useTreasureStore = create<Treasure>(set => ({
   setNearbyTreasure: value => set({ nearbyTreasure: value }),
   setTreasureCount: value => set({ treasureCount: value }),
   setCurrentReward: value => set({ currentReward: value }),
+  checkAndResetTreasureCount: async () => {
+    try {
+      const lastResetDate = await AsyncStorage.getItem('lastResetDate');
+      const today = new Date().toISOString().split('T')[0];
+
+      if (lastResetDate !== today) {
+        set({ treasureCount: 0 });
+        await AsyncStorage.setItem('lastResetDate', today);
+        console.log('Treasure count reset for the day');
+      } else {
+        console.log('Treasure count is up-to-date');
+      }
+    } catch (error) {
+      console.error('Error checking treasure count reset:', error);
+    }
+  },
 }));
 
 export default useTreasureStore;
