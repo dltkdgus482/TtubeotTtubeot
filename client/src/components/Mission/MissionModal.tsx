@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Modal, ScrollView, Image, TouchableOpacity } from 'react-native';
 import styles from './MissionModal.styles';
 import StyledText from '../../styles/StyledText';
-import Icon from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/Ionicons';
 import MissionList from './MissionList';
 import // dailyMissionList,
 // weeklyMissionList,

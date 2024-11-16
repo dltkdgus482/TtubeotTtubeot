@@ -10,6 +10,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "@expo/config-plugins": "^9.0.9",
+    "@firebase/app": "^0.10.16",
     "@notifee/react-native": "^9.1.2",
     "@react-native-async-storage/async-storage": "^2.0.0",
     "@react-native-firebase/app": "^21.4.0",
@@ -24,6 +26,7 @@
     "axios": "^1.7.7",
     "jwt-decode": "^4.0.0",
     "react": "18.3.1",
+    "react-dom": "^18.3.1",
     "react-native": "0.75.4",
     "react-native-ble-advertiser": "^0.0.17",
     "react-native-ble-manager": "^11.5.6",
@@ -47,7 +50,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "@babel/preset-env": "^7.20.0",
+    "@babel/preset-env": "^7.26.0",
     "@babel/runtime": "^7.20.0",
     "@react-native/babel-preset": "0.75.4",
     "@react-native/eslint-config": "0.75.4",

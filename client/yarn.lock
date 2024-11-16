@@ -1368,7 +1368,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:^7.20.0":
+"@babel/preset-env@npm:^7.26.0":
   version: 7.26.0
   resolution: "@babel/preset-env@npm:7.26.0"
   dependencies:
@@ -1654,6 +1654,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo/config-plugins@npm:^9.0.9":
+  version: 9.0.9
+  resolution: "@expo/config-plugins@npm:9.0.9"
+  dependencies:
+    "@expo/config-types": ^52.0.0
+    "@expo/json-file": ~9.0.0
+    "@expo/plist": ^0.2.0
+    "@expo/sdk-runtime-versions": ^1.0.0
+    chalk: ^4.1.2
+    debug: ^4.3.5
+    getenv: ^1.0.0
+    glob: ^10.4.2
+    resolve-from: ^5.0.0
+    semver: ^7.5.4
+    slash: ^3.0.0
+    slugify: ^1.6.6
+    xcode: ^3.0.1
+    xml2js: 0.6.0
+  checksum: 283181aba18daeccf8559676c80e56c1883d0a0ed6a82fd598952ce1e126aff8bc162cf8e659835c70f91d7b0c1498d38bf45b88c54755dee2b2aa7d4b89233f
+  languageName: node
+  linkType: hard
+
 "@expo/config-plugins@npm:~8.0.0":
   version: 8.0.11
   resolution: "@expo/config-plugins@npm:8.0.11"
@@ -1691,6 +1713,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo/config-types@npm:^52.0.0":
+  version: 52.0.1
+  resolution: "@expo/config-types@npm:52.0.1"
+  checksum: eff316abcf9244b880eb40b6eb51f9924973d833148a30084bf76aa33add144822a97a7eefe0c1c24cce3c4951d21f39b980db247944ce0f9c02b397412a3c48
+  languageName: node
+  linkType: hard
+
 "@expo/fingerprint@npm:^0.6.0":
   version: 0.6.1
   resolution: "@expo/fingerprint@npm:0.6.1"
@@ -1719,6 +1748,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo/json-file@npm:~9.0.0":
+  version: 9.0.0
+  resolution: "@expo/json-file@npm:9.0.0"
+  dependencies:
+    "@babel/code-frame": ~7.10.4
+    json5: ^2.2.3
+    write-file-atomic: ^2.3.0
+  checksum: 28a3db84a8a90eae901df14519f12d075dfd3ecd1502b07bc7c76b6c5445da0983c8d04651d71e2688722e915b56ab785a7372e23cc8e046e92f795fd36eb9d9
+  languageName: node
+  linkType: hard
+
 "@expo/plist@npm:^0.1.0":
   version: 0.1.3
   resolution: "@expo/plist@npm:0.1.3"
@@ -1727,6 +1767,17 @@ __metadata:
     base64-js: ^1.2.3
     xmlbuilder: ^14.0.0
   checksum: 8abe78bed4d1849f2cddddd1a238c6fe5c2549a9dee40158224ff70112f31503db3f17a522b6e21f16eea66b5f4b46cc49d22f2b369067d00a88ef6d301a50cd
+  languageName: node
+  linkType: hard
+
+"@expo/plist@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "@expo/plist@npm:0.2.0"
+  dependencies:
+    "@xmldom/xmldom": ~0.7.7
+    base64-js: ^1.2.3
+    xmlbuilder: ^14.0.0
+  checksum: f2714a33789451d97d7d4d3699ef0d687cc5c734aedce844f568165f12671aeeb26044eb6cf6fd8ec0cc4da76069019fc510286bd52daa5b509d82e7ce6beb9f
   languageName: node
   linkType: hard
 
@@ -1860,6 +1911,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@firebase/app@npm:^0.10.16":
+  version: 0.10.16
+  resolution: "@firebase/app@npm:0.10.16"
+  dependencies:
+    "@firebase/component": 0.6.11
+    "@firebase/logger": 0.4.4
+    "@firebase/util": 1.10.2
+    idb: 7.1.1
+    tslib: ^2.1.0
+  checksum: 8856d90ad80b6b2f00d6de1c1c233294d36f10cf767fd5b4a3d3996a4c429609e37bcf85efbcd0a932183cefcf27c56324e9666f0f267ed176313a970c8380af
+  languageName: node
+  linkType: hard
+
 "@firebase/auth-compat@npm:0.5.14":
   version: 0.5.14
   resolution: "@firebase/auth-compat@npm:0.5.14"
@@ -1909,6 +1973,16 @@ __metadata:
     "@react-native-async-storage/async-storage":
       optional: true
   checksum: f6ce5151dae619ed18dc2e205e3d6c17280a7f05fa0b6416b3dbb8d75c694c9feefaf8b30bca3d3a01ebaafd8865d6fb8b38fe46b5c23ec998278a834a1976a9
+  languageName: node
+  linkType: hard
+
+"@firebase/component@npm:0.6.11":
+  version: 0.6.11
+  resolution: "@firebase/component@npm:0.6.11"
+  dependencies:
+    "@firebase/util": 1.10.2
+    tslib: ^2.1.0
+  checksum: 0a172b370a9d5c8fbeaa041c695d784c077f0300c3412e6db7ad3f6067a226d7673f2237b7dcfa47f039c47fcd2c460ab767b0ed3edd13ffafc4e78f336602d8
   languageName: node
   linkType: hard
 
@@ -2090,6 +2164,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@firebase/logger@npm:0.4.4":
+  version: 0.4.4
+  resolution: "@firebase/logger@npm:0.4.4"
+  dependencies:
+    tslib: ^2.1.0
+  checksum: 5ab53233dd7ef772491dcabb6c3fbc3aecb2b49ca6364cab8501cad7b0b005a00d8bd6db7bcb8932225e7f580b51ae6313fe2c456dd70c45c919697ab0e56544
+  languageName: node
+  linkType: hard
+
 "@firebase/messaging-compat@npm:0.2.11":
   version: 0.2.11
   resolution: "@firebase/messaging-compat@npm:0.2.11"
@@ -2248,6 +2331,15 @@ __metadata:
   dependencies:
     tslib: ^2.1.0
   checksum: 3fb8f0e58145f10bf2de0497c89293cf76bcb79d440b818466f8e1e272e4051e04926443c611f930f862af00e174bd49dc9f0b2513ba1719263a5297d4837709
+  languageName: node
+  linkType: hard
+
+"@firebase/util@npm:1.10.2":
+  version: 1.10.2
+  resolution: "@firebase/util@npm:1.10.2"
+  dependencies:
+    tslib: ^2.1.0
+  checksum: a64ee0e3a9d2b89c9ea31902d1319ad78cfe213ad0b9fa5f77dd5d304c004dbebae115a20f3c789e312013cc1570bcb8fca462ca3a6db0dda5374c9ccf77c3b9
   languageName: node
   linkType: hard
 
@@ -5097,7 +5189,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:~4.3.1, debug@npm:~4.3.2":
+"debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.3.5, debug@npm:~4.3.1, debug@npm:~4.3.2":
   version: 4.3.7
   resolution: "debug@npm:4.3.7"
   dependencies:
@@ -6337,7 +6429,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^10.2.2, glob@npm:^10.3.10":
+"glob@npm:^10.2.2, glob@npm:^10.3.10, glob@npm:^10.4.2":
   version: 10.4.5
   resolution: "glob@npm:10.4.5"
   dependencies:
@@ -9275,6 +9367,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-dom@npm:^18.3.1":
+  version: 18.3.1
+  resolution: "react-dom@npm:18.3.1"
+  dependencies:
+    loose-envify: ^1.1.0
+    scheduler: ^0.23.2
+  peerDependencies:
+    react: ^18.3.1
+  checksum: 298954ecd8f78288dcaece05e88b570014d8f6dce5db6f66e6ee91448debeb59dcd31561dddb354eee47e6c1bb234669459060deb238ed0213497146e555a0b9
+  languageName: node
+  linkType: hard
+
 "react-freeze@npm:^1.0.0":
   version: 1.0.4
   resolution: "react-freeze@npm:1.0.4"
@@ -10767,8 +10871,10 @@ __metadata:
   resolution: "ttubeot@workspace:."
   dependencies:
     "@babel/core": ^7.20.0
-    "@babel/preset-env": ^7.20.0
+    "@babel/preset-env": ^7.26.0
     "@babel/runtime": ^7.20.0
+    "@expo/config-plugins": ^9.0.9
+    "@firebase/app": ^0.10.16
     "@notifee/react-native": ^9.1.2
     "@react-native-async-storage/async-storage": ^2.0.0
     "@react-native-firebase/app": ^21.4.0
@@ -10795,6 +10901,7 @@ __metadata:
     jwt-decode: ^4.0.0
     prettier: 2.8.8
     react: 18.3.1
+    react-dom: ^18.3.1
     react-native: 0.75.4
     react-native-ble-advertiser: ^0.0.17
     react-native-ble-manager: ^11.5.6
