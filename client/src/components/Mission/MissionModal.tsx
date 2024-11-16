@@ -57,7 +57,8 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
     const updateCoinInfo = async () => {
       const res = await getInfoApi(accessToken, setAccessToken);
       const newCoin = res.userCoin;
-      updateCoin(newCoin);
+      const prevCoin = user.coin;
+      updateCoin(newCoin - prevCoin);
     };
 
     const fetchDailyMissionlist = async () => {

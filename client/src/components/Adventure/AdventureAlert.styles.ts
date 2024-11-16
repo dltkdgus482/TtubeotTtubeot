@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 40,
     padding: 10,
+    flexDirection: 'column',
   },
   alertBackground: {
     position: 'absolute',
@@ -61,6 +62,12 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
   },
+  alertDescriptionContainer: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignContent: 'center',
+  },
+  alertDescription: {},
 });
 
 export default styles;

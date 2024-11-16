@@ -19,12 +19,14 @@ interface AdventureFriendsListParams {
   friend: UserProps;
   index: number;
   requestFriend: (opoonentUserId: number) => void;
+  isFriendRequestConfirmSent: boolean;
 }
 
 const AdventureFriendsList = ({
   friend,
   index,
   requestFriend,
+  isFriendRequestConfirmSent,
 }: AdventureFriendsListParams) => {
   const { accessToken, setAccessToken, user } = useUser.getState();
   const [username, setUsername] = useState<string>('');
@@ -38,7 +40,7 @@ const AdventureFriendsList = ({
     };
 
     checkIsFriend();
-  }, []);
+  }, [isFriendRequestConfirmSent]);
 
   useEffect(() => {
     const fetchUserInfo = async () => {

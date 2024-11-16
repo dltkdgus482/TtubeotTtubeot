@@ -20,6 +20,7 @@ interface AdventureFriendModalParams {
   closeFriendsModal: () => void;
   friends: UserProps[];
   requestFriend: (opponentUserId: number) => void;
+  isFriendRequestConfirmSent: boolean;
 }
 
 const AdventureFriendsModal = ({
@@ -27,6 +28,7 @@ const AdventureFriendsModal = ({
   closeFriendsModal,
   friends,
   requestFriend,
+  isFriendRequestConfirmSent,
 }: AdventureFriendModalParams) => {
   return (
     <Modal
@@ -50,6 +52,7 @@ const AdventureFriendsModal = ({
                     friend={friend}
                     index={index}
                     requestFriend={requestFriend}
+                    isFriendRequestConfirmSent={isFriendRequestConfirmSent}
                   />
                 ))
               ) : (

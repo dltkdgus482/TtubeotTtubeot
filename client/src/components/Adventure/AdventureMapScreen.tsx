@@ -623,6 +623,7 @@ const AdventureMapScreen = ({
         }}
         friends={nearbyUsers}
         requestFriend={requestFriend}
+        isFriendRequestConfirmSent={isFriendRequestConfirmSent}
       />
       {isNfcTagged && opponentUsername !== '' && (
         <NfcTagging
