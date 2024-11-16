@@ -5,8 +5,14 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'relative',
     width: '100%',
+    height: '100%',
+    alignItems: 'center',
   },
   backgroundImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
     opacity: 0.65,
     resizeMode: 'cover',
   },
@@ -21,11 +27,9 @@ const styles = StyleSheet.create({
     right: 10,
   },
   content: {
-    position: 'absolute',
-    top: 130,
     width: '100%',
-    paddingHorizontal: 0,
-    display: 'flex',
+    height: '100%',
+    position: 'relative',
   },
   startButtonContainer: {
     alignItems: 'center',
@@ -98,6 +102,13 @@ const styles = StyleSheet.create({
     top: 28,
     left: 17,
     fontSize: 14,
+  },
+  loading: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });
 

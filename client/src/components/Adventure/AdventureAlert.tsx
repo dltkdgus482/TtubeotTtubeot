@@ -54,9 +54,10 @@ const AdventureAlert = () => {
   };
   return (
     <View style={styles.container}>
-      <View style={styles.alertBackground}></View>
-      <View style={styles.triangle}></View>
-      {renderAlert()}
+      <View style={styles.alertBackground}>
+        <View style={styles.triangle} />
+        {renderAlert()}
+      </View>
     </View>
   );
 };
