@@ -12,12 +12,13 @@ import Icon from '../../components/Icon';
 import styles from './JournalDetail.styles';
 import ButtonFlat from '../../components/Button/ButtonFlat';
 import AdventureRoute from '../../components/Journal/AdventureRoute';
-import { JournalDetailData } from '../../types/JournalData';
+import { JournalData, JournalDetailData } from '../../types/JournalData';
 import { getJournalDetail } from '../../utils/apis/Journal/Journal';
 import { useUser } from '../../store/user';
+import { profileColor } from '../../components/ProfileImageUrl';
 
 type JournalDetailProps = {
-  id: number;
+  journal: JournalData;
   closeJournalDetail: () => void;
 };
 
@@ -26,7 +27,7 @@ const noPicture = require('../../assets/images/JournalImageNotCreated.png');
 const ttubeot = require('../../assets/images/TtubeotTitle.png');
 const mockTtu = require('../../assets/ttubeot/IntroTtubeotDog.png');
 
-const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
+const JournalDetail = ({ journal, closeJournalDetail }: JournalDetailProps) => {
   const { accessToken, setAccessToken } = useUser.getState();
   const flipAnimation = useRef(new Animated.Value(0)).current;
   const colorAnimation = useRef(new Animated.Value(0)).current;
@@ -79,7 +80,11 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
 
   const loadJournalDetail = async () => {
     try {
-      const res = await getJournalDetail(id, accessToken, setAccessToken);
+      const res = await getJournalDetail(
+        journal.adventure_log_id,
+        accessToken,
+        setAccessToken,
+      );
       console.log(res);
       if (res) {
         setJournalDetail(res);
@@ -135,6 +140,26 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
     setIsModalOpen(false);
   };
 
+  const getPostposition = name => {
+    const lastChar = name[name.length - 1];
+    const isKorean = /[가-힣]/.test(lastChar); // 마지막 글자가 한글인지 확인
+    const isEnglish = /[a-zA-Z]/.test(lastChar); // 마지막 글자가 영어인지 확인
+
+    if (isKorean) {
+      // 한글 음절의 유니코드 확인
+      const lastCharCode = lastChar.charCodeAt(0);
+      const jongseong = (lastCharCode - 0xac00) % 28; // 받침 여부 확인
+      return jongseong === 0 ? '와' : '과';
+    } else if (isEnglish) {
+      // 영어일 경우 모음(A, E, I, O, U) 확인 (대소문자 모두 처리)
+      const vowels = ['a', 'e', 'i', 'o', 'u'];
+      return vowels.includes(lastChar.toLowerCase()) ? '와' : '과';
+    }
+
+    // 한글/영어가 아닌 경우 기본적으로 "과" 반환
+    return '과';
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.backgroundCircle} />
@@ -158,7 +183,10 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
                 style={styles.title}
                 resizeMode="contain"
               />
-              <Image source={mockTtu} style={styles.titleTtubeot} />
+              <Image
+                source={profileColor[journal.ttubeot_id]}
+                style={styles.titleTtubeot}
+              />
             </View>
             <View style={styles.pictureContainer}>
               <Image
@@ -182,7 +210,10 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
           <View style={styles.backView}>
             <View style={styles.journalTitleContainer}>
               <StyledText bold style={styles.journalTitle}>
-                우리마루<StyledText>와 함께한</StyledText>
+                {journal.ttubeot_name}
+                <StyledText>
+                  {getPostposition(journal.ttubeot_name)} 함께한
+                </StyledText>
               </StyledText>
               <StyledText bold style={styles.journalTitle}>
                 {journalDetail.start_at}
@@ -237,11 +268,17 @@ const JournalDetail = ({ id, closeJournalDetail }: JournalDetailProps) => {
                 <StyledText style={styles.journalDetail}>
                   모험 경로 확인
                 </StyledText>
-                <Pressable onPress={openRouteModal}>
-                  <StyledText color="#7C92B3" style={styles.journalDetailMap}>
-                    확인하기
+                {journalDetail?.gps_log && journalDetail.gps_log.length > 0 ? (
+                  <Pressable onPress={openRouteModal}>
+                    <StyledText color="#7C92B3" style={styles.journalDetailMap}>
+                      확인하기
+                    </StyledText>
+                  </Pressable>
+                ) : (
+                  <StyledText style={styles.journalDetail}>
+                    모험 경로가 없어요!
                   </StyledText>
-                </Pressable>
+                )}
               </View>
             </View>
           </View>

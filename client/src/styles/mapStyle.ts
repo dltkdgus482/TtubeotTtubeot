@@ -1,33 +1,15 @@
 export const mapStyle = [
   {
     featureType: 'all',
-    elementType: 'geometry',
+    elementType: 'all',
     stylers: [
       {
-        visibility: 'simplified',
+        visibility: 'on',
       },
     ],
   },
   {
     featureType: 'all',
-    elementType: 'labels.text',
-    stylers: [
-      {
-        visibility: 'off',
-      },
-    ],
-  },
-  {
-    featureType: 'all',
-    elementType: 'labels.icon',
-    stylers: [
-      {
-        visibility: 'off',
-      },
-    ],
-  },
-  {
-    featureType: 'poi.park',
     elementType: 'geometry',
     stylers: [
       {
@@ -36,20 +18,11 @@ export const mapStyle = [
     ],
   },
   {
-    featureType: 'poi.park',
+    featureType: 'all',
     elementType: 'labels',
     stylers: [
       {
-        visibility: 'on',
-      },
-    ],
-  },
-  {
-    featureType: 'poi.park',
-    elementType: 'labels.text',
-    stylers: [
-      {
-        visibility: 'on',
+        visibility: 'off',
       },
     ],
   },
@@ -65,6 +38,7 @@ export const mapStyle = [
       },
     ],
   },
+
   {
     featureType: 'road',
     elementType: 'geometry.stroke',

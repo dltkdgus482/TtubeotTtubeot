@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Modal, Image, TouchableOpacity } from 'react-native';
 import styles from './FriendsModal.styles';
-import Icon from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/Ionicons';
 import StyledText from '../../styles/StyledText';
 import ButtonFlat from '../Button/ButtonFlat';
 import { getFriendList } from '../../utils/apis/users/getFriendList';
@@ -127,7 +127,7 @@ const FriendsModal: React.FC<FriendsModalProps> = ({
                       content=""
                       width={50}
                       height={50}
-                      borderRadius={50}
+                      borderRadius={60}
                     />
                     <Image source={sendCoin} style={styles.sendCoinIcon} />
                   </TouchableOpacity>

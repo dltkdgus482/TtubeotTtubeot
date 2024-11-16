@@ -22,6 +22,7 @@ import FindPasswordScreen from './src/screens/Profile/FindPasswordScreen';
 import SetNewPasswordScreen from './src/screens/Profile/SetNewPasswordScreen';
 import messaging from '@react-native-firebase/messaging';
 import notifee, { AndroidImportance } from '@notifee/react-native';
+import useTreasureStore from './src/store/treasure';
 
 const Stack = createStackNavigator();
 
@@ -64,6 +65,17 @@ function App(): React.JSX.Element {
     });
 
     return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    const resetTreasureCount = async () => {
+      await useTreasureStore.getState().checkAndResetTreasureCount();
+      console.log(
+        '오늘 보물 찾은 횟수',
+        useTreasureStore.getState().treasureCount,
+      );
+    };
+    resetTreasureCount();
   }, []);
 
   const { isLoggedIn } = useUser();

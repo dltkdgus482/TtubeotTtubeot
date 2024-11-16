@@ -36,6 +36,20 @@ const styles = StyleSheet.create({
     top: 10,
     right: 10,
   },
+  emptyGpsLogContainer: {
+    flex: 1,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f8f9fa',
+    borderRadius: 25,
+  },
+  emptyGpsLogText: {
+    fontSize: 18,
+    color: '#6c757d',
+    textAlign: 'center',
+    paddingHorizontal: 20,
+  },
 });
 
 export default styles;

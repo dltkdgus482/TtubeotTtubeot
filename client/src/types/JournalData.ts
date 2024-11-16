@@ -13,6 +13,8 @@ export type JournalData = {
   gps_log_key: string;
   image_urls: string[];
   duration: number;
+  ttubeot_name: string;
+  ttubeot_id: number;
 };
 
 export type JournalDetailData = {
@@ -29,4 +31,6 @@ export type JournalDetailData = {
   gps_log: Location[];
   image_urls: string[];
   duration: number;
+  ttubeot_name: string;
+  ttubeot_id: number;
 };
