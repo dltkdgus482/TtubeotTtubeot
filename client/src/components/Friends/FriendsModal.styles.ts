@@ -5,15 +5,11 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
     width: '100%',
     height: '89%',
-  },
-  modalText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
   titleBackContainer: {
     position: 'absolute',
@@ -21,11 +17,15 @@ const styles = StyleSheet.create({
     height: '100%',
     marginTop: 30,
     backgroundColor: '#DFD6C0',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   titleBackImage: {
-    width: '104%',
-    height: 50,
+    width: '100%',
+    height: 52,
     resizeMode: 'stretch',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   titleImage: {
     width: '30%',
@@ -46,8 +46,8 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    top: 15,
-    right: 20,
+    top: 20,
+    right: 16,
   },
   friendsContainer: {
     width: '100%',
@@ -56,9 +56,10 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   friends: {
-    width: '96%',
+    width: '94%',
     height: 80,
-    backgroundColor: '#F2E6D6',
+    alignSelf: 'center',
+    backgroundColor: '#F3EBD8',
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
@@ -71,12 +72,12 @@ const styles = StyleSheet.create({
       height: 2,
     },
     shadowOpacity: 0.3,
-    elevation: 5,
-    borderRadius: 15,
+    elevation: 3,
+    borderRadius: 20,
   },
   friendImageContainer: {
     width: '17%',
-    marginLeft: 10,
+    marginLeft: 3,
   },
   friendImage: {
     width: 50,
@@ -114,17 +115,16 @@ const styles = StyleSheet.create({
   },
   footPrintText: {
     fontSize: 16,
-    paddingTop: 3,
   },
   sendCoin: {
-    width: '13%',
+    width: '14%',
   },
   sendCoinIcon: {
     position: 'absolute',
-    top: 3,
-    left: 3,
-    width: 40,
-    height: 40,
+    top: 5,
+    left: 8,
+    width: 38,
+    height: 38,
     resizeMode: 'contain',
   },
 });
