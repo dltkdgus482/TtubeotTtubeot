@@ -103,9 +103,11 @@ public class UserTtuBeotOwnership {
     }
 
     // 뚜벗의 상태 갱신 메서드
-    public void updateBreakUpAndStatus(LocalDateTime breakUpTime, Integer newStatus) {
+    public UserTtuBeotOwnership updateBreakUpAndStatus(LocalDateTime breakUpTime,
+        Integer newStatus) {
         this.breakUp = breakUpTime;
         this.ttubeotStatus = newStatus;
+        return this;
     }
 
     // 점수 누적 메서드

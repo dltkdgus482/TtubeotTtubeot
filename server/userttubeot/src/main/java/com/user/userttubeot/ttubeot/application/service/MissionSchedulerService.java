@@ -36,18 +36,18 @@ public class MissionSchedulerService {
     private final UserService userService;
 
     // 매일 일정시간에 모든 유저에게 테스트 알림 전송
-    @Scheduled(cron = "00 28 05 * * *")
-    public void sendTestNotification() {
-        // 모든 유저 조회
-        List<User> users = userRepository.findAll();
-
-        for (User user : users) {
-            String fcmToken = user.getFcmToken();
-            if (fcmToken != null && !fcmToken.isEmpty()) {
-                alertService.sendMissionNotification(fcmToken, "482야 레전드 불꺼라", "불끄고 자세요 여러분");
-            }
-        }
-    }
+//    @Scheduled(cron = "00 28 05 * * *")
+//    public void sendTestNotification() {
+//        // 모든 유저 조회
+//        List<User> users = userRepository.findAll();
+//
+//        for (User user : users) {
+//            String fcmToken = user.getFcmToken();
+//            if (fcmToken != null && !fcmToken.isEmpty()) {
+//                alertService.sendMissionNotification(fcmToken, "482야 레전드 불꺼라", "불끄고 자세요 여러분");
+//            }
+//        }
+//    }
 
     // 매일 자정에 일일 미션 초기화
     @Scheduled(cron = "0 30 00 * * *")
@@ -68,7 +68,7 @@ public class MissionSchedulerService {
     }
 
     // 뚜벗 관심 지수 감소
-    @Scheduled(cron = "0 30 * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void decreaseTtubeotInterestHourly() {
         String currentTime = LocalDateTime.now()
             .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -105,7 +105,9 @@ public class MissionSchedulerService {
 
         // 관심도가 0 이하인 경우, 상태 업데이트
         if (updatedInterest <= 0) {
-            userTtuBeotOwnership.updateBreakUpAndStatus(LocalDateTime.now(), 2);
+            UserTtuBeotOwnership updated = userTtuBeotOwnership.updateBreakUpAndStatus(
+                LocalDateTime.now(), 2);
+            userTtubeotOwnershipRepository.save(updated);
             log.info("관심도가 0 이하로 떨어져 뚜벗이 도망갔습니다. (사용자 ID: {})", userId);
         }
 
