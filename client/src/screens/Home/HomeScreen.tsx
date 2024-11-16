@@ -73,6 +73,7 @@ const HomeScreen = () => {
   const [horseBalloonContent, setHorseBalloonContent] =
     useState<ImageSourcePropType>(null);
   const [warningModalVisible, setWarningModalVisible] = useState(false);
+  const [webviewOpacity, setWebviewOpacity] = useState<number>(0);
 
   const webViewRef = useRef(null);
 
@@ -123,7 +124,6 @@ const HomeScreen = () => {
   };
 
   const handleBalloonPress = async () => {
-    // 이거 나중에 0으로 고쳐라
     if (currentTtubeotStatus === 0) {
       await updateLog(accessToken, setAccessToken, 0);
       console.log('로그 추가 api 호출완');
@@ -144,6 +144,12 @@ const HomeScreen = () => {
   }, [currentTtubeotStatus]);
 
   useEffect(() => {
+    setTimeout(() => {
+      setWebviewOpacity(1);
+    }, 550);
+  }, []);
+
+  useEffect(() => {
     const fetchCoinInfo = async () => {
       const updatedUserInfo = await getInfoApi(accessToken, setAccessToken);
       if (updatedUserInfo) {
@@ -160,11 +166,11 @@ const HomeScreen = () => {
       accessToken,
       setAccessToken,
     );
-    setUser({ ...user, steps: res.ttubeotScore });
     if (res === null) {
       setTtubeotId(46);
     } else {
       setTtubeotId(res.ttubeotId);
+      setUser({ ...user, steps: res.ttubeotScore });
     }
     console.log('내뚜벗 아이디가 뭔교', ttubeotId);
     sendId(ttubeotId);
@@ -212,7 +218,7 @@ const HomeScreen = () => {
           ref={webViewRef}
           originWhitelist={['*']}
           source={{ uri: 'file:///android_asset/renderModel.html' }}
-          style={styles.ttubeotWebview}
+          style={[styles.ttubeotWebview, { opacity: webviewOpacity }]}
           allowFileAccess={true}
           allowFileAccessFromFileURLs={true}
           allowUniversalAccessFromFileURLs={true}
@@ -235,7 +241,10 @@ const HomeScreen = () => {
 
         {ttubeotId === 46 && (
           <TouchableOpacity
-            style={styles.meetingTtubeotButtonContainer}
+            style={[
+              styles.meetingTtubeotButtonContainer,
+              { opacity: webviewOpacity },
+            ]}
             onPress={openShopModal}>
             <Image
               source={meetingTtubeotButton}
