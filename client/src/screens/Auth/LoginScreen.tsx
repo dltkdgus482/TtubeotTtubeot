@@ -15,6 +15,7 @@ import ButtonFlat from '../../components/Button/ButtonFlat';
 import { loginApi, getInfoApi } from '../../utils/apis/users';
 import { useNavigation } from '@react-navigation/native';
 import { useUser } from '../../store/user';
+import { getTtubeotDetail } from '../../utils/apis/users/userTtubeot';
 
 const background = require('../../assets/images/IntroBackground.png');
 const title = require('../../assets/images/TtubeotTitle.png');
@@ -22,7 +23,8 @@ const withTtubeot = require('../../assets/images/WithTtubeot.png');
 
 const LoginScreen = () => {
   const user = useUser(state => state.user); // 현재 user 상태 가져오기
-  const { setAccessToken, setIsLoggedIn, setUser } = useUser.getState();
+  const { setAccessToken, setIsLoggedIn, setUser, setTtubeotId } =
+    useUser.getState();
   const [phone, setPhone] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const navigation = useNavigation();
@@ -74,6 +76,22 @@ const LoginScreen = () => {
 
         // 상태 변경 후 확인
         console.log('Updated user state:', useUser.getState().user);
+
+        // 뚜벗 정보 가져오기
+        const ttubeotDetail = await getTtubeotDetail(
+          userId,
+          currentAccessToken,
+          setAccessToken,
+        );
+
+        // 뚜벗 ID 업데이트
+        if (ttubeotDetail === null) {
+          setTtubeotId(46); // 기본값
+        } else {
+          setTtubeotId(ttubeotDetail.ttubeotId);
+        }
+
+        console.log('Updated Ttubeot ID:', useUser.getState().ttubeotId);
 
         // 홈 화면으로 이동
         navigation.navigate('IntroScreen');
