@@ -5,6 +5,6 @@ const router = Router();
 
 router.get("/:adventureLogId", ReportController.getAdventureLogDetail);
 router.get("/", ReportController.getAdventureLogList);
-router.get("/size", ReportController.getAdventureLogSize);
+router.get("/log-count", ReportController.getAdventureLogSize);
 
 export default router;

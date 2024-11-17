@@ -54,11 +54,15 @@ class AdventureMysqlRepository {
     size: number
   ): Promise<any[]> {
     const [result]: any = await connection.query(
-      `SELECT * FROM adventure_log WHERE user_id = ? ORDER BY adventure_log_id ASC LIMIT ?, ?`,
+      `SELECT * 
+        FROM adventure_log 
+        WHERE user_id = ? AND gps_log_key IS NOT NULL 
+        ORDER BY end_at DESC 
+        LIMIT ?, ?`,
       [userId, (page - 1) * size, size]
     );
 
-    // change snake_case to camelCase
+    // change snake_case to camelCase (if necessary)
     return result;
   }
 
