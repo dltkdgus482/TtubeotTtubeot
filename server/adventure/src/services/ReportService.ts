@@ -45,6 +45,13 @@ class ReportService {
     return adventureLogList;
   }
 
+  async getAdventureLogSize(userId: number): Promise<number> {
+    let adventureLogSize =
+      await this.adventureMysqlRepository.getAdventureLogCount(userId);
+
+    return adventureLogSize;
+  }
+
   async getAdventureLogDetail(adventureLogId: number): Promise<any> {
     let adventureLog =
       await this.adventureMysqlRepository.getAdventureLogDetail(adventureLogId);

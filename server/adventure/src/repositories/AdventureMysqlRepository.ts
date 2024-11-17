@@ -48,7 +48,11 @@ class AdventureMysqlRepository {
     );
   }
 
-  async getAdventureLogList(userId: number, page: number, size: number): Promise<any[]> {
+  async getAdventureLogList(
+    userId: number,
+    page: number,
+    size: number
+  ): Promise<any[]> {
     const [result]: any = await connection.query(
       `SELECT * FROM adventure_log WHERE user_id = ? ORDER BY adventure_log_id ASC LIMIT ?, ?`,
       [userId, (page - 1) * size, size]
@@ -56,6 +60,16 @@ class AdventureMysqlRepository {
 
     // change snake_case to camelCase
     return result;
+  }
+
+  async getAdventureLogCount(userId: number): Promise<number> {
+    const [result]: any = await connection.query(
+      `SELECT COUNT(*) AS count FROM adventure_log WHERE user_id = ?`,
+      [userId]
+    );
+
+    // 반환된 결과에서 count 값을 추출하여 반환
+    return result[0].count;
   }
 
   async getAdventureLogDetail(adventureLogId: number): Promise<any> {

@@ -1,9 +1,10 @@
-import { Router } from 'express';
-import ReportController from '../controllers/ReportController';
+import { Router } from "express";
+import ReportController from "../controllers/ReportController";
 
 const router = Router();
 
-router.get('/:adventureLogId', ReportController.getAdventureLogDetail);
-router.get('/', ReportController.getAdventureLogList);
+router.get("/:adventureLogId", ReportController.getAdventureLogDetail);
+router.get("/", ReportController.getAdventureLogList);
+router.get("/size", ReportController.getAdventureLogSize);
 
 export default router;
