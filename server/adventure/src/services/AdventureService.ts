@@ -202,7 +202,7 @@ class AdventureService {
 
     let park = parkList[0];
 
-    if (park.distance > 100) {
+    if (park.distance > 300) {
       return { reward: 0, remain_count: 0 };
     }
 
