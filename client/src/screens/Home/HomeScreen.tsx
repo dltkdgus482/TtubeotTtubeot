@@ -227,7 +227,7 @@ const HomeScreen = () => {
           webViewRef.current.postMessage(
             JSON.stringify({ type: 'changeId', id }),
           );
-        }, 100);
+        }, 170);
       }
     }
   };
