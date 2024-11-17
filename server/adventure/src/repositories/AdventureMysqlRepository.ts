@@ -67,6 +67,7 @@ class AdventureMysqlRepository {
       `SELECT COUNT(*) AS count FROM adventure_log WHERE user_id = ?`,
       [userId]
     );
+    console.log(userId + " 의 getAdventureLogCount 결과: " + result[0]);
 
     // 반환된 결과에서 count 값을 추출하여 반환
     return result[0].count;

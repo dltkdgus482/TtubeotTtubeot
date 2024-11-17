@@ -46,9 +46,10 @@ class ReportService {
   }
 
   async getAdventureLogSize(userId: number): Promise<number> {
+    console.log(userId + " 의 모험 로그 조회 ");
     let adventureLogSize =
       await this.adventureMysqlRepository.getAdventureLogCount(userId);
-
+    console.log(userId + " 의 모험 로그 개수: " + adventureLogSize);
     return adventureLogSize;
   }
 
