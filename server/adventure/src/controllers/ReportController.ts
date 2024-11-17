@@ -31,6 +31,8 @@ class ReportController {
   async getAdventureLogSize(req: Request, res: Response) {
     let token = req.headers.authorization?.split(" ")[1];
     let userId = JWTParser.parseUserIdFromJWT(token ?? "");
+    console.log(userId + " 의 모험 발자취 갯수 조회 시작");
+
     if (userId === -1) {
       res.status(401).json({ message: "Unauthorized" });
       return;
