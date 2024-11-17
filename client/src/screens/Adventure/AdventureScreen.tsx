@@ -42,8 +42,6 @@ const CameraIcon = require('../../assets/icons/CameraIcon.png');
 const MissionIcon = require('../../assets/icons/MissionIcon.png');
 const MapIcon = require('../../assets/icons/MapIcon.png');
 const horseBalloon = require('../../assets/images/horseBalloon.png');
-const footPrintIcon = require('../../assets/icons/FootprintIcon.png');
-const greenFootPrintIcon = require('../../assets/icons/FootprintIconDeepGreen.png');
 
 const isRunningOnEmulator = () => {
   if (Platform.OS === 'android') {
@@ -293,6 +291,7 @@ const AdventureScreen = () => {
   useFocusEffect(
     useCallback(() => {
       sendId(ttubeotId);
+      setModalVisible(false);
     }, [ttubeotId]),
   );
   return (
@@ -393,6 +392,7 @@ const AdventureScreen = () => {
         ) : (
           <GetTreasureModal
             modalVisible={isTreasureOpen}
+            ttubeotId={ttubeotId}
             closeModal={handleCloseTreasure}
           />
         ))}
@@ -401,6 +401,11 @@ const AdventureScreen = () => {
         missionModalVisible={missionVisible}
         closeMissionModal={handleCloseMissionModal}
       />
+      {/* <GetTreasureModal
+        modalVisible={modalVisible}
+        ttubeotId={ttubeotId}
+        closeModal={closeModal}
+      /> */}
     </SafeAreaView>
   );
 };

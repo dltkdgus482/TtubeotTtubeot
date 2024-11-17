@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Text, View, Modal, Pressable, Image } from 'react-native';
 import styles from './AdventureRoute.styles';
-import Icon from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/Ionicons';
 import MapView, { PROVIDER_GOOGLE, Polyline, Marker } from 'react-native-maps';
 import { mapStyle } from '../../styles/mapStyle';
 import MaskedView from '@react-native-masked-view/masked-view';
