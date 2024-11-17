@@ -3,7 +3,6 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   backGround: {
     flex: 1,
-    resizeMode: 'contain', // 이미지 비율을 유지하며 화면을 넓게 보여줌
     justifyContent: 'center', // 필요 시 중앙 정렬 추가
     alignItems: 'center', // 필요 시 중앙 정렬 추가
     backgroundColor: '#C7E5C4',
@@ -18,18 +17,17 @@ const styles = StyleSheet.create({
   backgroundImage: {
     width: '100%',
     height: '100%',
-    top: '10%',
+    resizeMode: 'cover',
     position: 'absolute', // 배경 이미지를 전체 화면에 고정
     opacity: 0.9, // 흐릿하게 보이도록 투명도 조절
   },
-  // topThreeList: {
-  //   width: '100%',
-  //   height: '26%',
-  //   flexDirection: 'row',
-  //   justifyContent: 'center',
-  //   alignItems: 'flex-end',
-  //   gap: 10,
-  // },
+  titleImage: {
+    position: 'absolute',
+    resizeMode: 'contain',
+    width: 240,
+    height: 130,
+    top: 50,
+  },
   topThreeList: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -43,7 +41,7 @@ const styles = StyleSheet.create({
     height: '90%',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    backgroundColor: '#EBC11B',
+    backgroundColor: '#FFED97',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -52,7 +50,7 @@ const styles = StyleSheet.create({
     height: '65%',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    backgroundColor: '#D6CCA6',
+    backgroundColor: '#E2EBEE',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -61,7 +59,7 @@ const styles = StyleSheet.create({
     height: '45%',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    backgroundColor: '#E79E5E',
+    backgroundColor: '#FDB777',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -79,79 +77,77 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 5,
     paddingVertical: 10, // 상하 여백을 사용해 높이를 유동적으로 만듦
-    paddingHorizontal: '3%', // 좌우 여백을 화면 비율에 맞게 설정
+    paddingHorizontal: '5%', // 좌우 여백을 화면 비율에 맞게 설정
     marginHorizontal: '2%', // 컨테이너 간의 여백을 화면 비율에 맞게 설정
     borderRadius: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
     width: '100%', // 컨테이너가 화면의 대부분을 차지하도록 설정
-    // padding: 4,
     height: 80,
   },
 
   ranking: {
-    fontSize: 30,
-    justifyContent: 'flex-start', // 상위 컨테이너 안에서 왼쪽 정렬
+    fontSize: 24,
+    // justifyContent: 'flex-start', // 상위 컨테이너 안에서 왼쪽 정렬
     alignItems: 'flex-start', // 세로로도 왼쪽 정렬
     textAlign: 'left', // 텍스트 왼쪽 정렬
-    marginLeft: -10, // 음수 값을 주어 좀 더 왼쪽으로 이동
-  },
-
-  rankingImage: {
-    width: 60,
-    height: 60,
-    marginLeft: -10,
+    marginLeft: -15, // 음수 값을 주어 좀 더 왼쪽으로 이동
   },
   rankingInfo: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    width: '90%',
+    width: '92%',
     backgroundColor: '#F5F8FA',
     borderRadius: 20,
-    padding: '1%',
+    padding: 5,
     paddingHorizontal: '5%',
+    paddingVertical: 10,
+    borderWidth: 2,
+    borderColor: '#F1F1F1',
+  },
+  isMerankingInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '92%',
+    backgroundColor: '#F5F8FA',
+    borderRadius: 20,
+    padding: 5,
+    paddingHorizontal: '5%',
+    borderWidth: 2,
+    borderColor: '#b4d7ee',
   },
   rankingName: {
-    width: 110,
     fontSize: 18,
-    textAlign: 'left',
-    marginLeft: 10,
-    marginRight: 'auto', // 이름을 이미지 바로 왼쪽에 고정
   },
   rankingScore: {
-    width: '25%',
-    fontSize: 20,
+    fontSize: 16,
     textAlign: 'right',
+    marginRight: 8,
   },
   medal: {
     position: 'absolute',
-    top: 0,
-    height: 55, // 원하는 사이즈로 높이 조정
+    top: 10,
+    height: 45,
     objectFit: 'contain',
   },
-
-  nameAndScore: {
-    flexDirection: 'row', // 이름과 점수를 가로로 배치
-    alignItems: 'center', // 세로 가운데 정렬
-    flex: 1, // 남는 공간을 차지하여 점수가 오른쪽 끝으로 가도록 함
-  },
-  playerImage: {
+  top3PlayerImage: {
     width: 80,
     height: 80,
-    marginTop: 8,
+  },
+  playerImage: {
+    width: 70,
+    height: 70,
   },
   playerName: {
     width: 120,
-    fontSize: 18,
+    fontSize: 16,
     position: 'absolute',
     top: -110,
     textAlign: 'center',
-    color: '#231514',
+    color: '#393331',
   },
-  playerImageContainer: {
+  top3PlayerImageContainer: {
     position: 'absolute',
     top: -80,
     backgroundColor: 'white',
@@ -173,10 +169,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden', // 원을 벗어나는 이미지 숨기기
   },
   rankingText: {
-    // marginTop: 10,
-    top: '20%',
-    fontSize: 40, // 글자 크기
-    // fontWeight: 'bold', // 두께
+    top: '18%',
+    fontSize: 26, // 글자 크기
     textAlign: 'center', // 중앙 정렬
   },
   rankingDescription: {
@@ -187,25 +181,31 @@ const styles = StyleSheet.create({
     marginBottom: 20, // 배경 이미지 및 버튼 컨테이너와의 간격
   },
   imageWrapper: {
-    width: 65,
-    height: 65,
+    width: 55,
+    height: 55,
     borderRadius: 50, // width와 height의 절반 값으로 설정해 원형 만들기
     backgroundColor: 'white', // 흰색 배경
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden', // 원을 벗어나는 이미지 숨기기
-    marginRight: 10, // 이미지와 이름 사이 간격
+    marginRight: 15, // 이미지와 이름 사이 간격
   },
   textWrapper: {
     alignItems: 'flex-start', // 텍스트 요소들을 왼쪽 정렬
     flexDirection: 'column', // 세로 방향으로 정렬
     flex: 1, // 가능한 모든 공간을 차지하도록 설정
   },
+  nameAndScore: {
+    flexDirection: 'row', // 이름과 점수를 가로로 배치
+    rowGap: 20,
+    justifyContent: 'flex-end',
+    alignItems: 'center', // 세로 가운데 정렬
+    flex: 1,
+  },
   scoreContainer: {
-    flexDirection: 'row', // 가로 정렬
-    alignItems: 'center', // 세로 중앙 정렬
-    marginLeft: 'auto', // 오른쪽 끝으로 배치
-    width: 400,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 'auto', // 오른쪽 끝으로 이동
   },
   highlightedContainer: {
     borderRadius: 10,
