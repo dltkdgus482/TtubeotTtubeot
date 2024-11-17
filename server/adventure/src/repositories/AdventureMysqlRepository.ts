@@ -56,7 +56,9 @@ class AdventureMysqlRepository {
     const [result]: any = await connection.query(
       `SELECT * 
         FROM adventure_log 
-        WHERE user_id = ? AND gps_log_key IS NOT NULL 
+        WHERE user_id = ? 
+        AND gps_log_key IS NOT NULL 
+        AND JSON_LENGTH(image_urls) > 0
         ORDER BY end_at DESC 
         LIMIT ?, ?`,
       [userId, (page - 1) * size, size]
