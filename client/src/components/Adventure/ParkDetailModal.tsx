@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, Modal } from 'react-native';
 import { Park } from '../../types/Park';
 import styles from './ParkDetailModal.styles';
-import Icon from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/Ionicons';
 import StyledText from '../../styles/StyledText';
 
 interface ParkDetailProps {

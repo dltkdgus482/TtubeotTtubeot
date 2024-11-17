@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -14,9 +14,11 @@ import ButtonFlat from '../Button/ButtonFlat';
 import { useFocusEffect } from '@react-navigation/native';
 import { useUser } from '../../store/user';
 import { updateCoin } from '../../utils/apis/users/updateUserInfo';
+import WebView from 'react-native-webview';
 
 type GetTreasureModalProps = {
   modalVisible: boolean;
+  ttubeotId: number;
   closeModal: () => void;
 };
 
@@ -24,6 +26,7 @@ const coinIcon = require('../../assets/icons/coinIcon.png');
 
 const GetTreasureModal = ({
   modalVisible,
+  ttubeotId,
   closeModal,
 }: GetTreasureModalProps) => {
   const {
@@ -34,6 +37,7 @@ const GetTreasureModal = ({
     setHasTreasure,
     setNearbyTreasure,
   } = useTreasureStore();
+  const webViewRef = useRef(null);
 
   const getTreasure = () => {
     updateCoin(currentReward);
@@ -51,6 +55,25 @@ const GetTreasureModal = ({
     console.log('treasureCount', treasureCount);
   }, [currentReward, treasureCount]);
 
+  const sendId = (id: number) => {
+    if (webViewRef.current && id >= 101 && id <= 145) {
+      webViewRef.current.postMessage(JSON.stringify({ type: 'changeId', id }));
+      console.log('ttuID', id);
+      setOpacity(1);
+    }
+  };
+
+  const [opacity, setOpacity] = useState<number>(0);
+
+  useFocusEffect(
+    useCallback(() => {
+      setOpacity(0);
+      setTimeout(() => {
+        sendId(ttubeotId + 100);
+      }, 500);
+    }, [ttubeotId, modalVisible]),
+  );
+
   return (
     <Modal
       visible={modalVisible}
@@ -62,6 +85,33 @@ const GetTreasureModal = ({
           <Image source={coinIcon} />
           {currentReward !== 0 && <StyledText>x {currentReward}</StyledText>}
         </View>
+        <View style={styles.ttubeotWebviewContainer}>
+          <WebView
+            ref={webViewRef}
+            originWhitelist={['*']}
+            source={{ uri: 'file:///android_asset/renderRunModel.html' }}
+            style={[styles.ttubeotWebview, { opacity: opacity }]}
+            allowFileAccess={true}
+            allowFileAccessFromFileURLs={true}
+            allowUniversalAccessFromFileURLs={true}
+            onLoadStart={syntheticEvent => {
+              const { nativeEvent } = syntheticEvent;
+              console.log('WebView Start: ', nativeEvent);
+            }}
+            onError={syntheticEvent => {
+              const { nativeEvent } = syntheticEvent;
+              console.error('WebView onError: ', nativeEvent);
+            }}
+            onHttpError={syntheticEvent => {
+              const { nativeEvent } = syntheticEvent;
+              console.error('WebView onHttpError: ', nativeEvent);
+            }}
+            onMessage={event => {
+              console.log('Message from WebView:', event.nativeEvent.data);
+            }}
+          />
+        </View>
+
         <TouchableOpacity onPress={getTreasure}>
           <ButtonFlat content="획득하고 나가기" width={200} height={50} />
         </TouchableOpacity>

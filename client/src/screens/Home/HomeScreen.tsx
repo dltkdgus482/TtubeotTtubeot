@@ -74,6 +74,7 @@ const HomeScreen = () => {
     useState<ImageSourcePropType>(null);
   const [warningModalVisible, setWarningModalVisible] = useState(false);
   const [webviewOpacity, setWebviewOpacity] = useState<number>(0);
+  const [nowSpinning, setNowSpinning] = useState<boolean>(false);
 
   const webViewRef = useRef(null);
 
@@ -128,6 +129,16 @@ const HomeScreen = () => {
       await updateLog(accessToken, setAccessToken, 0);
       console.log('로그 추가 api 호출완');
       fetchInterestInfo();
+    } else if (affectionPoints >= 80) {
+      if (!nowSpinning) {
+        setNowSpinning(true);
+        sendId(ttubeotId + 100);
+        // sendId(145);
+        setTimeout(() => {
+          sendId(ttubeotId);
+          setNowSpinning(false);
+        }, 1200);
+      }
     }
   };
 
@@ -138,6 +149,9 @@ const HomeScreen = () => {
     } else if (currentTtubeotStatus === 1) {
       setHorseBalloonVisible(true);
       setHorseBalloonContent(PawIcon); // 심심함
+    } else if (affectionPoints >= 80) {
+      setHorseBalloonVisible(true);
+      setHorseBalloonContent(HeartIcon); // 관심 지수 80% 이상
     } else {
       setHorseBalloonVisible(false); // todo: 관심지수 확인해서 80% 이상이면 하트 띄우기?
     }
@@ -181,7 +195,8 @@ const HomeScreen = () => {
       fetchUserTtubeot();
       fetchInterestInfo();
       sendId(ttubeotId);
-    }, [user, ttubeotId]),
+      setNowSpinning(false);
+    }, [ttubeotId]),
   );
 
   const fetchInterestInfo = async () => {
@@ -194,13 +209,26 @@ const HomeScreen = () => {
       if (ttubeotInterestInfo) {
         setAffectionPoints(ttubeotInterestInfo.ttubeotInterest);
         setCurrentTtubeotStatus(ttubeotInterestInfo.currentTtubeotStatus);
+      } else {
+        setAffectionPoints(null);
+        setCurrentTtubeotStatus(2); // ttubeotId 46일 때는 기본 2로
       }
     }
   };
 
   const sendId = (id: number) => {
-    if (webViewRef.current && id > 0 && id <= 46) {
-      webViewRef.current.postMessage(JSON.stringify({ type: 'changeId', id }));
+    if (webViewRef.current) {
+      if (id > 0 && id <= 46) {
+        webViewRef.current.postMessage(
+          JSON.stringify({ type: 'changeId', id }),
+        );
+      } else if (id >= 101 && id <= 145) {
+        setTimeout(() => {
+          webViewRef.current.postMessage(
+            JSON.stringify({ type: 'changeId', id }),
+          );
+        }, 100);
+      }
     }
   };
 
@@ -217,7 +245,11 @@ const HomeScreen = () => {
         <WebView
           ref={webViewRef}
           originWhitelist={['*']}
-          source={{ uri: 'file:///android_asset/renderModel.html' }}
+          source={{
+            uri: nowSpinning
+              ? 'file:///android_asset/renderRunModel.html'
+              : 'file:///android_asset/renderModel.html',
+          }}
           style={[styles.ttubeotWebview, { opacity: webviewOpacity }]}
           allowFileAccess={true}
           allowFileAccessFromFileURLs={true}
