@@ -29,20 +29,31 @@ class ReportService {
         size
       );
 
+    // 결과를 저장할 배열
+    let filteredAdventureLogList: AdventureLogModel[] = [];
+
     for (let adventureLog of adventureLogList) {
+      // `image_urls` 채우기
       adventureLog.image_urls =
         await this.adventureImageMysqlRepository.findImageUrlsByAdventureLogId(
           adventureLog.adventure_log_id
         );
+
+      // `ttubeotInfo` 채우기
       let ttubeotInfo = await this.ttubeotService.getTtubeotIdByOwnershipId(
         adventureLog.user_ttubeot_ownership_id
       );
 
       adventureLog.ttubeot_id = ttubeotInfo.ttubeotId;
       adventureLog.ttubeot_name = ttubeotInfo.ttubeotName;
-      // console.log("뚜벗 정보: ", ttubeotInfo);
+
+      // 빈 배열 제외
+      if (adventureLog.image_urls.length > 0) {
+        filteredAdventureLogList.push(adventureLog);
+      }
     }
-    return adventureLogList;
+
+    return filteredAdventureLogList;
   }
 
   async getAdventureLogSize(userId: number): Promise<number> {
