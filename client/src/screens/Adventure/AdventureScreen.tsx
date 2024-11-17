@@ -340,11 +340,11 @@ const AdventureScreen = () => {
           />
         </TouchableOpacity>
       </View>
-      {/* <GPSAlertModal
+      <GPSAlertModal
         modalVisible={modalVisible}
         setIsPressedNextButton={setIsPressedNextButton}
         closeModal={closeModal}
-      /> */}
+      />
       <View style={styles.ttubeotWebviewContainer} pointerEvents="none">
         <WebView
           ref={webViewRef}
@@ -401,11 +401,11 @@ const AdventureScreen = () => {
         missionModalVisible={missionVisible}
         closeMissionModal={handleCloseMissionModal}
       />
-      <GetTreasureModal
+      {/* <GetTreasureModal
         modalVisible={modalVisible}
         ttubeotId={ttubeotId}
         closeModal={closeModal}
-      />
+      /> */}
     </SafeAreaView>
   );
 };

@@ -118,10 +118,12 @@ const GetTreasureModal = ({
           </View>
           <View style={styles.treasureContainer}>
             <Image source={coinIcon} style={styles.treasure} />
-            {/* {currentReward !== 0 && <StyledText bold>x {currentReward}</StyledText>} */}
-            <StyledText bold style={styles.treasureCount}>
+            {currentReward !== 0 && (
+              <StyledText bold>x {currentReward}</StyledText>
+            )}
+            {/* <StyledText bold style={styles.treasureCount}>
               x 500
-            </StyledText>
+            </StyledText> */}
           </View>
           <TouchableOpacity
             onPress={getTreasure}
