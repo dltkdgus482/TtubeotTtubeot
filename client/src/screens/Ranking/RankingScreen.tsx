@@ -14,8 +14,8 @@ const IntroTtubeotRabbit = require('../../assets/ttubeot/IntroTtubeotRabbit.png'
 const gold = require('../../assets/medals/gold.png');
 const silver = require('../../assets/medals/silver.png');
 const bronze = require('../../assets/medals/bronze.png');
-const ttubeotDog = require('../../assets/ttubeot/IntroTtubeotDog.png');
 const backgroundImage = require('../../assets/backgrounds/rankingBackgroundImage.jpg'); // 배경 이미지 경로 설정
+const titleImage = require('../../assets/images/rankingTitle.png');
 
 interface RankingProps {
   userId: number;
@@ -25,12 +25,9 @@ interface RankingProps {
 }
 
 const RankingScreen = () => {
-  // const [selected, setSelected] = useState('뚜벗 랭킹');
   const [rankingList, setRankingList] = useState<RankingProps[]>([]);
   const isFocused = useIsFocused(); // 화면 포커스 여부 감지
   const { user } = useUser.getState();
-  // console.log(user.userId);
-  // console.log('Ranking User ID:', rankingList[3].userId);
 
   useEffect(() => {
     const fetchRankingInfo = async () => {
@@ -55,7 +52,8 @@ const RankingScreen = () => {
           source={backgroundImage}
           style={styles.backgroundImage}
         />
-        <StyledText bold style={styles.rankingText}>
+        <Image source={titleImage} style={styles.titleImage} />
+        <StyledText bold color="#1f1913e0" style={styles.rankingText}>
           랭킹
         </StyledText>
         <View style={styles.topThreeList}>
@@ -66,13 +64,13 @@ const RankingScreen = () => {
               </StyledText>
               <View
                 style={[
-                  styles.playerImageContainer,
-                  user.userId == rankingList[1].userId &&
+                  styles.top3PlayerImageContainer,
+                  user.userId === rankingList[1].userId &&
                     styles.highlightedBorder,
                 ]}>
                 <Image
                   source={profileColor[rankingList[1].ttubeotId]}
-                  style={{ width: 80, height: 80 }}
+                  style={styles.top3PlayerImage}
                 />
               </View>
               <Image source={silver} style={styles.medal} />
@@ -85,13 +83,13 @@ const RankingScreen = () => {
               </StyledText>
               <View
                 style={[
-                  styles.playerImageContainer,
-                  user.userId == rankingList[0].userId &&
+                  styles.top3PlayerImageContainer,
+                  user.userId === rankingList[0].userId &&
                     styles.highlightedBorder,
                 ]}>
                 <Image
                   source={profileColor[rankingList[0].ttubeotId]}
-                  style={{ width: 80, height: 80 }}
+                  style={styles.top3PlayerImage}
                 />
               </View>
               <Image source={gold} style={styles.medal} />
@@ -104,13 +102,13 @@ const RankingScreen = () => {
               </StyledText>
               <View
                 style={[
-                  styles.playerImageContainer,
-                  user.userId == rankingList[2].userId &&
+                  styles.top3PlayerImageContainer,
+                  user.userId === rankingList[2].userId &&
                     styles.highlightedBorder,
                 ]}>
                 <Image
                   source={profileColor[rankingList[2].ttubeotId]}
-                  style={{ width: 80, height: 80 }}
+                  style={styles.top3PlayerImage}
                 />
               </View>
               <Image source={bronze} style={styles.medal} />
@@ -130,16 +128,12 @@ const RankingScreen = () => {
 
           return (
             <View style={styles.rankingContainer} key={index}>
-              <StyledText bold style={styles.ranking}>
+              <StyledText bold color="#493531" style={styles.ranking}>
                 {(index + 1).toString().padStart(2, '0')}
               </StyledText>
               <View
                 style={[
-                  styles.rankingInfo,
-                  isHighlighted
-                    ? { borderWidth: 4, borderColor: '#7C92B3' }
-                    : // ? { borderWidth: 4, borderColor: '#72C9B3' }
-                      {},
+                  isHighlighted ? styles.isMerankingInfo : styles.rankingInfo,
                 ]}>
                 <View style={styles.imageWrapper}>
                   <Image
@@ -159,12 +153,11 @@ const RankingScreen = () => {
                     <StyledText bold style={styles.rankingScore}>
                       {ranking.score.toLocaleString()}
                     </StyledText>
-                    <View style={{ width: 5 }} />
                     <Icon
                       type="FontAwesome5"
                       name="paw"
                       size={20}
-                      color="#000"
+                      color="#70615E"
                     />
                   </View>
                 </View>
