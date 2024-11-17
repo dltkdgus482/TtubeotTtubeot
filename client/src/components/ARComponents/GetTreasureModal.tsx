@@ -23,6 +23,7 @@ type GetTreasureModalProps = {
 };
 
 const coinIcon = require('../../assets/icons/coinIcon.png');
+const background = require('../../assets/images/AlbumBackground.png');
 
 const GetTreasureModal = ({
   modalVisible,
@@ -58,7 +59,6 @@ const GetTreasureModal = ({
   const sendId = (id: number) => {
     if (webViewRef.current && id >= 101 && id <= 145) {
       webViewRef.current.postMessage(JSON.stringify({ type: 'changeId', id }));
-      console.log('ttuID', id);
       setOpacity(1);
     }
   };
@@ -80,41 +80,60 @@ const GetTreasureModal = ({
       onRequestClose={closeModal}
       animationType="fade"
       transparent={true}>
-      <View style={styles.modalView}>
-        <View style={styles.treasureContainer}>
-          <Image source={coinIcon} />
-          {currentReward !== 0 && <StyledText>x {currentReward}</StyledText>}
+      <View style={styles.modalBackground}>
+        <View style={styles.modalView}>
+          <View style={styles.backgroundContainer}>
+            <Image source={background} style={styles.background} />
+          </View>
+          <View style={styles.titleContainer}>
+            <StyledText bold style={styles.title}>
+              보물을 획득했어요!
+            </StyledText>
+          </View>
+          <View style={styles.ttubeotWebviewContainer}>
+            <WebView
+              ref={webViewRef}
+              originWhitelist={['*']}
+              source={{ uri: 'file:///android_asset/renderRunModel.html' }}
+              style={[styles.ttubeotWebview, { opacity: opacity }]}
+              allowFileAccess={true}
+              allowFileAccessFromFileURLs={true}
+              allowUniversalAccessFromFileURLs={true}
+              onLoadStart={syntheticEvent => {
+                const { nativeEvent } = syntheticEvent;
+                console.log('WebView Start: ', nativeEvent);
+              }}
+              onError={syntheticEvent => {
+                const { nativeEvent } = syntheticEvent;
+                console.error('WebView onError: ', nativeEvent);
+              }}
+              onHttpError={syntheticEvent => {
+                const { nativeEvent } = syntheticEvent;
+                console.error('WebView onHttpError: ', nativeEvent);
+              }}
+              onMessage={event => {
+                console.log('Message from WebView:', event.nativeEvent.data);
+              }}
+            />
+          </View>
+          <View style={styles.treasureContainer}>
+            <Image source={coinIcon} style={styles.treasure} />
+            {/* {currentReward !== 0 && <StyledText bold>x {currentReward}</StyledText>} */}
+            <StyledText bold style={styles.treasureCount}>
+              x 500
+            </StyledText>
+          </View>
+          <TouchableOpacity
+            onPress={getTreasure}
+            style={styles.closeButtonContainer}>
+            <ButtonFlat
+              content="획득하고 나가기"
+              width={200}
+              height={50}
+              borderRadius={30}
+            />
+          </TouchableOpacity>
         </View>
-        <View style={styles.ttubeotWebviewContainer}>
-          <WebView
-            ref={webViewRef}
-            originWhitelist={['*']}
-            source={{ uri: 'file:///android_asset/renderRunModel.html' }}
-            style={[styles.ttubeotWebview, { opacity: opacity }]}
-            allowFileAccess={true}
-            allowFileAccessFromFileURLs={true}
-            allowUniversalAccessFromFileURLs={true}
-            onLoadStart={syntheticEvent => {
-              const { nativeEvent } = syntheticEvent;
-              console.log('WebView Start: ', nativeEvent);
-            }}
-            onError={syntheticEvent => {
-              const { nativeEvent } = syntheticEvent;
-              console.error('WebView onError: ', nativeEvent);
-            }}
-            onHttpError={syntheticEvent => {
-              const { nativeEvent } = syntheticEvent;
-              console.error('WebView onHttpError: ', nativeEvent);
-            }}
-            onMessage={event => {
-              console.log('Message from WebView:', event.nativeEvent.data);
-            }}
-          />
-        </View>
-
-        <TouchableOpacity onPress={getTreasure}>
-          <ButtonFlat content="획득하고 나가기" width={200} height={50} />
-        </TouchableOpacity>
       </View>
     </Modal>
   );

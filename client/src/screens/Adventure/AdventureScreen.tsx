@@ -401,11 +401,6 @@ const AdventureScreen = () => {
         missionModalVisible={missionVisible}
         closeMissionModal={handleCloseMissionModal}
       />
-      {/* <GetTreasureModal
-        modalVisible={modalVisible}
-        ttubeotId={ttubeotId}
-        closeModal={closeModal}
-      /> */}
     </SafeAreaView>
   );
 };
