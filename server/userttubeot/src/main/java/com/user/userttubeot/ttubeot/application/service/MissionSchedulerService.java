@@ -57,15 +57,16 @@ public class MissionSchedulerService {
             .orElseThrow(() -> new IllegalArgumentException(
                 "ID 3에 해당하는 미션을 찾을 수 없습니다.")); // missionType 0 (일일미션)
         List<Mission> dailyMissions = List.of(specificMission); // ID 3번 미션만 리스트에 포함
-        assignMissionsToActiveTtubeots(dailyMissions, "일일 미션이 새로 할당되었습니다.");
+        assignMissionsToActiveTtubeots(dailyMissions, "새로운 일일 미션 등장! 오늘은 꼭 성공해보세요!");
     }
 
     // 매주 일요일 자정에 주간 미션 초기화
     @Scheduled(cron = "0 0 0 * * SUN")
     public void assignWeeklyMissions() {
         List<Mission> weeklyMissions = getRandomMissionsByType(1);
-        assignMissionsToActiveTtubeots(weeklyMissions, "주간 미션이 새로 할당되었습니다.");
+        assignMissionsToActiveTtubeots(weeklyMissions, "짜잔! 이번 주 주간 미션이 도착했습니다! 도전 준비 완료?");
     }
+
 
     // 뚜벗 관심 지수 감소
     @Scheduled(cron = "0 0 * * * *")
@@ -103,11 +104,16 @@ public class MissionSchedulerService {
         // 관심도 변화에 따른 알림 전송
         checkAndSendNotification(user, currentInterest, updatedInterest);
 
-        // 관심도가 0 이하인 경우, 상태 업데이트
+        // 관심도가 0 이하인 경우, 상태 업데이트 및 알림 전송
         if (updatedInterest <= 0) {
             UserTtuBeotOwnership updated = userTtuBeotOwnership.updateBreakUpAndStatus(
                 LocalDateTime.now(), 2);
             userTtubeotOwnershipRepository.save(updated);
+
+            // 알림 전송
+            sendNotification(user, "뚜벗이 떠났어요...",
+                "관심이 부족해서 뚜벗이 멀리 떠나버렸어요. 다시 데려오려면 열심히 활동해보세요!");
+
             log.info("관심도가 0 이하로 떨어져 뚜벗이 도망갔습니다. (사용자 ID: {})", userId);
         }
 
@@ -118,13 +124,14 @@ public class MissionSchedulerService {
     private void checkAndSendNotification(User user, Integer currentInterest,
         Integer updatedInterest) {
         if (currentInterest >= 50 && updatedInterest < 50) {
-            sendNotification(user, "모험 가자", "관심도가 50 미만으로 떨어졌습니다. 추가적인 활동이 필요합니다!");
+            sendNotification(user, "모험 경고!", "뚜벗의 관심도가 50 아래로 떨어졌어요! 지금 바로 모험을 떠나야 해요!");
             log.info("관심도가 50 미만으로 떨어져 알림을 전송했습니다. (사용자 ID: {})", user.getUserId());
         } else if (currentInterest >= 30 && updatedInterest < 30) {
-            sendNotification(user, "모험 가자", "관심도가 30 미만으로 떨어졌습니다. 추가적인 활동이 필요합니다!");
+            sendNotification(user, "긴급 모험 소집!", "뚜벗의 관심도가 30 아래로 떨어졌어요! 뚜벗이 힘내려면 꼭 도와주세요!");
             log.info("관심도가 30 미만으로 떨어져 알림을 전송했습니다. (사용자 ID: {})", user.getUserId());
         }
     }
+
 
     private void sendNotification(User user, String title, String message) {
         String fcmToken = user.getFcmToken();
