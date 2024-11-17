@@ -161,7 +161,9 @@ class AdventureService {
       ) {
         let repeat = Math.floor(Math.random() * 3) + 3;
         for (let i = 0; i < repeat; i++) {
-          remainCounts.push(Math.floor(Math.random() * 200) + 300);
+          // remainCounts.push(Math.floor(Math.random() * 200) + 300);
+          // TODO: 시연용 보물 획득 걸음 수 100으로 수정
+          remainCounts.push(100);
         }
         await this.adventureRedisRepository.setRemainCounts(
           userId,
