@@ -203,7 +203,19 @@ public class TtubeotServiceImpl implements TtubeotService {
         List<UserTtuBeotOwnership> graduatedTtubeots =
             userTtubeotOwnershipRepository.findAllByUser_UserId(userId);
 
-        // 로그 테이블 접근하여 함께한 모험 횟수를 조회 (type = 3)
+        // 졸업 리스트를 breakUp 기준으로 최신순 정렬
+        graduatedTtubeots.sort((o1, o2) -> {
+            if (o1.getBreakUp() == null && o2.getBreakUp() == null) {
+                return 0; // 두 값이 null이면 순서를 유지
+            }
+            if (o1.getBreakUp() == null) {
+                return 1; // null 값은 뒤로 보냄
+            }
+            if (o2.getBreakUp() == null) {
+                return -1; // null 값은 뒤로 보냄
+            }
+            return o2.getBreakUp().compareTo(o1.getBreakUp()); // 최신 날짜가 상위로
+        });
 
         // 조회된 entity 목록을 dto로 변환
         List<UserTtubeotGraduationInfoDTO> graduationInfoListDTO = graduatedTtubeots.stream()
@@ -583,8 +595,8 @@ public class TtubeotServiceImpl implements TtubeotService {
         // 2. 해당 뚜벗의 관심도를 조회합니다.
         int userTtubeotInterest = userTtubeotOwnership.getTtubeotInterest();
 
-        // 3. 최근 10개의 로그 데이터 조회
-        Pageable pageable = PageRequest.of(0, 10);
+        // 3. 최근 5개의 로그 데이터 조회
+        Pageable pageable = PageRequest.of(0, 5);
         List<TtubeotLog> recentLogs = ttubeotLogRepository.findRecentLogsByOwnership(
             userTtubeotOwnership, pageable);
 
@@ -598,7 +610,7 @@ public class TtubeotServiceImpl implements TtubeotService {
 
         int currentTtubeotStatus;
 
-        if (foodCount >= 1 && socialAndAdventureCount >= 1) {
+        if (foodCount >= 2 && socialAndAdventureCount >= 2) {
             currentTtubeotStatus = 2; // 평온
         } else if (foodCount < socialAndAdventureCount) {
             currentTtubeotStatus = 0; // 배고픔
