@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     fontSize: 20,
     zIndex: 10000,
-    top: 80,
+    top: 25,
     left: 10,
     flexDirection: 'row',
     alignItems: 'center',
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     fontSize: 20,
     zIndex: 10000,
-    top: 130,
+    top: 75,
     left: 8,
     flexDirection: 'row',
     alignItems: 'center',
@@ -80,6 +80,20 @@ const styles = StyleSheet.create({
   stepCounter: {
     left: 63,
     fontSize: 22,
+  },
+  currentPositionContainer: {
+    position: 'absolute',
+    width: 60,
+    height: 60,
+    bottom: 20,
+    right: 10,
+    zIndex: 1000,
+  },
+  currentPosition: {
+    position: 'absolute',
+    width: 60,
+    height: 60,
+    resizeMode: 'contain',
   },
   markerContainer: {
     width: 50,

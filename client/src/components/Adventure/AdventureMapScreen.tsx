@@ -64,6 +64,7 @@ const FriendIcon = require('../../assets/icons/FriendIcon.png');
 const nearbyUsersIcon = require('../../assets/icons/nearbyUsersIcon.png');
 const footPrintIcon = require('../../assets/icons/adventureFootPrint.png');
 const treasureMarkerIcon = require('../../assets/icons/treasureMarker.png');
+const currentPositionIcon = require('../../assets/icons/CurrentPosition.png');
 
 global.Buffer = require('buffer').Buffer;
 
@@ -272,10 +273,6 @@ const AdventureMapScreen = ({
     }
   }, [steps]);
 
-  useEffect(() => {
-    console.log(parkList);
-  }, [parkList]);
-
   // -----------------------------
 
   // AdventureInfo의 싱글턴 인스턴스 가져오기
@@ -405,6 +402,22 @@ const AdventureMapScreen = ({
     }
   };
 
+  const [isUserInteracting, setIsUserInteracting] = useState<boolean>(false);
+
+  const handleRegionChange = () => {
+    setIsUserInteracting(true);
+  };
+
+  const handleRegionInit = () => {
+    setIsUserInteracting(false);
+  };
+
+  useEffect(() => {
+    if (!isUserInteracting) {
+      initializeLocation();
+    }
+  }, [isUserInteracting]);
+
   const getCurrentLocation = useCallback(() => {
     if (!isConnected || !socketRef.current) {
       // console.log('소켓이 연결되지 않아 위치 정보를 전송하지 않습니다.');
@@ -414,24 +427,31 @@ const AdventureMapScreen = ({
     Geolocation.getCurrentPosition(
       position => {
         const { latitude, longitude } = position.coords;
-        setLocation(position.coords);
+        setLocation(prevLocation => {
+          if (prevLocation === null) {
+            return position.coords;
+          }
+          return { ...prevLocation, latitude, longitude };
+        });
 
-        setRegion(prevRegion => {
-          if (prevRegion === null) {
+        if (!isUserInteracting) {
+          setRegion(prevRegion => {
+            if (prevRegion === null) {
+              return {
+                latitude,
+                longitude,
+                latitudeDelta: 0.01, // 초기 줌 레벨
+                longitudeDelta: 0.01, // 초기 줌 레벨
+              };
+            }
+
             return {
+              ...prevRegion,
               latitude,
               longitude,
-              latitudeDelta: 0.01, // 초기 줌 레벨
-              longitudeDelta: 0.01, // 초기 줌 레벨
             };
-          }
-
-          return {
-            ...prevRegion,
-            latitude,
-            longitude,
-          };
-        });
+          });
+        }
         setLoading(false);
 
         socketRef.current.sendPosition({
@@ -449,18 +469,18 @@ const AdventureMapScreen = ({
     );
   }, [isConnected]);
 
-  useEffect(() => {
-    const initializeLocation = async () => {
-      const hasPermission = await requestLocationPermission();
-      if (hasPermission) {
-        getCurrentLocation();
-        intervalId.current = setInterval(getCurrentLocation, 2000);
-      } else {
-        setErrorMessage('위치 권한이 없습니다.');
-        setLoading(false);
-      }
-    };
+  const initializeLocation = async () => {
+    const hasPermission = await requestLocationPermission();
+    if (hasPermission) {
+      getCurrentLocation();
+      intervalId.current = setInterval(getCurrentLocation, 2000);
+    } else {
+      setErrorMessage('위치 권한이 없습니다.');
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     initializeLocation();
 
     return () => {
@@ -542,12 +562,12 @@ const AdventureMapScreen = ({
     );
   }, [location]);
 
-  const debouncedHandleRegionChange = useCallback(
-    debounce(updatedRegion => {
-      setRegion(updatedRegion);
-    }, 2000),
-    [setRegion],
-  );
+  // const debouncedHandleRegionChange = useCallback(
+  //   debounce(updatedRegion => {
+  //     setRegion(updatedRegion);
+  //   }, 2000),
+  //   [setRegion],
+  // );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -598,6 +618,14 @@ const AdventureMapScreen = ({
                       {currentSteps.current.toLocaleString()}
                     </StyledText>
                   </View>
+                  <TouchableOpacity
+                    onPress={handleRegionInit}
+                    style={styles.currentPositionContainer}>
+                    <Image
+                      source={currentPositionIcon}
+                      style={styles.currentPosition}
+                    />
+                  </TouchableOpacity>
                   <MapView
                     key={nearbyUsers.length}
                     ref={mapRef}
@@ -605,7 +633,9 @@ const AdventureMapScreen = ({
                     region={region}
                     customMapStyle={mapStyle}
                     style={styles.map}
-                    onRegionChangeComplete={debouncedHandleRegionChange}>
+                    // onRegionChangeComplete={debouncedHandleRegionChange}
+                    onRegionChange={handleRegionChange}
+                    onRegionChangeComplete={getCurrentLocation}>
                     {markers}
                   </MapView>
                 </View>

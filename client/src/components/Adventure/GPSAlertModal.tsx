@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, View, Pressable } from 'react-native';
 import styles from './GPSAlertModal.styles';
-import Icon from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/Ionicons';
 import StyledText from '../../styles/StyledText';
 import ButtonFlat from '../Button/ButtonFlat';
 import { useNavigation } from '@react-navigation/native';

@@ -24,6 +24,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
+  ttubeotWebviewContainer: {
+    position: 'absolute',
+    top: -20,
+    alignSelf: 'center',
+  },
+  ttubeotWebview: {
+    width: 400,
+    height: 500,
+    backgroundColor: 'transparent',
+  },
 });
 
 export default styles;
