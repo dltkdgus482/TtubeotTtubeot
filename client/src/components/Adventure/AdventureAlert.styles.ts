@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   },
   alertTitle: {
     paddingTop: 10,
-    fontSize: 22,
+    fontSize: 20,
     textAlign: 'center',
   },
   buttonContainer: {
@@ -67,9 +67,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     textAlign: 'center',
+    gap: 8,
+    padding: 12,
   },
-  alertDescription: {
-    textAlign: 'center',
+  alertDescription: {},
+  alertButton: {
+    alignSelf: 'center',
+  },
+  alertImage: {
+    width: 30,
+    height: 30,
+    right: 5,
+    bottom: 2,
+  },
+  cameraIcon: {
+    width: 45,
+    height: 30,
+    right: 2,
+  },
+  alertDescriptionInnerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 

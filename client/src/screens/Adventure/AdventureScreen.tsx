@@ -372,7 +372,6 @@ const AdventureScreen = () => {
           }}
         />
 
-        {/* Todo: 말풍선 Content 추가 필요 */}
         {horseBalloonVisible && (
           <View style={styles.horseBalloonContainer}>
             <Image source={horseBalloon} style={styles.horseBalloon} />
