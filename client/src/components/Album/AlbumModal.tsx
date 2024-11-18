@@ -122,6 +122,19 @@ const AlbumModal: React.FC<AlbumModalProps> = ({
     setSelectedCharacter(ttubeotId);
   };
 
+  const [notFound, setNotFound] = useState<boolean>(false);
+
+  useEffect(() => {
+    console.log(
+      characterList.find(char => char.ttubeotId === selectedCharacter)
+        ?.ttubeotStatus === -1,
+    );
+    setNotFound(
+      characterList.find(char => char.ttubeotId === selectedCharacter)
+        ?.ttubeotStatus === -1,
+    );
+  }, [selectedCharacter]);
+
   const selectedCharacterData =
     characterList.find(char => char.ttubeotId === selectedCharacter) || null;
 
@@ -283,7 +296,7 @@ const AlbumModal: React.FC<AlbumModalProps> = ({
               source={{
                 uri: 'file:///android_asset/renderStaticModel.html',
               }}
-              style={[styles.ttubeotWebview]}
+              style={[styles.ttubeotWebview, { opacity: notFound ? 0 : 1 }]}
               allowFileAccess={true}
               allowFileAccessFromFileURLs={true}
               allowUniversalAccessFromFileURLs={true}

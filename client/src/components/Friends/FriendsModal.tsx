@@ -49,7 +49,7 @@ const FriendsModal: React.FC<FriendsModalProps> = ({
     const fetchFriends = async (): Promise<void> => {
       const res = await getFriendList(accessToken, setAccessToken);
       setFriends(res);
-      console.log(res);
+      // console.log(res);
     };
 
     fetchFriends();
