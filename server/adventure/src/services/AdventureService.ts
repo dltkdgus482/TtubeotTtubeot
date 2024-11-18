@@ -173,6 +173,11 @@ class AdventureService {
         );
       }
 
+      // 양의 정수만 필터링
+      remainCounts = remainCounts.filter(
+        (count) => Number.isInteger(count) && count > 0
+      );
+
       result.push({
         name: park.name,
         lat: park.location.coordinates[1],
@@ -183,8 +188,11 @@ class AdventureService {
       });
     }
 
+    const systemTime = new Date();
+    console.log("System Time:", systemTime.toISOString());
+
     // result를 로그로 출력
-    console.log("Result:", JSON.stringify(result, null, 2));
+    // console.log("Result:", JSON.stringify(result, null, 2));
 
     return result;
   }
