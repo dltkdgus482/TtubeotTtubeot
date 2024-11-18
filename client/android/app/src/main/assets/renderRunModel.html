@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>3D Model Viewer</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: transparent;
+      }
+      canvas {
+        display: block;
+        width: 80vw;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+      let id = 1;
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000,
+      );
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+      }); // alpha: true로 설정하여 투명 배경 활성화
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0x00000000, 0); // 배경색을 투명으로 설정
+      renderer.shadowMap.enabled = true; // 그림자 활성화
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 부드러운 그림자 사용
+      renderer.gammaOutput = true; // 감마 보정 활성화
+      renderer.gammaFactor = 1.5; // 감마 팩터 조정
+
+      document.body.appendChild(renderer.domElement);
+
+      window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      });
+
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableZoom = false; // 줌 비활성화
+      controls.enableRotate = false;
+
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+      scene.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.75);
+      directionalLight.position.set(10, 20, 10); // 모델을 위에서 비추는 방향으로 위치 조정
+      directionalLight.castShadow = true; // 그림자 활성화
+      directionalLight.shadow.mapSize.width = 2048; // 그림자 품질 개선
+      directionalLight.shadow.mapSize.height = 2048;
+      scene.add(directionalLight);
+
+      const shadowPlaneGeometry = new THREE.PlaneGeometry(200, 200);
+      const shadowPlaneMaterial = new THREE.ShadowMaterial({ opacity: 0.3 }); // 그림자만 보이도록 설정
+      const shadowPlane = new THREE.Mesh(
+        shadowPlaneGeometry,
+        shadowPlaneMaterial,
+      );
+      shadowPlane.rotation.x = -Math.PI / 2;
+      shadowPlane.position.y = 0; // 모델 아래쪽에 그림자 투영용 평면 설정
+      shadowPlane.receiveShadow = true; // 그림자 받기 활성화
+      scene.add(shadowPlane);
+
+      let mixer = null;
+      const loader = new THREE.GLTFLoader();
+
+      function loadModel() {
+        loader.load(
+          `file:///android_asset/ttubeotRunModels/${id}.glb`,
+          gltf => {
+            if (mixer) mixer.stopAllAction();
+            scene.clear();
+            scene.add(ambientLight);
+            scene.add(directionalLight);
+            scene.add(shadowPlane);
+
+            const model = gltf.scene;
+            const animations = gltf.animations;
+            mixer = new THREE.AnimationMixer(model);
+
+            if (animations.length > 0) {
+              const action = mixer.clipAction(animations[0]);
+              action.setEffectiveTimeScale(0.6);
+              action.play();
+            }
+
+            model.scale.set(2, 2, 2);
+            model.traverse(node => {
+              if (node.isMesh) {
+                node.castShadow = true; // 모델의 모든 Mesh가 그림자를 만들도록 설정
+                node.receiveShadow = true; // 필요 시 모델 자체도 그림자를 받을 수 있도록 설정
+              }
+            });
+
+            scene.add(model);
+
+            // 카메라 위치를 모델 주변으로 조정
+            camera.position.set(-2.8, 4.5, 4.7); // Y 위치를 약간 높여 모델이 잘 보이게 함(나중에 카메라 위치 에셋에 맞게 수정)
+            camera.lookAt(model.position); // 모델을 바라보도록 설정
+          },
+          undefined,
+          error => {
+            const errorDetails = JSON.stringify(
+              error,
+              Object.getOwnPropertyNames(error),
+            );
+            window.ReactNativeWebView.postMessage(
+              `An error occurred loading the GLB model: ${errorDetails}`,
+            );
+          },
+        );
+      }
+
+      const clock = new THREE.Clock();
+
+      function animate() {
+        requestAnimationFrame(animate);
+        const delta = clock.getDelta();
+        if (mixer) {
+          mixer.update(delta);
+        }
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+
+      const receiver = document;
+
+      receiver.addEventListener('message', event => {
+        const { id: newId } = JSON.parse(event.data);
+        id = newId;
+        loadModel(); // 메시지를 수신하면 loadModel을 호출
+      });
+
+      loadModel();
+    </script>
+  </body>
+</html>

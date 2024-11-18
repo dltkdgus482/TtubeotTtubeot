@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="3cc9a07a-da6a-46ae-acec-21950a1ecf2f" name="변경" comment="# my commit message template&#10;# 본문과 푸터는 선택 사항입니다.&#10;##################&#10;# type: Subject (아래에 작성)&#10;&#10;# Body(아래에 작성)&#10;&#10;# Footer(아래에 작성)&#10;##################&#10;# feat: 새로운 기능 추가&#10;# fix: 버그 수정&#10;# docs: 문서 수정&#10;# style: 코드 포맷팅, 세미콜론 누락, 코드 변경이 없는 경우&#10;# refactor: 코드 리팩토링&#10;# test: 테스트 코드, 리팩토링 테스트 코드 추가&#10;# chore: 빌드 업무 수정, 패키지 매니저 수정, production code와 무관한 부분들 (.gitignore, build.gradle 같은)&#10;# comment: 주석 추가 및 변경&#10;# remove: 파일, 폴더 삭제&#10;# rename: 파일, 폴더명 수정&#10;##################&#10;# 영어로 Subject 작성 시&#10;# Add : 추가&#10;# Remove : 삭제&#10;# Simplify : 단순화&#10;# Update : 보완&#10;# Implement : 구현&#10;# Prevent : 방지&#10;# Move : 이동&#10;# Rename : 이름 변경&#10;##################&#10;# 예시&#10;# feat: &quot;로그인 기능 구현&quot;&#10;&#10;# 로그인 시 JWT 발급&#10;&#10;# Resolves: #111&#10;# Ref: #122&#10;# related to: #30, #50" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand />
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/../.." value="FE/refactor/ranking" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="GitLabMergeRequestFiltersHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPENED",
+    "assignee": {
+      "type": "org.jetbrains.plugins.gitlab.mergerequest.ui.filters.GitLabMergeRequestsFiltersValue.MergeRequestsMemberFilterValue.MergeRequestsAssigneeFilterValue",
+      "username": "qkrdusgn00",
+      "fullname": "박연후"
+    }
+  }
+}]]></component>
+  <component name="GitLabMergeRequestsSettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "first": "https://lab.ssafy.com/s11-final/S11P31E101.git",
+    "second": "ab37b275-2fb6-4574-993e-48f8764e2c25"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 4
+}]]></component>
+  <component name="ProjectId" id="2okR9ffWAAcL1wqzseUo3NlCkxU" />
+  <component name="ProjectViewState">
+    <option name="abbreviatePackageNames" value="true" />
+    <option name="autoscrollToSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="openDirectoriesWithSingleClick" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showVisibilityIcons" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "BE/user",
+    "kotlin-language-version-configured": "true",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="UserttubeotApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="userttubeot.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.user.userttubeot.UserttubeotApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.18034.62" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-IU-241.18034.62" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="애플리케이션 수준" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="디폴트 작업">
+      <changelist id="3cc9a07a-da6a-46ae-acec-21950a1ecf2f" name="변경" comment="" />
+      <created>1731411438683</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1731411438683</updated>
+      <workItem from="1731411442447" duration="253000" />
+    </task>
+    <task id="LOCAL-00001" summary="# my commit message template&#10;# 본문과 푸터는 선택 사항입니다.&#10;##################&#10;# type: Subject (아래에 작성)&#10;hotfix: 랭킹 응답 수정&#10;# Body(아래에 작성)&#10;&#10;# Footer(아래에 작성)&#10;##################&#10;# feat: 새로운 기능 추가&#10;# fix: 버그 수정&#10;# docs: 문서 수정&#10;# style: 코드 포맷팅, 세미콜론 누락, 코드 변경이 없는 경우&#10;# refactor: 코드 리팩토링&#10;# test: 테스트 코드, 리팩토링 테스트 코드 추가&#10;# chore: 빌드 업무 수정, 패키지 매니저 수정, production code와 무관한 부분들 (.gitignore, build.gradle 같은)&#10;# comment: 주석 추가 및 변경&#10;# remove: 파일, 폴더 삭제&#10;# rename: 파일, 폴더명 수정&#10;##################&#10;# 영어로 Subject 작성 시&#10;# Add : 추가&#10;# Remove : 삭제&#10;# Simplify : 단순화&#10;# Update : 보완&#10;# Implement : 구현&#10;# Prevent : 방지&#10;# Move : 이동&#10;# Rename : 이름 변경&#10;##################&#10;# 예시&#10;# feat: &quot;로그인 기능 구현&quot;&#10;&#10;# 로그인 시 JWT 발급&#10;&#10;# Resolves: #111&#10;# Ref: #122&#10;# related to: #30, #50">
+      <option name="closed" value="true" />
+      <created>1731411683512</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1731411683512</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="BE/user" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="# my commit message template&#10;# 본문과 푸터는 선택 사항입니다.&#10;##################&#10;# type: Subject (아래에 작성)&#10;hotfix: 랭킹 응답 수정&#10;# Body(아래에 작성)&#10;&#10;# Footer(아래에 작성)&#10;##################&#10;# feat: 새로운 기능 추가&#10;# fix: 버그 수정&#10;# docs: 문서 수정&#10;# style: 코드 포맷팅, 세미콜론 누락, 코드 변경이 없는 경우&#10;# refactor: 코드 리팩토링&#10;# test: 테스트 코드, 리팩토링 테스트 코드 추가&#10;# chore: 빌드 업무 수정, 패키지 매니저 수정, production code와 무관한 부분들 (.gitignore, build.gradle 같은)&#10;# comment: 주석 추가 및 변경&#10;# remove: 파일, 폴더 삭제&#10;# rename: 파일, 폴더명 수정&#10;##################&#10;# 영어로 Subject 작성 시&#10;# Add : 추가&#10;# Remove : 삭제&#10;# Simplify : 단순화&#10;# Update : 보완&#10;# Implement : 구현&#10;# Prevent : 방지&#10;# Move : 이동&#10;# Rename : 이름 변경&#10;##################&#10;# 예시&#10;# feat: &quot;로그인 기능 구현&quot;&#10;&#10;# 로그인 시 JWT 발급&#10;&#10;# Resolves: #111&#10;# Ref: #122&#10;# related to: #30, #50" />
+    <option name="LAST_COMMIT_MESSAGE" value="# my commit message template&#10;# 본문과 푸터는 선택 사항입니다.&#10;##################&#10;# type: Subject (아래에 작성)&#10;hotfix: 랭킹 응답 수정&#10;# Body(아래에 작성)&#10;&#10;# Footer(아래에 작성)&#10;##################&#10;# feat: 새로운 기능 추가&#10;# fix: 버그 수정&#10;# docs: 문서 수정&#10;# style: 코드 포맷팅, 세미콜론 누락, 코드 변경이 없는 경우&#10;# refactor: 코드 리팩토링&#10;# test: 테스트 코드, 리팩토링 테스트 코드 추가&#10;# chore: 빌드 업무 수정, 패키지 매니저 수정, production code와 무관한 부분들 (.gitignore, build.gradle 같은)&#10;# comment: 주석 추가 및 변경&#10;# remove: 파일, 폴더 삭제&#10;# rename: 파일, 폴더명 수정&#10;##################&#10;# 영어로 Subject 작성 시&#10;# Add : 추가&#10;# Remove : 삭제&#10;# Simplify : 단순화&#10;# Update : 보완&#10;# Implement : 구현&#10;# Prevent : 방지&#10;# Move : 이동&#10;# Rename : 이름 변경&#10;##################&#10;# 예시&#10;# feat: &quot;로그인 기능 구현&quot;&#10;&#10;# 로그인 시 JWT 발급&#10;&#10;# Resolves: #111&#10;# Ref: #122&#10;# related to: #30, #50" />
+  </component>
+</project>

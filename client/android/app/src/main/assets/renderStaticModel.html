@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>3D Model Viewer</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: transparent;
+      }
+      canvas {
+        display: block;
+        width: 80vw;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+      let id = 1;
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000,
+      );
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+      });
+      renderer.setSize(window.innerWidth, window.innerHeight - 500);
+      renderer.setClearColor(0x00000000, 0);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.gammaOutput = true;
+      renderer.gammaFactor = 1.5;
+
+      document.body.appendChild(renderer.domElement);
+
+      window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      });
+
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableZoom = false;
+      controls.enableRotate = true;
+      controls.maxPolarAngle = Math.PI / 2 - 0.332;
+      controls.minPolarAngle = Math.PI / 2 - 0.532;
+      controls.enablePan = false;
+
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+      scene.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.75);
+      directionalLight.position.set(10, 20, 10);
+      directionalLight.castShadow = true;
+      directionalLight.shadow.mapSize.width = 2048;
+      directionalLight.shadow.mapSize.height = 2048;
+      scene.add(directionalLight);
+
+      const shadowPlaneGeometry = new THREE.PlaneGeometry(200, 200);
+      const shadowPlaneMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
+      const shadowPlane = new THREE.Mesh(
+        shadowPlaneGeometry,
+        shadowPlaneMaterial,
+      );
+      shadowPlane.rotation.x = -Math.PI / 2;
+      shadowPlane.position.y = 0;
+      shadowPlane.receiveShadow = true;
+      scene.add(shadowPlane);
+
+      const loader = new THREE.GLTFLoader();
+
+      function loadModel() {
+        loader.load(
+          `file:///android_asset/ttubeotModels/${id}.glb`,
+          gltf => {
+            // 씬에서 이전 모델을 제거합니다.
+            scene.clear();
+            scene.add(ambientLight);
+            scene.add(directionalLight);
+            scene.add(shadowPlane);
+
+            const model = gltf.scene;
+
+            model.scale.set(2.1, 2.1, 2.1);
+            model.traverse(node => {
+              if (node.isMesh) {
+                node.castShadow = true;
+                node.receiveShadow = true;
+              }
+            });
+
+            scene.add(model);
+
+            camera.position.set(0, 2.2, 4.3);
+            camera.lookAt(model.position);
+          },
+          undefined,
+          error => {
+            const errorDetails = JSON.stringify(
+              error,
+              Object.getOwnPropertyNames(error),
+            );
+            window.ReactNativeWebView.postMessage(
+              `An error occurred loading the GLB model: ${errorDetails}`,
+            );
+          },
+        );
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+      }
+
+      animate();
+
+      // WebView에서 수신할 메시지를 설정
+      document.addEventListener('message', event => {
+        const data = JSON.parse(event.data);
+        const newId = data.id;
+
+        if (newId && newId !== id) {
+          id = newId;
+          // console.log('Received new ID from WebView:', newId);
+          loadModel(); // 새로운 id가 올 때마다 모델 로드
+        }
+      });
+
+      loadModel();
+    </script>
+  </body>
+</html>

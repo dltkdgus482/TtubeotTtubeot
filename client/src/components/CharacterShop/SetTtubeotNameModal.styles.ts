@@ -1,0 +1,67 @@
+import { StyleSheet } from 'react-native';
+
+export default StyleSheet.create({
+  modalBackground: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    width: '80%',
+    backgroundColor: '#fff',
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    marginBottom: 10,
+    color: '#333',
+  },
+  separator: {
+    width: '100%',
+    height: 0.7,
+    backgroundColor: '#ECF2F5',
+    marginVertical: 15,
+  },
+  ttubeotImage: {
+    width: 140,
+    height: 140,
+    marginBottom: 25,
+    borderRadius: 40,
+    backgroundColor: '#F5F5F5',
+  },
+  input: {
+    width: '90%',
+    height: 50,
+    borderColor: '#E0E0E0',
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingLeft: 15,
+    paddingRight: 15,
+    marginBottom: 30,
+    textAlignVertical: 'center',
+    fontSize: 16,
+    backgroundColor: '#ffffff',
+  },
+  confirmButton: {
+    width: '35%',
+    height: 50,
+    borderRadius: 20,
+    backgroundColor: '#87898C',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 1,
+  },
+  confirmButtonText: {
+    fontSize: 16,
+    color: '#FFFFFF',
+  },
+});

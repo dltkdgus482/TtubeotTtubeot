@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "701268811273",
+    "project_id": "ttubeotttubeot",
+    "storage_bucket": "ttubeotttubeot.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701268811273:android:a6a34ced889b8f24eea2d8",
+        "android_client_info": {
+          "package_name": "com.ttubeot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBG-xVdmVz6rW0VvuQ1sWsxvi0fQNLxzD0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

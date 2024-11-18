@@ -1,0 +1,105 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" package="com.ttubeot">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
+    <uses-permission android:name="android.permission.health.WRITE_HEART_RATE" />
+    <uses-permission android:name="android.permission.health.READ_STEPS" />
+    <uses-permission android:name="android.permission.health.WRITE_STEPS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" tools:replace="required"/>
+    <uses-feature android:glEsVersion="0x00030000" android:required="false" tools:node="remove" tools:replace="required" />
+    <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="false" tools:replace="required" />
+    <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false" tools:replace="required" />
+    <uses-feature android:name="android.hardware.nfc" android:required="false" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <!-- Only when targeting Android 12 or higher -->
+    <!--
+      Please make sure you read the following documentation
+      to have a better understanding of the new permissions.
+      https://developer.android.com/guide/topics/connectivity/bluetooth/permissions#assert-never-for-location
+    -->
+
+    <!-- Needed if your app search for Bluetooth devices. -->
+     <!--
+      If your app doesn't use Bluetooth scan results to derive physical location information,
+      you can strongly assert that your app doesn't derive physical location.
+    -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+                     android:usesPermissionFlags="neverForLocation" />
+    <!-- Needed if you want to interact with a BLE device. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <!-- Needed if your app makes the current device discoverable to other Bluetooth devices. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+
+    <queries>
+        <package android:name="com.google.android.apps.healthdata" />
+    </queries>
+
+    <application
+      android:name=".MainApplication"
+      android:label="@string/app_name"
+      android:icon="@mipmap/ic_launcher"
+      android:roundIcon="@mipmap/ic_launcher_round"
+      android:allowBackup="false"
+      android:theme="@style/AppTheme"
+      android:supportsRtl="true">
+
+      <meta-data 
+        android:name="com.google.ar.core" 
+        android:value="optional" 
+      />
+
+      <meta-data 
+        android:name="com.google.android.geo.API_KEY" 
+        android:value="${googleMapApiKey}"
+      />
+      <uses-library android:name="org.apache.http.legacy" android:required="false"/>   
+
+      <activity
+        android:name=".MainActivity"
+        android:screenOrientation="portrait"
+        android:label="@string/app_name"
+        android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+        android:launchMode="singleTask"
+        android:windowSoftInputMode="adjustResize"
+        android:exported="true">
+
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+      </activity>
+
+      <!-- For supported versions through Android 13, create an activity to show the rationale
+            of Health Connect permissions once users click the privacy policy link. -->
+      <activity
+          android:name=".PermissionsRationaleActivity"
+          android:exported="true">
+          <intent-filter>
+              <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+          </intent-filter>
+      </activity>
+
+      <!-- For versions starting Android 14, create an activity alias to show the rationale
+            of Health Connect permissions once users click the privacy policy link. -->
+      <activity-alias
+          android:name="ViewPermissionUsageActivity"
+          android:exported="true"
+          android:targetActivity=".PermissionsRationaleActivity"
+          android:permission="android.permission.START_VIEW_PERMISSION_USAGE">
+          <intent-filter>
+              <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+              <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
+          </intent-filter>
+      </activity-alias>
+    </application>
+</manifest>
