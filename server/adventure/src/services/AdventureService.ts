@@ -224,7 +224,11 @@ class AdventureService {
 
       let reward = Math.floor(Math.random() * 100) + 100;
 
+      console.log("Before Update:", adventureLog.adventureCoin);
+      console.log("Reward:", reward);
       adventureLog.adventureCoin += reward;
+      console.log("After Update:", adventureLog.adventureCoin);
+
       await this.adventureRedisRepository.updateUserInfo(adventureLog, socket);
 
       return { reward, remain_count: remainCounts.length };
