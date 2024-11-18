@@ -159,7 +159,8 @@ class AdventureService {
           park._id
         ))
       ) {
-        let repeat = Math.floor(Math.random() * 3) + 3;
+        // TODO: 시연용 보물 획득 갯수 300 수정
+        let repeat = Math.floor(Math.random() * 300) + 3;
         for (let i = 0; i < repeat; i++) {
           // remainCounts.push(Math.floor(Math.random() * 200) + 300);
           // TODO: 시연용 보물 획득 걸음 수 50 수정
