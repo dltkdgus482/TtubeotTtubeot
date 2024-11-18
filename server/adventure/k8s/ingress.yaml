@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adventure-ingress
+  namespace: ttubeot-adventure
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt"
+    acme.cert-manager.io/http01-ingress-class: "traefik"
+    traefik.ingress.kubernetes.io/router.middlewares: "ttubeot-adventure-cors@kubernetescrd"
+spec:
+  rules:
+  - host: "ssafy.picel.net"
+    http:
+      paths:
+      - path: /adventure
+        pathType: Prefix
+        backend:
+          service:
+            name: adventure
+            port:
+              number: 8080
+  tls:
+  - hosts:
+    - "ssafy.picel.net"
+    secretName: letsencrypt-tls
