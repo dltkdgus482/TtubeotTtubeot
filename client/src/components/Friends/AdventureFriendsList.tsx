@@ -50,10 +50,10 @@ const AdventureFriendsList = ({
           setAccessToken,
           userId: friend.userId,
         });
-        console.log(res);
+        // console.log(res);
         setUsername(res.username);
       } catch (error) {
-        console.log('fetchUserInfo Error', error);
+        // console.log('fetchUserInfo Error', error);
       }
     };
 

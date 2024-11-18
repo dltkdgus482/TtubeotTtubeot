@@ -6,9 +6,13 @@ import { useFocusEffect } from '@react-navigation/native'; // useFocusEffect 추
 import styles from './JournalScreen.styles';
 import StyledText from '../../styles/StyledText';
 import JournalDetail from './JournalDetail';
-import { getJournalList } from '../../utils/apis/Journal/Journal';
+import {
+  getJournalCount,
+  getJournalList,
+} from '../../utils/apis/Journal/Journal';
 import { useUser } from '../../store/user';
 import { JournalData } from '../../types/JournalData';
+import { getPostposition } from '../../utils/libs/postPosition';
 
 const testPic = require('../../assets/images/JournalImageNotCreated.png');
 
@@ -40,7 +44,7 @@ const JournalScreen = () => {
         } else {
           setHasMore(false);
         }
-        console.log('load', page, reset, response);
+        // console.log('load', page, reset, response);
       }
 
       if (reset) {
@@ -69,30 +73,11 @@ const JournalScreen = () => {
     setSelectedJournalId(null);
   };
 
-  const getPostposition = name => {
-    const lastChar = name[name.length - 1];
-    const isKorean = /[가-힣]/.test(lastChar); // 마지막 글자가 한글인지 확인
-    const isEnglish = /[a-zA-Z]/.test(lastChar); // 마지막 글자가 영어인지 확인
-
-    if (isKorean) {
-      // 한글 음절의 유니코드 확인
-      const lastCharCode = lastChar.charCodeAt(0);
-      const jongseong = (lastCharCode - 0xac00) % 28; // 받침 여부 확인
-      return jongseong === 0 ? '와' : '과';
-    } else if (isEnglish) {
-      // 영어일 경우 모음(A, E, I, O, U) 확인 (대소문자 모두 처리)
-      const vowels = ['a', 'e', 'i', 'o', 'u'];
-      return vowels.includes(lastChar.toLowerCase()) ? '와' : '과';
-    }
-
-    // 한글/영어가 아닌 경우 기본적으로 "과" 반환
-    return '과';
-  };
-
   // 화면이 포커스될 때 새로고침
   useFocusEffect(
     useCallback(() => {
       setPage(1);
+      // getJournalCount(accessToken, setAccessToken);
     }, []),
   );
 

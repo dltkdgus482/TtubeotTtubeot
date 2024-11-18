@@ -236,8 +236,8 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   choiceCharacterImageContainer: {
-    width: 110,
-    height: 110,
+    width: 100,
+    height: 100,
     borderRadius: 15,
     margin: 10,
     backgroundColor: '#F4F3F1',

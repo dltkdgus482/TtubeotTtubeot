@@ -80,11 +80,12 @@ export default StyleSheet.create({
     height: '40%',
   },
   ttubeotInfoContainer: {
+    position: 'absolute',
     width: '60%',
     right: 15,
-    height: 200,
+    top: 50,
+    height: 190,
     borderRadius: 20,
-    paddingHorizontal: 20,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'white',
@@ -132,10 +133,17 @@ export default StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 15,
   },
+  ttubeotWebviewContainer: {
+    position: 'absolute',
+    top: 40,
+    left: 0,
+    width: 150,
+    height: 300,
+    backgroundColor: 'transparent',
+  },
   ttubeotWebview: {
     top: 50,
     left: 5,
-    height: 190,
     backgroundColor: 'transparent',
   },
   ttubeotName: {
@@ -175,5 +183,10 @@ export default StyleSheet.create({
   sadEmoji: {
     fontSize: 20,
     marginTop: 5,
+  },
+  isSelected: {
+    borderRadius: 20,
+    // backgroundColor: '#ACACAC',
+    elevation: 5,
   },
 });

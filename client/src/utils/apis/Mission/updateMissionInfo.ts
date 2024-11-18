@@ -14,7 +14,7 @@ export const updateStepMission = async (
       '/user/auth/ttubeot/adventure/result',
       data,
     );
-    console.log('----- updatedMission -----', res.data);
+    // console.log('----- updatedMission -----', res.data);
   } catch (error) {
     console.log('updateMission Error', error);
   }

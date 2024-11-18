@@ -49,7 +49,7 @@ const MissionModal: React.FC<CharacterShopModalProps> = ({
   );
 
   useEffect(() => {
-    console.log('useEffect missionModalVisible, selectedMenu');
+    // console.log('useEffect missionModalVisible, selectedMenu');
 
     if (missionModalVisible === false) return;
 

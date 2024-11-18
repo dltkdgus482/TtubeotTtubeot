@@ -44,7 +44,7 @@ export const getTtubeotInfo = async ({
     const ttubeotInfo = await authClient.get(
       `/user/ttubeot/adventure/${userId}/details`,
     );
-    console.log('getTtubeotInfo', ttubeotInfo.data);
+    // console.log('getTtubeotInfo', ttubeotInfo.data);
     return ttubeotInfo.data;
   } catch (error) {
     console.log('getTtubeotInfo Error', error);

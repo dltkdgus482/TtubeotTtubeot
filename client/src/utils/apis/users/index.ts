@@ -18,9 +18,9 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
     });
 
     // 응답 성공 로그
-    console.log('[Response Status]:', loginRes.status);
-    console.log('[Response Headers]:', loginRes.headers);
-    console.log('[Response Data]:', loginRes.data);
+    // console.log('[Response Status]:', loginRes.status);
+    // console.log('[Response Headers]:', loginRes.headers);
+    // console.log('[Response Data]:', loginRes.data);
     if (loginRes.status === 200) {
       const userId = loginRes.data.userId;
       const authorizationHeader = loginRes.headers.authorization;
@@ -34,7 +34,7 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
 
         //fcm토큰 발급 후 백엔드로 post요청
         const fcmToken = await messaging().getToken();
-        console.log('[+] FCM Token: ', fcmToken);
+        // console.log('[+] FCM Token: ', fcmToken);
 
         // send FCM
         const response = await defaultRequest.post(
@@ -42,7 +42,7 @@ export const loginApi = async (formData, setAccessToken, setIsLoggedIn) => {
           { userId, fcmToken },
         );
 
-        console.log('[+] FCM Token 전송 성공:', response.data);
+        // console.log('[+] FCM Token 전송 성공:', response.data);
         return loginRes.data.userId; // 로그인된 사용자 ID 반환
       } else {
         Alert.alert('토큰이 존재하지 않습니다.');
@@ -173,7 +173,7 @@ export const getInfoApi = async (accessToken, setAccessToken) => {
 
   try {
     const getInfoRes = await authClient.get('/user/profile');
-    console.log('유저 정보 조회', getInfoRes.data);
+    // console.log('유저 정보 조회', getInfoRes.data);
     return getInfoRes.data;
   } catch (error) {
     console.error('유저 정보 조회 실패:', error);

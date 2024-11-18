@@ -101,7 +101,7 @@ const CameraModal = ({
               allowUniversalAccessFromFileURLs={true}
               onLoadStart={syntheticEvent => {
                 const { nativeEvent } = syntheticEvent;
-                console.log('WebView Start: ', nativeEvent);
+                // console.log('WebView Start: ', nativeEvent);
               }}
               onError={syntheticEvent => {
                 const { nativeEvent } = syntheticEvent;
@@ -112,7 +112,7 @@ const CameraModal = ({
                 console.error('WebView onHttpError: ', nativeEvent);
               }}
               onMessage={event => {
-                console.log('Message from WebView:', event.nativeEvent.data);
+                // console.log('Message from WebView:', event.nativeEvent.data);
               }}
             />
           </View>

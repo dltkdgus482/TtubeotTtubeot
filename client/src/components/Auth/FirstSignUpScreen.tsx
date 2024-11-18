@@ -48,7 +48,7 @@ const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({
       ...user,
       phoneNumber: phone,
     });
-    console.log('유저', user);
+    // console.log('유저', user);
 
     onNext();
   };
@@ -67,7 +67,7 @@ const FirstSignUpScreen: React.FC<FirstSignUpScreenProps> = ({
         Alert.alert('인증 요청에 실패했습니다. 다시 시도해주세요.');
       }
     } catch (error) {
-      console.error('인증 요청 중 에러 발생:', error);
+      // console.error('인증 요청 중 에러 발생:', error);
       Alert.alert('인증 요청 중 오류가 발생했습니다.');
     }
   };

@@ -59,7 +59,7 @@ export const getJournalDetail = async (
     const authClient = authRequest(accessToken, setAccessToken);
     const res = await authClient.get(`/adventure/reports/${journalId}`);
     const journal = res.data.data;
-    console.log('journal', journal);
+    // console.log('journal', journal);
 
     return {
       ...journal,
@@ -67,6 +67,21 @@ export const getJournalDetail = async (
       start_at: formatDate(journal.start_at),
       end_at: formatDate(journal.end_at),
     };
+  } catch (err) {
+    console.error('err :', err);
+    return null;
+  }
+};
+
+export const getJournalCount = async (
+  accessToken: string,
+  setAccessToken: (accessToken: string) => void,
+): Promise<number> => {
+  try {
+    const authClient = authRequest(accessToken, setAccessToken);
+    const res = await authClient.get(`/adventure/reports/size`);
+    // console.log('count!!!!!!!!', res.data.data);
+    return res.data.data;
   } catch (err) {
     console.error('err :', err);
     return null;

@@ -180,7 +180,7 @@ const BLEModal: React.FC<BLEModalProps> = ({ modalVisible, closeBLEModal }) => {
 
   const handleCloseBLEModal = async () => {
     if (isScanning === true) {
-      console.log('cannot close modal while scanning');
+      // console.log('cannot close modal while scanning');
       return;
     }
 

@@ -75,7 +75,7 @@ const LoginScreen = () => {
         });
 
         // 상태 변경 후 확인
-        console.log('Updated user state:', useUser.getState().user);
+        // console.log('Updated user state:', useUser.getState().user);
 
         // 뚜벗 정보 가져오기
         const ttubeotDetail = await getTtubeotDetail(
@@ -91,7 +91,7 @@ const LoginScreen = () => {
           setTtubeotId(ttubeotDetail.ttubeotId);
         }
 
-        console.log('Updated Ttubeot ID:', useUser.getState().ttubeotId);
+        // console.log('Updated Ttubeot ID:', useUser.getState().ttubeotId);
 
         // 홈 화면으로 이동
         navigation.navigate('IntroScreen');

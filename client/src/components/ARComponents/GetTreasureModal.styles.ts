@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     height: '48%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#5A6C4F',
     borderRadius: 40,
     padding: 20,
     position: 'relative',
@@ -46,8 +46,9 @@ const styles = StyleSheet.create({
   },
   ttubeotWebviewContainer: {
     zIndex: 1000,
-    position: 'absolute',
     alignItems: 'center',
+    justifyContent: 'center',
+    bottom: 30,
     width: 300,
     height: 500,
   },
@@ -58,13 +59,12 @@ const styles = StyleSheet.create({
   },
   treasureContainer: {
     position: 'absolute',
-    bottom: 65,
+    bottom: 80,
     width: '90%',
     height: 100,
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 10,
     flexDirection: 'row',
   },
   treasure: {
@@ -78,6 +78,23 @@ const styles = StyleSheet.create({
   closeButtonContainer: {
     position: 'absolute',
     bottom: 25,
+    zIndex: 1002,
+  },
+  glowEffectContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: -30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    zIndex: 1002,
+  },
+  glowEffect: {
+    width: 120,
+    height: 120,
+    resizeMode: 'contain',
+    zIndex: 1004,
   },
 });
 

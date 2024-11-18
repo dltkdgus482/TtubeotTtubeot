@@ -15,13 +15,13 @@ const SignUpScreen = () => {
   const [step, setStep] = useState(1); // 현재 회원가입 단계
   const onNext = () => {
     setStep(prev => prev + 1);
-    console.log('step', step);
+    // console.log('step', step);
   };
   const onBack = () => {
     setStep(prev => prev - 1);
   };
 
-const renderFormContainer = () => {
+  const renderFormContainer = () => {
     switch (step) {
       case 1:
         return <TermsOfUseScreen onNext={onNext} />;

@@ -35,9 +35,9 @@ const useTreasureStore = create<Treasure>(set => ({
       if (lastResetDate !== today) {
         set({ treasureCount: 0 });
         await AsyncStorage.setItem('lastResetDate', today);
-        console.log('Treasure count reset for the day');
+        // console.log('Treasure count reset for the day');
       } else {
-        console.log('Treasure count is up-to-date');
+        // console.log('Treasure count is up-to-date');
       }
     } catch (error) {
       console.error('Error checking treasure count reset:', error);

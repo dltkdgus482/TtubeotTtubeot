@@ -121,7 +121,7 @@ const AdventureScreen = () => {
       PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION,
     );
     if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-      console.log('Permission denied');
+      // console.log('Permission denied');
       return;
     }
 
@@ -216,7 +216,7 @@ const AdventureScreen = () => {
   }, [socketConnected]);
 
   useEffect(() => {
-    console.log('보물 찾음?', nearbyTreasure, currentReward);
+    // console.log('보물 찾음?', nearbyTreasure, currentReward);
     const openAR = async () => {
       if (hasPermission) {
         setIsARMode(true);
@@ -315,7 +315,7 @@ const AdventureScreen = () => {
             source={CameraIcon}
             style={[
               styles.cameraIcon,
-              !nearbyTreasure && styles.disabledCamera,
+              !nearbyTreasure && currentReward === 0 && styles.disabledCamera,
             ]}
             resizeMethod="resize"
           />
@@ -328,7 +328,12 @@ const AdventureScreen = () => {
           />
         </TouchableOpacity>
       </View>
-      <View style={styles.content}>{renderPage()}</View>
+      <View style={[styles.content, { opacity: isTreasureOpen ? 0 : 1 }]}>
+        {renderPage()}
+      </View>
+      {/* <View style={[styles.content, { opacity: modalVisible ? 0 : 1 }]}>
+        {renderPage()}
+      </View> */}
       <View style={styles.startButtonContainer}>
         <TouchableOpacity onPress={handleStartAdventure}>
           <ButtonDefault
@@ -356,7 +361,7 @@ const AdventureScreen = () => {
           allowUniversalAccessFromFileURLs={true}
           onLoadStart={syntheticEvent => {
             const { nativeEvent } = syntheticEvent;
-            console.log('WebView Start: ', nativeEvent);
+            // console.log('WebView Start: ', nativeEvent);
           }}
           onError={syntheticEvent => {
             const { nativeEvent } = syntheticEvent;
@@ -367,7 +372,7 @@ const AdventureScreen = () => {
             console.error('WebView onHttpError: ', nativeEvent);
           }}
           onMessage={event => {
-            console.log('Message from WebView:', event.nativeEvent.data);
+            // console.log('Message from WebView:', event.nativeEvent.data);
           }}
         />
 

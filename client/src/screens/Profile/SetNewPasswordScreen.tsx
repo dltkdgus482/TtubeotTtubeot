@@ -60,7 +60,7 @@ const SetNewPasswordScreen = () => {
           navigation.navigate('LoginScreen'); // LoginScreen으로 이동
         }
       } else {
-        console.log(response);
+        // console.log(response);
       }
     } catch (error) {
       console.error('비밀번호 변경 실패:', error);
