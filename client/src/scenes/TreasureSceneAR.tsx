@@ -62,8 +62,8 @@ Array.from({ length: 50 }).forEach((_, index) => {
       diffuseColor: getRandomColor(),
       lightingModel: 'Constant',
       blendMode: 'Add',
-      bloomThreshold: 0.1,
-      shininess: 0.1,
+      bloomThreshold: 0.5,
+      shininess: 0.5,
     },
   });
 });
@@ -338,14 +338,16 @@ const TreasureSceneAR = () => {
         {isUnboxed && (
           <>
             {Array.from({ length: 50 }).map((_, index) => {
-              const randomDirectionX = (Math.random() - 0.5) * 2;
-              const randomDirectionZ = (Math.random() - 0.5) * 2;
+              const randomDirectionX = (Math.random() - 0.5) * 0.8;
+              const randomDirectionY = (Math.random() - 0.5) * 0.8;
+              const randomDirectionZ = (Math.random() - 0.5) * 0.8;
 
               const distanceMultiplier = 0.4;
               const targetX = randomDirectionX * distanceMultiplier;
+              const targetY = randomDirectionY * distanceMultiplier;
               const targetZ = randomDirectionZ * distanceMultiplier;
 
-              const randomScale = 0.02 + Math.random() * 0.03;
+              const randomScale = 0.01 + Math.random() * 0.021;
 
               const animationName = `unBoxAnimation_${index}`;
 
@@ -353,8 +355,8 @@ const TreasureSceneAR = () => {
                 [animationName]: {
                   properties: {
                     positionX: `+=${targetX}`,
+                    positionY: `+=${targetY}`,
                     positionZ: `+=${targetZ}`,
-                    positionY: '+=0.08',
                   },
                   duration: 500,
                   easing: 'EaseInEaseOut',

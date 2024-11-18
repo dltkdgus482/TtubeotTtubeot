@@ -52,6 +52,7 @@
 
       const controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableZoom = false; // 줌 비활성화
+      controls.enablePan = false;
       controls.maxPolarAngle = Math.PI / 2 - 0.432;
       controls.minPolarAngle = Math.PI / 2 - 0.432;
 

@@ -70,17 +70,17 @@ function App(): React.JSX.Element {
   useEffect(() => {
     const resetTreasureCount = async () => {
       await useTreasureStore.getState().checkAndResetTreasureCount();
-      console.log(
-        '오늘 보물 찾은 횟수',
-        useTreasureStore.getState().treasureCount,
-      );
+      // console.log(
+      //   '오늘 보물 찾은 횟수',
+      //   useTreasureStore.getState().treasureCount,
+      // );
     };
     resetTreasureCount();
   }, []);
 
   const { isLoggedIn } = useUser();
 
-  console.log(isLoggedIn);
+  // console.log(isLoggedIn);
   return (
     <ThemeProvider theme={theme}>
       <SafeAreaView style={{ flex: 1 }}>

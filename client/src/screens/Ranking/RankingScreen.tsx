@@ -34,9 +34,9 @@ const RankingScreen = () => {
       const res = (await getRankingInfo()) as unknown as RankingProps[];
       setRankingList(res);
       // 반복문으로 한 줄씩 출력
-      res.forEach((ranking, index) => {
-        console.log(`Ranking ${index + 1}:`, ranking);
-      });
+      // res.forEach((ranking, index) => {
+      //   console.log(`Ranking ${index + 1}:`, ranking);
+      // });
     };
 
     if (isFocused) {

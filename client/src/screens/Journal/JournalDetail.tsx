@@ -17,6 +17,7 @@ import { getJournalDetail } from '../../utils/apis/Journal/Journal';
 import { useUser } from '../../store/user';
 import { profileColor } from '../../components/ProfileImageUrl';
 import PictureModal from './PictureModal';
+import { getPostposition } from '../../utils/libs/postPosition';
 
 type JournalDetailProps = {
   journal: JournalData;
@@ -142,26 +143,6 @@ const JournalDetail = ({ journal, closeJournalDetail }: JournalDetailProps) => {
     setIsModalOpen(false);
   };
 
-  const getPostposition = name => {
-    const lastChar = name[name.length - 1];
-    const isKorean = /[가-힣]/.test(lastChar); // 마지막 글자가 한글인지 확인
-    const isEnglish = /[a-zA-Z]/.test(lastChar); // 마지막 글자가 영어인지 확인
-
-    if (isKorean) {
-      // 한글 음절의 유니코드 확인
-      const lastCharCode = lastChar.charCodeAt(0);
-      const jongseong = (lastCharCode - 0xac00) % 28; // 받침 여부 확인
-      return jongseong === 0 ? '와' : '과';
-    } else if (isEnglish) {
-      // 영어일 경우 모음(A, E, I, O, U) 확인 (대소문자 모두 처리)
-      const vowels = ['a', 'e', 'i', 'o', 'u'];
-      return vowels.includes(lastChar.toLowerCase()) ? '와' : '과';
-    }
-
-    // 한글/영어가 아닌 경우 기본적으로 "과" 반환
-    return '과';
-  };
-
   const [pictureModalOpen, setPictureModalOpen] = useState<boolean>(false);
 
   const openPictureModal = () => {
@@ -200,8 +181,7 @@ const JournalDetail = ({ journal, closeJournalDetail }: JournalDetailProps) => {
               />
             </View>
             <View style={styles.pictureContainer}>
-              {journalDetail?.image_urls &&
-              journalDetail.image_urls.length > 0 ? (
+              {journalDetail?.image_urls && (
                 <TouchableOpacity
                   style={{ width: '100%', height: '100%' }}
                   onPress={openPictureModal}>
@@ -214,8 +194,6 @@ const JournalDetail = ({ journal, closeJournalDetail }: JournalDetailProps) => {
                     <Image source={fullScreen} style={styles.fullScreenIcon} />
                   </View>
                 </TouchableOpacity>
-              ) : (
-                <Image source={noPicture} style={styles.picture} />
               )}
               <View style={styles.pictureFooter}>
                 <View style={styles.withTtubeotContainer}>
@@ -226,7 +204,8 @@ const JournalDetail = ({ journal, closeJournalDetail }: JournalDetailProps) => {
                 </View>
                 <View style={styles.footerText}>
                   <StyledText bold>
-                    과 함께한 {journalDetail?.start_at}일의 모험 기록
+                    {getPostposition(journal.ttubeot_name)} 함께한{' '}
+                    {journalDetail?.start_at}일의 모험 기록
                   </StyledText>
                 </View>
               </View>
@@ -249,7 +228,7 @@ const JournalDetail = ({ journal, closeJournalDetail }: JournalDetailProps) => {
               </StyledText>
               <StyledText bold style={styles.journalTitle}>
                 {journalDetail.start_at}
-                <StyledText>의 모험 일지</StyledText>
+                <StyledText>의 발자국</StyledText>
               </StyledText>
             </View>
             <View style={styles.journalContentContainer}>

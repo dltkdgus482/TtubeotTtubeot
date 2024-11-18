@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'baseline',
+    zIndex: 100,
   },
   missionIcon: {
     width: 55,

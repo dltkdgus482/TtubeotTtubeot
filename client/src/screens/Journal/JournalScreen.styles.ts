@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     top: 160,
     width: '100%',
     justifyContent: 'center',
-    alignItems: 'center',
+    // alignItems: 'center',
   },
   journalCard: {
     margin: 10,

@@ -127,20 +127,36 @@ const HomeScreen = () => {
   const handleBalloonPress = async () => {
     if (currentTtubeotStatus === 0) {
       await updateLog(accessToken, setAccessToken, 0);
-      console.log('로그 추가 api 호출완');
+      // console.log('로그 추가 api 호출완');
       fetchInterestInfo();
-    } else if (affectionPoints >= 80) {
+    }
+
+    if (currentTtubeotStatus === 0 || affectionPoints >= 80) {
       if (!nowSpinning) {
         setNowSpinning(true);
-        sendId(ttubeotId + 100);
-        // sendId(145);
         setTimeout(() => {
-          sendId(ttubeotId);
           setNowSpinning(false);
         }, 1200);
       }
     }
   };
+
+  useEffect(() => {
+    // setWebviewOpacity(0);
+    if (nowSpinning) {
+      sendId(ttubeotId + 100);
+      // setTimeout(() => {
+      //   setWebviewOpacity(1);
+      // }, 300);
+    } else {
+      setTimeout(() => {
+        sendId(ttubeotId);
+        // setTimeout(() => {
+        //   setWebviewOpacity(1);
+        // }, 300);
+      }, 200);
+    }
+  }, [nowSpinning]);
 
   useEffect(() => {
     if (currentTtubeotStatus === 0) {
@@ -155,7 +171,7 @@ const HomeScreen = () => {
     } else {
       setHorseBalloonVisible(false); // todo: 관심지수 확인해서 80% 이상이면 하트 띄우기?
     }
-  }, [currentTtubeotStatus]);
+  }, [currentTtubeotStatus, affectionPoints]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -186,7 +202,7 @@ const HomeScreen = () => {
       setTtubeotId(res.ttubeotId);
       setUser({ ...user, steps: res.ttubeotScore });
     }
-    console.log('내뚜벗 아이디가 뭔교', ttubeotId);
+    // console.log('내뚜벗 아이디가 뭔교', ttubeotId);
     sendId(ttubeotId);
   };
 
@@ -208,6 +224,7 @@ const HomeScreen = () => {
       );
       if (ttubeotInterestInfo) {
         setAffectionPoints(ttubeotInterestInfo.ttubeotInterest);
+        // setAffectionPoints(85);
         setCurrentTtubeotStatus(ttubeotInterestInfo.currentTtubeotStatus);
       } else {
         setAffectionPoints(null);
@@ -215,6 +232,16 @@ const HomeScreen = () => {
       }
     }
   };
+
+  useEffect(() => {
+    setWebviewOpacity(0);
+    if (!modalVisible && !albumModalVisible) {
+      setTimeout(() => {
+        sendId(ttubeotId);
+        setWebviewOpacity(1);
+      }, 150);
+    }
+  }, [modalVisible, albumModalVisible]);
 
   const sendId = (id: number) => {
     if (webViewRef.current) {
@@ -227,7 +254,7 @@ const HomeScreen = () => {
           webViewRef.current.postMessage(
             JSON.stringify({ type: 'changeId', id }),
           );
-        }, 170);
+        }, 200);
       }
     }
   };
@@ -242,34 +269,36 @@ const HomeScreen = () => {
             ? styles.eggContainer
             : styles.ttubeotWebviewContainer,
         ]}>
-        <WebView
-          ref={webViewRef}
-          originWhitelist={['*']}
-          source={{
-            uri: nowSpinning
-              ? 'file:///android_asset/renderRunModel.html'
-              : 'file:///android_asset/renderModel.html',
-          }}
-          style={[styles.ttubeotWebview, { opacity: webviewOpacity }]}
-          allowFileAccess={true}
-          allowFileAccessFromFileURLs={true}
-          allowUniversalAccessFromFileURLs={true}
-          onLoadStart={syntheticEvent => {
-            const { nativeEvent } = syntheticEvent;
-            console.log('WebView Start: ', nativeEvent);
-          }}
-          onError={syntheticEvent => {
-            const { nativeEvent } = syntheticEvent;
-            console.error('WebView onError: ', nativeEvent);
-          }}
-          onHttpError={syntheticEvent => {
-            const { nativeEvent } = syntheticEvent;
-            console.error('WebView onHttpError: ', nativeEvent);
-          }}
-          onMessage={event => {
-            console.log('Message from WebView:', event.nativeEvent.data);
-          }}
-        />
+        {!modalVisible && !albumModalVisible && (
+          <WebView
+            ref={webViewRef}
+            originWhitelist={['*']}
+            source={{
+              uri: nowSpinning
+                ? 'file:///android_asset/renderRunModel.html'
+                : 'file:///android_asset/renderModel.html',
+            }}
+            style={[styles.ttubeotWebview, { opacity: webviewOpacity }]}
+            allowFileAccess={true}
+            allowFileAccessFromFileURLs={true}
+            allowUniversalAccessFromFileURLs={true}
+            onLoadStart={syntheticEvent => {
+              const { nativeEvent } = syntheticEvent;
+              // console.log('WebView Start: ', nativeEvent);
+            }}
+            onError={syntheticEvent => {
+              const { nativeEvent } = syntheticEvent;
+              console.error('WebView onError: ', nativeEvent);
+            }}
+            onHttpError={syntheticEvent => {
+              const { nativeEvent } = syntheticEvent;
+              console.error('WebView onHttpError: ', nativeEvent);
+            }}
+            onMessage={event => {
+              // console.log('Message from WebView:', event.nativeEvent.data);
+            }}
+          />
+        )}
 
         {ttubeotId === 46 && (
           <TouchableOpacity

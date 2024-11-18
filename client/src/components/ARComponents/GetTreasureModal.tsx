@@ -6,6 +6,8 @@ import {
   Modal,
   Image,
   TouchableOpacity,
+  Animated,
+  Easing,
 } from 'react-native';
 import styles from './GetTreasureModal.styles';
 import StyledText from '../../styles/StyledText';
@@ -24,6 +26,18 @@ type GetTreasureModalProps = {
 
 const coinIcon = require('../../assets/icons/coinIcon.png');
 const background = require('../../assets/images/AlbumBackground.png');
+const glowEffect = [
+  require('../../assets/textures/glow1.png'),
+  require('../../assets/textures/glow2.png'),
+  require('../../assets/textures/glow3.png'),
+  require('../../assets/textures/glow4.png'),
+  require('../../assets/textures/glow5.png'),
+  require('../../assets/textures/glow6.png'),
+  require('../../assets/textures/glow7.png'),
+  require('../../assets/textures/glow8.png'),
+  require('../../assets/textures/glow9.png'),
+  require('../../assets/textures/glow10.png'),
+];
 
 const GetTreasureModal = ({
   modalVisible,
@@ -52,8 +66,8 @@ const GetTreasureModal = ({
   };
 
   useEffect(() => {
-    console.log('currentReward', currentReward);
-    console.log('treasureCount', treasureCount);
+    // console.log('currentReward', currentReward);
+    // console.log('treasureCount', treasureCount);
   }, [currentReward, treasureCount]);
 
   const sendId = (id: number) => {
@@ -68,11 +82,57 @@ const GetTreasureModal = ({
   useFocusEffect(
     useCallback(() => {
       setOpacity(0);
+      // if (webViewRef.current) {
+      //   setTimeout(() => {
+      //     sendId(ttubeotId + 100);
+      //     // sendId(103);
+      //   }, 600);
+      // }
+    }, [ttubeotId, modalVisible, webViewRef]),
+  );
+
+  useEffect(() => {
+    if (webViewRef.current) {
       setTimeout(() => {
         sendId(ttubeotId + 100);
-      }, 500);
-    }, [ttubeotId, modalVisible]),
-  );
+      }, 550);
+    }
+  }, [webViewRef.current]);
+
+  const [glowIndex, setGlowIndex] = useState<number>(0);
+  const [glowAnim] = useState(new Animated.Value(1));
+
+  useEffect(() => {
+    glowAnim.stopAnimation();
+    if (modalVisible) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(glowAnim, {
+            toValue: 0.2,
+            duration: 500,
+            easing: Easing.linear,
+            useNativeDriver: true,
+          }),
+          Animated.timing(glowAnim, {
+            toValue: 1,
+            duration: 500,
+            easing: Easing.linear,
+            useNativeDriver: true,
+          }),
+        ]),
+      ).start();
+    }
+  }, [modalVisible]);
+
+  useEffect(() => {
+    let randomIndex = Math.floor(Math.random() * 10);
+    while (randomIndex === glowIndex) {
+      randomIndex = Math.floor(Math.random() * 10);
+    }
+    setTimeout(() => {
+      setGlowIndex(randomIndex);
+    }, 1000);
+  }, [glowIndex]);
 
   return (
     <Modal
@@ -87,7 +147,7 @@ const GetTreasureModal = ({
           </View>
           <View style={styles.titleContainer}>
             <StyledText bold style={styles.title}>
-              보물을 획득했어요!
+              코인을 획득했어요!
             </StyledText>
           </View>
           <View style={styles.ttubeotWebviewContainer}>
@@ -101,7 +161,7 @@ const GetTreasureModal = ({
               allowUniversalAccessFromFileURLs={true}
               onLoadStart={syntheticEvent => {
                 const { nativeEvent } = syntheticEvent;
-                console.log('WebView Start: ', nativeEvent);
+                // console.log('WebView Start: ', nativeEvent);
               }}
               onError={syntheticEvent => {
                 const { nativeEvent } = syntheticEvent;
@@ -112,16 +172,22 @@ const GetTreasureModal = ({
                 console.error('WebView onHttpError: ', nativeEvent);
               }}
               onMessage={event => {
-                console.log('Message from WebView:', event.nativeEvent.data);
+                // console.log('Message from WebView:', event.nativeEvent.data);
               }}
             />
           </View>
           <View style={styles.treasureContainer}>
+            <Animated.View
+              style={[styles.glowEffectContainer, { opacity: glowAnim }]}>
+              <Image source={glowEffect[glowIndex]} style={styles.glowEffect} />
+            </Animated.View>
             <Image source={coinIcon} style={styles.treasure} />
             {currentReward !== 0 && (
-              <StyledText bold>x {currentReward}</StyledText>
+              <StyledText bold color={'white'}>
+                x {currentReward}
+              </StyledText>
             )}
-            {/* <StyledText bold style={styles.treasureCount}>
+            {/* <StyledText bold color={'white'} style={styles.treasureCount}>
               x 500
             </StyledText> */}
           </View>

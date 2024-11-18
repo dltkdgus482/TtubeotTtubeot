@@ -20,7 +20,7 @@ export const getDailyMissionList = async (
     const res = await authClient.get('/user/auth/ttubeot/daily');
     const resData = res.data;
 
-    console.log(resData);
+    // console.log(resData);
     return [...resData.inProgressMissions, ...resData.completedMissions];
   } catch (error) {
     if (error.response.status === 403) {
@@ -42,15 +42,15 @@ export const getWeeklyMissionList = async (
     const res = await authClient.get('/user/auth/ttubeot/weekly');
     const resData = res.data;
 
-    console.log(resData);
+    // console.log(resData);
 
     return [...resData.inProgressMissions, ...resData.completedMissions];
   } catch (error) {
     if (error.response.status === 403) {
-      console.log(error);
+      // console.log(error);
       return [];
     } else {
-      console.log(error);
+      // console.log(error);
       return [];
     }
   }

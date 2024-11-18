@@ -30,10 +30,10 @@ export const drawTtubeot = async (
     // console.log(data);
     const res = await authClient.post('/user/auth/ttubeot/draw', data);
 
-    console.log('뚜벗 뽑기', res.data);
+    // console.log('뚜벗 뽑기', res.data);
     return res.data;
   } catch (error) {
-    console.log('drawTtubeot Error', error);
+    // console.log('drawTtubeot Error', error);
     return false;
   }
 };
@@ -42,11 +42,11 @@ export const confirmTtubeotName = async (
   userTtubeotOwnershipId: number,
   userTtubeotOwnershipName: string,
 ) => {
-  console.log(
-    'confirmTtubeotName',
-    userTtubeotOwnershipId,
-    userTtubeotOwnershipName,
-  );
+  // console.log(
+  //   'confirmTtubeotName',
+  //   userTtubeotOwnershipId,
+  //   userTtubeotOwnershipName,
+  // );
 
   try {
     const data = {
@@ -56,10 +56,10 @@ export const confirmTtubeotName = async (
 
     const res = await defaultRequest.post('/user/ttubeot/name', data);
 
-    console.log(res.data);
+    // console.log(res.data);
     return true;
   } catch (error) {
-    console.log('confirmTtubeotName Error', error);
+    // console.log('confirmTtubeotName Error', error);
     return false;
   }
 };
@@ -80,7 +80,7 @@ export const getBreakUpTtubeotInfoApi = async (
   const authClient = authRequest(accessToken, setAccessToken);
 
   if (!authClient) {
-    console.warn('유효하지 않은 accessToken입니다.');
+    // console.warn('유효하지 않은 accessToken입니다.');
     return null;
   }
 
@@ -93,7 +93,7 @@ export const getBreakUpTtubeotInfoApi = async (
       return null;
     }
 
-    console.log('최근 헤어진 뚜벗 정보', response.data);
+    // console.log('최근 헤어진 뚜벗 정보', response.data);
     return response.data;
   } catch (error) {
     console.error('getBreakUpTtubeotInfo Error', error);

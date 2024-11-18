@@ -37,7 +37,7 @@ const StepCounter = () => {
       PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION,
     );
     if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-      console.log('Permission denied');
+      // console.log('Permission denied');
       return;
     }
 

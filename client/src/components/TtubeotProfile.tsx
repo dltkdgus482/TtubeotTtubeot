@@ -7,6 +7,7 @@ import { useUser } from '../store/user';
 import { getTtubeotDetail } from '../utils/apis/users/userTtubeot';
 import { EmptyProfile, profileColor } from './ProfileImageUrl';
 import { TtubeotData } from '../types/ttubeotData';
+import { formatLocalDateTime } from '../utils/libs/formatDate';
 
 const Profile = styled(View)`
   position: relative;
@@ -30,6 +31,7 @@ const ProfileImageContainer = styled(View)`
 const ProfileImage = styled(Image)`
   width: 38px;
   height: 38px;
+  border-radius: 50px;
 `;
 
 const ProfileDetails = styled(View)`
@@ -97,6 +99,7 @@ const TtubeotProfile = () => {
     useUser.getState();
   const [loading, setIsLoading] = useState<boolean>(true);
   const [ttubeotData, setTtubeotData] = useState<TtubeotData>(null);
+  const [remainDays, setRemainDays] = useState<number>(null);
 
   useEffect(() => {
     const fetchUserTtubeot = async () => {
@@ -118,6 +121,21 @@ const TtubeotProfile = () => {
     fetchUserTtubeot();
   }, [user.userId, ttubeotId]);
 
+  useEffect(() => {
+    if (ttubeotData) {
+      const startDate = new Date(ttubeotData.createdAt);
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + 7);
+
+      const today = new Date();
+
+      const diffTime = endDate.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      setRemainDays(diffDays);
+    }
+  }, [ttubeotData]);
+
   return (
     <Profile>
       {ttubeotData && ttubeotId && (
@@ -126,7 +144,9 @@ const TtubeotProfile = () => {
           <ProfileDetails>
             <ProfileTop>
               <ProfileName bold>{ttubeotData?.ttubeotName}</ProfileName>
-              <RemainDays bold>D-4</RemainDays>
+              <RemainDays bold>
+                {remainDays > 0 ? `D-${remainDays}` : ''}
+              </RemainDays>
             </ProfileTop>
             <ProfileBottom>
               <View style={{ display: 'flex', flexDirection: 'row', gap: 4 }}>

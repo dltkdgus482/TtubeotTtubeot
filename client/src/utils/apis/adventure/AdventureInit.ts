@@ -32,12 +32,12 @@ const useAdventureSocket = () => {
       transports: ['websocket'],
     });
 
-    console.log('토큰 최신화 로직이 실행됐습니다!');
+    // console.log('토큰 최신화 로직이 실행됐습니다!');
 
     socketRef.current.on('connect', () => {
       const initMessage: InitMessage = { token: `Bearer ${accessToken}` };
       socketRef.current?.emit('adventure_init', initMessage);
-      console.log('소켓 연결 수립 및 adventure_init 이벤트 전송:', initMessage);
+      // console.log('소켓 연결 수립 및 adventure_init 이벤트 전송:', initMessage);
       setSocketConnected(true);
       // AdventureManager 초기화 및 소켓 인스턴스 전달
       AdventureManager.initialize(socketRef.current!);
@@ -47,13 +47,13 @@ const useAdventureSocket = () => {
   const disconnectSocket = useCallback(() => {
     if (socketRef.current) {
       socketRef.current.emit('adventure_end');
-      console.log('adventure_end 이벤트 전송');
+      // console.log('adventure_end 이벤트 전송');
       socketRef.current.on('adventure_result', data => {
-        console.log('adventure_result 이벤트 수신:', data);
+        // console.log('adventure_result 이벤트 수신:', data);
 
         socketRef.current?.disconnect();
         setSocketConnected(false);
-        console.log('소켓 연결이 종료되었습니다.');
+        // console.log('소켓 연결이 종료되었습니다.');
         AdventureManager.destory();
         socketRef.current.removeAllListeners();
         socketRef.current = null;

@@ -267,7 +267,7 @@ const AdventureMapScreen = ({
     if (
       remainCounts.length > 0 &&
       currentSteps.current > remainCounts[0] &&
-      nearbyParkDistance < 100
+      nearbyParkDistance < 300
     ) {
       setNearbyTreasure(true);
     }
@@ -292,8 +292,9 @@ const AdventureMapScreen = ({
       socketRef.current.addAdventureParkListener(data => {
         // console.log('addAdventureParkListener:', data.parks);
         setParkList(data.parks);
+        const availableParks = data.parks.filter(park => park.remain_count > 0);
 
-        const nearbyPark = data.parks[0];
+        const nearbyPark = availableParks[0];
 
         setRemainCounts(nearbyPark.remainCounts);
         setRemainCount(nearbyPark.remain_count);
@@ -310,27 +311,26 @@ const AdventureMapScreen = ({
       });
 
       socketRef.current.addAdventureConfirmListener(data => {
-        console.log('----- 친구 요청을 수신합니다 -----', data);
+        // console.log('----- 친구 요청을 수신합니다 -----', data);
 
         // 친구 요청 응답 수신 시 모달 닫기
         setIsNfcTagged(false);
       });
 
       socketRef.current.addAdventureRewardListener(data => {
-        console.log('보상 정보를 수신합니다.', data);
+        // console.log('보상 정보를 수신합니다.', data);
 
         if (data.type === 1) {
           // 친구추가, 인사 구분하는 로직 필요
           if (data.reward > 0) {
-            console.log(data);
+            // console.log(data);
             updateLog(accessToken, setAccessToken, 1);
             updateCoin(data.reward);
           }
         }
         if (data.type === 0) {
-          if (data.reward > 0) {
+          if (data.reward > 0 && data.remain_count > 0) {
             setCurrentReward(data.reward);
-            setNearbyParkDistance(null);
           }
         }
       });

@@ -46,27 +46,31 @@ const AlbumModal: React.FC<AlbumModalProps> = ({
     item,
   }: {
     item: { ttubeotId: number; ttubeotStatus: number };
-  }) => (
-    <TouchableOpacity
-      onPress={() => {
-        handleCharacterSelect(item.ttubeotId);
-        sendId(item.ttubeotId);
-      }}>
-      <Image
-        source={
-          item.ttubeotStatus !== -1
-            ? profileColor[item.ttubeotId]
-            : profileBlack[item.ttubeotId]
-        }
-        style={[
-          item.ttubeotStatus !== -1
-            ? styles.characterColorImage
-            : styles.characterBlackImage,
-          item.ttubeotStatus === 2 && { backgroundColor: '#F7DADA' }, // status 중퇴일 때 배경색 다르게
-        ]}
-      />
-    </TouchableOpacity>
-  );
+  }) => {
+    const isSelected = selectedCharacter === item.ttubeotId;
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          handleCharacterSelect(item.ttubeotId);
+          sendId(item.ttubeotId);
+        }}
+        style={isSelected && styles.isSelected}>
+        <Image
+          source={
+            item.ttubeotStatus !== -1
+              ? profileColor[item.ttubeotId]
+              : profileBlack[item.ttubeotId]
+          }
+          style={[
+            item.ttubeotStatus !== -1
+              ? styles.characterColorImage
+              : styles.characterBlackImage,
+            item.ttubeotStatus === 2 && { backgroundColor: '#F7DADA' }, // status 중퇴일 때 배경색 다르게
+          ]}
+        />
+      </TouchableOpacity>
+    );
+  };
 
   useEffect(() => {
     const fetchAlbumData = async () => {
@@ -131,7 +135,7 @@ const AlbumModal: React.FC<AlbumModalProps> = ({
       toValue: selectedCharacter ? 1 : 0,
       duration: 300,
       useNativeDriver: true,
-    });
+    }).start();
   }, [selectedCharacter, animationValue, animationOpactiyValue]);
 
   const translateY = animationValue.interpolate({
@@ -150,7 +154,7 @@ const AlbumModal: React.FC<AlbumModalProps> = ({
         const message = JSON.stringify({ type: 'changeId', id });
         webViewRef.current.postMessage(message);
       }
-    }, 500);
+    }, 100);
   };
 
   return (
@@ -218,35 +222,6 @@ const AlbumModal: React.FC<AlbumModalProps> = ({
               </View>
             ) : (
               <View style={styles.infoContainer}>
-                <WebView
-                  ref={webViewRef}
-                  originWhitelist={['*']}
-                  source={{
-                    uri: 'file:///android_asset/renderStaticModel.html',
-                  }}
-                  style={styles.ttubeotWebview}
-                  allowFileAccess={true}
-                  allowFileAccessFromFileURLs={true}
-                  allowUniversalAccessFromFileURLs={true}
-                  onLoadStart={syntheticEvent => {
-                    const { nativeEvent } = syntheticEvent;
-                    console.log('졸업앨범 웹뷰: ', nativeEvent);
-                  }}
-                  onError={syntheticEvent => {
-                    const { nativeEvent } = syntheticEvent;
-                    console.error('WebView onError: ', nativeEvent);
-                  }}
-                  onHttpError={syntheticEvent => {
-                    const { nativeEvent } = syntheticEvent;
-                    console.error('WebView onHttpError: ', nativeEvent);
-                  }}
-                  onMessage={event => {
-                    console.log(
-                      'Message from WebView:',
-                      event.nativeEvent.data,
-                    );
-                  }}
-                />
                 <View style={styles.ttubeotInfoContainer}>
                   <StyledText bold style={styles.ttubeotName}>
                     {selectedCharacterData.ttubeotName}
@@ -296,6 +271,39 @@ const AlbumModal: React.FC<AlbumModalProps> = ({
                 </View>
               </View>
             ))}
+
+          <Animated.View
+            style={[
+              styles.ttubeotWebviewContainer,
+              { opacity: animationOpactiyValue },
+            ]}>
+            <WebView
+              ref={webViewRef}
+              originWhitelist={['*']}
+              source={{
+                uri: 'file:///android_asset/renderStaticModel.html',
+              }}
+              style={[styles.ttubeotWebview]}
+              allowFileAccess={true}
+              allowFileAccessFromFileURLs={true}
+              allowUniversalAccessFromFileURLs={true}
+              onLoadStart={syntheticEvent => {
+                const { nativeEvent } = syntheticEvent;
+                // console.log('졸업앨범 웹뷰: ', nativeEvent);
+              }}
+              onError={syntheticEvent => {
+                const { nativeEvent } = syntheticEvent;
+                console.error('WebView onError: ', nativeEvent);
+              }}
+              onHttpError={syntheticEvent => {
+                const { nativeEvent } = syntheticEvent;
+                console.error('WebView onHttpError: ', nativeEvent);
+              }}
+              onMessage={event => {
+                // console.log('Message from WebView:', event.nativeEvent.data);
+              }}
+            />
+          </Animated.View>
 
           <Animated.View>
             <FlatList

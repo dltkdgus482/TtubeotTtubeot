@@ -68,7 +68,7 @@ export const getTtubeotStatus = async (
   try {
     const authClient = authRequest(accessToken, setAccessToken);
     const res = await authClient.get('/user/auth/ttubeot/status');
-    console.log('뚜벗 상태 조회 성공:', res.data);
+    // console.log('뚜벗 상태 조회 성공:', res.data);
     return res.data;
   } catch (err) {
     console.error('뚜벗 상태 조회 오류:', err);
@@ -91,7 +91,7 @@ export const getTtubeotInterestApi = async (
 
   try {
     const response = await authClient.get('/user/auth/ttubeot/interest');
-    console.log('뚜벗 관심도:', response.data);
+    // console.log('뚜벗 관심도:', response.data);
     return response.data;
   } catch (err) {
     console.error('뚜벗 관심도 조회 오류:', err);
