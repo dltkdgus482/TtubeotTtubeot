@@ -1,0 +1,42 @@
+{
+  "name": "adventure",
+  "version": "1.0.0",
+  "description": "ttubeot service's adventure service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dist/index.js",
+    "build": "tsc -p .",
+    "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/index.ts",
+    "postbuild": "cp grid_data.json dist/"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/ioredis": "^5.0.0",
+    "@types/mysql": "^2.15.26",
+    "@types/node": "^22.7.9",
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2"
+  },
+  "dependencies": {
+    "@types/amqplib": "^0.10.5",
+    "@types/ftp": "^0.3.36",
+    "@types/jsonwebtoken": "^9.0.7",
+    "amqplib": "^0.10.4",
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "ftp": "^0.3.10",
+    "ioredis": "^5.4.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.10.0",
+    "monsterapi": "^0.0.5",
+    "mysql2": "^3.11.3",
+    "openai": "^4.71.0",
+    "redis": "^4.7.0",
+    "socket.io": "^4.8.1",
+    "uuid": "^11.0.2"
+  }
+}

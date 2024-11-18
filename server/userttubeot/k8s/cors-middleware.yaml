@@ -1,0 +1,24 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: cors
+  namespace: ttubeot-user
+spec:
+  headers:
+    accessControlAllowMethods:
+      - "GET"
+      - "POST"
+      - "OPTIONS"
+      - "PUT"
+      - "PATCH"
+      - "DELETE"
+    accessControlAllowOriginList:
+      - "http://localhost:8081"
+      - "https://ssafy.picel.net"
+    accessControlAllowHeaders:
+      - "Content-Type"
+      - "Access"
+    accessControlExposeHeaders:
+      - "Access"  
+    accessControlAllowCredentials: true
+    accessControlMaxAge: 100
