@@ -188,8 +188,8 @@ class AdventureService {
       });
     }
 
-    const systemTime = new Date();
-    console.log("System Time:", systemTime.toISOString());
+    // const systemTime = new Date();
+    // console.log("System Time:", systemTime.toISOString());
 
     // result를 로그로 출력
     // console.log("Result:", JSON.stringify(result, null, 2));
