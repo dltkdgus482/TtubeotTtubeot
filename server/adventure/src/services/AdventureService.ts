@@ -192,10 +192,6 @@ class AdventureService {
     lng: number,
     steps: number
   ): Promise<{ reward: number; remain_count: number }> {
-    if (steps <= 0) {
-      throw new Error("Invalid steps value");
-    }
-
     let adventureLog = await this.adventureRedisRepository.getAdventureLog(
       socket
     );
@@ -206,60 +202,43 @@ class AdventureService {
       lng,
       1500
     );
+
     let park = parkList[0];
 
-    // 공원 거리가 너무 멀 경우
     if (park.distance > 300) {
-      let remainCounts = await this.adventureRedisRepository.getRemainCounts(
-        userId,
-        park._id
-      );
-      return { reward: 0, remain_count: remainCounts?.length || 0 };
+      return { reward: 0, remain_count: 0 };
     }
 
     let remainCounts = await this.adventureRedisRepository.getRemainCounts(
       userId,
       park._id
     );
-    if (
-      !remainCounts ||
-      remainCounts.length === 0 ||
-      remainCounts.some((count) => count === null)
-    ) {
-      return { reward: 0, remain_count: 0 };
-    }
+    let remainCount = remainCounts[0] - steps;
 
-    let remainCount = remainCounts[0] ? remainCounts[0] - steps : NaN;
+    console.log("RemainCounts:", remainCounts);
+    console.log("RemainCount:", remainCount);
+    console.log("Steps:", steps);
 
-    // 보상 지급 조건
-    if (isNaN(remainCount) || remainCount <= 0) {
+    if (remainCount <= 0) {
       remainCounts.shift();
-      if (remainCounts.length === 0) {
-        await this.adventureRedisRepository.setRemainCounts(
-          userId,
-          park._id,
-          remainCounts
-        );
-        return { reward: 0, remain_count: 0 };
-      }
-
       await this.adventureRedisRepository.setRemainCounts(
         userId,
         park._id,
         remainCounts
       );
 
-      // 보상 계산 (걸음 수와 무관)
-      let reward = Math.floor(Math.random() * 100) + 100; // 100~199 사이의 랜덤 값
-      adventureLog.adventureCoin += reward;
+      let reward = Math.floor(Math.random() * 100) + 100;
 
-      // 사용자 정보 업데이트
+      console.log("Before Update:", adventureLog.adventureCoin);
+      console.log("Reward:", reward);
+      adventureLog.adventureCoin += reward;
+      console.log("After Update:", adventureLog.adventureCoin);
+
       await this.adventureRedisRepository.updateUserInfo(adventureLog, socket);
 
       return { reward, remain_count: remainCounts.length };
     }
 
-    // 남은 걸음 수 업데이트
     remainCounts[0] = remainCount;
     await this.adventureRedisRepository.setRemainCounts(
       userId,
@@ -267,7 +246,7 @@ class AdventureService {
       remainCounts
     );
 
-    return { reward: 0, remain_count: remainCounts.length };
+    return { reward: 0, remain_count: 0 };
   }
 
   async getUserIdBySocket(socket: string): Promise<number> {
