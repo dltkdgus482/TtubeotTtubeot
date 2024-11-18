@@ -213,6 +213,20 @@ class AdventureService {
       userId,
       park._id
     );
+
+    // 양의 정수만 필터링
+    remainCounts = remainCounts.filter(
+      (count) => Number.isInteger(count) && count > 0
+    );
+
+    // 배열 크기가 0이면 반환
+    if (remainCounts.length === 0) {
+      console.log(
+        `사용자 ${userId}는 공원 ${park._id}에서 이미 모든 보상을 획득했습니다.`
+      );
+      return { reward: 0, remain_count: 0 };
+    }
+
     let remainCount = remainCounts[0] - steps;
 
     console.log("RemainCounts:", remainCounts);
