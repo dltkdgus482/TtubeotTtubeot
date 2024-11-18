@@ -214,6 +214,10 @@ class AdventureService {
     );
     let remainCount = remainCounts[0] - steps;
 
+    console.log("RemainCounts:", remainCounts);
+    console.log("RemainCount:", remainCount);
+    console.log("Steps:", steps);
+
     if (remainCount <= 0) {
       remainCounts.shift();
       await this.adventureRedisRepository.setRemainCounts(
