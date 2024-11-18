@@ -183,6 +183,9 @@ class AdventureService {
       });
     }
 
+    // result를 로그로 출력
+    console.log("Result:", JSON.stringify(result, null, 2));
+
     return result;
   }
 
