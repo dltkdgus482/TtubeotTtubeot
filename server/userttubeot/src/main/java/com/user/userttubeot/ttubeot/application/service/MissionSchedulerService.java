@@ -79,47 +79,60 @@ public class MissionSchedulerService {
         log.info("총 {}명의 사용자에 대해 흥미 감소 작업을 수행합니다. 현재 시간: {}", allUsers.size(), currentTime);
 
         for (User user : allUsers) {
-            processUserInterestDecrease(user);
+            try {
+                processUserInterestDecrease(user);
+            } catch (Exception e) {
+                log.error("사용자 ID {}에 대한 작업 중 예외 발생. 작업을 건너뜁니다: {}", user.getUserId(),
+                    e.getMessage());
+            }
         }
         log.info("모든 사용자에 대한 ttubeot_interest 감소 작업 완료. 현재 시간: {}", currentTime);
     }
 
     @Transactional
     public void processUserInterestDecrease(User user) {
-        Integer userId = user.getUserId();
-        log.info("사용자 ID {}에 대한 ttubeot_interest 감소 작업을 시작합니다.", userId);
+        try {
+            Integer userId = user.getUserId();
+            log.info("사용자 ID {}에 대한 ttubeot_interest 감소 작업을 시작합니다.", userId);
 
-        UserTtuBeotOwnership userTtuBeotOwnership = ttubeotService.getUserTtuBeotOwnership(userId);
-        Long ownershipId = userTtuBeotOwnership.getUserTtubeotOwnershipId();
+            UserTtuBeotOwnership userTtuBeotOwnership = ttubeotService.getUserTtuBeotOwnership(
+                userId);
+            Long ownershipId = userTtuBeotOwnership.getUserTtubeotOwnershipId();
 
-        Integer currentInterest = ttubeotService.getTtubeotInterest(userId).getTtubeotInterest();
-        log.info("현재 관심도: {} (소유 ID: {})", currentInterest, ownershipId);
+            Integer currentInterest = ttubeotService.getTtubeotInterest(userId)
+                .getTtubeotInterest();
+            log.info("현재 관심도: {} (소유 ID: {})", currentInterest, ownershipId);
 
-        UserTtuBeotOwnership updatedUserTtuBeotOwnership = ttubeotService.changeTtubeotInterest(
-            ownershipId, -1);
+            UserTtuBeotOwnership updatedUserTtuBeotOwnership = ttubeotService.changeTtubeotInterest(
+                ownershipId, -1);
 
-        Integer updatedInterest = updatedUserTtuBeotOwnership.getTtubeotInterest();
-        log.info("업데이트된 관심도: {} (소유 ID: {})", updatedInterest, ownershipId);
+            Integer updatedInterest = updatedUserTtuBeotOwnership.getTtubeotInterest();
+            log.info("업데이트된 관심도: {} (소유 ID: {})", updatedInterest, ownershipId);
 
-        // 관심도 변화에 따른 알림 전송
-        checkAndSendNotification(user, currentInterest, updatedInterest);
+            // 관심도 변화에 따른 알림 전송
+            checkAndSendNotification(user, currentInterest, updatedInterest);
 
-        // 관심도가 0 이하인 경우, 상태 업데이트 및 알림 전송
-        if (updatedInterest <= 0) {
-            UserTtuBeotOwnership updated = userTtuBeotOwnership.updateBreakUpAndStatus(
-                LocalDateTime.now(), 2);
-            userTtubeotOwnershipRepository.save(updated);
+            // 관심도가 0 이하인 경우, 상태 업데이트 및 알림 전송
+            if (updatedInterest <= 0) {
+                UserTtuBeotOwnership updated = userTtuBeotOwnership.updateBreakUpAndStatus(
+                    LocalDateTime.now(), 2);
+                userTtubeotOwnershipRepository.save(updated);
 
-            // 알림 전송
-            sendNotification(user, "뚜벗이 떠났어요...",
-                "관심이 부족해서 뚜벗이 멀리 떠나버렸어요. 다시 데려오려면 열심히 활동해보세요!");
+                // 알림 전송
+                sendNotification(user, "뚜벗이 떠났어요...",
+                    "관심이 부족해서 뚜벗이 멀리 떠나버렸어요. 다시 데려오려면 열심히 활동해보세요!");
 
-            log.info("관심도가 0 이하로 떨어져 뚜벗이 도망갔습니다. (사용자 ID: {})", userId);
+                log.info("관심도가 0 이하로 떨어져 뚜벗이 도망갔습니다. (사용자 ID: {})", userId);
+            }
+
+            userTtubeotOwnershipRepository.save(updatedUserTtuBeotOwnership);
+            log.info("사용자 ID {}의 ttubeot_interest 감소 작업이 완료되었습니다.", userId);
+        } catch (Exception e) {
+            log.error("사용자 ID {} 처리 중 예외 발생: {}", user.getUserId(), e.getMessage());
+            throw e; // 예외를 상위 메서드에서 처리
         }
-
-        userTtubeotOwnershipRepository.save(updatedUserTtuBeotOwnership);
-        log.info("사용자 ID {}의 ttubeot_interest 감소 작업이 완료되었습니다.", userId);
     }
+
 
     private void checkAndSendNotification(User user, Integer currentInterest,
         Integer updatedInterest) {
