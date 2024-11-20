@@ -7,7 +7,6 @@ import com.user.userttubeot.ttubeot.domain.model.UserTtubeotMission;
 import com.user.userttubeot.ttubeot.domain.repository.MissionRepository;
 import com.user.userttubeot.ttubeot.domain.repository.UserTtubeotMissionRepository;
 import com.user.userttubeot.ttubeot.domain.repository.UserTtubeotOwnershipRepository;
-import com.user.userttubeot.user.application.UserService;
 import com.user.userttubeot.user.domain.entity.User;
 import com.user.userttubeot.user.domain.repository.UserRepository;
 import java.time.LocalDateTime;
@@ -33,175 +32,159 @@ public class MissionSchedulerService {
     private final AlertServiceImpl alertService;
     private final UserRepository userRepository;
     private final TtubeotService ttubeotService;
-    private final UserService userService;
 
-    // 매일 일정시간에 모든 유저에게 테스트 알림 전송
-//    @Scheduled(cron = "00 28 05 * * *")
-//    public void sendTestNotification() {
-//        // 모든 유저 조회
-//        List<User> users = userRepository.findAll();
-//
-//        for (User user : users) {
-//            String fcmToken = user.getFcmToken();
-//            if (fcmToken != null && !fcmToken.isEmpty()) {
-//                alertService.sendMissionNotification(fcmToken, "482야 레전드 불꺼라", "불끄고 자세요 여러분");
-//            }
-//        }
-//    }
-
-    // 매일 자정에 일일 미션 초기화
+    /**
+     * 매일 자정에 일일 미션 초기화
+     */
     @Scheduled(cron = "0 30 00 * * *")
     @Transactional
     public void assignDailyMissions() {
-        Mission specificMission = missionRepository.findById(3)
-            .orElseThrow(() -> new IllegalArgumentException(
-                "ID 3에 해당하는 미션을 찾을 수 없습니다.")); // missionType 0 (일일미션)
-        List<Mission> dailyMissions = List.of(specificMission); // ID 3번 미션만 리스트에 포함
-        assignMissionsToActiveTtubeots(dailyMissions, "새로운 일일 미션 등장! 오늘은 꼭 성공해보세요!");
+        log.info("일일 미션 초기화 작업 시작");
+        assignMissionsToActiveTtubeots(
+            List.of(getMissionById(3)),
+            "새로운 일일 미션 등장! 오늘은 꼭 성공해보세요!"
+        );
+        log.info("일일 미션 초기화 작업 완료");
     }
 
-    // 매주 일요일 자정에 주간 미션 초기화
+    /**
+     * 매주 일요일 자정에 주간 미션 초기화
+     */
     @Scheduled(cron = "0 0 0 * * SUN")
+    @Transactional
     public void assignWeeklyMissions() {
-        List<Mission> weeklyMissions = getRandomMissionsByType(1);
-        assignMissionsToActiveTtubeots(weeklyMissions, "짜잔! 이번 주 주간 미션이 도착했습니다! 도전 준비 완료?");
+        log.info("주간 미션 초기화 작업 시작");
+        assignMissionsToActiveTtubeots(
+            getRandomMissionsByType(1),
+            "이번 주 주간 미션이 도착했습니다! 도전 준비 완료?"
+        );
+        log.info("주간 미션 초기화 작업 완료");
     }
 
-
-    // 뚜벗 관심 지수 감소
+    /**
+     * 매시간 실행: 뚜벗 관심도 감소 및 졸업 처리
+     */
     @Scheduled(cron = "0 0 * * * *")
+    @Transactional
     public void decreaseTtubeotInterestHourly() {
-        String currentTime = LocalDateTime.now()
-            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        log.info("매시간 정각에 실행되는 작업: ttubeot_interest 감소 작업 시작. 현재 시간: {}", currentTime);
+        log.info("뚜벗 관심도 감소 및 졸업 처리 작업 시작: {}", getCurrentTime());
 
-        List<User> allUsers = userRepository.findAll();
-        log.info("총 {}명의 사용자에 대해 흥미 감소 작업을 수행합니다. 현재 시간: {}", allUsers.size(), currentTime);
+        // 1. 관심도 감소 작업
+        log.info("관심도 감소 작업 시작");
+        List<User> users = userRepository.findAll();
 
-        for (User user : allUsers) {
+        users.forEach(user -> {
             try {
                 processUserInterestDecrease(user);
             } catch (Exception e) {
-                log.error("사용자 ID {}에 대한 작업 중 예외 발생. 작업을 건너뜁니다: {}", user.getUserId(),
-                    e.getMessage());
+                log.error("사용자 ID {} 처리 중 예외 발생: {}", user.getUserId(), e.getMessage());
             }
-        }
-        log.info("모든 사용자에 대한 ttubeot_interest 감소 작업 완료. 현재 시간: {}", currentTime);
+        });
+        log.info("관심도 감소 작업 완료");
+
+        // 2. 졸업 처리 작업
+        log.info("졸업 처리 작업 시작");
+        ttubeotService.verifyAndGraduateAfter7Days();
+        log.info("졸업 처리 작업 완료");
+
+        log.info("뚜벗 관심도 감소 및 졸업 처리 작업 완료: {}", getCurrentTime());
     }
 
-    @Transactional
-    public void processUserInterestDecrease(User user) {
-        try {
-            Integer userId = user.getUserId();
-            log.info("사용자 ID {}에 대한 ttubeot_interest 감소 작업을 시작합니다.", userId);
+    private void processUserInterestDecrease(User user) {
+        UserTtuBeotOwnership ownership = ttubeotService.getUserTtuBeotOwnership(user.getUserId());
+        int currentInterest = ownership.getTtubeotInterest();
+        ttubeotService.changeTtubeotInterest(ownership.getUserTtubeotOwnershipId(), -1);
+        int updatedInterest = ownership.getTtubeotInterest();
 
-            UserTtuBeotOwnership userTtuBeotOwnership = ttubeotService.getUserTtuBeotOwnership(
-                userId);
-            Long ownershipId = userTtuBeotOwnership.getUserTtubeotOwnershipId();
+        handleInterestNotifications(user, currentInterest, updatedInterest);
 
-            Integer currentInterest = ttubeotService.getTtubeotInterest(userId)
-                .getTtubeotInterest();
-            log.info("현재 관심도: {} (소유 ID: {})", currentInterest, ownershipId);
-
-            UserTtuBeotOwnership updatedUserTtuBeotOwnership = ttubeotService.changeTtubeotInterest(
-                ownershipId, -1);
-
-            Integer updatedInterest = updatedUserTtuBeotOwnership.getTtubeotInterest();
-            log.info("업데이트된 관심도: {} (소유 ID: {})", updatedInterest, ownershipId);
-
-            // 관심도 변화에 따른 알림 전송
-            checkAndSendNotification(user, currentInterest, updatedInterest);
-
-            // 관심도가 0 이하인 경우, 상태 업데이트 및 알림 전송
-            if (updatedInterest <= 0) {
-                UserTtuBeotOwnership updated = userTtuBeotOwnership.updateBreakUpAndStatus(
-                    LocalDateTime.now(), 2);
-                userTtubeotOwnershipRepository.save(updated);
-
-                // 알림 전송
-                sendNotification(user, "뚜벗이 떠났어요...",
-                    "관심이 부족해서 뚜벗이 멀리 떠나버렸어요. 다시 데려오려면 열심히 활동해보세요!");
-
-                log.info("관심도가 0 이하로 떨어져 뚜벗이 도망갔습니다. (사용자 ID: {})", userId);
-            }
-
-            userTtubeotOwnershipRepository.save(updatedUserTtuBeotOwnership);
-            log.info("사용자 ID {}의 ttubeot_interest 감소 작업이 완료되었습니다.", userId);
-        } catch (Exception e) {
-            log.error("사용자 ID {} 처리 중 예외 발생: {}", user.getUserId(), e.getMessage());
-            throw e; // 예외를 상위 메서드에서 처리
+        if (updatedInterest <= 0) {
+            handleBreakUp(ownership, user);
         }
     }
 
-
-    private void checkAndSendNotification(User user, Integer currentInterest,
-        Integer updatedInterest) {
+    private void handleInterestNotifications(User user, int currentInterest, int updatedInterest) {
         if (currentInterest >= 50 && updatedInterest < 50) {
-            sendNotification(user, "모험 경고!", "뚜벗의 관심도가 50 아래로 떨어졌어요! 지금 바로 모험을 떠나야 해요!");
-            log.info("관심도가 50 미만으로 떨어져 알림을 전송했습니다. (사용자 ID: {})", user.getUserId());
+            sendNotification(user, "모험 경고!", "뚜벗의 관심도가 50 아래로 떨어졌어요! 모험이 필요합니다.");
         } else if (currentInterest >= 30 && updatedInterest < 30) {
-            sendNotification(user, "긴급 모험 소집!", "뚜벗의 관심도가 30 아래로 떨어졌어요! 뚜벗이 힘내려면 꼭 도와주세요!");
-            log.info("관심도가 30 미만으로 떨어져 알림을 전송했습니다. (사용자 ID: {})", user.getUserId());
+            sendNotification(user, "긴급 모험 소집!", "뚜벗의 관심도가 30 아래로 떨어졌어요! 뚜벗을 도와주세요.");
         }
     }
 
-
-    private void sendNotification(User user, String title, String message) {
-        String fcmToken = user.getFcmToken();
-        if (fcmToken == null || fcmToken.isEmpty()) {
-            log.warn("사용자의 FCM 토큰이 유효하지 않습니다. 알림을 전송할 수 없습니다. (사용자 ID: {})", user.getUserId());
-            return;
-        }
-        alertService.sendMissionNotification(fcmToken, title, message);
-        log.info("알림 전송 완료 - 사용자 ID: {}, 제목: {}, 메시지: {}", user.getUserId(), title, message);
+    private void handleBreakUp(UserTtuBeotOwnership ownership, User user) {
+        ownership.updateBreakUpAndStatus(LocalDateTime.now(), 2);
+        userTtubeotOwnershipRepository.save(ownership);
+        sendNotification(user, "뚜벗이 떠났어요...", "관심이 부족해서 뚜벗이 떠나버렸어요.");
+        log.info("뚜벗이 도망갔습니다 - 사용자 ID: {}", user.getUserId());
     }
 
-
-    // missionType과 missionTheme에 따라 랜덤으로 미션 선택
-    private List<Mission> getRandomMissionsByType(int missionType) {
-        List<Mission> interactionMissions = missionRepository.findByMissionTypeAndMissionTheme(
-            missionType, 0);
-        List<Mission> adventureMissions = missionRepository.findByMissionTypeAndMissionTheme(
-            missionType, 1);
-        List<Mission> socialMissions = missionRepository.findByMissionTypeAndMissionTheme(
-            missionType, 2);
-
-        Random random = new Random();
-        return List.of(
-            interactionMissions.get(random.nextInt(interactionMissions.size())),
-            adventureMissions.get(random.nextInt(adventureMissions.size())),
-            socialMissions.get(random.nextInt(socialMissions.size()))
-        );
-    }
-
-    // 상태가 0인 활성 뚜벗에게 미션을 할당
     private void assignMissionsToActiveTtubeots(List<Mission> missions,
         String notificationMessage) {
-        // 상태가 0인 유저의 뚜벗을 조회
         List<UserTtuBeotOwnership> activeTtubeots = userTtubeotOwnershipRepository.findByTtubeotStatus(
             0);
 
-        for (UserTtuBeotOwnership ttubeot : activeTtubeots) {
-            String fcmToken = ttubeot.getUser().getFcmToken();
-            if (fcmToken != null && !fcmToken.isEmpty()) {
-                alertService.sendMissionNotification(fcmToken, "미션 알림", notificationMessage);
-            }
+        activeTtubeots.forEach(ttubeot -> {
+            notifyUserOfNewMission(ttubeot.getUser(), notificationMessage);
+            missions.forEach(mission -> assignMissionIfNotExists(ttubeot, mission));
+        });
+    }
 
-            for (Mission mission : missions) {
-                // 이미 동일한 미션이 할당되어 있는지 확인
-                boolean isMissionAlreadyAssigned = userTtubeotMissionRepository.existsByUserTtuBeotOwnershipAndMissionAndMissionStatus(
-                    ttubeot, mission, MissionStatus.IN_PROGRESS);
-                if (!isMissionAlreadyAssigned) {
-                    // 새 미션 할당
-                    UserTtubeotMission userTtubeotMission = UserTtubeotMission.builder()
-                        .mission(mission)
-                        .userTtuBeotOwnership(ttubeot)
-                        .missionStatus(MissionStatus.IN_PROGRESS)
-                        .userTtubeotMissionActionCount(0)
-                        .build();
-                    userTtubeotMissionRepository.save(userTtubeotMission);
-                }
-            }
+    private void assignMissionIfNotExists(UserTtuBeotOwnership ttubeot, Mission mission) {
+        boolean alreadyAssigned = userTtubeotMissionRepository.existsByUserTtuBeotOwnershipAndMissionAndMissionStatus(
+            ttubeot, mission, MissionStatus.IN_PROGRESS);
+
+        if (!alreadyAssigned) {
+            UserTtubeotMission userTtubeotMission = UserTtubeotMission.builder()
+                .mission(mission)
+                .userTtuBeotOwnership(ttubeot)
+                .missionStatus(MissionStatus.IN_PROGRESS)
+                .userTtubeotMissionActionCount(0)
+                .build();
+            userTtubeotMissionRepository.save(userTtubeotMission);
         }
+    }
+
+    private void notifyUserOfNewMission(User user, String message) {
+        if (isValidFcmToken(user.getFcmToken())) {
+            alertService.sendMissionNotification(user.getFcmToken(), "미션 알림", message);
+        }
+    }
+
+    private boolean isValidFcmToken(String token) {
+        return token != null && !token.isEmpty();
+    }
+
+    private Mission getMissionById(int missionId) {
+        return missionRepository.findById(missionId)
+            .orElseThrow(
+                () -> new IllegalArgumentException("ID " + missionId + "에 해당하는 미션을 찾을 수 없습니다."));
+    }
+
+    private List<Mission> getRandomMissionsByType(int missionType) {
+        Random random = new Random();
+        return List.of(
+            getRandomMission(missionType, 0, random),
+            getRandomMission(missionType, 1, random),
+            getRandomMission(missionType, 2, random)
+        );
+    }
+
+    private Mission getRandomMission(int missionType, int missionTheme, Random random) {
+        List<Mission> missions = missionRepository.findByMissionTypeAndMissionTheme(missionType,
+            missionTheme);
+        return missions.get(random.nextInt(missions.size()));
+    }
+
+    private void sendNotification(User user, String title, String message) {
+        if (isValidFcmToken(user.getFcmToken())) {
+            alertService.sendMissionNotification(user.getFcmToken(), title, message);
+            log.info("알림 전송 완료 - 사용자 ID: {}, 제목: {}, 메시지: {}", user.getUserId(), title, message);
+        } else {
+            log.warn("유효하지 않은 FCM 토큰 - 사용자 ID: {}", user.getUserId());
+        }
+    }
+
+    private String getCurrentTime() {
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 }

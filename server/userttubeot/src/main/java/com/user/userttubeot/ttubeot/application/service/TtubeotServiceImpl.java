@@ -555,7 +555,9 @@ public class TtubeotServiceImpl implements TtubeotService {
 
     @Override
     public void verifyAndGraduateAfter7Days() {
-        for (UserTtuBeotOwnership ttubeot : userTtubeotOwnershipRepository.findAllByStatusAndCreatedAtOlderThanSevenDays()) {
+        LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
+        for (UserTtuBeotOwnership ttubeot : userTtubeotOwnershipRepository.findAllByStatusAndCreatedAtOlderThanSevenDays(
+            0, sevenDaysAgo)) {
             ttubeot.updateBreakUpAndStatus(LocalDateTime.now(), 1);
             userTtubeotOwnershipRepository.save(ttubeot);
 

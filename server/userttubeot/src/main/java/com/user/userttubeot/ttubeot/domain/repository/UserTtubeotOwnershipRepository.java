@@ -1,6 +1,8 @@
 package com.user.userttubeot.ttubeot.domain.repository;
 
 import com.user.userttubeot.ttubeot.domain.model.UserTtuBeotOwnership;
+import io.lettuce.core.dynamic.annotation.Param;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,9 +36,10 @@ public interface UserTtubeotOwnershipRepository extends JpaRepository<UserTtuBeo
     Optional<UserTtuBeotOwnership> findFirstByUser_UserIdAndBreakUpIsNotNullOrderByBreakUpDesc(
         int userId);
 
-    @Query("SELECT u FROM UserTtuBeotOwnership u " +
-        "WHERE u.ttubeotStatus = 0 AND u.createdAt <= CURRENT_DATE - 7")
-    List<UserTtuBeotOwnership> findAllByStatusAndCreatedAtOlderThanSevenDays();
+    @Query("SELECT u FROM UserTtuBeotOwnership u WHERE u.ttubeotStatus = :status AND u.createdAt <= :cutoffDate")
+    List<UserTtuBeotOwnership> findAllByStatusAndCreatedAtOlderThanSevenDays(
+        @Param("status") int status,
+        @Param("cutoffDate") LocalDateTime cutoffDate);
 
 
 }
