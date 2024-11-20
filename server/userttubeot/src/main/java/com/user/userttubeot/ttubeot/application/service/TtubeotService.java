@@ -80,7 +80,14 @@ public interface TtubeotService {
     // 뚜벗 interest 변화
     UserTtuBeotOwnership changeTtubeotInterest(Long ttubeotInterestId, Integer mount);
 
+    // 유저 ID로 뚜벗 ID 조회
     UserTtuBeotOwnership getUserTtuBeotOwnership(int userId);
 
-    boolean deleteUserTtuBeotOwnership(Long ttubeotInterestId);
+    // 뚜벗 ID로 삭제
+    boolean deleteUserTtuBeotOwnership(Long ttubeotId);
+
+    // 뚜벗이 획득 한지 7일이 지났는지 체크 후 졸업 시키기
+    void verifyAndGraduateAfter7Days();
+
+
 }

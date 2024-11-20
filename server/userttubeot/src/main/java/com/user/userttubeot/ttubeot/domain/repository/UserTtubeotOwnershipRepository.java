@@ -4,6 +4,7 @@ import com.user.userttubeot.ttubeot.domain.model.UserTtuBeotOwnership;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -32,5 +33,10 @@ public interface UserTtubeotOwnershipRepository extends JpaRepository<UserTtuBeo
     // 가장 최근에 헤어진 뚜벗을 조회
     Optional<UserTtuBeotOwnership> findFirstByUser_UserIdAndBreakUpIsNotNullOrderByBreakUpDesc(
         int userId);
+
+    @Query("SELECT u FROM UserTtuBeotOwnership u " +
+        "WHERE u.ttubeotStatus = 0 AND u.createdAt <= CURRENT_DATE - 7")
+    List<UserTtuBeotOwnership> findAllByStatusAndCreatedAtOlderThanSevenDays();
+
 
 }

@@ -532,24 +532,35 @@ public class TtubeotServiceImpl implements TtubeotService {
 
     @Override
     @Transactional
-    public boolean deleteUserTtuBeotOwnership(Long userTtuBeotOwnershipId) {
-        log.info("deleteUserTtuBeotOwnership 호출됨 - userTtuBeotOwnershipId: {}",
-            userTtuBeotOwnershipId);
+    public boolean deleteUserTtuBeotOwnership(Long ttubeotId) {
+        log.info("deleteUserTtuBeotOwnership 호출됨 - ttubeotId: {}",
+            ttubeotId);
 
         try {
             UserTtuBeotOwnership userTtuBeotOwnership = userTtubeotOwnershipRepository.findById(
-                    userTtuBeotOwnershipId)
+                    ttubeotId)
                 .orElseThrow(() -> new IllegalArgumentException(
-                    "해당 ID의 소유권이 존재하지 않습니다: " + userTtuBeotOwnershipId));
+                    "해당 ID의 소유권이 존재하지 않습니다: " + ttubeotId));
 
             userTtubeotOwnershipRepository.delete(userTtuBeotOwnership);
 
-            log.info("뚜벗 소유권 삭제 완료 - userTtuBeotOwnershipId: {}", userTtuBeotOwnershipId);
+            log.info("뚜벗 소유권 삭제 완료 - ttubeotId: {}", ttubeotId);
 
             return true;
         } catch (Exception e) {
             log.error("삭제 중 오류 발생: {}", e.getMessage());
             return false;
+        }
+    }
+
+    @Override
+    public void verifyAndGraduateAfter7Days() {
+        for (UserTtuBeotOwnership ttubeot : userTtubeotOwnershipRepository.findAllByStatusAndCreatedAtOlderThanSevenDays()) {
+            ttubeot.updateBreakUpAndStatus(LocalDateTime.now(), 1);
+            userTtubeotOwnershipRepository.save(ttubeot);
+
+            log.info("ID: {} Name: {}가 졸업했습니다.", ttubeot.getUserTtubeotOwnershipId(),
+                ttubeot.getTtubeotName());
         }
     }
 
