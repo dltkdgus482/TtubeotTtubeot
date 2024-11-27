@@ -5,7 +5,7 @@
   <h3>아이들 야외 활동 장려 서비스 ‘뚜벗뚜벗’</h3>
   
   <div>
-    ✨ <a href="https://www.notion.so/SSAFY-df70a221ba984927b8fed0d68d34dd92">0ㅣ띠 팀 노션</a>
+    ✨ <a href="https://pinto-bakery-023.notion.site/0-SSAFY-1173b8f9991f80638044dc13e1c387b9?pvs=4">0ㅣ띠 팀 노션</a>
   </div>
   
   <br />
